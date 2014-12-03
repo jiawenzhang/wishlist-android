@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -25,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -104,6 +106,10 @@ public class WishList extends Activity {
 	
 	private long _selectedItem_id;
 
+    private String[] mNavigationDrawerMenu;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -135,6 +141,8 @@ public class WishList extends Activity {
 		setContentView(R.layout.main);
 
 		setUpActionBar();
+        setupNavigationDrawer();
+
 
 		// get the resources by their IDs
 		_viewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
@@ -1075,4 +1083,22 @@ public class WishList extends Activity {
 		});
 		}
 	}
+
+    private void setupNavigationDrawer() {
+        mNavigationDrawerMenu = new String[5];
+        mNavigationDrawerMenu[0] = "Add";
+        mNavigationDrawerMenu[1] = "List view";
+        mNavigationDrawerMenu[2] = "Grid view";
+        mNavigationDrawerMenu[3] = "Map view";
+        mNavigationDrawerMenu[4] = "Settings";
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(),
+                R.layout.drawer_list_item, mNavigationDrawerMenu);
+
+        mDrawerList.setAdapter(adapter);
+    }
 }

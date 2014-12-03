@@ -1,72 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-	android:background="@color/bodyBackground_light_grey">
-	
- 	<include android:id="@+id/listView_header" layout="@layout/header" />
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<EditText
-		android:id="@+id/mySearchText" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:text="" android:visibility="gone"
-		android:hint="@string/search_hint"
-	/>
-	
-	<ViewFlipper
-    	android:id="@+id/myFlipper"
-    	android:layout_width="fill_parent" 
-    	android:layout_height="fill_parent">
-    	
-		<ListView
-			android:id="@+id/myListView" android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:fadingEdge="none"
-			android:background="@color/bodyBackground_light_grey"
-		/>
-					<!--  android:cacheColorHint="#00000000" -->
-		
-		<GridView 
-		    android:id="@+id/myGridView"
-		    android:layout_width="match_parent" 
-		    android:layout_height="match_parent"
-		    android:numColumns="3"
-		    android:stretchMode="columnWidth"
-		    android:horizontalSpacing="0dp"
-		    android:verticalSpacing="0dp"
-		    android:gravity="center"
-			android:background="@color/black"
-			android:listSelector="@null"
-		/>
+    <!-- The main content view -->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/bodyBackground_light_grey">
 
-	<RelativeLayout
-				android:orientation="vertical"
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent"
-			>
+        <include android:id="@+id/listView_header" layout="@layout/header" />
 
-			<Button
-					android:id="@+id/addNewWishButton"
-					android:layout_width="205dp"
-					android:layout_height="44dp"
-					android:gravity="center"
-					android:layout_margin="25dp"
-					android:bottomRightRadius="10dp"
-					android:bottomLeftRadius="10dp"
-					android:topLeftRadius="10dp"
-					android:topRightRadius="10dp"
-					android:text="Make your first wish"
-					android:textSize="16.0sp"
-					android:clickable="true"
-					android:textColor="@color/grey"
-					android:background="@drawable/dotted_button"
-					android:layout_centerInParent="true"
-				/>
-			</RelativeLayout>
+        <EditText
+            android:id="@+id/mySearchText" android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:text="" android:visibility="gone"
+            android:hint="@string/search_hint"
+            />
 
-	<!-- default listSelector in android 10 has a left/right margins, while in android >10 has no margins,
-	 	set to null will remove these margins and make it consistent over different android version -->
-	
-	</ViewFlipper>
-	
-</LinearLayout>
+        <ViewFlipper
+            android:id="@+id/myFlipper"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <ListView
+                android:id="@+id/myListView" android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:fadingEdge="none"
+                android:background="@color/bodyBackground_light_grey"
+                />
+            <!--  android:cacheColorHint="#00000000" -->
+
+            <GridView
+                android:id="@+id/myGridView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:numColumns="3"
+                android:stretchMode="columnWidth"
+                android:horizontalSpacing="0dp"
+                android:verticalSpacing="0dp"
+                android:gravity="center"
+                android:background="@color/black"
+                android:listSelector="@null"
+                />
+
+            <RelativeLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                >
+
+                <Button
+                    android:id="@+id/addNewWishButton"
+                    android:layout_width="205dp"
+                    android:layout_height="44dp"
+                    android:gravity="center"
+                    android:layout_margin="25dp"
+                    android:bottomRightRadius="10dp"
+                    android:bottomLeftRadius="10dp"
+                    android:topLeftRadius="10dp"
+                    android:topRightRadius="10dp"
+                    android:text="Make your first wish"
+                    android:textSize="16.0sp"
+                    android:clickable="true"
+                    android:textColor="@color/grey"
+                    android:background="@drawable/dotted_button"
+                    android:layout_centerInParent="true"
+                    />
+            </RelativeLayout>
+
+            <!-- default listSelector in android 10 has a left/right margins, while in android >10 has no margins,
+                 set to null will remove these margins and make it consistent over different android version -->
+
+        </ViewFlipper>
+    </LinearLayout>
+
+    <!-- The navigation drawer -->
+    <ListView android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:background="#111"/>
+</android.support.v4.widget.DrawerLayout>
