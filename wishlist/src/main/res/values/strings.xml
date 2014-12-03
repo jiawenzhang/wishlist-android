@@ -152,4 +152,9 @@
     <string name="error_server">The server is busy, please retry later.</string>
     <string name="error_bad_request">An error occurred, please contact the developer with the following message: %1$s</string>
     <string name="error_unknown">An unknown error occurred, please contact the developer with the following message: %1$s</string>
+
+    <!-- NavigationDrawer -->
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
 </resources>
