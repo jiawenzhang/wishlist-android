@@ -107,7 +107,6 @@ public class WishList extends Activity {
 	
 	private long _selectedItem_id;
 
-    private String[] mNavigationDrawerMenu;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -294,7 +293,7 @@ public class WishList extends Activity {
 	/**
 	 * Get the ID of the item in Item table whose position in the list/grid view
 	 * is position.
-	 * 
+	 *
 	 * @param position
 	 *            : position of item in the list
 	 * @param viewMode
@@ -317,7 +316,7 @@ public class WishList extends Activity {
 	/***
 	 * initial display of items in both list and grid view, called when the
 	 * activity is created
-	 * 
+	 *
 	 * @param sortBy
 	 */
 	private void initializeView() {
@@ -340,7 +339,7 @@ public class WishList extends Activity {
 
 	/***
 	 * display the items in either list or grid view sorted by "sortBy"
-	 * 
+	 *
 	 * @param sortBy
 	 * @param searchName
 	 *            : the item name to match, null for all items
@@ -382,7 +381,7 @@ public class WishList extends Activity {
 
 		}
 	}
-	
+
 	private void updateGridView() {
 		if (_wishItemCursor != null) {
             _wishItemCursor.requery();
@@ -406,7 +405,7 @@ public class WishList extends Activity {
 			_wishItemCursor.requery();
 			int resID = R.layout.wishitem_single;
 
-			String[] from = new String[] { 
+			String[] from = new String[] {
 					ItemDBManager.KEY_ID,
 					ItemDBManager.KEY_PHOTO_URL,
 					ItemDBManager.KEY_NAME,
@@ -414,16 +413,16 @@ public class WishList extends Activity {
 					ItemDBManager.KEY_STORENAME,
 					ItemDBManager.KEY_ADDRESS,
 					ItemDBManager.KEY_COMPLETE};
-			
+
 			int[] to = new int[] {
-					R.id.txtItemID, 
+					R.id.txtItemID,
 					R.id.imgPhoto,
 					R.id.txtName,
 					R.id.txtPrice,
-					R.id.txtStore, 
+					R.id.txtStore,
 					R.id.txtAddress,
 					R.id.checkmark_complete};
-			
+
 			_wishListItemAdapterCursor = new WishListItemCursorAdapter(this,
 					resID, _wishItemCursor, from, to);
 
@@ -677,11 +676,11 @@ public class WishList extends Activity {
 //				toast.show();
 //			}
 //			else{
-				
+
 				// get the latitude and longitude of the clicked item
 				double[] dLocation = new double[2];
 				dLocation = _itemDBManager.getItemLocation(_selectedItem_id);
-				
+
 				if (dLocation[0] == Double.MIN_VALUE && dLocation[1] == Double.MIN_VALUE) {
 					Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
 					toast.show();
@@ -698,7 +697,7 @@ public class WishList extends Activity {
 		}
 
 		else if (itemId == R.id.SHARE) {
-			//Display display = getWindowManager().getDefaultDisplay(); 
+			//Display display = getWindowManager().getDefaultDisplay();
 			//int width = display.getWidth();  // deprecated
 			//int height = display.getHeight();  // deprecated
 			ShareHelper share = new ShareHelper(this, _selectedItem_id);
@@ -811,9 +810,9 @@ public class WishList extends Activity {
 						SharedPreferences.Editor editor = pref.edit();
 						editor.putString(PREF_SORT_OPTION, _sortOption);
 						editor.commit();
-						
+
 						dialog.dismiss();
-	
+
 						populateItems(_nameQuery, _where);
 					}
 			});
@@ -853,12 +852,12 @@ public class WishList extends Activity {
 							_where.put("complete", "0");
 							_statusOption = "in_progress";
 						}
-						
+
 						SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
 						SharedPreferences.Editor editor = pref.edit();
 						editor.putString(PREF_FILTER_OPTION, _statusOption);
 						editor.commit();
-						
+
 						dialog.dismiss();
 						populateItems(null, _where);
 					}
@@ -884,7 +883,7 @@ public class WishList extends Activity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
-		
+
 		// save the position of the currently selected item in the list
 		if (_viewOption.equals("list")) {
 		savedInstanceState.putInt(SELECTED_INDEX_KEY,
@@ -1000,7 +999,7 @@ public class WishList extends Activity {
             }
         }
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -1078,7 +1077,7 @@ public class WishList extends Activity {
 				}
 
 			});
-		
+
 			_viewImageButton = (ImageButton) findViewById(R.id.imageButton_viewType);
 			_viewImageButton.setOnClickListener(new OnClickListener() {
 				@Override
@@ -1090,19 +1089,12 @@ public class WishList extends Activity {
 	}
 
     private void setupNavigationDrawer() {
-        mNavigationDrawerMenu = new String[5];
-        mNavigationDrawerMenu[0] = "Add";
-        mNavigationDrawerMenu[1] = "List view";
-        mNavigationDrawerMenu[2] = "Grid view";
-        mNavigationDrawerMenu[3] = "Map view";
-        mNavigationDrawerMenu[4] = "Settings";
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(),
-                R.layout.drawer_list_item, mNavigationDrawerMenu);
+                R.layout.drawer_list_item, getResources().getStringArray(R.array.drawer_menu));
 
         mDrawerList.setAdapter(adapter);
 
@@ -1124,6 +1116,48 @@ public class WishList extends Activity {
 
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        // Setting item click listener for the listview mDrawerList
+        mDrawerList.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                String[] menuItems = getResources().getStringArray(R.array.drawer_menu);
+                String item = menuItems[position];
+                if (item.equals("Add")) {
+                    Intent editItem = new Intent(WishList.this, EditItem.class);
+                    startActivityForResult(editItem, ADD_ITEM);
+                }
+                else if (item.equals("List view")) {
+                    _viewOption = "list";
+                    populateItems(_nameQuery, _where);
+                    SharedPreferences pref = getPreferences(MODE_PRIVATE);
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString(PREF_VIEW_OPTION, _viewOption);
+                    editor.commit();
+                }
+                else if (item.equals("Grid view")) {
+                    _viewOption = "grid";
+                    populateItems(_nameQuery, _where);
+                    SharedPreferences pref = getPreferences(MODE_PRIVATE);
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString(PREF_VIEW_OPTION, _viewOption);
+                    editor.commit();
+                }
+                else if (item.equals("Map view")) {
+                    Intent mapIntent = new Intent(WishList.this, WishListMap.class);
+                    mapIntent.putExtra("type", "markAll");
+                    startActivity(mapIntent);
+                }
+                else if (item.equals("Settings")) {
+                    Intent prefIntent = new Intent(getApplicationContext(), WishListPreference.class);
+                    startActivity(prefIntent);
+                }
+                // Closing the drawer
+                mDrawerLayout.closeDrawer(mDrawerList);
+
+            }
+        });
     }
 
     @Override
