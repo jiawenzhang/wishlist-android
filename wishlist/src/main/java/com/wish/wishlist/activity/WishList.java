@@ -20,6 +20,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
 import android.view.View.OnClickListener;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -554,51 +555,7 @@ public class WishList extends Activity {
 		super.onOptionsItemSelected(item);
 
 		long itemId = item.getItemId();
-		if (itemId ==  android.R.id.home) {
-            if (_nameQuery != null) {
-                // We tap back on search results view, show all wishes
-                _nameQuery = null;
-                _tagOption = null;
-                _itemIds.clear();
-                _statusOption = "all";
-                _where.clear();
-
-                MenuItem tagItem =  _menu.findItem(R.id.menu_tags);
-                tagItem.setVisible(true);
-
-                MenuItem statusItem = _menu.findItem(R.id.menu_status);
-                statusItem.setVisible(true);
-
-                populateItems(null, _where);
-                return true;
-            }
-            if (_tagOption != null || !_statusOption.equals("all")) {
-                //the wishes are currently filtered by tag or status, tapping back button now should clean up the filter and show all wishes
-                _tagOption = null;
-                _itemIds.clear();
-
-                _statusOption = "all";
-                // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
-                // next time it is opened.
-                removeDialog(DIALOG_FILTER);
-
-                _where.clear();
-
-                SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putString(PREF_FILTER_OPTION, _statusOption);
-                editor.putString(PREF_TAG_OPTION, _tagOption);
-                editor.commit();
-
-                populateItems(null, _where);
-            }
-            else {
-                //we are already showing all the wishes, tapping back button should close the list view
-                finish();
-            }
-			return true;
-		}
-		else if (itemId == R.id.menu_search) {
+		if (itemId == R.id.menu_search) {
 			//do nothing here, the search view is already configured in onCreateOptionsMenu()
 			return true;
 		}
@@ -982,6 +939,58 @@ public class WishList extends Activity {
         populateItems(_nameQuery, _where);
         updateActionBarTitle();
 	}
+
+    /***
+     * called when the "return" button is clicked
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            if (_nameQuery != null) {
+                // We tap back on search results view, show all wishes
+                _nameQuery = null;
+                _tagOption = null;
+                _itemIds.clear();
+                _statusOption = "all";
+                _where.clear();
+
+                MenuItem tagItem =  _menu.findItem(R.id.menu_tags);
+                tagItem.setVisible(true);
+
+                MenuItem statusItem = _menu.findItem(R.id.menu_status);
+                statusItem.setVisible(true);
+
+                populateItems(null, _where);
+                return true;
+            }
+            if (_tagOption != null || !_statusOption.equals("all")) {
+                //the wishes are currently filtered by tag or status, tapping back button now should clean up the filter and show all wishes
+                _tagOption = null;
+                _itemIds.clear();
+
+                _statusOption = "all";
+                // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
+                // next time it is opened.
+                removeDialog(DIALOG_FILTER);
+
+                _where.clear();
+
+                SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString(PREF_FILTER_OPTION, _statusOption);
+                editor.putString(PREF_TAG_OPTION, _tagOption);
+                editor.commit();
+
+                populateItems(null, _where);
+            }
+            else {
+                //we are already showing all the wishes, tapping back button should close the list view
+                finish();
+            }
+            return true;
+        }
+        return false;
+    }
 
     private void updateActionBarTitle() {
         if (_nameQuery != null) {
