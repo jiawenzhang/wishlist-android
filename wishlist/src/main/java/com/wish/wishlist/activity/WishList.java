@@ -63,10 +63,9 @@ import com.wish.wishlist.util.social.ShareHelper;
 @SuppressLint("NewApi")
 public class WishList extends Activity {
 	static final private int DIALOG_MAIN = 0;
-	static final private int DIALOG_VIEW = 1;
-	static final private int DIALOG_FILTER = 2;
-	static final private int DIALOG_SORT = 3;
-	static final private int POST_ITEM = 4;
+	static final private int DIALOG_FILTER = 1;
+	static final private int DIALOG_SORT = 2;
+	static final private int POST_ITEM = 3;
 
 	private static final String SELECTED_INDEX_KEY = "SELECTED_INDEX_KEY";
 	private static final String SORT_BY_KEY = "SORT_BY_KEY";
@@ -603,22 +602,10 @@ public class WishList extends Activity {
 			//do nothing here, the search view is already configured in onCreateOptionsMenu()
 			return true;
 		}
-		//menu view only appears in > Honeycomb
-		else if (itemId == R.id.menu_view) {
-			showDialog(DIALOG_VIEW);
-			return true;
-		}
-
 		else if (itemId == R.id.menu_add) {
 			// let user generate a wish item
 			Intent editItem = new Intent(this, EditItem.class);
 			startActivityForResult(editItem, ADD_ITEM);
-			return true;
-		}
-		else if (itemId == R.id.menu_map) {
-			Intent mapIntent = new Intent(this, WishListMap.class);
-			mapIntent.putExtra("type", "markAll");
-			startActivity(mapIntent);
 			return true;
 		}
 		//else if (itemId == R.id.menu_post) {
@@ -752,32 +739,6 @@ public class WishList extends Activity {
 		case DIALOG_MAIN:
 			dialog = null;
 			break;
-		case DIALOG_VIEW:
-			final CharSequence[] items = {"List", "Grid"};
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(WishList.this);
-			builder.setTitle("Show wishes in");
-			builder.setItems(items, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int item) {
-					if (items[item].equals("List")) {
-						// Recall populate here is inefficient
-						_viewOption = "list";
-						populateItems(_nameQuery, _where);
-					}
-					else {
-						_viewOption = "grid";
-						populateItems(_nameQuery, _where);
-					}
-					SharedPreferences pref = getPreferences(MODE_PRIVATE);
-					SharedPreferences.Editor editor = pref.edit();
-					editor.putString(PREF_VIEW_OPTION, _viewOption);
-					editor.commit();
-					//Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
-				}
-			});
-			dialog = builder.create();
-			break;
-
 		case DIALOG_SORT:
 			final String BY_NAME = "By name";
 			final String BY_TIME = "By time";
@@ -1082,7 +1043,6 @@ public class WishList extends Activity {
 			_viewImageButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					showDialog(DIALOG_VIEW);
 				}
 		});
 		}
