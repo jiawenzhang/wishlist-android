@@ -33,6 +33,7 @@
     <color name="background3">#ffe3e8f1</color>
     <color name="title_separator">#40ffffff</color>
     <color name="light_yellow">#F5E856</color>
+    <color name="wishlist_yellow_color">#f6be27</color>
     
     <color name="headBarBackground_dark_grey">#222222</color>
     <color name="headBarText_light_grey">#aeaeae</color>
