@@ -462,7 +462,14 @@ public class WishList extends Activity {
 					}
 				});
 
-		builder.create().show();
+        AlertDialog dialog;
+		dialog = builder.create();
+        dialog.show();
+
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        positiveButton.setBackgroundResource(R.drawable.selectable_background_wishlist);
+        negativeButton.setBackgroundResource(R.drawable.selectable_background_wishlist);
 	}
 
 	@SuppressLint("NewApi")
