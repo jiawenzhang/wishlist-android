@@ -462,9 +462,7 @@ public class WishList extends Activity {
 					}
 				});
 
-		AlertDialog alert;
-		alert = builder.create();
-		alert.show();
+		builder.create().show();
 	}
 
 	@SuppressLint("NewApi")
@@ -736,6 +734,7 @@ public class WishList extends Activity {
 			});
 
 			dialog = sortBuilder.create();
+            dialog.setOnShowListener(new OnShowListenerMultiple(this));
 			break;
 
 		case DIALOG_FILTER:
@@ -782,6 +781,7 @@ public class WishList extends Activity {
 			});
 
 			dialog = optionBuilder.create();
+            dialog.setOnShowListener(new OnShowListenerMultiple(this));
 			break;
 		default:
 			dialog = null;
@@ -1134,4 +1134,36 @@ public class WishList extends Activity {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
     }
-}
+
+    public static class OnShowListenerMultiple implements DialogInterface.OnShowListener {
+        Activity activity;
+
+        OnShowListenerMultiple(Activity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        public void onShow(DialogInterface dialog) {
+            try {
+                // TODO Auto-generated method stub
+                Dialog d = ((Dialog) dialog);
+
+                int titleId = d.getContext().getResources().getIdentifier("android:id/alertTitle", null, null);
+                TextView titleView = (TextView) d.findViewById(titleId);
+                titleView.setTextColor(activity.getResources().getColor(R.color.wishlist_yellow_color)); // earlier defined color-int
+            } catch (Exception e) {
+            }
+
+            try {
+                // TODO Auto-generated method stub
+                Dialog d = ((Dialog) dialog);
+
+                int divierId = d.getContext().getResources().getIdentifier("android:id/titleDivider", null, null);
+                View divider = d.findViewById(divierId);
+                divider.setBackgroundColor(activity.getResources().getColor(R.color.wishlist_yellow_color)); // earlier defined color-int
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    }
