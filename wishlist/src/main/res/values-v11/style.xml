@@ -48,11 +48,13 @@
         <item name="android:fastScrollThumbDrawable">@drawable/wishlist_yellow_fastscroll_thumb_holo</item>
 
         <!-- AlertDialog attributes -->
-        <item name="android:alertDialogTheme">@style/Alert</item>
+        <item name="android:alertDialogTheme">@style/Wishlist_AlertDialog</item>
 
     </style>
 
-    <style name="Alert">
+
+    <!--copy from "android:style/Theme.Holo.Light.Dialog.Alert-->
+    <style name="Wishlist_AlertDialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowTitleStyle">@style/Wishlist_DialogWindowTitle</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -72,6 +74,7 @@
         <item name="android:textSize">22sp</item>
         <item name="android:textColor">@color/wishlist_yellow_color</item>
     </style>
+
 
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
     <style name="Theme.Wishlist.Widget" parent="@android:style/Theme.Holo">
