@@ -7,7 +7,7 @@
 		android:key="autoLocation"
 		android:layout="@xml/checkbox_preference_style"/>
 
-    <EditTextPreference
+    <com.wish.wishlist.view.CustomEditTextPreference
         android:title="Currency symbol"
         android:summary="$"
         android:key="currency"
