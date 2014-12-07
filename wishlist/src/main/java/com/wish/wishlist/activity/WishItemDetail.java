@@ -33,6 +33,7 @@ import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.DateTimeFormatter;
+import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.ImageManager;
 import com.wish.wishlist.util.social.ShareHelper;
 
@@ -77,7 +78,6 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 	private int _position;
 	private int _prevPosition;
 	private int _nextPosition;
-	private AlertDialog _alert;
 	private String _picture_str = Integer.toHexString(R.drawable.logo);//default pic is logo
 	private String _fullsize_picture_str=null;
 
@@ -376,8 +376,9 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 						dialog.cancel();
 					}
 				});
-		_alert = builder.create();
-		_alert.show();
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(new DialogOnShowListener(this));
+		dialog.show();
 	}
 	
 	private void editItem(){

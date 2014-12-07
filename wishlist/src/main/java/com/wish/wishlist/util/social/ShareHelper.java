@@ -12,12 +12,11 @@ import android.content.pm.ResolveInfo;
 
 import com.facebook.android.Facebook; 
 
-import com.wish.wishlist.R;  
-import com.wish.wishlist.model.WishItem;  
+import com.wish.wishlist.R;
+import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;  
 import com.wish.wishlist.activity.WishItemPostToSNS;
-import com.wish.wishlist.activity.FacebookPost;
-import com.wish.wishlist.util.social.ShareIntentListAdapter;  
+import com.wish.wishlist.util.DialogOnShowListener;
 
 public class ShareHelper {
 	Context _ctx;
@@ -74,7 +73,9 @@ public Facebook share() {
 		}
 	});
 
-	builder.create().show();
+    AlertDialog dialog = builder.create();
+    dialog.setOnShowListener(new DialogOnShowListener((Activity)_ctx));
+    dialog.show();
 	return _facebook;
 }
 }

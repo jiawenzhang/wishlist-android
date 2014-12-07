@@ -36,6 +36,7 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.facebook.model.WishGraphObject;
 import com.wish.wishlist.facebook.model.MakeAction;
+import com.wish.wishlist.util.DialogOnShowListener;
 
 
 public class FacebookPost extends Activity {
@@ -449,11 +450,13 @@ public class FacebookPost extends Activity {
 			}
 		}
 
-		new AlertDialog.Builder(this)
-			.setPositiveButton(R.string.error_dialog_button_text, listener)
-			.setTitle(R.string.error_dialog_title)
-			.setMessage(dialogBody)
-			.show();
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setPositiveButton(R.string.error_dialog_button_text, listener)
+                .setTitle(R.string.error_dialog_title)
+                .setMessage(dialogBody);
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(new DialogOnShowListener(this));
+        dialog.show();
 	}
 
 	private String stageImage(String token) {

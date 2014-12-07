@@ -20,6 +20,7 @@ import com.wish.wishlist.db.StoreDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.PositionManager;
 import com.wish.wishlist.util.camera.PhotoFileCreater;
 import com.wish.wishlist.util.camera.CameraManager;
@@ -98,7 +99,6 @@ public class EditItem extends Activity implements Observer {
 	private boolean _isGettingLocation = false;
     private ArrayList<String> _tags = new ArrayList<String>();
 	
-	private AlertDialog _alert;
 	static final private int TAKE_PICTURE = 1;
 	private static final int SELECT_PICTURE = 2;
     private static final int ADD_TAG = 3;
@@ -262,6 +262,7 @@ public class EditItem extends Activity implements Observer {
 					}
 				});
 				AlertDialog dialog = builder.create();
+                dialog.setOnShowListener(new DialogOnShowListener(EditItem.this));
 				dialog.show();
 			};
 		});
@@ -536,6 +537,7 @@ public class EditItem extends Activity implements Observer {
 		
 		//only show warning if user is editing a new item
 		if(_editNew){
+            AlertDialog dialog;
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage("Discard the wish?").setCancelable(
 					false).setPositiveButton("Yes",
@@ -550,8 +552,9 @@ public class EditItem extends Activity implements Observer {
 							dialog.cancel();
 						}
 					});
-			_alert = builder.create();
-			_alert.show();
+			dialog = builder.create();
+            dialog.setOnShowListener(new DialogOnShowListener(this));
+			dialog.show();
 		}
 		else{
 			setResult(RESULT_CANCELED, null);
