@@ -46,6 +46,7 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
 import com.wish.wishlist.util.social.ShareHelper;
+import com.wish.wishlist.util.DialogOnShowListener;
 
 /***
  * WishList.java is responsible for displaying wish items in either list or grid
@@ -464,12 +465,8 @@ public class WishList extends Activity {
 
         AlertDialog dialog;
 		dialog = builder.create();
+        dialog.setOnShowListener(new DialogOnShowListener(this));
         dialog.show();
-
-        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-        positiveButton.setBackgroundResource(R.drawable.selectable_background_wishlist);
-        negativeButton.setBackgroundResource(R.drawable.selectable_background_wishlist);
 	}
 
 	@SuppressLint("NewApi")
@@ -488,7 +485,7 @@ public class WishList extends Activity {
 			// Assumes current activity is the searchable activity
 			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 			searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-		}
+        }
 		return true;
 	}
 
@@ -741,7 +738,7 @@ public class WishList extends Activity {
 			});
 
 			dialog = sortBuilder.create();
-            dialog.setOnShowListener(new OnShowListenerMultiple(this));
+            dialog.setOnShowListener(new DialogOnShowListener(this));
 			break;
 
 		case DIALOG_FILTER:
@@ -788,7 +785,7 @@ public class WishList extends Activity {
 			});
 
 			dialog = optionBuilder.create();
-            dialog.setOnShowListener(new OnShowListenerMultiple(this));
+            dialog.setOnShowListener(new DialogOnShowListener(this));
 			break;
 		default:
 			dialog = null;
@@ -1142,35 +1139,5 @@ public class WishList extends Activity {
         mDrawerToggle.syncState();
     }
 
-    public static class OnShowListenerMultiple implements DialogInterface.OnShowListener {
-        Activity activity;
-
-        OnShowListenerMultiple(Activity activity) {
-            this.activity = activity;
-        }
-
-        @Override
-        public void onShow(DialogInterface dialog) {
-            try {
-                // TODO Auto-generated method stub
-                Dialog d = ((Dialog) dialog);
-
-                int titleId = d.getContext().getResources().getIdentifier("android:id/alertTitle", null, null);
-                TextView titleView = (TextView) d.findViewById(titleId);
-                titleView.setTextColor(activity.getResources().getColor(R.color.wishlist_yellow_color)); // earlier defined color-int
-            } catch (Exception e) {
-            }
-
-            try {
-                // TODO Auto-generated method stub
-                Dialog d = ((Dialog) dialog);
-
-                int divierId = d.getContext().getResources().getIdentifier("android:id/titleDivider", null, null);
-                View divider = d.findViewById(divierId);
-                divider.setBackgroundColor(activity.getResources().getColor(R.color.wishlist_yellow_color)); // earlier defined color-int
-            } catch (Exception e) {
-            }
-        }
-    }
 
     }

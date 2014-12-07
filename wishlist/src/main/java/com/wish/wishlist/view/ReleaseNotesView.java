@@ -4,6 +4,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import com.wish.wishlist.activity.WishList;
+import com.wish.wishlist.util.DialogOnShowListener;
 
 import java.io.IOException;
 import android.app.Dialog;
@@ -91,6 +92,7 @@ public class ReleaseNotesView {
 			AlertDialog dialog = builder.create();
 			dialog.setTitle("Release notes");
 			dialog.setView(view, 0, 0, 0, 0);
+            dialog.setOnShowListener(new DialogOnShowListener(_act));
 			dialog.show();
 			Log.d(TAG, "dialog show");
 		}
