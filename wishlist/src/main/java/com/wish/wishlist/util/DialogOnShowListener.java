@@ -27,14 +27,14 @@ public class DialogOnShowListener implements DialogInterface.OnShowListener {
         try {
             int titleId = d.getContext().getResources().getIdentifier("android:id/alertTitle", null, null);
             TextView titleView = (TextView) d.findViewById(titleId);
-            titleView.setTextColor(activity.getResources().getColor(R.color.wishlist_yellow_color)); // earlier defined color-int
+            titleView.setTextColor(activity.getResources().getColor(R.color.bodyText_dark_grey));
         } catch (Exception e) {
         }
 
         try {
             int divierId = d.getContext().getResources().getIdentifier("android:id/titleDivider", null, null);
             View divider = d.findViewById(divierId);
-            divider.setBackgroundColor(activity.getResources().getColor(R.color.wishlist_yellow_color)); // earlier defined color-int
+            divider.setBackgroundColor(activity.getResources().getColor(R.color.wishlist_yellow_color));
         } catch (Exception e) {
         }
 

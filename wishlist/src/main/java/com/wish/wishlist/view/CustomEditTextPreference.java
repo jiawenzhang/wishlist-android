@@ -33,7 +33,7 @@ public class CustomEditTextPreference extends EditTextPreference {
         try {
             int titleId = d.getContext().getResources().getIdentifier("android:id/alertTitle", null, null);
             TextView titleView = (TextView) d.findViewById(titleId);
-            titleView.setTextColor(getContext().getResources().getColor(R.color.wishlist_yellow_color)); // earlier defined color-int
+            titleView.setTextColor(getContext().getResources().getColor(R.color.bodyText_dark_grey)); // earlier defined color-int
         } catch (Exception e) {
         }
 
