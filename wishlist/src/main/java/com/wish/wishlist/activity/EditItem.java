@@ -32,6 +32,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -50,6 +51,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -158,6 +160,9 @@ public class EditItem extends Activity implements Observer {
 
 		_galleryImageButton = (ImageButton) findViewById(R.id.imageButton_gallery);
 		_imageItem = (ImageView) findViewById(R.id.image_photo);
+        int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+        _imageItem.setLayoutParams(new LinearLayout.LayoutParams(screenWidth/3, screenWidth/3));
+        _imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
 		_imageItem.setOnClickListener(new OnClickListener() {
 			@Override

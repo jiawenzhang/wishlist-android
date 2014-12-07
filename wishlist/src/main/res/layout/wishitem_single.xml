@@ -3,14 +3,13 @@
  	android:gravity="center_vertical"
 	android:layout_height="fill_parent"
 	android:layout_width="fill_parent"
-	android:orientation="horizontal"
+	android:orientation="horizontal">
 	
-	android:background="@xml/list_item_selector">
 	<!--  android:background="@color/bodyBackground_light_grey"> -->
 	   <!--   android:paddingTop="3dip"
     android:paddingBottom="3dip"
     -->
-		
+
 	<ImageView android:id="@+id/imgPhoto"
 		android:layout_width="100dip" 
 	    android:layout_height="100dip"

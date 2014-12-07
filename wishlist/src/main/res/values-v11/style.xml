@@ -207,10 +207,9 @@
 	</style>
 
 	<style name="GridImageView">
-		<item name="android:background">?android:selectableItemBackground</item>
 		<item name="android:padding">3dp</item>
 	</style>
-    
+
 	<style name="TitleBar" parent="android:style/Theme.Holo.Light">
         <item name="android:id">@id/title_container</item>
         <item name="android:layout_width">fill_parent</item>
