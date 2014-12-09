@@ -3,8 +3,9 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:background="@color/bodyBackground_light_grey">
-	
+    android:background="@color/bodyBackground_light_grey"
+    >
+
  	<include android:id="@+id/addItemView_header" layout="@layout/header" />
 
 <!-- we must use a relativelayout here to correctly position the scrollview and the footer.
@@ -79,6 +80,7 @@
 			    android:inputType="textMultiLine|textCapSentences"
 			    android:textSize="@dimen/text_size_medium" 
 				android:textColor="@color/bodyText_dark_grey"
+                android:imeOptions="flagNoExtractUi"
 			/>
 
 			<EditText
@@ -90,6 +92,7 @@
 			    android:inputType="textMultiLine|textCapSentences"
 			    android:textSize="@dimen/text_size_medium" 
 			    android:textColor="@color/bodyText_dark_grey"
+                android:imeOptions="flagNoExtractUi"
 			 />
 
 			<EditText
@@ -101,6 +104,7 @@
 			    android:inputType="numberDecimal"
 			    android:textSize="@dimen/text_size_medium"
 			    android:textColor="@color/bodyText_dark_grey"
+                android:imeOptions="flagNoExtractUi"
 			/>
 			
 			<EditText
@@ -112,6 +116,7 @@
 			    android:inputType="textMultiLine|textCapSentences"
 			    android:textSize="@dimen/text_size_medium" 
 				android:textColor="@color/bodyText_dark_grey"
+                android:imeOptions="flagNoExtractUi"
 			/>
 
 			<EditText
@@ -123,6 +128,7 @@
 			    android:inputType="textMultiLine|textPostalAddress|textCapWords"
 			    android:textSize="@dimen/text_size_medium" 
 			    android:textColor="@color/bodyText_dark_grey"
+                android:imeOptions="flagNoExtractUi"
 			/>
 
 				<!--android:scrollHorizontally="false" -->
