@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.wish.wishlist.R;
+import com.wish.wishlist.db.DBAdapter;
 
 public class Splash extends Activity{
 
@@ -17,6 +18,7 @@ public class Splash extends Activity{
 
 		Handler x = new Handler();
 		x.postDelayed(new splashhandler(), 2000);
+        DBAdapter.getInstance(this).createDB();
 	}
 	
 	class splashhandler implements Runnable{
