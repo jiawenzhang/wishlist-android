@@ -32,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -492,6 +493,10 @@ public class WishList extends Activity {
             View searchPlate = searchView.findViewById(searchPlateId);
             // Setting background of 'search_plate'.
             searchPlate.setBackgroundResource(R.drawable.textfield_searchview_yellow);
+
+            int closeButtonId = searchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
+            ImageView closeButton= (ImageView) searchView.findViewById(closeButtonId);
+            closeButton.setBackgroundResource(R.drawable.selectable_background_wishlist);
         }
 		return true;
 	}
