@@ -190,7 +190,7 @@ public class EditItem extends Activity implements Observer {
 		
 		if (mItem_id != -1) {
 			_editNew = false;
-			
+
 			_mapImageButton.setVisibility(View.GONE);
 			_completeCheckBox.setVisibility(View.VISIBLE);
 			
@@ -240,6 +240,7 @@ public class EditItem extends Activity implements Observer {
 		}
 		
 		else { //we are editing a new wish, get the location in background
+            _imageItem.setVisibility(View.GONE);
 			boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true);
 			if (tagLocation) {
 				_pManager.startLocationUpdates();
@@ -591,6 +592,7 @@ public class EditItem extends Activity implements Observer {
 		}
 		else {
 			_imageItem.setImageBitmap(_thumbnail);
+            _imageItem.setVisibility(View.VISIBLE);
 		}
 		
 		//compress the _thumbnail to JPEG and write the JEPG to 
