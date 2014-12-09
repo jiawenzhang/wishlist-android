@@ -48,7 +48,7 @@
     <string name="settings_description">Find Item</string>
     
     <string name="search_results">Search Result</string>
-    <string name="search_hint">Search items by name</string>
+    <string name="search_hint">Search wishes by name</string>
     
 	<string name="WishListDataBase_Create">"
 	CREATE TABLE WishItems (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT, create_date TEXT, store_id INTEGER, picture TEXT NOT NULL, price REAL, location TEXT, priority INTEGER);
