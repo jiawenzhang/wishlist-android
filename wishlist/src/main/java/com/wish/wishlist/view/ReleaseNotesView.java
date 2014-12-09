@@ -22,7 +22,7 @@ public class ReleaseNotesView {
 	static final private String releaseNotesXml = "release_notes"; 
 	static final private String css =
 				"<style type=\"text/css\">"
-				+ "h1 { font-size: 16pt; }"
+				+ "h1 { font-size: 12pt; }"
 				+ "li { font-size: 12pt;}"
 				+ "ol { padding-left: 30px;}"
 				+ "</style>";
