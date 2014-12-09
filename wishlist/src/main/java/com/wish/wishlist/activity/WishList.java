@@ -485,6 +485,13 @@ public class WishList extends Activity {
 			// Assumes current activity is the searchable activity
 			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 			searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
+            // Style the searchView with yellow accent color
+            int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
+            // Getting the 'search_plate' LinearLayout.
+            View searchPlate = searchView.findViewById(searchPlateId);
+            // Setting background of 'search_plate'.
+            searchPlate.setBackgroundResource(R.drawable.textfield_searchview_yellow);
         }
 		return true;
 	}
