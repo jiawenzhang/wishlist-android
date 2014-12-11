@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -45,9 +46,11 @@ import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.DrawerItemCustomAdapter;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
 import com.wish.wishlist.util.social.ShareHelper;
 import com.wish.wishlist.util.DialogOnShowListener;
+import com.wish.wishlist.view.ObjectDrawerItem;
 
 /***
  * WishList.java is responsible for displaying wish items in either list or grid
@@ -1077,10 +1080,15 @@ public class WishList extends Activity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        // Set the adapter for the list view
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(),
-                R.layout.drawer_list_item, getResources().getStringArray(R.array.drawer_menu));
+        ObjectDrawerItem[] drawerItem = new ObjectDrawerItem[5];
 
+        drawerItem[0] = new ObjectDrawerItem(R.drawable.ic_action_camera, "Add");
+        drawerItem[1] = new ObjectDrawerItem(R.drawable.ic_action_list, "List view");
+        drawerItem[2] = new ObjectDrawerItem(R.drawable.ic_action_tiles_small, "Grid view");
+        drawerItem[3] = new ObjectDrawerItem(R.drawable.ic_action_map, "Map view");
+        drawerItem[4] = new ObjectDrawerItem(R.drawable.ic_action_gear, "Settings");
+
+        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.listview_item_row, drawerItem);
         mDrawerList.setAdapter(adapter);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
@@ -1109,6 +1117,9 @@ public class WishList extends Activity {
                                     int position, long id) {
                 String[] menuItems = getResources().getStringArray(R.array.drawer_menu);
                 String item = menuItems[position];
+
+                // Don't show the selected option in pressed state when the drawer is shown the next time
+                mDrawerList.clearChoices();
                 if (item.equals("Add")) {
                     Intent editItem = new Intent(WishList.this, EditItem.class);
                     startActivityForResult(editItem, ADD_ITEM);
@@ -1140,7 +1151,6 @@ public class WishList extends Activity {
                 }
                 // Closing the drawer
                 mDrawerLayout.closeDrawer(mDrawerList);
-
             }
         });
     }
@@ -1151,5 +1161,10 @@ public class WishList extends Activity {
         mDrawerToggle.syncState();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
 
     }
