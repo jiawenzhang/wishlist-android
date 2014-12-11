@@ -156,12 +156,5 @@
     <!-- NavigationDrawer -->
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
-    <string-array name="drawer_menu">
-        <item>Add</item>
-        <item>List view</item>
-        <item>Grid view</item>
-        <item>Map view</item>
-        <item>Settings</item>
-    </string-array>
 
 </resources>

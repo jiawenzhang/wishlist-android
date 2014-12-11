@@ -29,7 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -270,7 +269,6 @@ public class WishList extends Activity {
     }
 
     private void handleIntent(Intent intent) {
-        Log.v("A", "handleIntent");
         // check if the activity is started from search
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             // activity is started from search, get the search query and
@@ -360,6 +358,7 @@ public class WishList extends Activity {
 		}
 
 		updateView();
+        updateDrawerList();
         updateActionBarTitle();
 	}
 
@@ -371,6 +370,7 @@ public class WishList extends Activity {
 			_viewFlipper.setDisplayedChild(2);
 			return;
 		}
+
 
 		if (_viewOption.equals("list")) {
 			// Update the list view
@@ -446,7 +446,6 @@ public class WishList extends Activity {
 		else {
 			// give message about empty cursor
 		}
-
 	}
 
 	private void deleteItem(long item_id){
@@ -956,8 +955,55 @@ public class WishList extends Activity {
         // explicitly reload the list, as in these cases, onResume won't be called.
 
         populateItems(_nameQuery, _where);
+        updateDrawerList();
         updateActionBarTitle();
 	}
+
+    private Boolean goBack()
+    {
+        if (_nameQuery != null) {
+            // We tap back on search results view, show all wishes
+            _nameQuery = null;
+            _tagOption = null;
+            _itemIds.clear();
+            _statusOption = "all";
+            _where.clear();
+
+            MenuItem tagItem =  _menu.findItem(R.id.menu_tags);
+            tagItem.setVisible(true);
+
+            MenuItem statusItem = _menu.findItem(R.id.menu_status);
+            statusItem.setVisible(true);
+
+            populateItems(null, _where);
+            return true;
+        }
+        if (_tagOption != null || !_statusOption.equals("all")) {
+            //the wishes are currently filtered by tag or status, tapping back button now should clean up the filter and show all wishes
+            _tagOption = null;
+            _itemIds.clear();
+
+            _statusOption = "all";
+            // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
+            // next time it is opened.
+            removeDialog(DIALOG_FILTER);
+
+            _where.clear();
+
+            SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString(PREF_FILTER_OPTION, _statusOption);
+            editor.putString(PREF_TAG_OPTION, _tagOption);
+            editor.commit();
+
+            populateItems(null, _where);
+        }
+        else {
+            //we are already showing all the wishes, tapping back button should close the list view
+            finish();
+        }
+        return true;
+    }
 
     /***
      * called when the "return" button is clicked
@@ -965,48 +1011,7 @@ public class WishList extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            if (_nameQuery != null) {
-                // We tap back on search results view, show all wishes
-                _nameQuery = null;
-                _tagOption = null;
-                _itemIds.clear();
-                _statusOption = "all";
-                _where.clear();
-
-                MenuItem tagItem =  _menu.findItem(R.id.menu_tags);
-                tagItem.setVisible(true);
-
-                MenuItem statusItem = _menu.findItem(R.id.menu_status);
-                statusItem.setVisible(true);
-
-                populateItems(null, _where);
-                return true;
-            }
-            if (_tagOption != null || !_statusOption.equals("all")) {
-                //the wishes are currently filtered by tag or status, tapping back button now should clean up the filter and show all wishes
-                _tagOption = null;
-                _itemIds.clear();
-
-                _statusOption = "all";
-                // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
-                // next time it is opened.
-                removeDialog(DIALOG_FILTER);
-
-                _where.clear();
-
-                SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putString(PREF_FILTER_OPTION, _statusOption);
-                editor.putString(PREF_TAG_OPTION, _tagOption);
-                editor.commit();
-
-                populateItems(null, _where);
-            }
-            else {
-                //we are already showing all the wishes, tapping back button should close the list view
-                finish();
-            }
-            return true;
+            return goBack();
         }
         return false;
     }
@@ -1076,20 +1081,29 @@ public class WishList extends Activity {
 		}
 	}
 
+    private void updateDrawerList() {
+        ArrayList<ObjectDrawerItem> drawerItems = new ArrayList<ObjectDrawerItem>();
+        if (!_itemIds.isEmpty() || !_statusOption.equals("all")) {
+            drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_goleft, "All wishes"));
+        }
+        drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_add, "Add"));
+        drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_list, "List view"));
+        drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_tiles_small, "Grid view"));
+        drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_map, "Map view"));
+        drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_gear, "Settings"));
+
+        ObjectDrawerItem[] drawerItemArray = new ObjectDrawerItem[drawerItems.size()];
+        drawerItems.toArray(drawerItemArray);
+
+        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.listview_item_row, drawerItemArray);
+        mDrawerList.setAdapter(adapter);
+    }
+
     private void setupNavigationDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        ObjectDrawerItem[] drawerItem = new ObjectDrawerItem[5];
-
-        drawerItem[0] = new ObjectDrawerItem(R.drawable.ic_action_add, "Add");
-        drawerItem[1] = new ObjectDrawerItem(R.drawable.ic_action_list, "List view");
-        drawerItem[2] = new ObjectDrawerItem(R.drawable.ic_action_tiles_small, "Grid view");
-        drawerItem[3] = new ObjectDrawerItem(R.drawable.ic_action_map, "Map view");
-        drawerItem[4] = new ObjectDrawerItem(R.drawable.ic_action_gear, "Settings");
-
-        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.listview_item_row, drawerItem);
-        mDrawerList.setAdapter(adapter);
+        updateDrawerList();
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
@@ -1115,12 +1129,15 @@ public class WishList extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                String[] menuItems = getResources().getStringArray(R.array.drawer_menu);
-                String item = menuItems[position];
+                TextView textViewName = (TextView) view.findViewById(R.id.textViewName);
+                String item = textViewName.getText().toString();
 
                 // Don't show the selected option in pressed state when the drawer is shown the next time
                 mDrawerList.clearChoices();
-                if (item.equals("Add")) {
+                if (item.equals("All wishes")) {
+                    goBack();
+                }
+                else if (item.equals("Add")) {
                     Intent editItem = new Intent(WishList.this, EditItem.class);
                     startActivityForResult(editItem, ADD_ITEM);
                 }

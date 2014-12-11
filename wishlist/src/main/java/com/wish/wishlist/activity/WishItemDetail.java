@@ -78,7 +78,6 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 	private int _position;
 	private int _prevPosition;
 	private int _nextPosition;
-	private String _picture_str = Integer.toHexString(R.drawable.logo);//default pic is logo
 	private String _fullsize_picture_str=null;
 
 	@Override
