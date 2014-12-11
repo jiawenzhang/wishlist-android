@@ -1082,7 +1082,7 @@ public class WishList extends Activity {
 
         ObjectDrawerItem[] drawerItem = new ObjectDrawerItem[5];
 
-        drawerItem[0] = new ObjectDrawerItem(R.drawable.ic_action_camera, "Add");
+        drawerItem[0] = new ObjectDrawerItem(R.drawable.ic_action_add, "Add");
         drawerItem[1] = new ObjectDrawerItem(R.drawable.ic_action_list, "List view");
         drawerItem[2] = new ObjectDrawerItem(R.drawable.ic_action_tiles_small, "Grid view");
         drawerItem[3] = new ObjectDrawerItem(R.drawable.ic_action_map, "Map view");
