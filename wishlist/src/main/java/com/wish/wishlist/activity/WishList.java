@@ -47,6 +47,7 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.DrawerItemCustomAdapter;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
+import com.wish.wishlist.util.camera.CameraManager;
 import com.wish.wishlist.util.social.ShareHelper;
 import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.view.ObjectDrawerItem;
@@ -83,15 +84,21 @@ public class WishList extends Activity {
 	private Map<String,String> _where = new HashMap<String, String>();
 	private String _nameQuery = null;
 	public static final String LOG_TAG = "WishList";
+
 	private static final int EDIT_ITEM = 0;
 	private static final int ADD_ITEM = 1;
     private static final int FIND_TAG = 2;
     private static final int ADD_TAG = 3;
     private static final int ITEM_DETAILS = 4;
+    private static final int TAKE_PICTURE = 5;
+
 	private String _viewOption = "list";
 	private String _statusOption = "all";
     private String _tagOption = null;
 	private String _sortOption = ItemsCursor.SortBy.item_name.toString();
+
+    private String _fullsizePhotoPath = null;
+    private String _newfullsizePhotoPath = null;
 
 	private ViewFlipper _viewFlipper;
 	private ListView _listView;
@@ -260,8 +267,19 @@ public class WishList extends Activity {
 //				// Do nothing.
 //			}
 //		});
+        if (savedInstanceState != null) {
+            Log.d(WishList.LOG_TAG, "savedInstanceState != null");
+            // restore the current selected item in the list
+            _newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
+            _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
 
-	}
+            Log.d(WishList.LOG_TAG, "_newfullsizePhotoPath " + _newfullsizePhotoPath);
+            Log.d(WishList.LOG_TAG, "_fullsizePhotoPath " + _fullsizePhotoPath);
+        }
+        else{
+            Log.d(WishList.LOG_TAG, "savedInstanceState == null");
+        }
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -472,6 +490,13 @@ public class WishList extends Activity {
         dialog.show();
 	}
 
+    private void dispatchTakePictureIntent() {
+        CameraManager c = new CameraManager();
+        _newfullsizePhotoPath = c.getPhotoPath();
+        Log.v("dispatch", "_new " + _newfullsizePhotoPath);
+        startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
+    }
+
 	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -577,8 +602,9 @@ public class WishList extends Activity {
 		}
 		else if (itemId == R.id.menu_add) {
 			// let user generate a wish item
-			Intent editItem = new Intent(this, EditItem.class);
-			startActivityForResult(editItem, ADD_ITEM);
+            dispatchTakePictureIntent();
+			//Intent editItem = new Intent(this, EditItem.class);
+			//startActivityForResult(editItem, ADD_ITEM);
 			return true;
 		}
 		//else if (itemId == R.id.menu_post) {
@@ -822,13 +848,13 @@ public class WishList extends Activity {
 
 		// save the position of the currently selected item in the list
 		if (_viewOption.equals("list")) {
-		savedInstanceState.putInt(SELECTED_INDEX_KEY,
-				_listView.getSelectedItemPosition());
+		    savedInstanceState.putInt(SELECTED_INDEX_KEY, _listView.getSelectedItemPosition());
 		}
 		else {
-		savedInstanceState.putInt(SELECTED_INDEX_KEY,
-				_gridView.getSelectedItemPosition());
+	    	savedInstanceState.putInt(SELECTED_INDEX_KEY, _gridView.getSelectedItemPosition());
 		}
+        savedInstanceState.putString("newfullsizePhotoPath", _newfullsizePhotoPath);
+        savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -841,6 +867,8 @@ public class WishList extends Activity {
 			if (savedInstanceState.containsKey(SELECTED_INDEX_KEY)) {
 				pos = savedInstanceState.getInt(SELECTED_INDEX_KEY, -1);
 			}
+            _newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
+            _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
 		}
 
         _listView.setSelection(pos);
@@ -930,6 +958,27 @@ public class WishList extends Activity {
             case ADD_TAG: {
                 if (resultCode == Activity.RESULT_OK) {
                     updateItemIdsForTag();
+                }
+                break;
+            }
+            case TAKE_PICTURE: {
+                if (resultCode == RESULT_OK) {
+                    Log.d(WishList.LOG_TAG, "TAKE_PICTURE: RESULT_OK");
+                    Log.v("TAKE PICTURE", "_new " + _newfullsizePhotoPath);
+                    _fullsizePhotoPath = String.valueOf(_newfullsizePhotoPath);
+                    _newfullsizePhotoPath = null;
+                    Intent i = new Intent(this, EditItem.class);
+                    i.putExtra("fullsizePhotoPath", _fullsizePhotoPath);
+                    if (_fullsizePhotoPath != null) {
+                        Log.v("photo path", _fullsizePhotoPath);
+                    }
+                    else {
+                        Log.v("photo path", "null");
+                    }
+                    startActivityForResult(i, EDIT_ITEM);
+                }
+                else {
+                    Log.d(WishList.LOG_TAG, "TAKE_PICTURE: not RESULT_OK");
                 }
                 break;
             }

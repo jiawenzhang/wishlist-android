@@ -163,7 +163,7 @@ public class EditItem extends Activity implements Observer {
         _imageItem.setLayoutParams(new LinearLayout.LayoutParams(screenWidth/3, screenWidth/3));
         _imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-		_imageItem.setOnClickListener(new OnClickListener() {
+        _imageItem.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				Intent i = new Intent(EditItem.this, FullscreenPhoto.class);
@@ -176,14 +176,13 @@ public class EditItem extends Activity implements Observer {
 		
 		
 		Intent i = getIntent();
-		
-		//get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from
-		//dashboard camera
-		_fullsizePhotoPath = i.getStringExtra("fullsizePhotoPath");
-		if (_fullsizePhotoPath != null) {
-			setPic();
-		}
-		
+        //get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from
+        //dashboard camera
+        _fullsizePhotoPath = i.getStringExtra("fullsizePhotoPath");
+        if (_fullsizePhotoPath != null) {
+            setPic();
+        }
+
 		//get item id from previous intent, if there is an item id, we know this EditItemInfo is launched
 		//by editing an existing item, so fill the empty box
 		mItem_id = i.getLongExtra("item_id", -1);
@@ -234,13 +233,13 @@ public class EditItem extends Activity implements Observer {
 					picture_Uri = Uri.parse(_picture_str);
 					_imageItem.setImageURI(picture_Uri);
 				}
+                _imageItem.setVisibility(View.VISIBLE);
 			}
 
             _tags = TagItemDBManager.instance(this).tags_of_item(mItem_id);
 		}
 		
 		else { //we are editing a new wish, get the location in background
-            _imageItem.setVisibility(View.GONE);
 			boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true);
 			if (tagLocation) {
 				_pManager.startLocationUpdates();
@@ -248,6 +247,7 @@ public class EditItem extends Activity implements Observer {
 				_locationEditText.setText("Loading location...");
 			}
 		}
+
 
 		_cameraImageButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -591,8 +591,8 @@ public class EditItem extends Activity implements Observer {
 			return;
 		}
 		else {
-			_imageItem.setImageBitmap(_thumbnail);
             _imageItem.setVisibility(View.VISIBLE);
+			_imageItem.setImageBitmap(_thumbnail);
 		}
 		
 		//compress the _thumbnail to JPEG and write the JEPG to 
@@ -709,4 +709,3 @@ public class EditItem extends Activity implements Observer {
 		}
 	}
 }
-
