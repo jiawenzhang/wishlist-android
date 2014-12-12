@@ -107,6 +107,7 @@ public class WishList extends Activity {
 	private ImageButton _backImageButton;
 	private ImageButton _viewImageButton;
 	private ImageButton _searchImageButton;
+    private MenuItem _menuSearch;
 
     private Menu _menu;
 
@@ -289,6 +290,7 @@ public class WishList extends Activity {
     private void handleIntent(Intent intent) {
         // check if the activity is started from search
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            _menuSearch.collapseActionView();
             // activity is started from search, get the search query and
             // displayed the searched items
             _nameQuery = intent.getStringExtra(SearchManager.QUERY);
@@ -509,6 +511,7 @@ public class WishList extends Activity {
 			//search view is part the action bar in honeycomeb and up
 			//Get the SearchView and set the searchable configuration
 			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            _menuSearch = menu.findItem(R.id.menu_search);
 			SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
 			// Assumes current activity is the searchable activity
 			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -1132,7 +1135,7 @@ public class WishList extends Activity {
 
     private void updateDrawerList() {
         ArrayList<ObjectDrawerItem> drawerItems = new ArrayList<ObjectDrawerItem>();
-        if (!_itemIds.isEmpty() || !_statusOption.equals("all")) {
+        if (!_itemIds.isEmpty() || !_statusOption.equals("all") || _nameQuery != null) {
             drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_goleft, "All wishes"));
         }
         drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_add, "Add"));
