@@ -11,6 +11,7 @@
         android:title="Currency symbol"
         android:summary="$"
         android:key="currency"
+        android:defaultValue="$"
         android:layout="@xml/preference_style"/>
 
 	<Preference
