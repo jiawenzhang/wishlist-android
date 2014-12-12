@@ -110,7 +110,7 @@
 	    android:layout_height="wrap_content"
 	    android:layout_gravity="top"
 	    android:adjustViewBounds="true"
-	    android:src="@drawable/ic_checkmark_holo_light"
+	    android:src="@drawable/ic_checkmark"
 	    android:visibility="visible" 
 	 />
 
