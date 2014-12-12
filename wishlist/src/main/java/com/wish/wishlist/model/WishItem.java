@@ -285,7 +285,7 @@ public class WishItem {
 			message = "Shared a wish\n\n";
 		}
 		else {
-			message = "Shared a wish via Beans Wishlist\n\n";
+			message = "Shared via Beans Wishlist\n\n";
 		}
 		String dateTimeStr = getDate();
 		String dateTimeStrNew = DateTimeFormatter.getInstance().getDateTimeString(dateTimeStr);
