@@ -39,6 +39,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -369,6 +370,8 @@ public class EditItem extends Activity implements Observer {
 
 		if(_itemNameEditText.getText().toString().trim().length() == 0){
 			Toast toast = Toast.makeText(this, "Please give a name to your wish", Toast.LENGTH_SHORT);
+            int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+            toast.setGravity(Gravity.TOP | Gravity.CENTER, 0, screenHeight/4);
 			toast.show();
 			return;
 		}
