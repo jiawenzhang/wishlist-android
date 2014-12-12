@@ -443,7 +443,7 @@ public class EditItem extends Activity implements Observer {
 		WishItem item = new WishItem(this, mItem_id, mStore_id, itemStoreName, itemName, itemDesc, 
 				date, _picture_str, _fullsizePhotoPath, itemPrice, _lat, _lng, 
 				_ddStr, itemPriority, itemComplete);
-		
+
 		mItem_id = item.save();
 
         //save the tags of this item

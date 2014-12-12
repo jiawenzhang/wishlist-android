@@ -177,19 +177,19 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 	}
 	
 	private void showItemInfo(WishItem item) {
-		_fullsize_picture_str = item.getFullsizePicPath();
-		Display display = getWindowManager().getDefaultDisplay(); 
+        _fullsize_picture_str = item.getFullsizePicPath();
+		Display display = getWindowManager().getDefaultDisplay();
 		int width = display.getWidth();  // deprecated
 		int height = display.getHeight();  // deprecated
 		if (_fullsize_picture_str != null) {
-//			Log.d("wishlist", "fullsize_picture_str == " + fullsize_picture_str);
 			Bitmap bitmap = ImageManager.getInstance().decodeSampledBitmapFromFile(_fullsize_picture_str, width, height, true);
 			//Bitmap bitmap = BitmapFactory.decodeFile(fullsize_picture_str, null);
 			if (bitmap == null) {
-//				Log.d("wishlist", "bitmap == null");
+				//Log.d("wishlist", "bitmap == null");
 			}
 			else {
 				_photoView.setImageBitmap(bitmap);
+                _photoView.setVisibility(View.VISIBLE);
 			}
 		}
 		else {
@@ -402,9 +402,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 						showItemInfo(item);
                         addTags();
 					}
-					
 				}
-				
 			}
 			break;
 		}
