@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <releaseNote>
+    <release versionName="1.1.0" versionCode="16">
+        <note>New navigation menu: just swipe from the left edge of the screen, and you can go to different places in the app.</note>
+        <note>Newly designed icons in a variety of places throughout the UI.</note>
+        <note>New uniform theme with golden accent color.</note>
+    </release>
     <release versionName="1.0.10" versionCode="13">
         <note>Users can add tags to wishes, view the tags of a wish, and look up wishes by tag.</note>
         <note>Improved messages on header bar about the status and tags of the wishes shown.</note>

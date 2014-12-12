@@ -55,9 +55,11 @@ public class Splash extends Activity{
         private void showWhatsNewDialog() {
             AlertDialog.Builder builder = new AlertDialog.Builder(Splash.this);
             builder.setTitle("What's new");
-            builder.setMessage("Version 1.0.10\n\n" +
-                    "Users can add tags to wishes, view the tags of a wish, and look up wishes by tag.\n\n" +
-                    "Improved messages on header bar about the status and tags of the wishes shown.");
+            builder.setMessage("Version 1.1.0\n\n" +
+                    "New navigation menu: just swipe from the left edge of the screen, and you can go to different places in the app.\n\n" +
+                    "Newly designed icons in a variety of places throughout the UI.\n\n" +
+                    "New uniform theme with golden accent color.\n");
+
             builder.setCancelable(false);
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
