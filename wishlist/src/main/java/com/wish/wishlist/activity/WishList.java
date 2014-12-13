@@ -720,11 +720,15 @@ public class WishList extends Activity {
 			}
 			wish_item.save();
 			if (_viewOption.equals("list")) {
-				//we only need to update the view if it is list view, as the the check mark will be updated
+				//we only need to update the view if it is list view, as the check mark will be updated
 				//in grid view, we don't have the checkmark, so no need to update
-				//there is also a problem of updating the grid view while maintaining its scroll position
 				updateView();
 			}
+            else if(_viewOption.equals("grid") && !_statusOption.equals("all")) {
+                //there is a problem of updating the grid view while maintaining its scroll position
+                //so we only update it if it is showing only completed or in progress wishes
+                updateView();
+            }
 		}
         else if (itemId == R.id.TAG) {
             Intent i = new Intent(WishList.this, AddTag.class);
