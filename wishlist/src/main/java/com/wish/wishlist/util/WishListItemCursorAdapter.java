@@ -3,7 +3,6 @@ import java.text.DecimalFormat;
 
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.model.WishItem;
-//import com.wish.wishlist.model.WishItemManager;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -41,21 +40,16 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 		
 		boolean _hasStoreName = false;
 		int _photoWidth;
-		int _columnSpace;
 
 		public WishListItemViewBinder() {
-			//we show 3 columes of photo in gridview, so photo width should be 1/3 of screen width
+			//we show 3  or 4 columns of photo in grid view, so photo width should be 1/3 of screen width
             int columnCount = 3;
             if (Resources.getSystem().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 columnCount = 4;
             }
 
 			int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-			int columnSpace = screenWidth / 100;
-			//_photoWidth = (screenWidth - columnCount * columnSpace) / 3;
 			_photoWidth = screenWidth / columnCount;
-			Log.d(TAG, "screen width" + String.valueOf(screenWidth));
-			Log.d(TAG, "photo width" + String.valueOf(_photoWidth));
 		}
 
 		@Override
@@ -238,10 +232,7 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 			}
 		
 			return false;
-//			return true;
 		}
-
 	}
-
 }
 
