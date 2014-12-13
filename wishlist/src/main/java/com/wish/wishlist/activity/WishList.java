@@ -161,6 +161,10 @@ public class WishList extends Activity {
 		_viewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
 		_listView = (ListView) findViewById(R.id.myListView);
 		_gridView = (GridView) findViewById(R.id.myGridView);
+        _gridView.setNumColumns(3);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            _gridView.setNumColumns(4);
+        }
 		_addNew = (Button) findViewById(R.id.addNewWishButton);
 		// mySearchText = (EditText) findViewById(R.id.mySearchText);
 

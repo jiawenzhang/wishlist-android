@@ -6,6 +6,7 @@ import com.wish.wishlist.model.WishItem;
 //import com.wish.wishlist.model.WishItemManager;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -44,11 +45,15 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 
 		public WishListItemViewBinder() {
 			//we show 3 columes of photo in gridview, so photo width should be 1/3 of screen width
+            int columnCount = 3;
+            if (Resources.getSystem().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                columnCount = 4;
+            }
+
 			int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
 			int columnSpace = screenWidth / 100;
-			int columnCount = 3;
 			//_photoWidth = (screenWidth - columnCount * columnSpace) / 3;
-			_photoWidth = screenWidth / 3;
+			_photoWidth = screenWidth / columnCount;
 			Log.d(TAG, "screen width" + String.valueOf(screenWidth));
 			Log.d(TAG, "photo width" + String.valueOf(_photoWidth));
 		}
