@@ -3,13 +3,13 @@
 	<item android:id="@+id/menu_search"
 		android:title="@string/search"
 		android:icon="@android:drawable/ic_menu_search"
-		android:showAsAction="ifRoom|collapseActionView|withText"
+		android:showAsAction="ifRoom|collapseActionView"
 		android:actionViewClass="android.widget.SearchView"
 	/>
     <item android:id="@+id/menu_add"
 		android:title="@string/add_new"
 		android:icon="@android:drawable/ic_menu_camera"
-		android:showAsAction="ifRoom|withText"
+		android:showAsAction="always"
 	/>
   <!--    <item android:id="@+id/menu_search"
 		android:title="@string/search"
@@ -22,8 +22,6 @@
  -->
  <item android:id="@+id/menu_sort" 
 		android:title="Sort"
-		android:icon="@android:drawable/ic_menu_sort_by_size"
-	 	android:showAsAction="ifRoom|withText"
   />
 
  <item android:id="@+id/menu_status"
