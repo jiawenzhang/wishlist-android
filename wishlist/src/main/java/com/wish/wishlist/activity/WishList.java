@@ -349,9 +349,15 @@ public class WishList extends Activity {
 	private void initializeView() {
 		_wishItemCursor = _itemDBManager.getItems(_sortOption, _where, _itemIds);
 		if (_itemDBManager.getItemsCount() == 0) {
-			_viewFlipper.setDisplayedChild(2);
-			return;
+            // make a new wish button
+            _viewFlipper.setDisplayedChild(2);
+            return;
 		}
+        if (_wishItemCursor.getCount() == 0 && (!_where.isEmpty() || !_itemIds.isEmpty() || _nameQuery != null)) {
+            // no matching wishes text
+            _viewFlipper.setDisplayedChild(3);
+            return;
+        }
 
 		if (_viewOption.equals("list")) {
 			updateListView();
@@ -391,85 +397,76 @@ public class WishList extends Activity {
 	 */
 	private void updateView() {
 		if (_itemDBManager.getItemsCount() == 0) {
-			_viewFlipper.setDisplayedChild(2);
-			return;
+            // make a new wish button
+            _viewFlipper.setDisplayedChild(2);
+            return;
 		}
 
-
+        _wishItemCursor.requery();
+        if (_wishItemCursor.getCount() == 0 && (!_where.isEmpty() || !_itemIds.isEmpty() || _nameQuery != null)) {
+            // no matching wishes text
+            _viewFlipper.setDisplayedChild(3);
+            return;
+        }
 		if (_viewOption.equals("list")) {
 			// Update the list view
 			updateListView();
-			_viewFlipper.setDisplayedChild(0);
-
+            _viewFlipper.setDisplayedChild(0);
 		}
 
 		else if (_viewOption.equals("grid")) {
 			// Update the grid view
 			updateGridView();
 			_viewFlipper.setDisplayedChild(1);
-
 		}
 	}
 
 	private void updateGridView() {
-		if (_wishItemCursor != null) {
-            _wishItemCursor.requery();
-            int resID = R.layout.wishitem_photo;
+        int resID = R.layout.wishitem_photo;
+        String[] from = new String[]{ItemDBManager.KEY_ID,
+                ItemDBManager.KEY_PHOTO_URL};
 
-            String[] from = new String[]{ItemDBManager.KEY_ID,
-                    ItemDBManager.KEY_PHOTO_URL};
+        int[] to = new int[]{R.id.txtItemID_Grid, R.id.imgPhotoGrid};
+        _wishListItemAdapterCursor = new WishListItemCursorAdapter(this,
+                resID, _wishItemCursor, from, to);
 
-            int[] to = new int[]{R.id.txtItemID_Grid, R.id.imgPhotoGrid};
-            _wishListItemAdapterCursor = new WishListItemCursorAdapter(this,
-                    resID, _wishItemCursor, from, to);
-
-            _gridView.setAdapter(_wishListItemAdapterCursor);
-            _wishListItemAdapterCursor.notifyDataSetChanged();
-        }
+        _gridView.setAdapter(_wishListItemAdapterCursor);
+        _wishListItemAdapterCursor.notifyDataSetChanged();
 	}
 
 	private void updateListView() {
+        int resID = R.layout.wishitem_single;
+        String[] from = new String[] {
+                ItemDBManager.KEY_ID,
+                ItemDBManager.KEY_PHOTO_URL,
+                ItemDBManager.KEY_NAME,
+                ItemDBManager.KEY_PRICE,
+                ItemDBManager.KEY_STORENAME,
+                ItemDBManager.KEY_ADDRESS,
+                ItemDBManager.KEY_COMPLETE};
 
-		if (_wishItemCursor != null) {
-			_wishItemCursor.requery();
-			int resID = R.layout.wishitem_single;
+        int[] to = new int[] {
+                R.id.txtItemID,
+                R.id.imgPhoto,
+                R.id.txtName,
+                R.id.txtPrice,
+                R.id.txtStore,
+                R.id.txtAddress,
+                R.id.checkmark_complete};
 
-			String[] from = new String[] {
-					ItemDBManager.KEY_ID,
-					ItemDBManager.KEY_PHOTO_URL,
-					ItemDBManager.KEY_NAME,
-					ItemDBManager.KEY_PRICE,
-					ItemDBManager.KEY_STORENAME,
-					ItemDBManager.KEY_ADDRESS,
-					ItemDBManager.KEY_COMPLETE};
+        _wishListItemAdapterCursor = new WishListItemCursorAdapter(this,
+                resID, _wishItemCursor, from, to);
 
-			int[] to = new int[] {
-					R.id.txtItemID,
-					R.id.imgPhoto,
-					R.id.txtName,
-					R.id.txtPrice,
-					R.id.txtStore,
-					R.id.txtAddress,
-					R.id.checkmark_complete};
+        // save index and top position
+        int index = _listView.getFirstVisiblePosition();
+        View v = _listView.getChildAt(0);
+        int top = (v == null) ? 0 : v.getTop();
 
-			_wishListItemAdapterCursor = new WishListItemCursorAdapter(this,
-					resID, _wishItemCursor, from, to);
+        _listView.setAdapter(_wishListItemAdapterCursor);
+        _wishListItemAdapterCursor.notifyDataSetChanged();
 
-			// save index and top position
-			int index = _listView.getFirstVisiblePosition();
-			View v = _listView.getChildAt(0);
-			int top = (v == null) ? 0 : v.getTop();
-
-			_listView.setAdapter(_wishListItemAdapterCursor);
-			_wishListItemAdapterCursor.notifyDataSetChanged();
-
-			// restore
-			_listView.setSelectionFromTop(index, top);
-		}
-
-		else {
-			// give message about empty cursor
-		}
+        // restore
+        _listView.setSelectionFromTop(index, top);
 	}
 
 	private void deleteItem(long item_id){
@@ -499,7 +496,6 @@ public class WishList extends Activity {
     private void dispatchTakePictureIntent() {
         CameraManager c = new CameraManager();
         _newfullsizePhotoPath = c.getPhotoPath();
-        Log.v("dispatch", "_new " + _newfullsizePhotoPath);
         startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
     }
 

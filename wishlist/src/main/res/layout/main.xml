@@ -71,6 +71,24 @@
                     />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                >
+
+                <TextView
+                    android:id="@+id/noWishText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/grey"
+                    android:text="No matching wishes"
+                    android:textSize="16.0sp"
+                    android:gravity="center"
+                    android:layout_centerInParent="true"
+                    />
+            </RelativeLayout>
+
             <!-- default listSelector in android 10 has a left/right margins, while in android >10 has no margins,
                  set to null will remove these margins and make it consistent over different android version -->
 
