@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="ga_sessionTimeout">300</integer>
+
+    <!-- Enable automatic Activity measurement -->
+    <bool name="ga_autoActivityTracking">false</bool>
+
+    <!-- the Local LogLevel for Analytics -->
+    <!--Remember to disable verobse log level for production -->
+    <string name="ga_logLevel">verbose</string>
+
+    <!-- how often the dispatcher should fire -->
+    <integer name="ga_dispatchPeriod">30</integer>
+
+    <!-- Treat events as test events and don't send to google -->
+   <!-- <bool name="ga_dryRun">false</bool>-->
+
+</resources>

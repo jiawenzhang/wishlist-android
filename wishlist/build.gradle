@@ -53,4 +53,5 @@ dependencies {
    // compile 'com.android.support:support-v4:20.+'
     // do not use dynamic updating.
     compile 'com.android.support:support-v4:20.0.0'
+    compile 'com.google.android.gms:play-services-base:6.5.+'
 }

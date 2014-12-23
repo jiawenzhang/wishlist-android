@@ -14,12 +14,16 @@ import java.util.Date;
 import java.util.Observer;
 import java.util.Observable;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.LocationDBManager;
 import com.wish.wishlist.db.StoreDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.AnalyticsHelper;
 import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.PositionManager;
 import com.wish.wishlist.util.camera.PhotoFileCreater;
@@ -375,7 +379,13 @@ public class EditItem extends Activity implements Observer {
 			toast.show();
 			return;
 		}
-		
+
+        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        t.send(new HitBuilders.EventBuilder()
+                .setCategory("Wish")
+                .setAction("Save")
+                .build());
+
 		//define variables to hold the item info.
 		String itemName = "";
 		String itemDesc = "";

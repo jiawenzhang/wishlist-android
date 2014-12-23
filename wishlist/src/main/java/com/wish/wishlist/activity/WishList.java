@@ -39,12 +39,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.AnalyticsHelper;
 import com.wish.wishlist.util.DrawerItemCustomAdapter;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
 import com.wish.wishlist.util.camera.CameraManager;
@@ -710,14 +713,26 @@ public class WishList extends Activity {
 			return true;
 		}
 
-		else if (itemId == R.id.COMPLETE) {
-			WishItem wish_item = WishItemManager.getInstance(this).retrieveItembyId(_selectedItem_id);
-			if (wish_item.getComplete() == 1) {
-				wish_item.setComplete(0);
-			}
-			else {
-				wish_item.setComplete(1);
-			}
+        else if (itemId == R.id.COMPLETE) {
+            WishItem wish_item = WishItemManager.getInstance(this).retrieveItembyId(_selectedItem_id);
+            if (wish_item.getComplete() == 1) {
+                wish_item.setComplete(0);
+                Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                t.send(new HitBuilders.EventBuilder()
+                        .setCategory("Wish")
+                        .setAction("ChangeStatus")
+                        .setLabel("InProgress")
+                        .build());
+            }
+            else {
+                wish_item.setComplete(1);
+                Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                t.send(new HitBuilders.EventBuilder()
+                        .setCategory("Wish")
+                        .setAction("ChangeStatus")
+                        .setLabel("Complete")
+                        .build());
+            }
 			wish_item.save();
 			if (_viewOption.equals("list")) {
 				//we only need to update the view if it is list view, as the check mark will be updated
