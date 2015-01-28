@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.Observer;
 import java.util.Observable;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
@@ -23,7 +22,7 @@ import com.wish.wishlist.db.StoreDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.util.AnalyticsHelper;
+import com.wish.wishlist.AnalyticsHelper;
 import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.PositionManager;
 import com.wish.wishlist.util.camera.PhotoFileCreater;
@@ -473,6 +472,12 @@ public class EditItem extends Activity implements Observer {
 				if (resultCode == RESULT_OK) {
 					_fullsizePhotoPath = String.valueOf(_newfullsizePhotoPath);
 					_newfullsizePhotoPath = null;
+                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    t.send(new HitBuilders.EventBuilder()
+                            .setCategory("Wish")
+                            .setAction("TakenPicture")
+                            .setLabel("FromEditItemCameraButton")
+                            .build());
 					handleBigCameraPhoto();
 				}
 				break;
@@ -481,6 +486,11 @@ public class EditItem extends Activity implements Observer {
 				if (resultCode == RESULT_OK) {
 					Uri selectedImageUri = data.getData();
 					_fullsizePhotoPath = copyPhotoToAlbum(selectedImageUri);
+                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    t.send(new HitBuilders.EventBuilder()
+                            .setCategory("Wish")
+                            .setAction("SelectedPicture")
+                            .build());
 					setPic();
 				}
                 break;

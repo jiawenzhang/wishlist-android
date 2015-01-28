@@ -47,7 +47,7 @@ import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.util.AnalyticsHelper;
+import com.wish.wishlist.AnalyticsHelper;
 import com.wish.wishlist.util.DrawerItemCustomAdapter;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
 import com.wish.wishlist.util.camera.CameraManager;
@@ -997,6 +997,12 @@ public class WishList extends Activity {
                     else {
                         Log.v("photo path", "null");
                     }
+                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    t.send(new HitBuilders.EventBuilder()
+                            .setCategory("Wish")
+                            .setAction("TakenPicture")
+                            .setLabel("FromActionBarCameraButton")
+                            .build());
                     startActivityForResult(i, EDIT_ITEM);
                 }
                 else {

@@ -10,12 +10,15 @@ import android.content.DialogInterface;
 import android.content.Intent; 
 import android.content.pm.ResolveInfo; 
 
-import com.facebook.android.Facebook; 
+import com.facebook.android.Facebook;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;  
 import com.wish.wishlist.activity.WishItemPostToSNS;
+import com.wish.wishlist.AnalyticsHelper;
 import com.wish.wishlist.util.DialogOnShowListener;
 
 public class ShareHelper {
@@ -69,7 +72,14 @@ public Facebook share() {
 				intent.putExtra(Intent.EXTRA_TEXT, message);
 				intent.putExtra(Intent.EXTRA_STREAM, item.getFullsizePicUri());
 				((Activity)_ctx).startActivity(intent);
+
 			}
+            Tracker t = ((AnalyticsHelper) ((Activity)_ctx).getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            t.send(new HitBuilders.EventBuilder()
+                    .setCategory("Social")
+                    .setAction("ShareWish")
+                    .setLabel(info.activityInfo.packageName)
+                    .build());
 		}
 	});
 

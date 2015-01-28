@@ -28,11 +28,14 @@ import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.tokenautocomplete.FilteredArrayAdapter;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
+import com.wish.wishlist.AnalyticsHelper;
 
 public class AddTag extends Activity implements TokenCompleteTextView.TokenListener {
     protected final static String PREFIX = "Tags: ";
@@ -152,6 +155,11 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
         }
         else if (id == R.id.menu_save) {
             onSave();
+            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            t.send(new HitBuilders.EventBuilder()
+                    .setCategory("Tag")
+                    .setAction("ClickSave")
+                    .build());
             return true;
         }
         else {

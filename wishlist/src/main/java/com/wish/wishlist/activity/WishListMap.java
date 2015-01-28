@@ -34,6 +34,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
 //import com.android.wishlist.R.drawable;
 //import com.android.wishlist.R.string;
@@ -48,6 +50,7 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 import com.wish.wishlist.db.ItemDBManager;
+import com.wish.wishlist.AnalyticsHelper;
 
 /**
  * Displays a custom map which shows our current location and the location where
@@ -70,6 +73,10 @@ public class WishListMap extends MapActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        t.setScreenName("MapView");
+        t.send(new HitBuilders.AppViewBuilder().build());
 
 		FrameLayout frame = new FrameLayout(this);
 		_mapView = new MapView(this, getString(R.string.googleMapKey));
