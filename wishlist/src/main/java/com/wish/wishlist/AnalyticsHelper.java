@@ -36,9 +36,9 @@ public class AnalyticsHelper extends Application {
             analytics.setLocalDispatchPeriod(30);
 
             //When true, dryRun flag prevents data from being processed with reports. (for testing)
-            analytics.setDryRun(true);
+            analytics.setDryRun(false);
 
-            analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
+            //analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
 
             Tracker t = analytics.newTracker(PROPERTY_ID);
             t.setSessionTimeout(300);
