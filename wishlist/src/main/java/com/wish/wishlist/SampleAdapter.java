@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -12,10 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.etsy.android.grid.util.DynamicHeightTextView;
+import com.etsy.android.grid.util.DynamicHeightImageView;
 
 /***
  * ADAPTER
@@ -24,11 +25,12 @@ import com.etsy.android.grid.util.DynamicHeightTextView;
 public class SampleAdapter extends ArrayAdapter<String> {
 
     private static final String TAG = "SampleAdapter";
+    private static int a = 0;
 
     static class ViewHolder {
+        DynamicHeightImageView imageView;
         DynamicHeightTextView txtLineOne;
         Button btnGo;
-        ImageView imageView;
     }
 
     private final LayoutInflater mLayoutInflater;
@@ -58,13 +60,12 @@ public class SampleAdapter extends ArrayAdapter<String> {
         if (convertView == null) {
             convertView = mLayoutInflater.inflate(R.layout.list_item_sample, parent, false);
             vh = new ViewHolder();
+            vh.imageView = (DynamicHeightImageView) convertView.findViewById(R.id.imageGridView);
             vh.txtLineOne = (DynamicHeightTextView) convertView.findViewById(R.id.txt_line1);
             vh.btnGo = (Button) convertView.findViewById(R.id.btn_go);
-            vh.imageView = (ImageView) convertView.findViewById(R.id.imageGridView);
 
             convertView.setTag(vh);
-        }
-        else {
+        } else {
             vh = (ViewHolder) convertView.getTag();
         }
 
@@ -76,18 +77,37 @@ public class SampleAdapter extends ArrayAdapter<String> {
 
         Log.d(TAG, "getView position:" + position + " h:" + positionHeight);
 
-        //vh.imageView.setImageResource(R.drawable.cake);
+        Drawable d = getContext().getResources().getDrawable(R.drawable.cake);
+        if (a == 0) {
+            vh.imageView.setImageResource(R.drawable.cake);
+            a = 1;
+            d = getContext().getResources().getDrawable(R.drawable.cake);
+        }
+        else if (a == 1) {
+            vh.imageView.setImageResource(R.drawable.d3);
+            a = 2;
+            d = getContext().getResources().getDrawable(R.drawable.d3);
+        }
+        else if (a == 2) {
+            vh.imageView.setImageResource(R.drawable.mini_cooper);
+            a = 0;
+            d = getContext().getResources().getDrawable(R.drawable.mini_cooper);
+        }
+        float h = (float) d.getIntrinsicHeight();
+        float w = (float) d.getIntrinsicWidth();
+        Log.d(TAG, " h/w" + h/w);
+        vh.imageView.setHeightRatio(h/w);
 
-        vh.txtLineOne.setHeightRatio(positionHeight);
-        vh.txtLineOne.setText(getItem(position) + position);
+        //vh.txtLineOne.setHeightRatio(positionHeight);
+        //vh.txtLineOne.setText(getItem(position) + position);
 
-        vh.btnGo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                Toast.makeText(getContext(), "Button Clicked Position " +
-                        position, Toast.LENGTH_SHORT).show();
-            }
-        });
+//        vh.btnGo.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(final View v) {
+//                Toast.makeText(getContext(), "Button Clicked Position " +
+//                        position, Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         return convertView;
     }
