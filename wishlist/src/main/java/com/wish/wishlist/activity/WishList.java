@@ -22,11 +22,13 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View.OnClickListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -55,6 +57,10 @@ import com.wish.wishlist.util.social.ShareHelper;
 import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.view.ObjectDrawerItem;
 
+import com.etsy.android.grid.StaggeredGridView;
+import com.wish.wishlist.SampleData;
+import com.wish.wishlist.SampleAdapter;
+
 /***
  * WishList.java is responsible for displaying wish items in either list or grid
  * view and providing access to functions of manipulating items such as adding,
@@ -70,7 +76,8 @@ import com.wish.wishlist.view.ObjectDrawerItem;
  * 
  */
 @SuppressLint("NewApi")
-public class WishList extends Activity {
+//public class WishList extends Activity {
+public class WishList extends Activity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 	static final private int DIALOG_MAIN = 0;
 	static final private int DIALOG_FILTER = 1;
 	static final private int DIALOG_SORT = 2;
@@ -125,6 +132,15 @@ public class WishList extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+
+
+
+
+    private StaggeredGridView mGridView;
+    private boolean mHasRequestedMore;
+    private SampleAdapter mAdapter;
+
+    private ArrayList<String> mData;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -287,6 +303,42 @@ public class WishList extends Activity {
         else{
             Log.d(WishList.LOG_TAG, "savedInstanceState == null");
         }
+
+
+
+
+
+        //setContentView(R.layout.activity_sgv);
+
+        //setTitle("SGV");
+        mGridView = (StaggeredGridView) findViewById(R.id.grid_view);
+
+        //LayoutInflater layoutInflater = getLayoutInflater();
+
+        //View header = layoutInflater.inflate(R.layout.list_item_header_footer, null);
+        //View footer = layoutInflater.inflate(R.layout.list_item_header_footer, null);
+        //TextView txtHeaderTitle = (TextView) header.findViewById(R.id.txt_title);
+        //TextView txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
+        //txtHeaderTitle.setText("THE HEADER!");
+        //txtFooterTitle.setText("THE FOOTER!");
+
+        //mGridView.addHeaderView(header);
+        //mGridView.addFooterView(footer);
+        mAdapter = new SampleAdapter(this, R.id.txt_line1);
+
+
+        if (mData == null) {
+            mData = SampleData.generateSampleData();
+        }
+
+        for (String data : mData) {
+            mAdapter.add(data);
+        }
+
+        mGridView.setAdapter(mAdapter);
+        mGridView.setOnScrollListener(this);
+        mGridView.setOnItemClickListener(this);
+        mGridView.setOnItemLongClickListener(this);
     }
 
     @Override
@@ -1249,6 +1301,18 @@ public class WishList extends Activity {
         });
     }
 
+    private void onLoadMoreItems() {
+        final ArrayList<String> sampleData = SampleData.generateSampleData();
+        for (String data : sampleData) {
+            mAdapter.add(data);
+        }
+        // stash all the data in our backing store
+        mData.addAll(sampleData);
+        // notify the adapter that we can update now
+        mAdapter.notifyDataSetChanged();
+        mHasRequestedMore = false;
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -1259,6 +1323,39 @@ public class WishList extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onScrollStateChanged(final AbsListView view, final int scrollState) {
+        Log.d("wishlist", "onScrollStateChanged:" + scrollState);
+    }
+
+    @Override
+    public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
+        Log.d("wishlist", "onScroll firstVisibleItem:" + firstVisibleItem +
+                " visibleItemCount:" + visibleItemCount +
+                " totalItemCount:" + totalItemCount);
+        // our handling
+        if (!mHasRequestedMore) {
+            int lastInScreen = firstVisibleItem + visibleItemCount;
+            if (lastInScreen >= totalItemCount) {
+                Log.d("wishlist", "onScroll lastInScreen - so load more");
+                mHasRequestedMore = true;
+                onLoadMoreItems();
+            }
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Toast.makeText(this, "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+    {
+        Toast.makeText(this, "Item Long Clicked: " + position, Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     }
