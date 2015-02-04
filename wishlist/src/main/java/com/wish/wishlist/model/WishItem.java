@@ -40,7 +40,6 @@ public class WishItem {
 	private double _latitude;
 	private double _longitude;
 	private String _address;
-	
 
 	public WishItem(Context ctx ,String name) {
 		this(ctx, name, null, null);

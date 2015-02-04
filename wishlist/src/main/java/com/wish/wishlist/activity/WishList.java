@@ -22,7 +22,6 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View.OnClickListener;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,6 +50,7 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.AnalyticsHelper;
 import com.wish.wishlist.util.DrawerItemCustomAdapter;
+import com.wish.wishlist.util.WishItemStaggeredCursorAdapter;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
 import com.wish.wishlist.util.camera.CameraManager;
 import com.wish.wishlist.util.social.ShareHelper;
@@ -113,6 +113,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 	private ViewFlipper _viewFlipper;
 	private ListView _listView;
 	private GridView _gridView;
+    private StaggeredGridView _staggeredView;
 	private Button _addNew;
 	private ImageButton _backImageButton;
 	private ImageButton _viewImageButton;
@@ -123,6 +124,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
 	private ItemsCursor _wishItemCursor;
 	private WishListItemCursorAdapter _wishListItemAdapterCursor;
+    private WishItemStaggeredCursorAdapter _wishItemStaggeredAdapterCursor;
 
 	private ItemDBManager _itemDBManager;
     private ArrayList<Long> _itemIds = new ArrayList<Long>();
@@ -132,15 +134,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-
-
-
-
-    private StaggeredGridView mGridView;
-    private boolean mHasRequestedMore;
-    private SampleAdapter mAdapter;
-
-    private ArrayList<String> mData;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -178,6 +171,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
 		// get the resources by their IDs
 		_viewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
+        _staggeredView = (StaggeredGridView) findViewById(R.id.staggered_view);
 		_listView = (ListView) findViewById(R.id.myListView);
 		_gridView = (GridView) findViewById(R.id.myGridView);
         _gridView.setNumColumns(3);
@@ -303,42 +297,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         else{
             Log.d(WishList.LOG_TAG, "savedInstanceState == null");
         }
-
-
-
-
-
-        //setContentView(R.layout.activity_sgv);
-
-        //setTitle("SGV");
-        mGridView = (StaggeredGridView) findViewById(R.id.grid_view);
-
-        //LayoutInflater layoutInflater = getLayoutInflater();
-
-        //View header = layoutInflater.inflate(R.layout.list_item_header_footer, null);
-        //View footer = layoutInflater.inflate(R.layout.list_item_header_footer, null);
-        //TextView txtHeaderTitle = (TextView) header.findViewById(R.id.txt_title);
-        //TextView txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
-        //txtHeaderTitle.setText("THE HEADER!");
-        //txtFooterTitle.setText("THE FOOTER!");
-
-        //mGridView.addHeaderView(header);
-        //mGridView.addFooterView(footer);
-        mAdapter = new SampleAdapter(this, R.id.txt_line1);
-
-
-        if (mData == null) {
-            mData = SampleData.generateSampleData();
-        }
-
-        for (String data : mData) {
-            mAdapter.add(data);
-        }
-
-        mGridView.setAdapter(mAdapter);
-        mGridView.setOnScrollListener(this);
-        mGridView.setOnItemClickListener(this);
-        mGridView.setOnItemLongClickListener(this);
     }
 
     @Override
@@ -405,23 +363,24 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 		_wishItemCursor = _itemDBManager.getItems(_sortOption, _where, _itemIds);
 		if (_itemDBManager.getItemsCount() == 0) {
             // make a new wish button
-            _viewFlipper.setDisplayedChild(2);
+            _viewFlipper.setDisplayedChild(3);
             return;
 		}
         if (_wishItemCursor.getCount() == 0 && (!_where.isEmpty() || !_itemIds.isEmpty() || _nameQuery != null)) {
             // no matching wishes text
-            _viewFlipper.setDisplayedChild(3);
+            _viewFlipper.setDisplayedChild(4);
             return;
         }
 
 		if (_viewOption.equals("list")) {
 			updateListView();
-			_viewFlipper.setDisplayedChild(0);
-		}
-
-		else {
-			updateGridView();
 			_viewFlipper.setDisplayedChild(1);
+		}
+		else {
+			//updateGridView();
+			//_viewFlipper.setDisplayedChild(2);
+            updateStaggeredView();
+            _viewFlipper.setDisplayedChild(0);
 		}
 	}
 
@@ -464,17 +423,31 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
             return;
         }
 		if (_viewOption.equals("list")) {
-			// Update the list view
 			updateListView();
-            _viewFlipper.setDisplayedChild(0);
+            _viewFlipper.setDisplayedChild(1);
 		}
 
 		else if (_viewOption.equals("grid")) {
-			// Update the grid view
-			updateGridView();
-			_viewFlipper.setDisplayedChild(1);
+			//updateGridView();
+			//_viewFlipper.setDisplayedChild(1);
+            updateStaggeredView();
+            _viewFlipper.setDisplayedChild(0);
 		}
 	}
+
+    private void updateStaggeredView() {
+        String[] from = new String[]{ItemDBManager.KEY_FULLSIZE_PHOTO_PATH};
+
+        int[] to = new int[]{R.id.imageGridView};
+        _wishItemStaggeredAdapterCursor = new WishItemStaggeredCursorAdapter(this,
+                R.layout.list_item_sample, _wishItemCursor, from, to);
+
+        _staggeredView.setAdapter(_wishItemStaggeredAdapterCursor);
+        _wishItemStaggeredAdapterCursor.notifyDataSetChanged();
+        _staggeredView.setOnScrollListener(this);
+        _staggeredView.setOnItemClickListener(this);
+        _staggeredView.setOnItemLongClickListener(this);
+    }
 
 	private void updateGridView() {
         int resID = R.layout.wishitem_photo;
@@ -1301,18 +1274,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         });
     }
 
-    private void onLoadMoreItems() {
-        final ArrayList<String> sampleData = SampleData.generateSampleData();
-        for (String data : sampleData) {
-            mAdapter.add(data);
-        }
-        // stash all the data in our backing store
-        mData.addAll(sampleData);
-        // notify the adapter that we can update now
-        mAdapter.notifyDataSetChanged();
-        mHasRequestedMore = false;
-    }
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -1335,15 +1296,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         Log.d("wishlist", "onScroll firstVisibleItem:" + firstVisibleItem +
                 " visibleItemCount:" + visibleItemCount +
                 " totalItemCount:" + totalItemCount);
-        // our handling
-        if (!mHasRequestedMore) {
-            int lastInScreen = firstVisibleItem + visibleItemCount;
-            if (lastInScreen >= totalItemCount) {
-                Log.d("wishlist", "onScroll lastInScreen - so load more");
-                mHasRequestedMore = true;
-                onLoadMoreItems();
-            }
-        }
     }
 
     @Override
