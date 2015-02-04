@@ -1288,14 +1288,14 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
     @Override
     public void onScrollStateChanged(final AbsListView view, final int scrollState) {
-        Log.d("wishlist", "onScrollStateChanged:" + scrollState);
+ //       Log.d("wishlist", "onScrollStateChanged:" + scrollState);
     }
 
     @Override
     public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
-        Log.d("wishlist", "onScroll firstVisibleItem:" + firstVisibleItem +
-                " visibleItemCount:" + visibleItemCount +
-                " totalItemCount:" + totalItemCount);
+    //    Log.d("wishlist", "onScroll firstVisibleItem:" + firstVisibleItem +
+    //            " visibleItemCount:" + visibleItemCount +
+    //            " totalItemCount:" + totalItemCount);
     }
 
     @Override
