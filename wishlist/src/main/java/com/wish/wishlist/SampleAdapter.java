@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.etsy.android.grid.util.DynamicHeightTextView;
 import com.etsy.android.grid.util.DynamicHeightImageView;
@@ -38,7 +37,7 @@ public class SampleAdapter extends ArrayAdapter<String> {
 
         ViewHolder vh;
         if (convertView == null) {
-            convertView = mLayoutInflater.inflate(R.layout.list_item_sample, parent, false);
+            convertView = mLayoutInflater.inflate(R.layout.staggeredview_item, parent, false);
             vh = new ViewHolder();
             vh.imageView = (DynamicHeightImageView) convertView.findViewById(R.id.imageGridView);
             vh.txtLineOne = (DynamicHeightTextView) convertView.findViewById(R.id.txt_line1);

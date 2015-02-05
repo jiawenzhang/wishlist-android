@@ -58,8 +58,6 @@ import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.view.ObjectDrawerItem;
 
 import com.etsy.android.grid.StaggeredGridView;
-import com.wish.wishlist.SampleData;
-import com.wish.wishlist.SampleAdapter;
 
 /***
  * WishList.java is responsible for displaying wish items in either list or grid
@@ -440,7 +438,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
         int[] to = new int[]{R.id.imageGridView};
         _wishItemStaggeredAdapterCursor = new WishItemStaggeredCursorAdapter(this,
-                R.layout.list_item_sample, _wishItemCursor, from, to);
+                R.layout.staggeredview_item, _wishItemCursor, from, to);
 
         _staggeredView.setAdapter(_wishItemStaggeredAdapterCursor);
         _wishItemStaggeredAdapterCursor.notifyDataSetChanged();
