@@ -14,6 +14,9 @@ import android.widget.SimpleCursorAdapter;
 import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.etsy.android.grid.util.DynamicHeightTextView;
 import com.wish.wishlist.db.ItemDBManager;
+import com.wish.wishlist.model.WishItem;
+
+import java.text.DecimalFormat;
 
 
 public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
@@ -70,6 +73,21 @@ public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
                 String name = cursor.getString(columnIndex);
                 DynamicHeightTextView textView = (DynamicHeightTextView) view;
                 textView.setText(name);
+            }
+            else if (columnIndex == nPriceIndex) {
+                DynamicHeightTextView viewPrice = (DynamicHeightTextView) view;
+
+                double price = cursor.getDouble(columnIndex);
+                //we use float.min_value to indicate price is not available
+                if (price != Double.MIN_VALUE) {
+                    DecimalFormat Dec = new DecimalFormat("0.00");
+                    String priceStr = (Dec.format(price));
+                    viewPrice.setText(WishItem.priceStringWithCurrency(priceStr, view.getContext()));
+                    viewPrice.setVisibility(View.VISIBLE);
+                }
+                else {
+                    viewPrice.setVisibility(View.GONE);
+                }
             }
             return true;
         }
