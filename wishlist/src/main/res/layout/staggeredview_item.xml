@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="horizontal"
+android:orientation="vertical"
 android:id="@+id/panel_content"
 android:layout_width="match_parent"
 android:layout_height="wrap_content"
@@ -15,9 +15,12 @@ android:descendantFocusability="blocksDescendants">
 
 <com.etsy.android.grid.util.DynamicHeightTextView
     android:id="@+id/txt_line1"
+    android:textSize="18sp"
+    android:ellipsize="marquee"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    android:visibility="gone"/>
+    android:textColor="@color/dark_purple"/>
+<!--    android:gravity="center"/> -->
+    <!--android:visibility="gone"/> -->
 
 </LinearLayout>

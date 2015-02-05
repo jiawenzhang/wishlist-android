@@ -434,9 +434,9 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 	}
 
     private void updateStaggeredView() {
-        String[] from = new String[]{ItemDBManager.KEY_FULLSIZE_PHOTO_PATH};
+        String[] from = new String[]{ItemDBManager.KEY_FULLSIZE_PHOTO_PATH, ItemDBManager.KEY_NAME};
 
-        int[] to = new int[]{R.id.imageGridView};
+        int[] to = new int[]{R.id.imageGridView, R.id.txt_line1};
         _wishItemStaggeredAdapterCursor = new WishItemStaggeredCursorAdapter(this,
                 R.layout.staggeredview_item, _wishItemCursor, from, to);
 
