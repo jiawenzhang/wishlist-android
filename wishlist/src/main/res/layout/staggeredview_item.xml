@@ -5,7 +5,13 @@ android:orientation="vertical"
 android:id="@+id/panel_content"
 android:layout_width="match_parent"
 android:layout_height="wrap_content"
+android:paddingLeft="1dp"
+android:paddingRight="1dp"
+android:paddingTop="1dp"
+android:paddingBottom="5dp"
+android:background="@drawable/staggered_view_border"
 android:descendantFocusability="blocksDescendants">
+<!--1dp padding is to match with 1dp border so images won't obscure the border -->
 
     <com.etsy.android.grid.util.DynamicHeightImageView
         android:id="@+id/staggered_image"
@@ -19,6 +25,9 @@ android:descendantFocusability="blocksDescendants">
         android:ellipsize="marquee"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:textColor="@color/dark_purple"/>
 
     <com.etsy.android.grid.util.DynamicHeightTextView
@@ -27,6 +36,8 @@ android:descendantFocusability="blocksDescendants">
         android:layout_height="wrap_content"
         android:textSize="13sp"
         android:singleLine="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:textColor="@color/bodyText_dark_grey"/>
 <!--    android:gravity="center"/> -->
     <!--android:visibility="gone"/> -->
