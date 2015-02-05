@@ -8,13 +8,13 @@ android:layout_height="wrap_content"
 android:descendantFocusability="blocksDescendants">
 
     <com.etsy.android.grid.util.DynamicHeightImageView
-        android:id="@+id/imageGridView"
+        android:id="@+id/staggered_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"/>
 
 <com.etsy.android.grid.util.DynamicHeightTextView
-    android:id="@+id/txt_line1"
+    android:id="@+id/staggered_name"
     android:textSize="18sp"
     android:ellipsize="marquee"
     android:layout_width="match_parent"

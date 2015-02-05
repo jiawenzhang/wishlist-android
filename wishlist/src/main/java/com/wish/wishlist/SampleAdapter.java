@@ -39,8 +39,8 @@ public class SampleAdapter extends ArrayAdapter<String> {
         if (convertView == null) {
             convertView = mLayoutInflater.inflate(R.layout.staggeredview_item, parent, false);
             vh = new ViewHolder();
-            vh.imageView = (DynamicHeightImageView) convertView.findViewById(R.id.imageGridView);
-            vh.txtLineOne = (DynamicHeightTextView) convertView.findViewById(R.id.txt_line1);
+            vh.imageView = (DynamicHeightImageView) convertView.findViewById(R.id.staggered_image);
+            vh.txtLineOne = (DynamicHeightTextView) convertView.findViewById(R.id.staggered_name);
 
             convertView.setTag(vh);
         } else {
