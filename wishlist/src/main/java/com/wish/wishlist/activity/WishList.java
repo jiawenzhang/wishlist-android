@@ -179,47 +179,8 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 		_addNew = (Button) findViewById(R.id.addNewWishButton);
 		// mySearchText = (EditText) findViewById(R.id.mySearchText);
 
-		// Listener for _listView.
-		// When clicked, it starts a new activity to display the clicked item's
-		// detailed info.
-		_listView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> a, View v, int position,
-					long id) {
-				// find which item in the list view has been clicked
-				// and get its _id in database
-				long item_id = getDBItemID(v);
-				if (item_id == -1) {
-					return;
-				}
-
-				// Create an intent to show the item detail.
-				// Pass the item_id along so the next activity can use it to
-				// retrieve the info. about the item from database
-				Intent i = new Intent(WishList.this, WishItemDetail.class);
-				i.putExtra("item_id", item_id);
-				i.putExtra("position", position);
-				startActivityForResult(i, ITEM_DETAILS);
-			}
-		});
-
-		// Listener for _gridView
-		// When clicked, it starts a new activity to display the clicked item's
-		// detailed info.
-		_gridView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-				// find which item has been clicked and get its _id in database
-				long item_id = getDBItemID(v);
-				// Create an intent to show the item detail.
-				// Pass the item_id along so the next activity can use it to
-				// retrieve the info. about the item from database
-				Intent i = new Intent(WishList.this, WishItemDetail.class);
-				i.putExtra("item_id", item_id);
-				i.putExtra("position", position);
-				startActivity(i);
-			}
-		});
+		_listView.setOnItemClickListener(this);
+		_gridView.setOnItemClickListener(this);
 
 		_addNew.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -345,7 +306,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 			itemIdTextView = (TextView) v.findViewById(R.id.txtItemID);
 		}
 		else {
-			itemIdTextView = (TextView) v.findViewById(R.id.txtItemID_Grid);
+            itemIdTextView = (TextView) v.findViewById(R.id.staggered_id);
 		}
 		long item_id = Long.parseLong(itemIdTextView.getText().toString());
 		return item_id;
@@ -434,11 +395,13 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 	}
 
     private void updateStaggeredView() {
-        String[] from = new String[]{ItemDBManager.KEY_FULLSIZE_PHOTO_PATH,
+        String[] from = new String[]{ItemDBManager.KEY_ID,
+                ItemDBManager.KEY_FULLSIZE_PHOTO_PATH,
                 ItemDBManager.KEY_NAME,
                 ItemDBManager.KEY_PRICE};
 
-        int[] to = new int[]{R.id.staggered_image,
+        int[] to = new int[]{R.id.staggered_id,
+                R.id.staggered_image,
                 R.id.staggered_name,
                 R.id.staggered_price};
 
@@ -1303,7 +1266,20 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Toast.makeText(this, "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
+        // find which item in the list view has been clicked
+        // and get its _id in database
+        long item_id = getDBItemID(view);
+        if (item_id == -1) {
+            return;
+        }
+
+        // Create an intent to show the item detail.
+        // Pass the item_id along so the next activity can use it to
+        // retrieve the info. about the item from database
+        Intent i = new Intent(WishList.this, WishItemDetail.class);
+        i.putExtra("item_id", item_id);
+        i.putExtra("position", position);
+        startActivityForResult(i, ITEM_DETAILS);
     }
 
     @Override

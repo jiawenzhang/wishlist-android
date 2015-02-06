@@ -10,6 +10,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.etsy.android.grid.util.DynamicHeightTextView;
@@ -33,6 +34,7 @@ public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
 
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            int nIdIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_ID);
             int nNameIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_NAME);
             int nImageIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_FULLSIZE_PHOTO_PATH);
             int nPriceIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_PRICE);
@@ -40,6 +42,11 @@ public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
             int nAddIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_ADDRESS);
             int nCompleteIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_COMPLETE);
 
+            if (columnIndex == nIdIndex) {
+                long id = cursor.getLong(columnIndex);
+                TextView textView = (TextView) view;
+                textView.setText(Long.toString(id));
+            }
             // set the photo to the image view
             if (columnIndex == nImageIndex) {
                 //get the ImageView in which the photo should be displayed
