@@ -192,6 +192,9 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 		// register context menu for both listview and gridview
 		registerForContextMenu(_listView);
 		registerForContextMenu(_gridView);
+        registerForContextMenu(_staggeredView);
+
+        _listView.setOnItemLongClickListener(this);
 
 		// open the database for operations of Item table
 		_itemDBManager = new ItemDBManager(this);
@@ -533,42 +536,9 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu_item_context, menu);
 
-		AdapterView.AdapterContextMenuInfo menu_info;
-		menu_info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-
-		//get the position of the item in the list
-		//this is the position of the items among all items including the invisible ones
-		int pos = menu_info.position;
-		View selected_view = null;
-		_selectedItem_id = -1;
-		if(_viewOption.equals("list")){
-			//get the position of the items among the visible items
-			pos = pos - _listView.getFirstVisiblePosition();
-			selected_view = _listView.getChildAt(pos);
-			if (selected_view != null) {
-				_selectedItem_id = getDBItemID(selected_view);
-			}
-			else {
-				return;
-			}
-		}
-		else if(_viewOption.equals("grid")){
-			pos = pos - _gridView.getFirstVisiblePosition();
-			selected_view = _gridView.getChildAt(pos);
-			if (selected_view != null) {
-				_selectedItem_id = getDBItemID(selected_view);
-			}
-			else {
-				return;
-			}
-		}
-		else if(selected_view == null){
-			return;
-		}
-
 		WishItem wish_item = WishItemManager.getInstance(this).retrieveItembyId(_selectedItem_id);
 		int complete = wish_item.getComplete();
-		MenuItem mi = (MenuItem) menu.findItem(R.id.COMPLETE);
+		MenuItem mi = menu.findItem(R.id.COMPLETE);
 		if (complete == 1) {
 			mi.setTitle("Mark as incomplete");
 		}
@@ -1285,7 +1255,13 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
     {
-        Toast.makeText(this, "Item Long Clicked: " + position, Toast.LENGTH_SHORT).show();
+        _selectedItem_id = id;
+        if (_viewOption.equals("list")) {
+            _listView.showContextMenu();
+        }
+        else {
+            _staggeredView.showContextMenu();
+        }
         return true;
     }
 
