@@ -292,29 +292,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 		return super.onSearchRequested();
 	}
 
-	/**
-	 * Get the ID of the item in Item table whose position in the list/grid view
-	 * is position.
-	 *
-	 * @param position
-	 *            : position of item in the list
-	 * @param viewMode
-	 *            : the current view mode
-	 * @return the Item ID
-	 */
-	public long getDBItemID(View v) {
-		TextView itemIdTextView = null;
-		// Note that txtItemID is not visible in the UI but can be retrieved
-		if (_viewOption.equals("list")) {
-			itemIdTextView = (TextView) v.findViewById(R.id.txtItemID);
-		}
-		else {
-            itemIdTextView = (TextView) v.findViewById(R.id.staggered_id);
-		}
-		long item_id = Long.parseLong(itemIdTextView.getText().toString());
-		return item_id;
-	}
-
 	/***
 	 * initial display of items in both list and grid view, called when the
 	 * activity is created
@@ -398,12 +375,12 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 	}
 
     private void updateStaggeredView() {
-        String[] from = new String[]{ItemDBManager.KEY_ID,
+        String[] from = new String[]{
                 ItemDBManager.KEY_FULLSIZE_PHOTO_PATH,
                 ItemDBManager.KEY_NAME,
                 ItemDBManager.KEY_PRICE};
 
-        int[] to = new int[]{R.id.staggered_id,
+        int[] to = new int[]{
                 R.id.staggered_image,
                 R.id.staggered_name,
                 R.id.staggered_price};
@@ -420,10 +397,9 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
 	private void updateGridView() {
         int resID = R.layout.wishitem_photo;
-        String[] from = new String[]{ItemDBManager.KEY_ID,
-                ItemDBManager.KEY_PHOTO_URL};
+        String[] from = new String[]{ItemDBManager.KEY_PHOTO_URL};
 
-        int[] to = new int[]{R.id.txtItemID_Grid, R.id.imgPhotoGrid};
+        int[] to = new int[]{R.id.imgPhotoGrid};
         _wishListItemAdapterCursor = new WishListItemCursorAdapter(this,
                 resID, _wishItemCursor, from, to);
 
@@ -434,7 +410,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 	private void updateListView() {
         int resID = R.layout.wishitem_single;
         String[] from = new String[] {
-                ItemDBManager.KEY_ID,
                 ItemDBManager.KEY_PHOTO_URL,
                 ItemDBManager.KEY_NAME,
                 ItemDBManager.KEY_PRICE,
@@ -443,7 +418,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                 ItemDBManager.KEY_COMPLETE};
 
         int[] to = new int[] {
-                R.id.txtItemID,
                 R.id.imgPhoto,
                 R.id.txtName,
                 R.id.txtPrice,
@@ -1236,18 +1210,11 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        // find which item in the list view has been clicked
-        // and get its _id in database
-        long item_id = getDBItemID(view);
-        if (item_id == -1) {
-            return;
-        }
-
         // Create an intent to show the item detail.
         // Pass the item_id along so the next activity can use it to
         // retrieve the info. about the item from database
         Intent i = new Intent(WishList.this, WishItemDetail.class);
-        i.putExtra("item_id", item_id);
+        i.putExtra("item_id", id);
         i.putExtra("position", position);
         startActivityForResult(i, ITEM_DETAILS);
     }

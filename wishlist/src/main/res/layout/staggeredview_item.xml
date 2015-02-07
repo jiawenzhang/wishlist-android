@@ -41,11 +41,4 @@ android:descendantFocusability="blocksDescendants">
         android:textColor="@color/bodyText_dark_grey"/>
 <!--    android:gravity="center"/> -->
     <!--android:visibility="gone"/> -->
-
-    <TextView android:id="@+id/staggered_id"
-        android:visibility="gone"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
-
 </LinearLayout>
