@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -95,6 +96,17 @@ public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
                 else {
                     viewPrice.setVisibility(View.GONE);
                 }
+            }
+            else if (columnIndex == nCompleteIndex) {
+                ImageView viewComplete = (ImageView) view;
+                int complete = cursor.getInt(columnIndex);
+                if (complete == 1) {
+                    viewComplete.setVisibility(View.VISIBLE);
+                }
+                else {
+                    viewComplete.setVisibility(View.GONE);
+                }
+                return true;
             }
             return true;
         }

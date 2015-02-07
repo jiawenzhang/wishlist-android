@@ -378,12 +378,14 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         String[] from = new String[]{
                 ItemDBManager.KEY_FULLSIZE_PHOTO_PATH,
                 ItemDBManager.KEY_NAME,
-                ItemDBManager.KEY_PRICE};
+                ItemDBManager.KEY_PRICE,
+                ItemDBManager.KEY_COMPLETE};
 
         int[] to = new int[]{
                 R.id.staggered_image,
                 R.id.staggered_name,
-                R.id.staggered_price};
+                R.id.staggered_price,
+                R.id.staggered_checkmark_complete};
 
         _wishItemStaggeredAdapterCursor = new WishItemStaggeredCursorAdapter(this,
                 R.layout.staggeredview_item, _wishItemCursor, from, to);
@@ -669,16 +671,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                         .build());
             }
 			wish_item.save();
-			if (_viewOption.equals("list")) {
-				//we only need to update the view if it is list view, as the check mark will be updated
-				//in grid view, we don't have the checkmark, so no need to update
-				updateView();
-			}
-            else if(_viewOption.equals("grid") && !_statusOption.equals("all")) {
-                //there is a problem of updating the grid view while maintaining its scroll position
-                //so we only update it if it is showing only completed or in progress wishes
-                updateView();
-            }
+			updateView();
 		}
         else if (itemId == R.id.TAG) {
             Intent i = new Intent(WishList.this, AddTag.class);
