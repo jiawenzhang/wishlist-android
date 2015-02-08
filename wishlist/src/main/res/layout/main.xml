@@ -40,6 +40,9 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:fadingEdge="none"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="8dp"
+                android:padding = "8dp"
                 android:background="@color/bodyBackground_light_grey"
                 />
             <!--  android:cacheColorHint="#00000000" -->

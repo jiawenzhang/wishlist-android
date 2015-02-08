@@ -1,6 +1,8 @@
 package com.wish.wishlist.util;
+import java.io.File;
 import java.text.DecimalFormat;
 
+import com.squareup.picasso.Picasso;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.model.WishItem;
 
@@ -8,18 +10,12 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.util.Log;
 
 public class WishListItemCursorAdapter extends SimpleCursorAdapter {
-	static final String TAG = "WishList";
 	public WishListItemCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to) {
 		super(context, layout, c, from, to);
@@ -54,65 +50,25 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 
 		@Override
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			//int nIdIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_ID);
-			//long id = cursor.getLong(nIdIndex);
-			//WishItem item = WishItemManager.getInstance(_ctx).retrieveItembyId(id);
-
-			int nImageIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_PHOTO_URL);
-//			int nDateIndex = cursor
-//					.getColumnIndexOrThrow(ItemDBManager.KEY_DATE_TIME);
+            int nImageIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_FULLSIZE_PHOTO_PATH);
+//			int nDateIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_DATE_TIME);
 			int nPriceIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_PRICE);
-			
 			int nStoreNameIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_STORENAME);
-
 			int nAddIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_ADDRESS);
-
 			int nCompleteIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_COMPLETE);
 			
 			// set the photo to the image view
 			if (columnIndex == nImageIndex) {
-				Bitmap bitmap = null;
-				
-				//get the ImageView in which the photo should be displayed
-				ImageView photoView = (ImageView) view;
-				photoView.setLayoutParams(new LinearLayout.LayoutParams(_photoWidth, _photoWidth));
-				photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-				// read in the picture string from db
-				// the string could be a resource id or a uri from content provider
-				String pic_str = cursor.getString(columnIndex);
-				//String pic_str = item.getPicStr();
-				//check if pic_str is null, which user added this item without taking a pic.
-				if (pic_str == null) {
-					//do nothing
-					return true;
-				}
-				
-				// check if pic_str is a resId or a uri
-				try {
-					//if it's a resID, the following decodeResource will not 
-					//throw exception (this need to be changed for performance)
-					int picResId = Integer.valueOf(pic_str, 16).intValue();
-					Log.d(TAG, pic_str);
-					bitmap = BitmapFactory.decodeResource(view.getContext().getResources(), picResId);
-				} catch (NumberFormatException e) {
-					// Not a resId, so it must be a content provider uri
-					// thus set image from uri (not a photo taken by cameara, but
-					// a photo we manually added to the drawable folder
-					Uri pic_uri = Uri.parse(pic_str);
-					photoView.setImageURI(pic_uri);
-					return true;
-//					
-//					picUrl = Integer.toHexString(R.drawable.mini_cooper);
-//					bitmap = BitmapFactory.decodeResource(view.getContext()
-//							.getResources(), R.drawable.mini_cooper);
-				}
+                ImageView imageView = (ImageView) view;
+                String photo_path = cursor.getString(columnIndex);
+                if (photo_path == null) {
+                    return true;
+                }
 
-				// exception is not thrown, so it is resID.
-				// set the image decoded from resID
-				photoView.setImageBitmap(bitmap);
+                Picasso.with(view.getContext()).load(new File(photo_path)).fit().centerCrop().into(imageView);
 
-				return true;
+                return true;
 			}
 
 //			// set date and time to the text view in appropriate format

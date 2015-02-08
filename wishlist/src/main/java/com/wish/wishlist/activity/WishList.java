@@ -413,7 +413,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
     private void updateListView() {
         int resID = R.layout.wishitem_single;
         String[] from = new String[] {
-                ItemDBManager.KEY_PHOTO_URL,
+                ItemDBManager.KEY_FULLSIZE_PHOTO_PATH,
                 ItemDBManager.KEY_NAME,
                 ItemDBManager.KEY_PRICE,
                 ItemDBManager.KEY_STORENAME,
