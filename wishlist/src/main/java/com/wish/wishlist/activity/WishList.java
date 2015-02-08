@@ -395,6 +395,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
         _staggeredView.setAdapter(_wishItemStaggeredAdapterCursor);
         _wishItemStaggeredAdapterCursor.notifyDataSetChanged();
+
     }
 
 	private void updateGridView() {
@@ -771,6 +772,12 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
 						dialog.dismiss();
 						populateItems(null, _where);
+
+                    // This is a HACK to fix the bug:
+                    // If we have scrolled to the middle of the staggered view, and then filter wish by completed,
+                    // the items will be positioned incorrectly. Calling resetToTop() will somehow refresh the
+                    // the view and layout the items correctly.
+                    _staggeredView.resetToTop();
 					}
 			});
 
