@@ -5,6 +5,8 @@
     android:layout_height="wrap_content"
     android:foreground="@drawable/wishlist_yellow_list_selector_holo_light">
 
+    <!-- the FrameLayout is to have the press state of the item-->
+
 <LinearLayout
 xmlns:android="http://schemas.android.com/apk/res/android"
 android:orientation="vertical"
