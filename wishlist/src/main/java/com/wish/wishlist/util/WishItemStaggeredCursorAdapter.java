@@ -2,7 +2,6 @@ package com.wish.wishlist.util;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.util.Log;
@@ -15,9 +14,11 @@ import android.widget.TextView;
 
 import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.etsy.android.grid.util.DynamicHeightTextView;
+import com.squareup.picasso.Picasso;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.model.WishItem;
 
+import java.io.File;
 import java.text.DecimalFormat;
 
 
@@ -72,9 +73,7 @@ public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
                 int width = size.x / 2;
                 int height = (int) (width * ratio);
 
-                Bitmap bitmap = ImageManager.getInstance().decodeSampledBitmapFromFile(photo_path, width, height, true);
-
-                imageView.setImageBitmap(bitmap);
+                Picasso.with(view.getContext()).load(new File(photo_path)).resize(width, height).into(imageView);
                 imageView.setHeightRatio(ratio);
             }
             else if (columnIndex == nNameIndex) {
