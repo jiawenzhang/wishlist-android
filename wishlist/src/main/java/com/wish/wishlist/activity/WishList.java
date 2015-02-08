@@ -64,148 +64,148 @@ import com.etsy.android.grid.StaggeredGridView;
  * view and providing access to functions of manipulating items such as adding,
  * deleting and editing items, sorting items, searching items, viewing item
  * detailed info. and etc.
- * 
+ *
  * Item display is via binding the list view or grid view to the Item table in
  * the database using WishListItemCursorAdapter
- * 
+ *
  * switching between list and grid view is realized using viewflipper
- * 
+ *
  * sorting items is via "SELECT ... ORDER BY" query to the database
- * 
+ *
  */
 @SuppressLint("NewApi")
 //public class WishList extends Activity {
 public class WishList extends Activity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, AdapterView.OnItemLongClickListener {
-	static final private int DIALOG_MAIN = 0;
-	static final private int DIALOG_FILTER = 1;
-	static final private int DIALOG_SORT = 2;
-	static final private int POST_ITEM = 3;
+    static final private int DIALOG_MAIN = 0;
+    static final private int DIALOG_FILTER = 1;
+    static final private int DIALOG_SORT = 2;
+    static final private int POST_ITEM = 3;
 
-	private static final String SELECTED_INDEX_KEY = "SELECTED_INDEX_KEY";
-	private static final String SORT_BY_KEY = "SORT_BY_KEY";
-	private static final String PREF_VIEW_OPTION = "viewOption";
-	private static final String PREF_FILTER_OPTION = "filterOption";
+    private static final String SELECTED_INDEX_KEY = "SELECTED_INDEX_KEY";
+    private static final String SORT_BY_KEY = "SORT_BY_KEY";
+    private static final String PREF_VIEW_OPTION = "viewOption";
+    private static final String PREF_FILTER_OPTION = "filterOption";
     private static final String PREF_TAG_OPTION = "tagOption";
-	private static final String PREF_SORT_OPTION = "sortOption";
+    private static final String PREF_SORT_OPTION = "sortOption";
 
-	private ItemsCursor.SortBy SORT_BY = ItemsCursor.SortBy.item_name;
-	private Map<String,String> _where = new HashMap<String, String>();
-	private String _nameQuery = null;
-	public static final String LOG_TAG = "WishList";
+    private ItemsCursor.SortBy SORT_BY = ItemsCursor.SortBy.item_name;
+    private Map<String,String> _where = new HashMap<String, String>();
+    private String _nameQuery = null;
+    public static final String LOG_TAG = "WishList";
 
-	private static final int EDIT_ITEM = 0;
-	private static final int ADD_ITEM = 1;
+    private static final int EDIT_ITEM = 0;
+    private static final int ADD_ITEM = 1;
     private static final int FIND_TAG = 2;
     private static final int ADD_TAG = 3;
     private static final int ITEM_DETAILS = 4;
     private static final int TAKE_PICTURE = 5;
 
-	private String _viewOption = "list";
-	private String _statusOption = "all";
+    private String _viewOption = "list";
+    private String _statusOption = "all";
     private String _tagOption = null;
-	private String _sortOption = ItemsCursor.SortBy.item_name.toString();
+    private String _sortOption = ItemsCursor.SortBy.item_name.toString();
 
     private String _fullsizePhotoPath = null;
     private String _newfullsizePhotoPath = null;
 
-	private ViewFlipper _viewFlipper;
-	private ListView _listView;
-	private GridView _gridView;
+    private ViewFlipper _viewFlipper;
+    private ListView _listView;
+    private GridView _gridView;
     private StaggeredGridView _staggeredView;
-	private Button _addNew;
-	private ImageButton _backImageButton;
-	private ImageButton _viewImageButton;
-	private ImageButton _searchImageButton;
+    private Button _addNew;
+    private ImageButton _backImageButton;
+    private ImageButton _viewImageButton;
+    private ImageButton _searchImageButton;
     private MenuItem _menuSearch;
 
     private Menu _menu;
 
-	private ItemsCursor _wishItemCursor;
-	private WishListItemCursorAdapter _wishListItemAdapterCursor;
+    private ItemsCursor _wishItemCursor;
+    private WishListItemCursorAdapter _wishListItemAdapterCursor;
     private WishItemStaggeredCursorAdapter _wishItemStaggeredAdapterCursor;
 
-	private ItemDBManager _itemDBManager;
+    private ItemDBManager _itemDBManager;
     private ArrayList<Long> _itemIds = new ArrayList<Long>();
-	
-	private long _selectedItem_id;
+
+    private long _selectedItem_id;
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
 
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         SharedPreferences pref = this.getPreferences(MODE_PRIVATE);
-		_viewOption = pref.getString(PREF_VIEW_OPTION, "list");
+        _viewOption = pref.getString(PREF_VIEW_OPTION, "list");
         _statusOption = pref.getString(PREF_FILTER_OPTION, "all");
 
-		if (_statusOption.equals("all")) {
-			_where.clear();
-		}
-		else if(_statusOption.equals("completed")) {
-			_where.put("complete", "1");
-		}
-		else if(_statusOption.equals("in_progress")) {
-			_where.put("complete", "0");
-		}
+        if (_statusOption.equals("all")) {
+            _where.clear();
+        }
+        else if(_statusOption.equals("completed")) {
+            _where.put("complete", "1");
+        }
+        else if(_statusOption.equals("in_progress")) {
+            _where.put("complete", "0");
+        }
 
-		_sortOption = pref.getString(PREF_SORT_OPTION, ItemsCursor.SortBy.item_name.toString());
+        _sortOption = pref.getString(PREF_SORT_OPTION, ItemsCursor.SortBy.item_name.toString());
 
         _tagOption = pref.getString(PREF_TAG_OPTION, null);
         if (_tagOption != null) {
             _itemIds = TagItemDBManager.instance(this).ItemIds_by_tag(_tagOption);
         }
 
-		// Get the intent, verify the action and get the query
-		Intent intent = getIntent();
-		setContentView(R.layout.main);
+        // Get the intent, verify the action and get the query
+        Intent intent = getIntent();
+        setContentView(R.layout.main);
 
-		setUpActionBar();
+        setUpActionBar();
         setupNavigationDrawer();
 
 
-		// get the resources by their IDs
-		_viewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
+        // get the resources by their IDs
+        _viewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
         _staggeredView = (StaggeredGridView) findViewById(R.id.staggered_view);
         _staggeredView.setOnScrollListener(this);
         _staggeredView.setOnItemClickListener(this);
         _staggeredView.setOnItemLongClickListener(this);
 
-		_listView = (ListView) findViewById(R.id.myListView);
+        _listView = (ListView) findViewById(R.id.myListView);
         _listView.setOnItemClickListener(this);
         _listView.setOnItemLongClickListener(this);
 
-		_gridView = (GridView) findViewById(R.id.myGridView);
+        _gridView = (GridView) findViewById(R.id.myGridView);
         _gridView.setNumColumns(3);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             _gridView.setNumColumns(4);
         }
         _gridView.setOnItemClickListener(this);
 
-		_addNew = (Button) findViewById(R.id.addNewWishButton);
-		_addNew.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Intent editItem = new Intent(WishList.this, EditItem.class);
-				startActivityForResult(editItem, ADD_ITEM);
-			}
-		});
+        _addNew = (Button) findViewById(R.id.addNewWishButton);
+        _addNew.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent editItem = new Intent(WishList.this, EditItem.class);
+                startActivityForResult(editItem, ADD_ITEM);
+            }
+        });
 
-		// register context menu for both listview and gridview
-		registerForContextMenu(_listView);
-		registerForContextMenu(_gridView);
+        // register context menu for both listview and gridview
+        registerForContextMenu(_listView);
+        registerForContextMenu(_gridView);
         registerForContextMenu(_staggeredView);
 
 
-		// open the database for operations of Item table
-		_itemDBManager = new ItemDBManager(this);
-		_itemDBManager.open();
+        // open the database for operations of Item table
+        _itemDBManager = new ItemDBManager(this);
+        _itemDBManager.open();
 
         handleIntent(getIntent());
 
-		// set the spinner for switching between list and grid views
+        // set the spinner for switching between list and grid views
 //		ArrayAdapter<CharSequence> adapter = ArrayAdapter
 //				.createFromResource(this, R.array.views_array,
 //						android.R.layout.simple_spinner_item);
@@ -290,73 +290,73 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         }
     }
 
-	@Override
-	public boolean onSearchRequested() {
-		return super.onSearchRequested();
-	}
+    @Override
+    public boolean onSearchRequested() {
+        return super.onSearchRequested();
+    }
 
-	/***
-	 * initial display of items in both list and grid view, called when the
-	 * activity is created
-	 *
-	 * @param sortBy
-	 */
-	private void initializeView() {
-		_wishItemCursor = _itemDBManager.getItems(_sortOption, _where, _itemIds);
-		if (_itemDBManager.getItemsCount() == 0) {
+    /***
+     * initial display of items in both list and grid view, called when the
+     * activity is created
+     *
+     * @param sortBy
+     */
+    private void initializeView() {
+        _wishItemCursor = _itemDBManager.getItems(_sortOption, _where, _itemIds);
+        if (_itemDBManager.getItemsCount() == 0) {
             // make a new wish button
             _viewFlipper.setDisplayedChild(3);
             return;
-		}
+        }
         if (_wishItemCursor.getCount() == 0 && (!_where.isEmpty() || !_itemIds.isEmpty() || _nameQuery != null)) {
             // no matching wishes text
             _viewFlipper.setDisplayedChild(4);
             return;
         }
 
-		if (_viewOption.equals("list")) {
-			updateListView();
-			_viewFlipper.setDisplayedChild(1);
-		}
-		else {
-			//updateGridView();
-			//_viewFlipper.setDisplayedChild(2);
+        if (_viewOption.equals("list")) {
+            updateListView();
+            _viewFlipper.setDisplayedChild(1);
+        }
+        else {
+            //updateGridView();
+            //_viewFlipper.setDisplayedChild(2);
             updateStaggeredView();
             _viewFlipper.setDisplayedChild(0);
-		}
-	}
+        }
+    }
 
-	/***
-	 * display the items in either list or grid view sorted by "sortBy"
-	 *
-	 * @param sortBy
-	 * @param searchName
-	 *            : the item name to match, null for all items
-	 */
-	private void populateItems(String searchName, Map<String,String> where) {
-		if (searchName == null) {
-			// Get all of the rows from the Item table
-			// Keep track of the TextViews added in list lstTable
-			// _wishItemCursor = wishListDB.getItems(sortBy);
-			_wishItemCursor = _itemDBManager.getItems(_sortOption, where, _itemIds);
-		} else {
-			_wishItemCursor = _itemDBManager.searchItems(searchName, _sortOption);
-		}
+    /***
+     * display the items in either list or grid view sorted by "sortBy"
+     *
+     * @param sortBy
+     * @param searchName
+     *            : the item name to match, null for all items
+     */
+    private void populateItems(String searchName, Map<String,String> where) {
+        if (searchName == null) {
+            // Get all of the rows from the Item table
+            // Keep track of the TextViews added in list lstTable
+            // _wishItemCursor = wishListDB.getItems(sortBy);
+            _wishItemCursor = _itemDBManager.getItems(_sortOption, where, _itemIds);
+        } else {
+            _wishItemCursor = _itemDBManager.searchItems(searchName, _sortOption);
+        }
 
-		updateView();
+        updateView();
         updateDrawerList();
         updateActionBarTitle();
-	}
+    }
 
-	/***
-	 * update either list view or grid view according view option
-	 */
-	private void updateView() {
-		if (_itemDBManager.getItemsCount() == 0) {
+    /***
+     * update either list view or grid view according view option
+     */
+    private void updateView() {
+        if (_itemDBManager.getItemsCount() == 0) {
             // make a new wish button
             _viewFlipper.setDisplayedChild(2);
             return;
-		}
+        }
 
         _wishItemCursor.requery();
         if (_wishItemCursor.getCount() == 0 && (!_where.isEmpty() || !_itemIds.isEmpty() || _nameQuery != null)) {
@@ -364,18 +364,18 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
             _viewFlipper.setDisplayedChild(3);
             return;
         }
-		if (_viewOption.equals("list")) {
-			updateListView();
+        if (_viewOption.equals("list")) {
+            updateListView();
             _viewFlipper.setDisplayedChild(1);
-		}
+        }
 
-		else if (_viewOption.equals("grid")) {
-			//updateGridView();
-			//_viewFlipper.setDisplayedChild(1);
+        else if (_viewOption.equals("grid")) {
+            //updateGridView();
+            //_viewFlipper.setDisplayedChild(1);
             updateStaggeredView();
             _viewFlipper.setDisplayedChild(0);
-		}
-	}
+        }
+    }
 
     private void updateStaggeredView() {
         String[] from = new String[]{
@@ -398,7 +398,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
     }
 
-	private void updateGridView() {
+    private void updateGridView() {
         int resID = R.layout.wishitem_photo;
         String[] from = new String[]{ItemDBManager.KEY_PHOTO_URL};
 
@@ -408,9 +408,9 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
         _gridView.setAdapter(_wishListItemAdapterCursor);
         _wishListItemAdapterCursor.notifyDataSetChanged();
-	}
+    }
 
-	private void updateListView() {
+    private void updateListView() {
         int resID = R.layout.wishitem_single;
         String[] from = new String[] {
                 ItemDBManager.KEY_PHOTO_URL,
@@ -441,31 +441,31 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
         // restore
         _listView.setSelectionFromTop(index, top);
-	}
+    }
 
-	private void deleteItem(long item_id){
-		_selectedItem_id = item_id;
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Delete the wish?");
-		builder.setCancelable(false);
-		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						_itemDBManager.deleteItem(_selectedItem_id);
-						updateView();
-					}
-				});
-		builder.setNegativeButton("No",
-						new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
+    private void deleteItem(long item_id){
+        _selectedItem_id = item_id;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Delete the wish?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                _itemDBManager.deleteItem(_selectedItem_id);
+                updateView();
+            }
+        });
+        builder.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
 
         AlertDialog dialog;
-		dialog = builder.create();
+        dialog = builder.create();
         dialog.setOnShowListener(new DialogOnShowListener(this));
         dialog.show();
-	}
+    }
 
     private void dispatchTakePictureIntent() {
         CameraManager c = new CameraManager();
@@ -473,23 +473,23 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
     }
 
-	@SuppressLint("NewApi")
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_main, menu);
+    @SuppressLint("NewApi")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
         _menu = menu;
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			//search view is part the action bar in honeycomeb and up
-			//Get the SearchView and set the searchable configuration
-			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            //search view is part the action bar in honeycomeb and up
+            //Get the SearchView and set the searchable configuration
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             _menuSearch = menu.findItem(R.id.menu_search);
-			SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-			// Assumes current activity is the searchable activity
-			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-			searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+            SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+            // Assumes current activity is the searchable activity
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 
             // Style the searchView with yellow accent color
             int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
@@ -502,104 +502,104 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
             ImageView closeButton= (ImageView) searchView.findViewById(closeButtonId);
             closeButton.setBackgroundResource(R.drawable.selectable_background_wishlist);
         }
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
 
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_item_context, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_item_context, menu);
 
-		WishItem wish_item = WishItemManager.getInstance(this).retrieveItembyId(_selectedItem_id);
-		int complete = wish_item.getComplete();
-		MenuItem mi = menu.findItem(R.id.COMPLETE);
-		if (complete == 1) {
-			mi.setTitle("Mark as incomplete");
-		}
-		else {
-			mi.setTitle("Mark as complete");
-		}
+        WishItem wish_item = WishItemManager.getInstance(this).retrieveItembyId(_selectedItem_id);
+        int complete = wish_item.getComplete();
+        MenuItem mi = menu.findItem(R.id.COMPLETE);
+        if (complete == 1) {
+            mi.setTitle("Mark as incomplete");
+        }
+        else {
+            mi.setTitle("Mark as complete");
+        }
 
-		return;
-	}
+        return;
+    }
 
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		super.onPrepareOptionsMenu(menu);
-		return true;
-	}
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-		super.onOptionsItemSelected(item);
+        super.onOptionsItemSelected(item);
 
-		long itemId = item.getItemId();
-		if (itemId == R.id.menu_search) {
-			//do nothing here, the search view is already configured in onCreateOptionsMenu()
-			return true;
-		}
-		else if (itemId == R.id.menu_add) {
-			// let user generate a wish item
+        long itemId = item.getItemId();
+        if (itemId == R.id.menu_search) {
+            //do nothing here, the search view is already configured in onCreateOptionsMenu()
+            return true;
+        }
+        else if (itemId == R.id.menu_add) {
+            // let user generate a wish item
             dispatchTakePictureIntent();
-			//Intent editItem = new Intent(this, EditItem.class);
-			//startActivityForResult(editItem, ADD_ITEM);
-			return true;
-		}
-		//else if (itemId == R.id.menu_post) {
-		//	Intent snsIntent = new Intent(this, WishItemPostToSNS.class);
-		//	startActivityForResult(snsIntent, POST_ITEM);
-		//	return true;
-		//}
+            //Intent editItem = new Intent(this, EditItem.class);
+            //startActivityForResult(editItem, ADD_ITEM);
+            return true;
+        }
+        //else if (itemId == R.id.menu_post) {
+        //	Intent snsIntent = new Intent(this, WishItemPostToSNS.class);
+        //	startActivityForResult(snsIntent, POST_ITEM);
+        //	return true;
+        //}
 
 //		else if (itemId == R.id.menu_scan) {
 //			IntentIntegrator.initiateScan(this);
 //			return true;
 //		}
 
-		else if(itemId == R.id.menu_sort) {
-				showDialog(DIALOG_SORT);
-		}
+        else if(itemId == R.id.menu_sort) {
+            showDialog(DIALOG_SORT);
+        }
 
-		else if (itemId == R.id.menu_status) {
-				showDialog(DIALOG_FILTER);
-		}
+        else if (itemId == R.id.menu_status) {
+            showDialog(DIALOG_FILTER);
+        }
 
         else if (itemId == R.id.menu_tags) {
             Intent i = new Intent(WishList.this, FindTag.class);
             startActivityForResult(i, FIND_TAG);
         }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		super.onContextItemSelected(item);
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        super.onContextItemSelected(item);
 
-		long itemId = item.getItemId();
-		if (itemId == R.id.REMOVE) {
-			deleteItem(_selectedItem_id);
-			return true;
-		}
-		else if (itemId == R.id.EDIT) {
-			Intent editItem = new Intent(this, EditItem.class);
-			editItem.putExtra("item_id", _selectedItem_id);
-			startActivityForResult(editItem, EDIT_ITEM);
-			return true;
-		}
-	//	else if (itemId == R.id.POST): {
-	//		Intent snsIntent = new Intent(this, WishItemPostToSNS.class);
-	//		snsIntent.putExtra("wishItem", "test");
-	//		startActivityForResult(snsIntent, POST_ITEM);
-	//		return true;
-	//	}
-		else if (itemId == R.id.MARK) {
+        long itemId = item.getItemId();
+        if (itemId == R.id.REMOVE) {
+            deleteItem(_selectedItem_id);
+            return true;
+        }
+        else if (itemId == R.id.EDIT) {
+            Intent editItem = new Intent(this, EditItem.class);
+            editItem.putExtra("item_id", _selectedItem_id);
+            startActivityForResult(editItem, EDIT_ITEM);
+            return true;
+        }
+        //	else if (itemId == R.id.POST): {
+        //		Intent snsIntent = new Intent(this, WishItemPostToSNS.class);
+        //		snsIntent.putExtra("wishItem", "test");
+        //		startActivityForResult(snsIntent, POST_ITEM);
+        //		return true;
+        //	}
+        else if (itemId == R.id.MARK) {
 //			String address = _itemDBManager.getItemAddress(_selectedItem_id);
 //			if (address.equals("unknown")||address.equals("")){
 //				Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
@@ -607,49 +607,49 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 //			}
 //			else{
 
-				// get the latitude and longitude of the clicked item
-				double[] dLocation = new double[2];
-				dLocation = _itemDBManager.getItemLocation(_selectedItem_id);
+            // get the latitude and longitude of the clicked item
+            double[] dLocation = new double[2];
+            dLocation = _itemDBManager.getItemLocation(_selectedItem_id);
 
-				if (dLocation[0] == Double.MIN_VALUE && dLocation[1] == Double.MIN_VALUE) {
-					Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
-					toast.show();
-				}
-				else {
-					Intent mapIntent = new Intent(this, WishListMap.class);
-					mapIntent.putExtra("type", "markOne");
-					mapIntent.putExtra("latitude", dLocation[0]);
-					mapIntent.putExtra("longitude", dLocation[1]);
-					startActivity(mapIntent);
-				}
+            if (dLocation[0] == Double.MIN_VALUE && dLocation[1] == Double.MIN_VALUE) {
+                Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+            else {
+                Intent mapIntent = new Intent(this, WishListMap.class);
+                mapIntent.putExtra("type", "markOne");
+                mapIntent.putExtra("latitude", dLocation[0]);
+                mapIntent.putExtra("longitude", dLocation[1]);
+                startActivity(mapIntent);
+            }
 //			}
-			return true;
-		}
+            return true;
+        }
 
-		else if (itemId == R.id.SHARE) {
-			//Display display = getWindowManager().getDefaultDisplay();
-			//int width = display.getWidth();  // deprecated
-			//int height = display.getHeight();  // deprecated
-			ShareHelper share = new ShareHelper(this, _selectedItem_id);
-			share.share();
-			//Intent sendIntent = new Intent();
-			//sendIntent.setAction(Intent.ACTION_SEND);
-			//sendIntent.putExtra(Intent.EXTRA_TEXT, message);
-			//sendIntent.putExtra(Intent.EXTRA_STREAM, wish_item.getFullsizePicUri());
-			//sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
-			//sendIntent.setType("text/plain");
-			//sendIntent.setType("*/*");
-			//List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(sendIntent, 0);
-			//startActivity(sendIntent);
-			//Intent chooserIntent = Intent.createChooser(sendIntent, "Share using");
-			//List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(chooserIntent, 0);
-			//for (ResolveInfo info : resInfo) {
-				//Log.d(LOG_TAG, "packageName " + info.activityInfo.packageName.toLowerCase());
-				//Log.d(LOG_TAG, "name        " + info.activityInfo.name.toLowerCase());
-			//}
-			//startActivity(Intent.createChooser(sendIntent, "Share using"));
-			return true;
-		}
+        else if (itemId == R.id.SHARE) {
+            //Display display = getWindowManager().getDefaultDisplay();
+            //int width = display.getWidth();  // deprecated
+            //int height = display.getHeight();  // deprecated
+            ShareHelper share = new ShareHelper(this, _selectedItem_id);
+            share.share();
+            //Intent sendIntent = new Intent();
+            //sendIntent.setAction(Intent.ACTION_SEND);
+            //sendIntent.putExtra(Intent.EXTRA_TEXT, message);
+            //sendIntent.putExtra(Intent.EXTRA_STREAM, wish_item.getFullsizePicUri());
+            //sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+            //sendIntent.setType("text/plain");
+            //sendIntent.setType("*/*");
+            //List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(sendIntent, 0);
+            //startActivity(sendIntent);
+            //Intent chooserIntent = Intent.createChooser(sendIntent, "Share using");
+            //List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(chooserIntent, 0);
+            //for (ResolveInfo info : resInfo) {
+            //Log.d(LOG_TAG, "packageName " + info.activityInfo.packageName.toLowerCase());
+            //Log.d(LOG_TAG, "name        " + info.activityInfo.name.toLowerCase());
+            //}
+            //startActivity(Intent.createChooser(sendIntent, "Share using"));
+            return true;
+        }
 
         else if (itemId == R.id.COMPLETE) {
             WishItem wish_item = WishItemManager.getInstance(this).retrieveItembyId(_selectedItem_id);
@@ -671,168 +671,168 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                         .setLabel("Complete")
                         .build());
             }
-			wish_item.save();
-			updateView();
-		}
+            wish_item.save();
+            updateView();
+        }
         else if (itemId == R.id.TAG) {
             Intent i = new Intent(WishList.this, AddTag.class);
             i.putExtra(AddTag.ITEM_ID, _selectedItem_id);
             startActivityForResult(i, ADD_TAG);
         }
 
-		return false; }
+        return false; }
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		AlertDialog dialog;
-		switch (id) {
-		case DIALOG_MAIN:
-			dialog = null;
-			break;
-		case DIALOG_SORT:
-			final String BY_NAME = "By name";
-			final String BY_TIME = "By time";
-			final String BY_PRICE = "By price";
-			final CharSequence[] sortOption = {BY_NAME, BY_TIME, BY_PRICE};
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        AlertDialog dialog;
+        switch (id) {
+            case DIALOG_MAIN:
+                dialog = null;
+                break;
+            case DIALOG_SORT:
+                final String BY_NAME = "By name";
+                final String BY_TIME = "By time";
+                final String BY_PRICE = "By price";
+                final CharSequence[] sortOption = {BY_NAME, BY_TIME, BY_PRICE};
 
-			AlertDialog.Builder sortBuilder = new AlertDialog.Builder(WishList.this);
-			sortBuilder.setTitle("Sort wishes");
+                AlertDialog.Builder sortBuilder = new AlertDialog.Builder(WishList.this);
+                sortBuilder.setTitle("Sort wishes");
 
-			int j = 0;// 0 is by name
-			if (_sortOption.equals(ItemsCursor.SortBy.date_time.toString())) {
-				j = 1;
-			}
-			else if (_sortOption.equals(ItemsCursor.SortBy.price.toString())) {
-				j = 2;
-			}
-			sortBuilder.setSingleChoiceItems(sortOption, j, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int item) {
-						if (sortOption[item].equals(BY_NAME)) {
-							_sortOption = ItemsCursor.SortBy.item_name.toString();
-						}
-						else if (sortOption[item].equals(BY_TIME)) {
-							_sortOption = ItemsCursor.SortBy.date_time.toString();
-						}
-						else {
-							_sortOption = ItemsCursor.SortBy.price.toString();
-						}
+                int j = 0;// 0 is by name
+                if (_sortOption.equals(ItemsCursor.SortBy.date_time.toString())) {
+                    j = 1;
+                }
+                else if (_sortOption.equals(ItemsCursor.SortBy.price.toString())) {
+                    j = 2;
+                }
+                sortBuilder.setSingleChoiceItems(sortOption, j, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        if (sortOption[item].equals(BY_NAME)) {
+                            _sortOption = ItemsCursor.SortBy.item_name.toString();
+                        }
+                        else if (sortOption[item].equals(BY_TIME)) {
+                            _sortOption = ItemsCursor.SortBy.date_time.toString();
+                        }
+                        else {
+                            _sortOption = ItemsCursor.SortBy.price.toString();
+                        }
 
-						SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
-						SharedPreferences.Editor editor = pref.edit();
-						editor.putString(PREF_SORT_OPTION, _sortOption);
-						editor.commit();
+                        SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putString(PREF_SORT_OPTION, _sortOption);
+                        editor.commit();
 
-						dialog.dismiss();
+                        dialog.dismiss();
 
-						populateItems(_nameQuery, _where);
-					}
-			});
+                        populateItems(_nameQuery, _where);
+                    }
+                });
 
-			dialog = sortBuilder.create();
-            dialog.setOnShowListener(new DialogOnShowListener(this));
-			break;
+                dialog = sortBuilder.create();
+                dialog.setOnShowListener(new DialogOnShowListener(this));
+                break;
 
-		case DIALOG_FILTER:
-			final String BY_ALL = "All";
-			final String BY_COMPLETED = "Completed";
-			final String BY_INPROGRESS = "In progress";
-			final CharSequence[] options = {BY_ALL, BY_COMPLETED, BY_INPROGRESS};
+            case DIALOG_FILTER:
+                final String BY_ALL = "All";
+                final String BY_COMPLETED = "Completed";
+                final String BY_INPROGRESS = "In progress";
+                final CharSequence[] options = {BY_ALL, BY_COMPLETED, BY_INPROGRESS};
 
-			AlertDialog.Builder optionBuilder = new AlertDialog.Builder(WishList.this);
-			optionBuilder.setTitle("Wish status");
+                AlertDialog.Builder optionBuilder = new AlertDialog.Builder(WishList.this);
+                optionBuilder.setTitle("Wish status");
 
-			int i = 0;
-			if (_statusOption.equals("completed")) {
-				i = 1;
-			}
-			else if (_statusOption.equals("in_progress")) {
-				i = 2;
-			}
-			optionBuilder.setSingleChoiceItems(options, i, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int item) {
+                int i = 0;
+                if (_statusOption.equals("completed")) {
+                    i = 1;
+                }
+                else if (_statusOption.equals("in_progress")) {
+                    i = 2;
+                }
+                optionBuilder.setSingleChoiceItems(options, i, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
 
-						if (options[item].equals(BY_ALL)) {
-							_where.clear();
-							_statusOption = "all";
-						}
+                        if (options[item].equals(BY_ALL)) {
+                            _where.clear();
+                            _statusOption = "all";
+                        }
 
-						else if (options[item].equals(BY_COMPLETED)) {
-							_where.put("complete", "1");
-							_statusOption = "completed";
-						}
-						else {
-							_where.put("complete", "0");
-							_statusOption = "in_progress";
-						}
+                        else if (options[item].equals(BY_COMPLETED)) {
+                            _where.put("complete", "1");
+                            _statusOption = "completed";
+                        }
+                        else {
+                            _where.put("complete", "0");
+                            _statusOption = "in_progress";
+                        }
 
-						SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
-						SharedPreferences.Editor editor = pref.edit();
-						editor.putString(PREF_FILTER_OPTION, _statusOption);
-						editor.commit();
+                        SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putString(PREF_FILTER_OPTION, _statusOption);
+                        editor.commit();
 
-						dialog.dismiss();
-						populateItems(null, _where);
+                        dialog.dismiss();
+                        populateItems(null, _where);
 
-                    // This is a HACK to fix the bug:
-                    // If we have scrolled to the middle of the staggered view, and then filter wish by completed,
-                    // the items will be positioned incorrectly. Calling resetToTop() will somehow refresh the
-                    // the view and layout the items correctly.
-                    _staggeredView.resetToTop();
-					}
-			});
+                        // This is a HACK to fix the bug:
+                        // If we have scrolled to the middle of the staggered view, and then filter wish by completed,
+                        // the items will be positioned incorrectly. Calling resetToTop() will somehow refresh the
+                        // the view and layout the items correctly.
+                        _staggeredView.resetToTop();
+                    }
+                });
 
-			dialog = optionBuilder.create();
-            dialog.setOnShowListener(new DialogOnShowListener(this));
-			break;
-		default:
-			dialog = null;
-		}
-		return dialog;
-	}
+                dialog = optionBuilder.create();
+                dialog.setOnShowListener(new DialogOnShowListener(this));
+                break;
+            default:
+                dialog = null;
+        }
+        return dialog;
+    }
 
-	@Override
-	protected void onPrepareDialog(int id, Dialog dialog) {
-		super.onPrepareDialog(id, dialog);
-	}
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        super.onPrepareDialog(id, dialog);
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle savedInstanceState) {
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
 
-		// save the position of the currently selected item in the list
-		if (_viewOption.equals("list")) {
-		    savedInstanceState.putInt(SELECTED_INDEX_KEY, _listView.getSelectedItemPosition());
-		}
-		else {
-	    	savedInstanceState.putInt(SELECTED_INDEX_KEY, _gridView.getSelectedItemPosition());
-		}
+        // save the position of the currently selected item in the list
+        if (_viewOption.equals("list")) {
+            savedInstanceState.putInt(SELECTED_INDEX_KEY, _listView.getSelectedItemPosition());
+        }
+        else {
+            savedInstanceState.putInt(SELECTED_INDEX_KEY, _gridView.getSelectedItemPosition());
+        }
         savedInstanceState.putString("newfullsizePhotoPath", _newfullsizePhotoPath);
         savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
-		super.onSaveInstanceState(savedInstanceState);
-	}
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		// restore the current selected item in the list
-		int pos = -1;
-		if (savedInstanceState != null) {
-			if (savedInstanceState.containsKey(SELECTED_INDEX_KEY)) {
-				pos = savedInstanceState.getInt(SELECTED_INDEX_KEY, -1);
-			}
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // restore the current selected item in the list
+        int pos = -1;
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(SELECTED_INDEX_KEY)) {
+                pos = savedInstanceState.getInt(SELECTED_INDEX_KEY, -1);
+            }
             _newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
             _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
-		}
+        }
 
         _listView.setSelection(pos);
         _gridView.setSelection(pos);
 
         updateView();
-	}
+    }
 
     private void updateItemIdsForTag() {
         // If the current wishlist is filtered by tag "T", and there is an item "A" in this list
@@ -846,14 +846,14 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         }
     }
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		_itemDBManager.close();
-	}
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        _itemDBManager.close();
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 //		if (scanResult != null) {
 //			Context context = getApplicationContext();
@@ -863,7 +863,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 //			toast.show();
 //		}
 
-		switch (requestCode) {
+        switch (requestCode) {
             case EDIT_ITEM: {
                 if (resultCode == Activity.RESULT_OK) {
                     updateItemIdsForTag();
@@ -946,11 +946,11 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                 break;
             }
         }
-	}
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
         // When we navigate to another activity and navigate back to the wishlist activity, the wishes could have been changed,
         // so we need to reload the list.
 
@@ -969,7 +969,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         populateItems(_nameQuery, _where);
         updateDrawerList();
         updateActionBarTitle();
-	}
+    }
 
     private Boolean goBack()
     {
@@ -1054,44 +1054,44 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         }
     }
 
-	private void setUpActionBar() {
-		// Make sure we're running on Honeycomb or higher to use ActionBar APIs
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			findViewById(R.id.listView_header).setVisibility(View.GONE);
+    private void setUpActionBar() {
+        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            findViewById(R.id.listView_header).setVisibility(View.GONE);
             getActionBar().setDisplayHomeAsUpEnabled(true);
             updateActionBarTitle();
-		}
-		else {
-			// we use the header instead of action bar for GingerBread and lower
-			findViewById(R.id.listView_header).findViewById(R.id.imageButton_back_logo).setVisibility(View.VISIBLE);
-			findViewById(R.id.listView_header).findViewById(R.id.imageButton_viewType).setVisibility(View.VISIBLE);
-			findViewById(R.id.listView_header).findViewById(R.id.imageButton_search).setVisibility(View.VISIBLE);
+        }
+        else {
+            // we use the header instead of action bar for GingerBread and lower
+            findViewById(R.id.listView_header).findViewById(R.id.imageButton_back_logo).setVisibility(View.VISIBLE);
+            findViewById(R.id.listView_header).findViewById(R.id.imageButton_viewType).setVisibility(View.VISIBLE);
+            findViewById(R.id.listView_header).findViewById(R.id.imageButton_search).setVisibility(View.VISIBLE);
 
-			_backImageButton = (ImageButton) findViewById(R.id.imageButton_back_logo);
-			_backImageButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					finish();
-				}
-			});
+            _backImageButton = (ImageButton) findViewById(R.id.imageButton_back_logo);
+            _backImageButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
 
-			_searchImageButton = (ImageButton) findViewById(R.id.imageButton_search);
-			_searchImageButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					onSearchRequested();
-				}
+            _searchImageButton = (ImageButton) findViewById(R.id.imageButton_search);
+            _searchImageButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onSearchRequested();
+                }
 
-			});
+            });
 
-			_viewImageButton = (ImageButton) findViewById(R.id.imageButton_viewType);
-			_viewImageButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-				}
-		});
-		}
-	}
+            _viewImageButton = (ImageButton) findViewById(R.id.imageButton_viewType);
+            _viewImageButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
+        }
+    }
 
     private void updateDrawerList() {
         ArrayList<ObjectDrawerItem> drawerItems = new ArrayList<ObjectDrawerItem>();
@@ -1198,14 +1198,14 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
     @Override
     public void onScrollStateChanged(final AbsListView view, final int scrollState) {
- //       Log.d("wishlist", "onScrollStateChanged:" + scrollState);
+        //       Log.d("wishlist", "onScrollStateChanged:" + scrollState);
     }
 
     @Override
     public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
-    //    Log.d("wishlist", "onScroll firstVisibleItem:" + firstVisibleItem +
-    //            " visibleItemCount:" + visibleItemCount +
-    //            " totalItemCount:" + totalItemCount);
+        //    Log.d("wishlist", "onScroll firstVisibleItem:" + firstVisibleItem +
+        //            " visibleItemCount:" + visibleItemCount +
+        //            " totalItemCount:" + totalItemCount);
     }
 
     @Override
@@ -1232,4 +1232,4 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         return true;
     }
 
-    }
+}
