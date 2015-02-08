@@ -55,8 +55,10 @@ public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
                 DynamicHeightImageView imageView = (DynamicHeightImageView) view;
                 String photo_path = cursor.getString(columnIndex);
                 if (photo_path == null) {
+                    imageView.setVisibility(View.GONE);
                     return true;
                 }
+                imageView.setVisibility(View.VISIBLE);
 
                 // decode the original image into one with width about half the screen width, keep the aspect ratio
                 // this will avoid loading the original image into memory, which could be very slow if the image is large.
