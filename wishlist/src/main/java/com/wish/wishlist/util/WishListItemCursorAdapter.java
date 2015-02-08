@@ -59,15 +59,14 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 			
 			// set the photo to the image view
 			if (columnIndex == nImageIndex) {
-
                 ImageView imageView = (ImageView) view;
                 String photo_path = cursor.getString(columnIndex);
                 if (photo_path == null) {
+                    imageView.setVisibility(View.GONE);
                     return true;
                 }
-
+                imageView.setVisibility(View.VISIBLE);
                 Picasso.with(view.getContext()).load(new File(photo_path)).fit().centerCrop().into(imageView);
-
                 return true;
 			}
 
@@ -118,9 +117,8 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 				else {
 					viewPrice.setVisibility(View.GONE);
 				}
-				return true;
+                return true;
 			}
-			
 			else if (columnIndex == nStoreNameIndex){
 				TextView viewStore = (TextView) view;
 			//	String storeName = item.getStoreName();
@@ -144,9 +142,8 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 				else {
 					viewStore.setVisibility(View.GONE);
 				}
-				return true;
+                return true;
 			}
-
 			else if (columnIndex == nAddIndex) {
 				TextView viewAddress = (TextView) view;
 			//	String address = item.getAddress();
@@ -172,9 +169,8 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 				else {
 					viewAddress.setVisibility(View.GONE);
 				}
-				return true;
+                return true;
 			}
-
 			else if (columnIndex == nCompleteIndex) {
 				ImageView viewComplete = (ImageView) view;
 				int complete = cursor.getInt(columnIndex);
@@ -182,11 +178,10 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 					viewComplete.setVisibility(View.VISIBLE);
 				}
 				else {
-					viewComplete.setVisibility(View.GONE);
+					viewComplete.setVisibility(View.INVISIBLE);
 				}
-				return true;
+                return true;
 			}
-		
 			return false;
 		}
 	}
