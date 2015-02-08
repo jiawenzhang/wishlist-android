@@ -170,18 +170,22 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 		// get the resources by their IDs
 		_viewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
         _staggeredView = (StaggeredGridView) findViewById(R.id.staggered_view);
+        _staggeredView.setOnScrollListener(this);
+        _staggeredView.setOnItemClickListener(this);
+        _staggeredView.setOnItemLongClickListener(this);
+
 		_listView = (ListView) findViewById(R.id.myListView);
+        _listView.setOnItemClickListener(this);
+        _listView.setOnItemLongClickListener(this);
+
 		_gridView = (GridView) findViewById(R.id.myGridView);
         _gridView.setNumColumns(3);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             _gridView.setNumColumns(4);
         }
+        _gridView.setOnItemClickListener(this);
+
 		_addNew = (Button) findViewById(R.id.addNewWishButton);
-		// mySearchText = (EditText) findViewById(R.id.mySearchText);
-
-		_listView.setOnItemClickListener(this);
-		_gridView.setOnItemClickListener(this);
-
 		_addNew.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent editItem = new Intent(WishList.this, EditItem.class);
@@ -194,7 +198,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 		registerForContextMenu(_gridView);
         registerForContextMenu(_staggeredView);
 
-        _listView.setOnItemLongClickListener(this);
 
 		// open the database for operations of Item table
 		_itemDBManager = new ItemDBManager(this);
@@ -392,9 +395,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
         _staggeredView.setAdapter(_wishItemStaggeredAdapterCursor);
         _wishItemStaggeredAdapterCursor.notifyDataSetChanged();
-        _staggeredView.setOnScrollListener(this);
-        _staggeredView.setOnItemClickListener(this);
-        _staggeredView.setOnItemLongClickListener(this);
     }
 
 	private void updateGridView() {
