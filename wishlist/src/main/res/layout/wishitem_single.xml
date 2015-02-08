@@ -22,7 +22,8 @@
 
 <!-- 	    android:layout_weight="1" -->
 
-	<LinearLayout 
+
+	<LinearLayout
 		android:layout_width="fill_parent"
         android:layout_height="fill_parent"
 		android:layout_weight="1"
@@ -37,16 +38,7 @@
 <!-- 			android:layout_weight="1" -->
 <!-- 			android:textSize="10sp" -->
 <!-- 			android:textColor="@color/notepad_text"/> -->
-        <ImageView
-            android:id="@+id/checkmark_complete"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_checkmark"
-            android:visibility="visible"
-            />
-
-		<TextView android:id="@+id/txtName"	
+		<TextView android:id="@+id/txtName"
 	 		android:textSize="18sp"
 	 		android:singleLine="true"
             android:ellipsize="marquee"
@@ -101,7 +93,17 @@
 		    android:maxLines="1"/>
 		    -->
 <!-- 		    android:textColor="@color/notepad_text"/> -->
-	</LinearLayout>
+
+        <ImageView
+            android:id="@+id/checkmark_complete"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="5dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_checkmark"
+            android:visibility="visible"
+            />
+    </LinearLayout>
 
 
     <!-- We use a FrameLayout here to set the correct
