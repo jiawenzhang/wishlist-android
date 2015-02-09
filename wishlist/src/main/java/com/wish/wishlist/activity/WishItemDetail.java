@@ -6,12 +6,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.ItemDBManager;
@@ -34,9 +33,9 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.DateTimeFormatter;
 import com.wish.wishlist.util.DialogOnShowListener;
-import com.wish.wishlist.util.ImageManager;
 import com.wish.wishlist.util.social.ShareHelper;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -178,57 +177,15 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 	
 	private void showItemInfo(WishItem item) {
         _fullsize_picture_str = item.getFullsizePicPath();
-		Display display = getWindowManager().getDefaultDisplay();
-		int width = display.getWidth();  // deprecated
-		int height = display.getHeight();  // deprecated
 		if (_fullsize_picture_str != null) {
-			Bitmap bitmap = ImageManager.getInstance().decodeSampledBitmapFromFile(_fullsize_picture_str, width, height, true);
-			//Bitmap bitmap = BitmapFactory.decodeFile(fullsize_picture_str, null);
-			if (bitmap == null) {
-				//Log.d("wishlist", "bitmap == null");
-			}
-			else {
-				_photoView.setImageBitmap(bitmap);
-                _photoView.setVisibility(View.VISIBLE);
-			}
+            Picasso.with(this).load(new File(_fullsize_picture_str)).fit().centerCrop().into(_photoView);
+            _photoView.setVisibility(View.VISIBLE);
 		}
 		else {
 		//pic_str is null, so user added this item without taking a pic.
 		//simply don't show any picture in this case. 
 			_photoView.setVisibility(View.GONE);
 		}
-		//if (fullsize_picture_str == null) {
-////			Log.d("wishlist", "fullsize_picture_str == null");
-//			picture_str = item.getPicStr();
-//
-//			if (picture_str == null){
-////				Log.d("wishlist", "picture_str == null");
-//			}
-//			else{
-//				if (picture_str.endsWith("sample")) {
-//					picture_str = picture_str.substring(0, picture_str.length() - 6);
-//				}
-//				Bitmap bitmap = null;
-//				Uri photoUri = Uri.parse(picture_str);
-//
-//				// check if pic_str is a resId
-//				try {
-//					// view.getContext().getResources().getDrawable(Integer.parseInt(pic_str));
-//					int picResId = Integer.valueOf(picture_str, 16).intValue();
-//					Log.d("wishlist", "width is " + String.valueOf(width));
-//					bitmap = ImageManager.getInstance().decodeSampledBitmapFromResource(_photoView.getContext().getResources(), picResId, width, height, true);
-//					//bitmap = BitmapFactory.decodeResource(_photoView.getContext()
-//					//		.getResources(), picResId);
-//					// it is resource id.
-//					_photoView.setImageBitmap(bitmap);
-//
-//				} catch (NumberFormatException e) {
-//					// Not a resId, so it must be a content provider uri
-//					photoUri = Uri.parse(picture_str);
-//					_photoView.setImageURI(photoUri);
-//				}
-//			}
-//		}
 
 		String dateTimeStr = item.getDate();
 		String dateTimeStrNew = DateTimeFormatter.getInstance().getDateTimeString(dateTimeStr);
