@@ -26,10 +26,9 @@
 			android:gravity="center_horizontal"
 			android:layout_weight="12">
 			
-
 				<ImageView android:id="@+id/imgPhotoDetail"
 					android:layout_width="match_parent" 
-					android:layout_height="300dip"
+					android:layout_height="300dp"
 					android:adjustViewBounds="true"
 					android:padding="2dp"
         			android:background="@color/bodyText_dark_grey"
@@ -47,8 +46,8 @@
 					    android:layout_width="wrap_content"
 					    android:layout_height="wrap_content"
 					    android:gravity="center_horizontal|left"
-					    android:paddingLeft="15dip"
-					    android:paddingTop="15dip"
+					    android:paddingLeft="15dp"
+					    android:paddingTop="15dp"
 					    android:singleLine="false"
 					    android:layout_weight="1"
 					    android:text="item name" />
@@ -59,7 +58,7 @@
 					    android:layout_height="wrap_content"
 					    android:gravity="right|center_horizontal"
 					    android:paddingRight="15dp"
-					    android:paddingTop="15dip"
+					    android:paddingTop="15dp"
 					    android:text="Completed"
 					    android:textColor="@color/bodyText_dark_grey"
 					    android:textSize="15sp"
