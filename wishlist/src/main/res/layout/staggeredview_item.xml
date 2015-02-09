@@ -42,7 +42,7 @@ android:descendantFocusability="blocksDescendants">
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:singleLine="true"
-            android:textColor="@color/dark_purple"/>
+            android:textColor="@color/black"/>
         <ImageView
             android:id="@+id/staggered_checkmark_complete"
             android:layout_weight="0.1"
@@ -64,7 +64,7 @@ android:descendantFocusability="blocksDescendants">
         android:singleLine="true"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:textColor="@color/bodyText_dark_grey"/>
+        android:textColor="@color/medium_grey"/>
 <!--    android:gravity="center"/> -->
     <!--android:visibility="gone"/> -->
 </LinearLayout>

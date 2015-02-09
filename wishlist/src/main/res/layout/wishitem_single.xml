@@ -27,7 +27,10 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:layout_margin="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="8dp"
             android:orientation="vertical">
             <!--		android:background="@xml/selector"  -->
             <!-- 		android:background="@color/notepad_paper"> -->
@@ -39,12 +42,12 @@
             <!-- 			android:textSize="10sp" -->
             <!-- 			android:textColor="@color/notepad_text"/> -->
             <TextView android:id="@+id/txtName"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:singleLine="true"
                 android:ellipsize="marquee"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/dark_purple"/>
+                android:textColor="@color/black"/>
             <!--android:textColor="@xml/selector"/>      -->
             <!--    android:maxLines="1"  -->
 
@@ -53,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:singleLine="true"
-                android:textColor="@color/bodyText_dark_grey"/>
+                android:textColor="@color/medium_grey"/>
             <!--  		android:layout_weight="1"-->
             <!--  android:scrollbars="vertical" android:fadingEdge="vertical" -->
             <!--   			 			android:padding="12dp"  -->
@@ -64,14 +67,14 @@
                 android:textSize="15sp"
                 android:singleLine="true"
                 android:ellipsize="marquee"
-                android:textColor="@color/bodyText_dark_grey"/>
+                android:textColor="@color/medium_grey"/>
 
             <TextView android:id="@+id/txtAddress"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:textSize="15sp"
-                android:textColor="@color/bodyText_dark_grey"/>
+                android:textColor="@color/medium_grey"/>
             <!-- 		<TextView android:id="@+id/txtDesc" android:layout_width="fill_parent" -->
             <!-- 			android:layout_height="fill_parent" android:padding="10dp" -->
             <!-- 			android:scrollbars="vertical" android:fadingEdge="vertical" -->
