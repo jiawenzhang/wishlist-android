@@ -140,6 +140,15 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
         SharedPreferences pref = this.getPreferences(MODE_PRIVATE);
         _viewOption = pref.getString(PREF_VIEW_OPTION, "list");
+        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        if (_viewOption.equals("list")) {
+            t.setScreenName("ListView");
+        }
+        else {
+            t.setScreenName("GridView");
+        }
+        t.send(new HitBuilders.AppViewBuilder().build());
+
         _statusOption = pref.getString(PREF_FILTER_OPTION, "all");
 
         if (_statusOption.equals("all")) {
@@ -1160,6 +1169,10 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putString(PREF_VIEW_OPTION, _viewOption);
                     editor.commit();
+
+                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    t.setScreenName("ListView");
+                    t.send(new HitBuilders.AppViewBuilder().build());
                 }
                 else if (item.equals("Grid view")) {
                     _viewOption = "grid";
@@ -1168,6 +1181,10 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putString(PREF_VIEW_OPTION, _viewOption);
                     editor.commit();
+
+                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    t.setScreenName("GridView");
+                    t.send(new HitBuilders.AppViewBuilder().build());
                 }
                 else if (item.equals("Map view")) {
                     Intent mapIntent = new Intent(WishList.this, WishListMap.class);
