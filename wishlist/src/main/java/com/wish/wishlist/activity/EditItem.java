@@ -16,6 +16,7 @@ import java.util.Observable;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.LocationDBManager;
 import com.wish.wishlist.db.StoreDBManager;
@@ -27,7 +28,6 @@ import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.PositionManager;
 import com.wish.wishlist.util.camera.PhotoFileCreater;
 import com.wish.wishlist.util.camera.CameraManager;
-import com.wish.wishlist.util.ImageManager;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -36,8 +36,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -83,8 +81,6 @@ public class EditItem extends Activity implements Observer {
 	private double _lat = Double.MIN_VALUE;
 	private double _lng = Double.MIN_VALUE;
 	private String _ddStr = "unknown";
-	private Bitmap _thumbnail;
-	private String _picture_str = Integer.toHexString(R.drawable.empty_photo_200by200);//default pic is "W" letter
 	private String _fullsizePhotoPath = null;
 	private String _newfullsizePhotoPath = null;
 	private StoreDBManager _storeDBManager;
@@ -107,7 +103,6 @@ public class EditItem extends Activity implements Observer {
 	static final private int TAKE_PICTURE = 1;
 	private static final int SELECT_PICTURE = 2;
     private static final int ADD_TAG = 3;
-	static final private String TAG = "EditItemInfo";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -216,30 +211,11 @@ public class EditItem extends Activity implements Observer {
 			}
 			_locationEditText.setText(item.getAddress());
 			_storeEditText.setText(item.getStoreName());
-			_picture_str = item.getPicStr();
 			_fullsizePhotoPath = item.getFullsizePicPath();
-			Bitmap bitmap = null;
-			
-			//check if pic_str is null, which user added this item without taking a pic.
-			if (_picture_str != null){
-				Uri picture_Uri = Uri.parse(_picture_str);
-				
-				// check if pic_str is a resId
-				try {
-					// view.getContext().getResources().getDrawable(Integer.parseInt(pic_str));
-					int picResId = Integer.valueOf(_picture_str, 16).intValue();
-					bitmap = BitmapFactory.decodeResource(_imageItem.getContext().getResources(), picResId);
-					// it is resource id.
-					_imageItem.setImageBitmap(bitmap);
-
-				} catch (NumberFormatException e) {
-					// Not a resId, so it must be a content provider uri
-					picture_Uri = Uri.parse(_picture_str);
-					_imageItem.setImageURI(picture_Uri);
-				}
-                _imageItem.setVisibility(View.VISIBLE);
-			}
-
+            if (_fullsizePhotoPath != null) {
+                Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
+                 _imageItem.setVisibility(View.VISIBLE);
+            }
             _tags = TagItemDBManager.instance(this).tags_of_item(mItem_id);
 		}
 		
@@ -251,7 +227,6 @@ public class EditItem extends Activity implements Observer {
 				_locationEditText.setText("Loading location...");
 			}
 		}
-
 
 		_cameraImageButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -336,8 +311,7 @@ public class EditItem extends Activity implements Observer {
 			// restore the current selected item in the list
 			_newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
 			_fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
-			_thumbnail = savedInstanceState.getParcelable("bitmap");
-			_imageItem.setImageBitmap(_thumbnail);
+            Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
 		}
 	}
 
@@ -450,7 +424,7 @@ public class EditItem extends Activity implements Observer {
 		}
 
 		WishItem item = new WishItem(this, mItem_id, mStore_id, itemStoreName, itemName, itemDesc, 
-				date, _picture_str, _fullsizePhotoPath, itemPrice, _lat, _lng, 
+				date, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
 				_ddStr, itemPriority, itemComplete);
 
 		mItem_id = item.save();
@@ -604,41 +578,8 @@ public class EditItem extends Activity implements Observer {
 	}
 	
 	private void setPic() {
-		int width =128;
-		int height=128;
-
-		_thumbnail = ImageManager.getInstance().decodeSampledBitmapFromFile(_fullsizePhotoPath, width, height, false);
-		//this will cut the pic to be exact width*height
-		_thumbnail = android.media.ThumbnailUtils.extractThumbnail(_thumbnail, width, height);
-		if (_thumbnail == null) {
-			return;
-		}
-		else {
-            _imageItem.setVisibility(View.VISIBLE);
-			_imageItem.setImageBitmap(_thumbnail);
-		}
-		
-		//compress the _thumbnail to JPEG and write the JEPG to 
-		//the file. Save the uri of the JEPG as a string,
-		//which will be inserted in the column "picture_uri" of
-		//the Item table
-
-		//we should really insert the file path to the table instead of the uri
-		//to make it consistent with fullphotopath
-		try {
-			File f = null;
-			f = PhotoFileCreater.getInstance().setUpPhotoFile(true);
-			Uri uri = Uri.fromFile(f);
-			
-			OutputStream outStream = getContentResolver()
-					.openOutputStream(uri);
-			_thumbnail.compress(Bitmap.CompressFormat.JPEG, 100,
-					outStream);
-
-			outStream.close();
-			_picture_str = uri.toString();
-		} catch (Exception e) {
-		}
+        _imageItem.setVisibility(View.VISIBLE);
+        Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
 	}
 	
 	//this will make the photo taken before to show up if user cancels taking a second photo
@@ -647,7 +588,6 @@ public class EditItem extends Activity implements Observer {
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		savedInstanceState.putString("newfullsizePhotoPath", _newfullsizePhotoPath);
 		savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
-		savedInstanceState.putParcelable("bitmap", _thumbnail);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -658,8 +598,7 @@ public class EditItem extends Activity implements Observer {
 		if (savedInstanceState != null) {
 			_newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
 			_fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
-			_thumbnail = savedInstanceState.getParcelable("bitmap");
-			_imageItem.setImageBitmap(_thumbnail);			
+            Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
 		}
 	}
 
