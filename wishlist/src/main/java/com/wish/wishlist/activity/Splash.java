@@ -50,8 +50,7 @@ public class Splash extends Activity{
             }
 
             if (currentVersionNumber > savedVersionNumber) {
-                //showWhatsNewDialog();
-                startActivity(new Intent(getApplication(), WishList.class));
+                showWhatsNewDialog();
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putInt(VERSION_KEY, currentVersionNumber);
                 editor.commit();
@@ -65,10 +64,10 @@ public class Splash extends Activity{
         private void showWhatsNewDialog() {
             AlertDialog.Builder builder = new AlertDialog.Builder(Splash.this);
             builder.setTitle("What's new");
-            builder.setMessage("Version 1.1.0\n\n" +
-                    "New navigation menu: just swipe from the left edge of the screen, and you can go to different places in the app.\n\n" +
-                    "Newly designed icons in a variety of places throughout the UI.\n\n" +
-                    "New uniform theme with golden accent color.\n");
+            builder.setMessage("Version 1.1.1\n\n" +
+                    "Completely renovated grid view, showing wishes in multi-column staggered fashion.\n\n" +
+                    "Improved list view.\n\n" +
+                    "Loads wish images more efficiently.\n");
 
             builder.setCancelable(false);
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
