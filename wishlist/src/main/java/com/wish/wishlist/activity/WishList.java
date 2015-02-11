@@ -363,14 +363,14 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
     private void updateView() {
         if (_itemDBManager.getItemsCount() == 0) {
             // make a new wish button
-            _viewFlipper.setDisplayedChild(2);
+            _viewFlipper.setDisplayedChild(3);
             return;
         }
 
         _wishItemCursor.requery();
         if (_wishItemCursor.getCount() == 0 && (!_where.isEmpty() || !_itemIds.isEmpty() || _nameQuery != null)) {
             // no matching wishes text
-            _viewFlipper.setDisplayedChild(3);
+            _viewFlipper.setDisplayedChild(4);
             return;
         }
         if (_viewOption.equals("list")) {
