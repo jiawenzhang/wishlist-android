@@ -1,4 +1,4 @@
-include ':third-party:facebookSDK'
+include ':third-party:facebook-android-sdk:facebook'
 include ':third-party:TokenAutoComplete'
 include ':third-party:AndroidStaggeredGrid:library'
 include ':wishlist'

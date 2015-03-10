@@ -44,7 +44,7 @@ android {
 }
 
 dependencies {
-    compile project(':third-party:facebookSDK')
+    compile project(':third-party:facebook-android-sdk:facebook')
     compile project(':third-party:TokenAutoComplete')
     compile project(':third-party:AndroidStaggeredGrid:library')
     compile files('libs/httpclient-4.2.5.jar')

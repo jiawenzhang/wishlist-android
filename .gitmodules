@@ -1,3 +1,6 @@
 [submodule "third-party/AndroidStaggeredGrid"]
 	path = third-party/AndroidStaggeredGrid
 	url = https://github.com/jiawenzhang/AndroidStaggeredGrid.git
+[submodule "third-party/facebook-android-sdk"]
+	path = third-party/facebook-android-sdk
+	url = https://github.com/facebook/facebook-android-sdk.git
