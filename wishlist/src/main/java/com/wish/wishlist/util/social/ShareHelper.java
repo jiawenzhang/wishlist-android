@@ -6,19 +6,15 @@ import android.util.Log;
 import android.app.Activity;
 import android.app.AlertDialog; 
 import android.content.Context; 
-import android.content.DialogInterface; 
-import android.content.Intent; 
+import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.facebook.android.Facebook;
-
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
-import com.wish.wishlist.activity.FacebookPost;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;  
 import com.wish.wishlist.activity.WishItemPostToSNS;
@@ -29,28 +25,36 @@ public class ShareHelper {
 	Context _ctx;
     Activity _act;
 	long _itemId;
-	Facebook _facebook;
 
 public ShareHelper(Context ctx, long itemId) {
 	_ctx = ctx;
 	_itemId = itemId;
-	_facebook = null;
 }
 
-public Facebook share() {
+public void share() {
     Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);
     sendIntent.setType("*/*");
-    List activities = _ctx.getPackageManager().queryIntentActivities(sendIntent, 0);
+    List<ResolveInfo> activities = _ctx.getPackageManager().queryIntentActivities(sendIntent, 0);
+
+    // Move facebook to the top of the list
+    for (ResolveInfo info : activities) {
+        if (info.activityInfo.packageName.contains("facebook")) {
+            int i = activities.indexOf(info);
+            activities.add(0, activities.remove(i));
+            break;
+        }
+    }
+
     AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
     builder.setIcon(0); //no icon in the title
     builder.setTitle("Share wish via");
-    final ShareIntentListAdapter adapter = new ShareIntentListAdapter((Activity) _ctx, R.layout.share_app_list, R.id.shareAppLabel, activities.toArray());
+    final ShareIntentListAdapter adapter = new ShareIntentListAdapter((Activity) _ctx, R.layout.share_app, R.id.shareAppLabel, activities.toArray());
 
     GridView gridView = new GridView(_ctx);
     gridView.setHorizontalSpacing(0);
     gridView.setNumColumns(3);
     gridView.setVerticalSpacing(70);
-    gridView.setStretchMode(2);
+    gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
     gridView.setPadding(30, 30, 30, 30);
     gridView.setClipToPadding(false);
 
@@ -80,7 +84,6 @@ public Facebook share() {
                 intent.putExtra(Intent.EXTRA_TEXT, message);
                 intent.putExtra(Intent.EXTRA_STREAM, item.getFullsizePicUri());
                 ((Activity) _ctx).startActivity(intent);
-
             }
             Tracker t = ((AnalyticsHelper) ((Activity) _ctx).getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
             t.send(new HitBuilders.EventBuilder()
@@ -95,7 +98,6 @@ public Facebook share() {
     AlertDialog dialog = builder.create();
     dialog.setOnShowListener(new DialogOnShowListener((Activity)_ctx));
     dialog.show();
-	return _facebook;
 }
 }
 
