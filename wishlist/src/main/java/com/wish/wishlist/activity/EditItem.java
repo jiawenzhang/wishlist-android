@@ -172,19 +172,36 @@ public class EditItem extends Activity implements Observer {
 				}
 			}
 		});
-		
-		
-		Intent i = getIntent();
-        //get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from
-        //dashboard camera
-        _fullsizePhotoPath = i.getStringExtra("fullsizePhotoPath");
-        if (_fullsizePhotoPath != null) {
-            setPic();
+
+
+        Intent intent = getIntent();
+
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            if ("text/plain".equals(type)) {
+                handleSendText(intent); // Handle text being sent
+            } else if (type.startsWith("image/")) {
+                handleSendImage(intent); // Handle single image being sent
+            }
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
+            if (type.startsWith("image/")) {
+                handleSendMultipleImages(intent); // Handle multiple images being sent
+            }
+        } else {
+            //Handle other intents, such as being started from the home screen
+            //get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from
+            //dashboard camera
+            _fullsizePhotoPath = intent.getStringExtra("fullsizePhotoPath");
+            if (_fullsizePhotoPath != null) {
+                setPic();
+            }
         }
 
 		//get item id from previous intent, if there is an item id, we know this EditItemInfo is launched
 		//by editing an existing item, so fill the empty box
-		mItem_id = i.getLongExtra("item_id", -1);
+		mItem_id = intent.getLongExtra("item_id", -1);
 		
 		if (mItem_id != -1) {
 			_editNew = false;
@@ -315,6 +332,29 @@ public class EditItem extends Activity implements Observer {
 		}
 	}
 
+    void handleSendText(Intent intent) {
+        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+        if (sharedText != null) {
+            _noteEditText.setText(sharedText);
+        }
+    }
+
+    void handleSendImage(Intent intent) {
+        Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        if (imageUri != null) {
+            _imageItem.setImageURI(imageUri);
+            _imageItem.setVisibility(View.VISIBLE);
+            _fullsizePhotoPath = copyPhotoToAlbum(imageUri);
+        }
+    }
+
+    void handleSendMultipleImages(Intent intent) {
+        ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        if (imageUris != null) {
+            // Update UI to reflect multiple images being shared
+        }
+    }
+
 	@Override
 		public boolean onCreateOptionsMenu(Menu menu) {
 			MenuInflater inflater = getMenuInflater();
@@ -423,7 +463,7 @@ public class EditItem extends Activity implements Observer {
 			_storeDBManager.updateStore(mStore_id, itemStoreName, mLocation_id);
 		}
 
-		WishItem item = new WishItem(this, mItem_id, mStore_id, itemStoreName, itemName, itemDesc, 
+		WishItem item = new WishItem(this, mItem_id, mStore_id, itemStoreName, itemName, itemDesc,
 				date, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
 				_ddStr, itemPriority, itemComplete);
 
