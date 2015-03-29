@@ -81,6 +81,7 @@ public class EditItem extends Activity implements Observer {
 	private double _lat = Double.MIN_VALUE;
 	private double _lng = Double.MIN_VALUE;
 	private String _ddStr = "unknown";
+    private Uri _selectedPicUri = null;
 	private String _fullsizePhotoPath = null;
 	private String _newfullsizePhotoPath = null;
 	private StoreDBManager _storeDBManager;
@@ -103,6 +104,7 @@ public class EditItem extends Activity implements Observer {
 	static final private int TAKE_PICTURE = 1;
 	private static final int SELECT_PICTURE = 2;
     private static final int ADD_TAG = 3;
+    private Boolean _selectedPic;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -194,9 +196,7 @@ public class EditItem extends Activity implements Observer {
             //get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from
             //dashboard camera
             _fullsizePhotoPath = intent.getStringExtra("fullsizePhotoPath");
-            if (_fullsizePhotoPath != null) {
-                setPic();
-            }
+            setTakenPhoto();
         }
 
 		//get item id from previous intent, if there is an item id, we know this EditItemInfo is launched
@@ -340,12 +340,8 @@ public class EditItem extends Activity implements Observer {
     }
 
     void handleSendImage(Intent intent) {
-        Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        if (imageUri != null) {
-            _imageItem.setImageURI(imageUri);
-            _imageItem.setVisibility(View.VISIBLE);
-            _fullsizePhotoPath = copyPhotoToAlbum(imageUri);
-        }
+        _selectedPicUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        setSelectedPic();
     }
 
     void handleSendMultipleImages(Intent intent) {
@@ -463,6 +459,9 @@ public class EditItem extends Activity implements Observer {
 			_storeDBManager.updateStore(mStore_id, itemStoreName, mLocation_id);
 		}
 
+        if (_selectedPic && _selectedPicUri != null) {
+            _fullsizePhotoPath = copyPhotoToAlbum(_selectedPicUri);
+        }
 		WishItem item = new WishItem(this, mItem_id, mStore_id, itemStoreName, itemName, itemDesc,
 				date, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
 				_ddStr, itemPriority, itemComplete);
@@ -492,20 +491,19 @@ public class EditItem extends Activity implements Observer {
                             .setAction("TakenPicture")
                             .setLabel("FromEditItemCameraButton")
                             .build());
-					handleBigCameraPhoto();
+                    setTakenPhoto();
 				}
 				break;
 			} 
 			case SELECT_PICTURE: {
 				if (resultCode == RESULT_OK) {
-					Uri selectedImageUri = data.getData();
-					_fullsizePhotoPath = copyPhotoToAlbum(selectedImageUri);
+					_selectedPicUri = data.getData();
                     Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
                             .setCategory("Wish")
                             .setAction("SelectedPicture")
                             .build());
-					setPic();
+					setSelectedPic();
 				}
                 break;
 			}
@@ -528,12 +526,6 @@ public class EditItem extends Activity implements Observer {
 		intent.setType("image/*");
 		intent.setAction(Intent.ACTION_GET_CONTENT);
 		startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURE);
-	}
-
-	private void handleBigCameraPhoto() {
-		if (_fullsizePhotoPath != null) {
-			setPic();
-		}
 	}
 
 	private String copyPhotoToAlbum(Uri uri) {
@@ -617,11 +609,24 @@ public class EditItem extends Activity implements Observer {
 		return false;
 	}
 	
-	private void setPic() {
+	private void setTakenPhoto() {
+        if (_fullsizePhotoPath == null) {
+            return;
+        }
         _imageItem.setVisibility(View.VISIBLE);
         Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
+        _selectedPic = false;
 	}
-	
+
+    private void setSelectedPic() {
+        if (_selectedPicUri == null) {
+            return;
+        }
+        _imageItem.setVisibility(View.VISIBLE);
+        Picasso.with(this).load(_selectedPicUri).fit().centerCrop().into(_imageItem);
+        _selectedPic = true;
+    }
+
 	//this will make the photo taken before to show up if user cancels taking a second photo
 	//this will also save the thumbnail on switching screen orientation
 	@Override
