@@ -11,8 +11,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Observer;
 import java.util.Observable;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -21,6 +26,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.db.LocationDBManager;
 import com.wish.wishlist.db.StoreDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
+import com.wish.wishlist.fragment.StaggeredGridActivityFragment;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.AnalyticsHelper;
@@ -36,10 +42,13 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -56,6 +65,12 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+
+import java.net.URL;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /*** EditItemInfo.java is responsible for reading in the info. of a newly added item 
  * including its name, description, time, price, location and photo, and saving them
@@ -182,7 +197,9 @@ public class EditItem extends Activity implements Observer {
         String type = intent.getType();
 
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            if ("text/plain".equals(type)) {
+            if ("*/*".equals(type)) {
+                handleSendAll(intent);
+            } else if ("text/plain".equals(type)) {
                 handleSendText(intent); // Handle text being sent
             } else if (type.startsWith("image/")) {
                 handleSendImage(intent); // Handle single image being sent
@@ -332,10 +349,22 @@ public class EditItem extends Activity implements Observer {
 		}
 	}
 
+    void handleSendAll(Intent intent) {
+        Log.v("AAA", "all");
+        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+        if (sharedText != null) {
+            _noteEditText.setText(sharedText);
+        }
+        _selectedPicUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        setSelectedPic();
+    }
+
     void handleSendText(Intent intent) {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (sharedText != null) {
             _noteEditText.setText(sharedText);
+            extractLinks(sharedText);
+
         }
     }
 
@@ -349,6 +378,77 @@ public class EditItem extends Activity implements Observer {
         if (imageUris != null) {
             // Update UI to reflect multiple images being shared
         }
+    }
+    private class testAsync extends AsyncTask<String, Integer, HashMap<String, WebImage>> {
+        protected HashMap<String, WebImage> doInBackground(String... urls) {
+            HashMap<String, WebImage> imgURLs = new HashMap<String, WebImage>();
+            try {
+                Document doc = Jsoup.connect(urls[0]).get();
+                Log.d("info", doc.title());
+                Elements img = doc.getElementsByTag("img");
+
+                for (Element el : img) {
+                    //for each element get the srs url
+                    String src = el.absUrl("src");
+                    //InputStream inputImage1 = new java.net.URL(src).openStream();
+                    //Bitmap image = BitmapFactory.decodeStream(inputImage1);
+                    // width and height can be in the format of 100px,
+                    // remove the non digit part of the string.
+                    //String width = el.attr("width").replaceAll("[^0-9]", "");
+                    //String height = el.attr("height").replaceAll("[^0-9]", "");
+                    //Log.v("AAA", "width " + el.attr("width"));
+                    //Log.v("AAA", "height " + el.attr("height"));
+                    if (src.isEmpty()) {
+                        continue;
+                    }
+                    try {
+                        final Bitmap image = Picasso.with(EditItem.this).load(src).get();
+                        if (image == null) {
+                            continue;
+                        }
+                        imgURLs.put(src, new WebImage(src, image.getWidth(), image.getHeight(), el.id()));
+                    } catch (IOException e) { }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return imgURLs;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            //setProgressPercent(progress[0]);
+        }
+
+        protected void onPostExecute(HashMap<String, WebImage> imgURLs) {
+            //showDialog("Downloaded " + result + " bytes");
+        }
+    }
+
+    public String[] extractLinks(String text) {
+        List<String> links = new ArrayList<String>();
+        Matcher m = Patterns.WEB_URL.matcher(text);
+        while (m.find()) {
+            String url = m.group();
+            Log.d("AAA", "URL extracted: " + url);
+            links.add(url);
+            HashMap<String, WebImage> urls = new HashMap<String, WebImage>();
+            try {
+                urls = new testAsync().execute(url).get();
+            }
+            catch (ExecutionException e) {
+            }
+            catch (InterruptedException e) {
+            }
+            ArrayList<WebImage> imgUrls = new ArrayList<WebImage>();
+            for (Map.Entry<String, WebImage> entry : urls.entrySet()) {
+                imgUrls.add(entry.getValue());
+            }
+            Intent intent = new Intent(this, StaggeredGridActivityFragment.class);
+            intent.putParcelableArrayListExtra("imgUrls", imgUrls);
+            startActivity(intent);
+        }
+        return links.toArray(new String[links.size()]);
     }
 
 	@Override
