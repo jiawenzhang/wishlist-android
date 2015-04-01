@@ -27,8 +27,8 @@ android:descendantFocusability="blocksDescendants">
         android:layout_height="wrap_content"
         android:gravity="center"/>
 
-   <!-- <com.etsy.android.grid.util.DynamicHeightTextView
-        android:id="@+id/staggered_price"
+   <com.etsy.android.grid.util.DynamicHeightTextView
+        android:id="@+id/web_image_size"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="13sp"
@@ -36,7 +36,6 @@ android:descendantFocusability="blocksDescendants">
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:textColor="@color/medium_grey"/>
-        -->
 
 </LinearLayout>
 </FrameLayout>

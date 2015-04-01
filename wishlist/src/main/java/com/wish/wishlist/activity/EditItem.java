@@ -401,22 +401,21 @@ public class EditItem extends Activity implements Observer {
                 Elements img = doc.getElementsByTag("img");
 
                 for (Element el : img) {
-                    //for each element get the srs url
                     String src = el.absUrl("src");
-                    //InputStream inputImage1 = new java.net.URL(src).openStream();
-                    //Bitmap image = BitmapFactory.decodeStream(inputImage1);
                     // width and height can be in the format of 100px,
                     // remove the non digit part of the string.
                     //String width = el.attr("width").replaceAll("[^0-9]", "");
                     //String height = el.attr("height").replaceAll("[^0-9]", "");
-                    //Log.v("AAA", "width " + el.attr("width"));
-                    //Log.v("AAA", "height " + el.attr("height"));
-                    if (src.isEmpty()) {
+                    String style = el.attr("style");
+
+                    // filter out hidden images, gif and png images. (gif and png are usually used for icons etc.)
+                    if (src.isEmpty() || style.contains("display:none") || src.endsWith(".gif") || src.endsWith(".png")) {
                         continue;
                     }
                     try {
                         final Bitmap image = Picasso.with(EditItem.this).load(src).get();
-                        if (image == null) {
+                        // filter out small images
+                        if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
                             continue;
                         }
                         imgURLs.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id()));

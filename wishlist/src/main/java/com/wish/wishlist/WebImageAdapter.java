@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 
 import com.etsy.android.grid.util.DynamicHeightImageView;
+import com.etsy.android.grid.util.DynamicHeightTextView;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.activity.WebImage;
 
@@ -23,6 +24,7 @@ public class WebImageAdapter extends ArrayAdapter<WebImage> {
 
     static class ViewHolder {
         DynamicHeightImageView imageView;
+        DynamicHeightTextView textView;
     }
 
     private final LayoutInflater mLayoutInflater;
@@ -40,6 +42,7 @@ public class WebImageAdapter extends ArrayAdapter<WebImage> {
             convertView = mLayoutInflater.inflate(R.layout.web_image_item, parent, false);
             vh = new ViewHolder();
             vh.imageView = (DynamicHeightImageView) convertView.findViewById(R.id.web_image);
+            vh.textView = (DynamicHeightTextView) convertView.findViewById(R.id.web_image_size);
             convertView.setTag(vh);
         } else {
             vh = (ViewHolder) convertView.getTag();
@@ -55,6 +58,7 @@ public class WebImageAdapter extends ArrayAdapter<WebImage> {
 
         Picasso.with(getContext()).load(img.mUrl).resize(width, height).into(vh.imageView);
         vh.imageView.setHeightRatio(ratio);
+        vh.textView.setText(img.mWidth + " x " +img.mHeight);
         return convertView;
     }
 }
