@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Observer;
 import java.util.Observable;
 import java.util.concurrent.ExecutionException;
@@ -66,7 +64,6 @@ import android.widget.Toast;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 
-import java.net.URL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -363,8 +360,22 @@ public class EditItem extends Activity implements Observer {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (sharedText != null) {
             _noteEditText.setText(sharedText);
-            extractLinks(sharedText);
-
+            ArrayList<String> links = extractLinks(sharedText);
+            if (links.isEmpty()) {
+                return;
+            }
+            String url = links.get(0);
+            ArrayList<WebImage> image_urls = new ArrayList<WebImage>();
+            try {
+                image_urls = new getImageAsync().execute(url).get();
+            }
+            catch (ExecutionException e) {
+            }
+            catch (InterruptedException e) {
+            }
+            Intent fg_intent = new Intent(this, StaggeredGridActivityFragment.class);
+            fg_intent.putParcelableArrayListExtra("imgUrls", image_urls);
+            startActivity(fg_intent);
         }
     }
 
@@ -379,9 +390,9 @@ public class EditItem extends Activity implements Observer {
             // Update UI to reflect multiple images being shared
         }
     }
-    private class testAsync extends AsyncTask<String, Integer, HashMap<String, WebImage>> {
-        protected HashMap<String, WebImage> doInBackground(String... urls) {
-            HashMap<String, WebImage> imgURLs = new HashMap<String, WebImage>();
+    private class getImageAsync extends AsyncTask<String, Integer, ArrayList<WebImage>> {
+        protected ArrayList<WebImage> doInBackground(String... urls) {
+            ArrayList<WebImage> imgURLs = new ArrayList<WebImage>();
             try {
                 Document doc = Jsoup.connect(urls[0]).get();
                 Log.d("info", doc.title());
@@ -406,13 +417,12 @@ public class EditItem extends Activity implements Observer {
                         if (image == null) {
                             continue;
                         }
-                        imgURLs.put(src, new WebImage(src, image.getWidth(), image.getHeight(), el.id()));
+                        imgURLs.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id()));
                     } catch (IOException e) { }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return imgURLs;
         }
 
@@ -425,30 +435,15 @@ public class EditItem extends Activity implements Observer {
         }
     }
 
-    public String[] extractLinks(String text) {
-        List<String> links = new ArrayList<String>();
+    public ArrayList<String> extractLinks(String text) {
+        ArrayList<String> links = new ArrayList<String>();
         Matcher m = Patterns.WEB_URL.matcher(text);
         while (m.find()) {
             String url = m.group();
             Log.d("AAA", "URL extracted: " + url);
             links.add(url);
-            HashMap<String, WebImage> urls = new HashMap<String, WebImage>();
-            try {
-                urls = new testAsync().execute(url).get();
-            }
-            catch (ExecutionException e) {
-            }
-            catch (InterruptedException e) {
-            }
-            ArrayList<WebImage> imgUrls = new ArrayList<WebImage>();
-            for (Map.Entry<String, WebImage> entry : urls.entrySet()) {
-                imgUrls.add(entry.getValue());
-            }
-            Intent intent = new Intent(this, StaggeredGridActivityFragment.class);
-            intent.putParcelableArrayListExtra("imgUrls", imgUrls);
-            startActivity(intent);
         }
-        return links.toArray(new String[links.size()]);
+        return links;
     }
 
 	@Override
