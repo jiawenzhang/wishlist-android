@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import com.etsy.android.grid.StaggeredGridView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WebImageAdapter;
+import com.wish.wishlist.activity.EditItem;
 import com.wish.wishlist.activity.WebImage;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class StaggeredGridActivityFragment extends FragmentActivity {
         if (fm.findFragmentById(android.R.id.content) == null) {
             final StaggeredGridFragment fragment = new StaggeredGridFragment();
             Bundle args = new Bundle();
-            args.putParcelableArrayList("imgUrls", getIntent().getParcelableArrayListExtra("imgUrls"));
+            args.putParcelableArrayList(EditItem.IMG_URLS, getIntent().getParcelableArrayListExtra(EditItem.IMG_URLS));
             fragment.setArguments(args);
             fm.beginTransaction().add(android.R.id.content, fragment).commit();
         }
@@ -65,7 +66,7 @@ public class StaggeredGridActivityFragment extends FragmentActivity {
             }
 
             if (mAdapter == null) {
-                ArrayList<WebImage> list = getArguments().getParcelableArrayList("imgUrls");
+                ArrayList<WebImage> list = getArguments().getParcelableArrayList(EditItem.IMG_URLS);
                 if (list == null) {
                     Log.d("AAA", "list null");
                 } else {

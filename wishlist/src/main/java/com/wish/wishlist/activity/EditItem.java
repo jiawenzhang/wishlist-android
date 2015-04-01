@@ -118,6 +118,8 @@ public class EditItem extends Activity implements Observer {
     private static final int ADD_TAG = 3;
     private Boolean _selectedPic;
 
+    static final public String IMG_URLS = "IMG_URLS";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -374,7 +376,7 @@ public class EditItem extends Activity implements Observer {
             catch (InterruptedException e) {
             }
             Intent fg_intent = new Intent(this, StaggeredGridActivityFragment.class);
-            fg_intent.putParcelableArrayListExtra("imgUrls", image_urls);
+            fg_intent.putParcelableArrayListExtra(IMG_URLS, image_urls);
             startActivity(fg_intent);
         }
     }
