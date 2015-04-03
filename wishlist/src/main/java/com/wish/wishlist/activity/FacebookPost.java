@@ -565,7 +565,19 @@ public class FacebookPost extends Activity {
         wish.setProperty("title", _wishItem.getName());
         //wish.setProperty("image", "http://example.com/cooking-app/images/buffalo-tacos.png");
         //wish.setProperty("url", "https://example.com/cooking-app/meal/Buffalo-Tacos.html");
-        wish.setProperty("description", _wishItem.getDesc());
+
+        String priceStr = _wishItem.getPriceAsString();
+        String priceWithCurrency = null;
+        if (priceStr != null) {
+            priceWithCurrency = _wishItem.priceStringWithCurrency(priceStr, this);
+        }
+
+        String description = "";
+        if (priceWithCurrency != null) {
+            description += priceWithCurrency;
+        }
+        description += ("\n" + _wishItem.getDesc());
+        wish.setProperty("description", description);
 
         List<Bitmap> images = new ArrayList<Bitmap>();
         Boolean userGenerated = true;
