@@ -8,7 +8,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,11 +92,9 @@ public class ShareAppDialogFragment extends DialogFragment {
                    // snsIntent.putExtra("itemId", _itemId);
                    // ((Activity)_ctx).startActivityForResult(snsIntent, 1);
                     //new PostToFacebookDialog(_ctx, _message).show();
-                    Log.d("share", "facebook");
                 } else {
                     WishItem item = WishItemManager.getInstance(_ctx).retrieveItembyId(_itemId);
                     String message = item.getShareMessage(false);
-                    Log.d("share", "others");
                     Intent intent = new Intent(android.content.Intent.ACTION_SEND);
                     intent.setClassName(info.activityInfo.packageName, info.activityInfo.name);
                     intent.setType("*/*");

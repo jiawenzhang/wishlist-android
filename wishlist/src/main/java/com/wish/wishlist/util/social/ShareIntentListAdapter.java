@@ -26,9 +26,9 @@ public View getView(int pos, View convertView, ViewGroup parent) {
 	LayoutInflater inflater=_ctx.getLayoutInflater();
 	View view = inflater.inflate(_layoutId, null);
 	TextView label = (TextView) view.findViewById(R.id.shareAppLabel);
-	label.setText(((ResolveInfo)_items[pos]).activityInfo.applicationInfo.loadLabel(_ctx.getPackageManager()).toString()); 
+    label.setText(((ResolveInfo)_items[pos]).activityInfo.loadLabel(_ctx.getPackageManager()).toString());
 	ImageView image = (ImageView) view.findViewById(R.id.shareAppIcon);
-	image.setImageDrawable(((ResolveInfo)_items[pos]).activityInfo.applicationInfo.loadIcon(_ctx.getPackageManager()));  
-	return(view);
+    image.setImageDrawable(((ResolveInfo)_items[pos]).activityInfo.loadIcon(_ctx.getPackageManager()));
+    return(view);
 }
 }
