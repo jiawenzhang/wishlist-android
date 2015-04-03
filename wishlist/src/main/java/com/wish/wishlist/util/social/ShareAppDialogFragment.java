@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -78,6 +81,10 @@ public class ShareAppDialogFragment extends DialogFragment {
                 // do something here
                 ResolveInfo info = (ResolveInfo) adapter.getItem(position);
                 if (info.activityInfo.packageName.contains("facebook")) {
+                    if (!isNetworkOnline()) {
+                        Toast.makeText(_ctx, "Network not available", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     Intent facebookPostIntent = new Intent(_ctx, FacebookPost.class);
                     facebookPostIntent.putExtra("itemId", _itemId);
                     ((Activity) _ctx).startActivityForResult(facebookPostIntent, 1);
@@ -120,5 +127,24 @@ public class ShareAppDialogFragment extends DialogFragment {
         });
 
         return v;
+    }
+
+    public boolean isNetworkOnline() {
+        boolean status = false;
+        try {
+            ConnectivityManager cm = (ConnectivityManager) _ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = cm.getNetworkInfo(0);
+            if (netInfo != null && netInfo.getState() == NetworkInfo.State.CONNECTED) {
+                status = true;
+            } else {
+                netInfo = cm.getNetworkInfo(1);
+                if (netInfo != null && netInfo.getState() == NetworkInfo.State.CONNECTED)
+                    status = true;
+            }
+        } catch(Exception e){
+            //e.printStackTrace();
+            return false;
+        }
+        return status;
     }
 }

@@ -605,7 +605,6 @@ public class FacebookPost extends Activity {
                         //.setImageAttachmentsForAction(images, true)
                 .build();
         _uiHelper.trackPendingDialogCall(shareDialog.present());
-        finish();
 
 
         //LoginButton authButton = (LoginButton) findViewById(R.id.facebook_login_button);
@@ -647,6 +646,7 @@ public class FacebookPost extends Activity {
             @Override
             public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
                 Log.e("Activity", String.format("Error: %s", error.toString()));
+                Toast.makeText(FacebookPost.this, "Fail to share", Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -654,6 +654,7 @@ public class FacebookPost extends Activity {
                 Log.i("Activity", "Success!");
             }
         });
+        finish();
     }
 
     @Override
