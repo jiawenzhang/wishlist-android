@@ -1,70 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	style="@style/TitleBar"
-	android:id="@+id/header"
-	android:layout_alignParentTop="true">
+    style="@style/TitleBar"
+    android:id="@+id/header"
+    android:layout_alignParentTop="true">
 
-	<!-- imageView_logo is only used in dashboard -->
-		<ImageView
-		    style="@style/TitleBarWish"
-		    android:id="@+id/imageView_logo"
-		    android:contentDescription="@string/description_logo"
-		    android:src="@drawable/wish_georgia_medium"
-			android:visibility="gone" />
-		
-		<ImageButton style="@style/TitleBarWishBack"
-		    android:id="@+id/imageButton_back_logo"
-			android:contentDescription="@string/description_back_logo"
-			android:src="@drawable/wish_back_georgia_medium"
-			android:onClick="onClickHome"
-			android:visibility="gone" />
-			
- 		<TextView style="@style/TitleBarText"
-			android:contentDescription="@string/my_wishes"/>
+    <!-- imageView_logo is only used in dashboard -->
+    <ImageView
+        style="@style/TitleBarWish"
+        android:id="@+id/imageView_logo"
+        android:contentDescription="@string/description_logo"
+        android:src="@drawable/wish_georgia_medium"
+        android:visibility="gone" />
 
-	<!-- the following two imageButton are used list/grid view -->
-		<ImageButton style="@style/TitleBarAction"
-			android:id="@+id/imageButton_viewType"
-			android:contentDescription="@string/description_view"
-			android:src="@drawable/ic_view_default"
-			android:onClick="onClickView"
-			android:visibility="gone" />
+    <ImageButton style="@style/TitleBarWishBack"
+        android:id="@+id/imageButton_back_logo"
+        android:contentDescription="@string/description_back_logo"
+        android:src="@drawable/wish_back_georgia_medium"
+        android:onClick="onClickHome"
+        android:visibility="gone" />
 
-		<ImageButton style="@style/TitleBarAction"
-			android:id="@+id/imageButton_search"
-			android:contentDescription="@string/description_search" 
-			android:src="@drawable/search_grey_default"
-			android:onClick="onClickSearch" 
-			android:visibility="gone" />
+    <TextView style="@style/TitleBarText"
+        android:contentDescription="@string/my_wishes"/>
 
-	<!-- the following three imageButton are used in item detail view -->
-		<ImageButton style="@style/TitleBarAction"
-			android:id="@+id/imageButton_share"
-			android:contentDescription="@string/description_share"
-			android:src="@drawable/ic_share_default"
-			android:onClick="onClickShare"
-			android:visibility="gone" />
+    <!-- the following two imageButton are used list/grid view -->
+    <ImageButton style="@style/TitleBarAction"
+        android:id="@+id/imageButton_viewType"
+        android:contentDescription="@string/description_view"
+        android:src="@drawable/ic_view_default"
+        android:onClick="onClickView"
+        android:visibility="gone" />
 
-		<ImageButton style="@style/TitleBarAction"
-			android:id="@+id/imageButton_edit"
-			android:contentDescription="@string/description_edit" 
-			android:src="@drawable/ic_edit_default"
-			android:onClick="onClickEdit"
-			android:visibility="gone" />
+    <ImageButton style="@style/TitleBarAction"
+        android:id="@+id/imageButton_search"
+        android:contentDescription="@string/description_search"
+        android:src="@drawable/search_grey_default"
+        android:onClick="onClickSearch"
+        android:visibility="gone" />
 
-		<ImageButton style="@style/TitleBarAction" 
-			android:id="@+id/imageButton_delete"
-			android:contentDescription="@string/description_delete" 
-			android:src="@drawable/ic_trashbin_grey_default_48by48"
-			android:onClick="onClickDelete"
-			android:visibility="gone" />
+    <!-- the following three imageButton are used in item detail view -->
+    <ImageButton style="@style/TitleBarAction"
+        android:id="@+id/imageButton_share"
+        android:contentDescription="@string/description_share"
+        android:src="@drawable/ic_share_default"
+        android:onClick="onClickShare"
+        android:visibility="gone" />
 
-	<!-- the following imageButton is used in add/edit item view -->
-		<ImageButton style="@style/TitleBarWishBack"
-			android:id="@+id/imageButton_save"
-			android:contentDescription="@string/description_save" 
-			android:src="@drawable/save_georgia_medium"
-			android:onClick="onClickSave"
-			android:visibility="gone" />
+    <ImageButton style="@style/TitleBarAction"
+        android:id="@+id/imageButton_edit"
+        android:contentDescription="@string/description_edit"
+        android:src="@drawable/ic_edit_default"
+        android:onClick="onClickEdit"
+        android:visibility="gone" />
 
+    <ImageButton style="@style/TitleBarAction"
+        android:id="@+id/imageButton_delete"
+        android:contentDescription="@string/description_delete"
+        android:src="@drawable/ic_trashbin_grey_default_48by48"
+        android:onClick="onClickDelete"
+        android:visibility="gone" />
+
+    <!-- the following imageButton is used in add/edit item view -->
+    <ImageButton style="@style/TitleBarWishBack"
+        android:id="@+id/imageButton_save"
+        android:contentDescription="@string/description_save"
+        android:src="@drawable/save_georgia_medium"
+        android:onClick="onClickSave"
+        android:visibility="gone" />
 </LinearLayout>

@@ -1,36 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<dimen name="notepad_margin">30dp</dimen>
-	<dimen name="logo_size">24pt</dimen>
-	<dimen name="version_size">5pt</dimen>
-	<dimen name="version_spacing">3pt</dimen>
-	<dimen name="screen_title_size">16pt</dimen>
-	<dimen name="menu_item_size">16pt</dimen>
-	<dimen name="game_question_size">10pt</dimen>
-	<dimen name="help_text_size">7pt</dimen>
-	<dimen name="help_text_padding">20px</dimen>
-	<dimen name="avatar_size">75px</dimen>
-	<dimen name="fav_place_textbox_size">200px</dimen>
-	
-	<dimen name="title_height">45dip</dimen>
-	<dimen name="title_imageButtonHeight">50dip</dimen>
-	<dimen name="title_backLogo_width">70dip</dimen>
-	<dimen name="title_wish_back_width">100dip</dimen>
+    <dimen name="notepad_margin">30dp</dimen>
+    <dimen name="logo_size">24pt</dimen>
+    <dimen name="version_size">5pt</dimen>
+    <dimen name="version_spacing">3pt</dimen>
+    <dimen name="screen_title_size">16pt</dimen>
+    <dimen name="menu_item_size">16pt</dimen>
+    <dimen name="game_question_size">10pt</dimen>
+    <dimen name="help_text_size">7pt</dimen>
+    <dimen name="help_text_padding">20px</dimen>
+    <dimen name="avatar_size">75px</dimen>
+    <dimen name="fav_place_textbox_size">200px</dimen>
+
+    <dimen name="title_height">45dip</dimen>
+    <dimen name="title_imageButtonHeight">50dip</dimen>
+    <dimen name="title_backLogo_width">70dip</dimen>
+    <dimen name="title_wish_back_width">100dip</dimen>
     <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_medium">18sp</dimen>
     <dimen name="text_size_large">22sp</dimen>
-    
+
     <dimen name="headBar_height">50dip</dimen>
     <dimen name="footBar_height">50dip</dimen>
-    
-<!--     <dimen name="headBarText_size">48pt</dimen>  -->
+
+    <!--     <dimen name="headBarText_size">48pt</dimen>  -->
     <dimen name="headBarText_size">20sp</dimen>
     <dimen name="itemName_detail_size">30pt</dimen>
-	<dimen name="itemInfo_detail_size">25pt</dimen>
-	
-	<dimen name="iconName_dashboard_size">30pt</dimen>
+    <dimen name="itemInfo_detail_size">25pt</dimen>
+
+    <dimen name="iconName_dashboard_size">30pt</dimen>
     <dimen name="tab_host_default_height">48dp</dimen>
-    
-    
-    
- </resources>
+</resources>

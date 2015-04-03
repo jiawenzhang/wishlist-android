@@ -1,108 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/itemDetail"
-	android:orientation="vertical"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:background="@color/bodyBackground_light_grey">
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bodyBackground_light_grey">
 
- 	<include android:id="@+id/detailView_header" layout="@layout/header" />
-	
-	<!--android:visibility = "invisible"-->
-	<ScrollView android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		android:fillViewport="true">
+    <include android:id="@+id/detailView_header" layout="@layout/header" />
 
-		<LinearLayout android:orientation="horizontal"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content">
-		<!-- 		android:layout_gravity="center" 
-		android:gravity="center_horizontal" -->
-		
-			<LinearLayout android:orientation="vertical"
-			android:layout_width="fill_parent" 
-			android:layout_height="wrap_content"
-			android:layout_gravity="center" 
-			android:gravity="center_horizontal"
-			android:layout_weight="12">
-			
-				<ImageView android:id="@+id/imgPhotoDetail"
-					android:layout_width="match_parent" 
-					android:layout_height="300dp"
-					android:adjustViewBounds="true"
-					android:padding="2dp"
-        			android:background="@color/bodyText_dark_grey"
-					android:gravity="center_horizontal"
-					/>
+    <!--android:visibility = "invisible"-->
+    <ScrollView android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
 
-				<LinearLayout
-				    android:layout_width="match_parent"
-				    android:layout_height="wrap_content" 
-				    android:orientation="horizontal">
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <!-- 		android:layout_gravity="center"
+            android:gravity="center_horizontal" -->
 
-					<TextView
-					    android:id="@+id/itemNameDetail"
-					    style="@style/ItemNameText"
-					    android:layout_width="wrap_content"
-					    android:layout_height="wrap_content"
-					    android:gravity="center_horizontal|left"
-					    android:paddingLeft="15dp"
-					    android:paddingTop="15dp"
-					    android:singleLine="false"
-					    android:layout_weight="1"
-					    android:text="item name" />
+            <LinearLayout android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal"
+                android:layout_weight="12">
 
-					<TextView
-					    android:id="@+id/itemCompleteState"
-					    android:layout_width="wrap_content"
-					    android:layout_height="wrap_content"
-					    android:gravity="right|center_horizontal"
-					    android:paddingRight="15dp"
-					    android:paddingTop="15dp"
-					    android:text="Completed"
-					    android:textColor="@color/bodyText_dark_grey"
-					    android:textSize="15sp"
-					    android:visibility="gone" />
+                <ImageView android:id="@+id/imgPhotoDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:adjustViewBounds="true"
+                    android:padding="2dp"
+                    android:background="@color/bodyText_dark_grey"
+                    android:gravity="center_horizontal"
+                    />
 
-				</LinearLayout>
-				
-				<TextView style="@style/ItemInfoText"
-				    android:id="@+id/itemDateDetail"
-				    android:text="item Date"
-					android:paddingTop="8dip"
-					android:paddingLeft="15dip"
-					android:layout_gravity="left" />
-				
-				<TextView style="@style/ItemInfoText"
-				    android:id="@+id/itemPriceDetail"
-				    android:text="$ XX.X"
-				   	android:paddingTop="8dip" 
-					android:paddingLeft="15dip"
-					android:layout_gravity="left" />
-				
-				<TextView style="@style/ItemInfoText"
-				    android:id="@+id/itemDesriptDetail"
-				    android:text="item description"
-					android:singleLine="false"
-					android:paddingTop="8dip" 
-					android:paddingLeft="15dip"
-					android:layout_gravity="left" />
-	
-				<TextView style="@style/ItemInfoText"
-				    android:id="@+id/itemStoreDetail"
-				    android:text="item store name"
-					android:paddingTop="8dip" 
-					android:singleLine="false"
-					android:paddingLeft="15dip"
-					android:layout_gravity="left" />
-				
-				<TextView style="@style/ItemInfoText"
-				    android:id="@+id/itemLocationDetail"
-				    android:text="item location"
-					android:paddingTop="8dip"
-					android:paddingLeft="15dip"
-					android:singleLine="false"
-					android:layout_gravity="left" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/itemNameDetail"
+                        style="@style/ItemNameText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal|left"
+                        android:paddingLeft="15dp"
+                        android:paddingTop="15dp"
+                        android:singleLine="false"
+                        android:layout_weight="1"
+                        android:text="item name" />
+
+                    <TextView
+                        android:id="@+id/itemCompleteState"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="right|center_horizontal"
+                        android:paddingRight="15dp"
+                        android:paddingTop="15dp"
+                        android:text="Completed"
+                        android:textColor="@color/bodyText_dark_grey"
+                        android:textSize="15sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <TextView style="@style/ItemInfoText"
+                    android:id="@+id/itemDateDetail"
+                    android:text="item Date"
+                    android:paddingTop="8dip"
+                    android:paddingLeft="15dip"
+                    android:layout_gravity="left" />
+
+                <TextView style="@style/ItemInfoText"
+                    android:id="@+id/itemPriceDetail"
+                    android:text="$ XX.X"
+                    android:paddingTop="8dip"
+                    android:paddingLeft="15dip"
+                    android:layout_gravity="left" />
+
+                <TextView style="@style/ItemInfoText"
+                    android:id="@+id/itemDesriptDetail"
+                    android:text="item description"
+                    android:singleLine="false"
+                    android:paddingTop="8dip"
+                    android:paddingLeft="15dip"
+                    android:layout_gravity="left" />
+
+                <TextView style="@style/ItemInfoText"
+                    android:id="@+id/itemStoreDetail"
+                    android:text="item store name"
+                    android:paddingTop="8dip"
+                    android:singleLine="false"
+                    android:paddingLeft="15dip"
+                    android:layout_gravity="left" />
+
+                <TextView style="@style/ItemInfoText"
+                    android:id="@+id/itemLocationDetail"
+                    android:text="item location"
+                    android:paddingTop="8dip"
+                    android:paddingLeft="15dip"
+                    android:singleLine="false"
+                    android:layout_gravity="left" />
 
 
                 <!-- we merely reuse the TagsCompletionView for
@@ -120,17 +120,17 @@
                     android:textSize="@dimen/text_size_medium" >
                 </com.wish.wishlist.activity.TagsCompletionView>
 
-				<!-- white space at the bottom -->
-				<TextView 
-				   	android:layout_width="fill_parent"
-	    			android:layout_height="wrap_content"
-				    android:paddingTop="8dip"
-					android:paddingLeft="15dip"
-				    android:visibility="invisible"
-					android:layout_gravity="left" />
-			
-			</LinearLayout>
-		</LinearLayout>
+                <!-- white space at the bottom -->
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dip"
+                    android:paddingLeft="15dip"
+                    android:visibility="invisible"
+                    android:layout_gravity="left" />
 
-	</ScrollView>
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
 </LinearLayout>

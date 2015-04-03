@@ -45,6 +45,5 @@
             android:visibility="gone"
             />
     </LinearLayout>
-
 </LinearLayout>
 

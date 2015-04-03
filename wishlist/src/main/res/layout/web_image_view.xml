@@ -15,5 +15,4 @@
         app:item_margin="12dp"
         app:column_count_portrait="2"
         app:column_count_landscape="3"/>
-
 </LinearLayout>

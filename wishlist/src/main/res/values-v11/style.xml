@@ -172,59 +172,59 @@
 
 
     <style name="Theme.D1"
-		parent="android:style/android:Theme.Holo.Light.DarkActionBar">
-		<!--<item name="android:actionBarStyle">@style/WishListActionBar</item> -->
-		<!--<item name="android:windowContentOverlay">@null</item>-->
+        parent="android:style/android:Theme.Holo.Light.DarkActionBar">
+        <!--<item name="android:actionBarStyle">@style/WishListActionBar</item> -->
+        <!--<item name="android:windowContentOverlay">@null</item>-->
     </style>
 
-	<style name="Theme.D1.noActionBar"
-		parent="@android:style/Theme.Holo.Light.NoActionBar">
+    <style name="Theme.D1.noActionBar"
+        parent="@android:style/Theme.Holo.Light.NoActionBar">
     </style>
 
-	<style name="WishList.EditWish.Theme.ActionBar"
-		parent="style/Wishlist_Yellow">
-		<item name="android:actionMenuTextAppearance">@style/WishList.EditWish.ActionBar.MenuTextStyle</item>
+    <style name="WishList.EditWish.Theme.ActionBar"
+        parent="style/Wishlist_Yellow">
+        <item name="android:actionMenuTextAppearance">@style/WishList.EditWish.ActionBar.MenuTextStyle</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
-<!--
-	<style name="WishList.EditWish.ActionBar"
-		parent="@android:style/Widget.Holo.ActionBar">
-		<item name="android:titleTextStyle">@style/WishList.EditWish.ActionBar.TitleTextStyle</item>
-	</style>
-	<item name="android:background">@color/headBarBackground_dark_grey</item> -->
-<!--
-	<style name="WishList.EditWish.ActionBar.TitleTextStyle"
-		parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-		<item name="android:textColor">@color/headBarText_light_grey</item>
-	</style>
-	<item name="android:textColor">@color/headBarText_light_grey</item>-->
+    <!--
+        <style name="WishList.EditWish.ActionBar"
+            parent="@android:style/Widget.Holo.ActionBar">
+            <item name="android:titleTextStyle">@style/WishList.EditWish.ActionBar.TitleTextStyle</item>
+        </style>
+        <item name="android:background">@color/headBarBackground_dark_grey</item> -->
+    <!--
+        <style name="WishList.EditWish.ActionBar.TitleTextStyle"
+            parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+            <item name="android:textColor">@color/headBarText_light_grey</item>
+        </style>
+        <item name="android:textColor">@color/headBarText_light_grey</item>-->
 
-	<style name="WishList.EditWish.ActionBar.MenuTextStyle"
-		parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
-	<!--<item name="android:textColor">@color/red</item> -->
-		<item name="android:textSize">18sp</item>
-	</style>
+    <style name="WishList.EditWish.ActionBar.MenuTextStyle"
+        parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
+        <!--<item name="android:textColor">@color/red</item> -->
+        <item name="android:textSize">18sp</item>
+    </style>
 
-	<style name="GridImageView">
-		<item name="android:padding">3dp</item>
-	</style>
+    <style name="GridImageView">
+        <item name="android:padding">3dp</item>
+    </style>
 
-	<style name="TitleBar" parent="android:style/Theme.Holo.Light">
+    <style name="TitleBar" parent="android:style/Theme.Holo.Light">
         <item name="android:id">@id/title_container</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">@dimen/headBar_height</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:background">@color/headBarBackground_dark_grey</item>
     </style>
-        
-	<style name="TitleBarAction" parent="android:style/Theme.Holo.Light">
+
+    <style name="TitleBarAction" parent="android:style/Theme.Holo.Light">
         <item name="android:layout_width">@dimen/title_imageButtonHeight</item>
         <item name="android:layout_height">fill_parent</item>
-		<item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:background">?android:selectableItemBackground</item>
     </style>
-    
-	<style name="TitleBarWish" parent="android:style/Theme.Holo.Light">
+
+    <style name="TitleBarWish" parent="android:style/Theme.Holo.Light">
         <item name="android:id">@id/title_wish</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -232,21 +232,21 @@
         <item name="android:clickable">false</item>
         <item name="android:scaleType">fitStart</item>
     </style>
-    
-	<style name="TitleBarWishBack" parent="android:style/Theme.Holo.Light">
+
+    <style name="TitleBarWishBack" parent="android:style/Theme.Holo.Light">
         <item name="android:layout_width">@dimen/title_wish_back_width</item>
         <item name="android:layout_height">fill_parent</item>
         <item name="android:gravity">left</item>
         <item name="android:clickable">true</item>
         <item name="android:scaleType">fitCenter</item>
-		<item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:background">?android:selectableItemBackground</item>
     </style>
-    
-	<style name="FooterBar" parent="android:style/Theme.Holo.Light">
-    	<item name="android:layout_width">fill_parent</item>
+
+    <style name="FooterBar" parent="android:style/Theme.Holo.Light">
+        <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">@dimen/footBar_height</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:background">@color/footerBarBackground_dark_grey</item>
-	</style>
+    </style>
 </resources>

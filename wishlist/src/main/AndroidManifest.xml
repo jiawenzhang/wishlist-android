@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.wish.wishlist"
-      android:versionCode="18"
-      android:versionName="1.1.1" >
+    package="com.wish.wishlist"
+    android:versionCode="18"
+    android:versionName="1.1.1" >
 
     <!-- min sdkversion earlier than 4 will implicitly require WRITE_EXTERNAL_STORAGE and READ_PHONE_STATE 
     user permission. set the min version >= 4 to avoid that -->
-	<!--<uses-sdk android:minSdkVersion="8"
-	    	android:targetSdkVersion="17" /> -->
-	    	<!-- 8 is android 2.2.x FROYO -->
-	    	<!-- 17 is android 4.2.x  JELLY BEAN-->
-	
+    <!--<uses-sdk android:minSdkVersion="8"
+            android:targetSdkVersion="17" /> -->
+    <!-- 8 is android 2.2.x FROYO -->
+    <!-- 17 is android 4.2.x  JELLY BEAN-->
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.CAMERA"/>
-    
+
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <uses-feature android:name="android.hardware.location" android:required="false" />
@@ -27,90 +27,90 @@
 
     <application
         android:name=".AnalyticsHelper"
-                 android:label="@string/app_name"
-    			  android:icon="@drawable/ic_logo"
-				  android:logo="@drawable/ic_logo"
-				  android:theme="@style/Wishlist_Yellow">
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_logo"
+        android:logo="@drawable/ic_logo"
+        android:theme="@style/Wishlist_Yellow">
 
         <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <!-- Google Analytics Version v4 needs this value for easy tracking, parsing this will cause app freeze -->
-<!--        <meta-data android:name="com.google.android.gms.analytics.globalConfigResource"
-            android:resource="@xml/global_tracker" /> -->
+        <!--        <meta-data android:name="com.google.android.gms.analytics.globalConfigResource"
+                    android:resource="@xml/global_tracker" /> -->
 
 
         <uses-library android:name="com.google.android.maps" />
-         
-         <activity android:name=".activity.Splash"
-           			android:label="@string/app_name"
-					android:theme="@style/Theme.D1.noActionBar"
-			>
+
+        <activity android:name=".activity.Splash"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.D1.noActionBar"
+            >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/> 
-                <category android:name="android.intent.category.LAUNCHER" /> 
-            </intent-filter> 
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        
+
         <activity android:name=".activity.DashBoard"
-        		  android:label="@string/app_name" 
-				android:theme="@style/Theme.D1.noActionBar"
-                 >
-			 <!-- android:theme="@android:style/Theme.Holo.Light"-->
-        </activity> 
-        <activity android:name=".activity.Login"
-        		  android:label="@string/app_name" 
-                 >
-        </activity> 
-         
-         
-<!--        <activity android:name=".WishListLogin"
-                  android:label="@string/app_name"
-                  android:theme="@style/ToDoTheme"> -->
-<!--             <intent-filter> -->
-<!--                 <action android:name="android.intent.action.MAIN" /> -->
-<!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
-<!--             </intent-filter> -->
-            
-<!--        </activity>   -->
-        
-<!--	    <activity android:name=".WishListLoginReal">
-	    </activity>
--->
-	    <!-- The default activity of the app.  Can also display search results. -->
-        <activity android:name=".activity.WishList"
-                  android:label="@string/app_name"
-				  android:theme="@style/Wishlist_Yellow"
-                  android:launchMode="singleTop"
-				  >
-<!--                   android:launchMode="singleTask"> -->
-                  
-<!--                   <meta-data android:name="android.app.default_searchable" -->
-<!--                    	   android:value=".WishListSearchEngine" /> -->
-                   	   
- <!--               <intent-filter> -->
-<!--                	<action android:name="android.intent.action.MAIN" />  -->
-<!--                	<category android:name="android.intent.category.LAUNCHER" />  -->
- <!--           	</intent-filter> -->
-            	
-	            <!-- Receives the search request. -->
-	            <intent-filter>
-	                <action android:name="android.intent.action.SEARCH" />
-	                <category android:name="android.intent.category.DEFAULT" />
-	            </intent-filter>
-	            
-<!-- 	            Points to searchable meta data. -->
-            	<meta-data android:name="android.app.searchable"
-                    android:resource="@xml/searchable"/>
-            
+            android:label="@string/app_name"
+            android:theme="@style/Theme.D1.noActionBar"
+            >
+            <!-- android:theme="@android:style/Theme.Holo.Light"-->
         </activity>
-        
+        <activity android:name=".activity.Login"
+            android:label="@string/app_name"
+            >
+        </activity>
+
+
+        <!--        <activity android:name=".WishListLogin"
+                          android:label="@string/app_name"
+                          android:theme="@style/ToDoTheme"> -->
+        <!--             <intent-filter> -->
+        <!--                 <action android:name="android.intent.action.MAIN" /> -->
+        <!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!--             </intent-filter> -->
+
+        <!--        </activity>   -->
+
+        <!--	    <activity android:name=".WishListLoginReal">
+                </activity>
+        -->
+        <!-- The default activity of the app.  Can also display search results. -->
+        <activity android:name=".activity.WishList"
+            android:label="@string/app_name"
+            android:theme="@style/Wishlist_Yellow"
+            android:launchMode="singleTop"
+            >
+            <!--                   android:launchMode="singleTask"> -->
+
+            <!--                   <meta-data android:name="android.app.default_searchable" -->
+            <!--                    	   android:value=".WishListSearchEngine" /> -->
+
+            <!--               <intent-filter> -->
+            <!--                	<action android:name="android.intent.action.MAIN" />  -->
+            <!--                	<category android:name="android.intent.category.LAUNCHER" />  -->
+            <!--           	</intent-filter> -->
+
+            <!-- Receives the search request. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <!-- 	            Points to searchable meta data. -->
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+
+        </activity>
+
         <activity android:name=".activity.EditItem"
-        		  android:label="@string/app_name"
-				  android:theme="@style/WishList.EditWish.Theme.ActionBar"
-				  >
-				  <!--android:theme="@style/Theme.D1"-->
-                  <!--  android:screenOrientation="portrait"> -->
+            android:label="@string/app_name"
+            android:theme="@style/WishList.EditWish.Theme.ActionBar"
+            >
+            <!--android:theme="@style/Theme.D1"-->
+            <!--  android:screenOrientation="portrait"> -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -138,47 +138,47 @@
         </activity>
 
         <activity android:name=".activity.WishListPreference"
-        		  android:label="@string/app_name" >
-                  <!--  android:screenOrientation="portrait"> -->
+            android:label="@string/app_name" >
+            <!--  android:screenOrientation="portrait"> -->
         </activity>
 
         <activity android:name=".activity.WishItemDetail"
-        		  android:label="@string/app_name"
-				  android:theme="@style/Wishlist_Yellow"
-				  >
-        		  <!--  android:screenOrientation="portrait"> --> 
-        </activity> 
-        
-        <activity android:name=".activity.FullscreenPhoto"
-        		  android:label="@string/app_name"
-				android:theme="@style/Theme.D1.noActionBar"
-				>
-        		  <!--  android:screenOrientation="portrait"> -->
-        </activity> 
-        
-         <activity android:name=".activity.WishItemPostToSNS"
-        		  android:label="@string/app_name">
-<!--              android:theme="@style/ToDoTheme"> -->
-        </activity> 
+            android:label="@string/app_name"
+            android:theme="@style/Wishlist_Yellow"
+            >
+            <!--  android:screenOrientation="portrait"> -->
+        </activity>
 
-         <activity android:name=".activity.FacebookPost"
-        		  android:label="@string/app_name">
-        </activity> 
-        
-<!--         <activity android:name=".WishListSearchEngine" -->
-<!--                 android:label="@string/app_name" -->
-<!--                 android:theme="@style/ToDoTheme"> -->
-<!--             <intent-filter> -->
-<!--                 <action android:name="android.intent.action.SEARCH" /> -->
-<!--             </intent-filter> -->
-<!--               <meta-data android:name="android.app.searchable" -->
-<!--                     android:resource="@xml/searchable"/> -->
-<!--         </activity> -->
-        
+        <activity android:name=".activity.FullscreenPhoto"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.D1.noActionBar"
+            >
+            <!--  android:screenOrientation="portrait"> -->
+        </activity>
+
+        <activity android:name=".activity.WishItemPostToSNS"
+            android:label="@string/app_name">
+            <!--              android:theme="@style/ToDoTheme"> -->
+        </activity>
+
+        <activity android:name=".activity.FacebookPost"
+            android:label="@string/app_name">
+        </activity>
+
+        <!--         <activity android:name=".WishListSearchEngine" -->
+        <!--                 android:label="@string/app_name" -->
+        <!--                 android:theme="@style/ToDoTheme"> -->
+        <!--             <intent-filter> -->
+        <!--                 <action android:name="android.intent.action.SEARCH" /> -->
+        <!--             </intent-filter> -->
+        <!--               <meta-data android:name="android.app.searchable" -->
+        <!--                     android:resource="@xml/searchable"/> -->
+        <!--         </activity> -->
+
         <activity android:name=".activity.WishListMap"
-				android:label="@string/app_name"
-				android:theme="@style/Theme.D1.noActionBar" >
-		</activity>
+            android:label="@string/app_name"
+            android:theme="@style/Theme.D1.noActionBar" >
+        </activity>
 
         <activity android:name=".activity.FindTag"
             android:label="@string/app_name"
@@ -193,18 +193,18 @@
             android:label="@string/app_name"
             android:theme="@style/WishList.EditWish.Theme.ActionBar" >
         </activity>
-<!--    android:theme="@style/ToDoTheme"></activity> -->
-                  
-<!--         <provider android:name="com.android.wishlist.defaultphotoprovider" -->
-<!--           android:authorities="com.android.wishlist.provider.defaultphotoprovider"> -->
-<!-- 		</provider> -->
-		
-<!-- 		<provider android:name="com.google.provider.NotePad" -->
-<!--           android:authorities="com.google.provider.NotePad"> -->
-<!-- 		</provider> -->
-		<activity android:name="com.facebook.LoginActivity"
-			android:label="@string/app_name" />
-		<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/applicationId" />
+        <!--    android:theme="@style/ToDoTheme"></activity> -->
+
+        <!--         <provider android:name="com.android.wishlist.defaultphotoprovider" -->
+        <!--           android:authorities="com.android.wishlist.provider.defaultphotoprovider"> -->
+        <!-- 		</provider> -->
+
+        <!-- 		<provider android:name="com.google.provider.NotePad" -->
+        <!--           android:authorities="com.google.provider.NotePad"> -->
+        <!-- 		</provider> -->
+        <activity android:name="com.facebook.LoginActivity"
+            android:label="@string/app_name" />
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/applicationId" />
 
         <provider android:authorities="com.facebook.app.NativeAppCallContentProvider221345307993103"
             android:name="com.facebook.NativeAppCallContentProvider"

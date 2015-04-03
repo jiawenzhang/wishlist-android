@@ -7,65 +7,65 @@
 
     <!-- the FrameLayout is to have the press state of the item-->
 
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:id="@+id/panel_content"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:paddingLeft="1dp"
-android:paddingRight="1dp"
-android:paddingTop="1dp"
-android:paddingBottom="5dp"
-android:background="@drawable/staggered_view_border"
-android:descendantFocusability="blocksDescendants">
-<!--1dp padding is to match with 1dp border so images won't obscure the border -->
-
-    <com.etsy.android.grid.util.DynamicHeightImageView
-        android:id="@+id/staggered_image"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:id="@+id/panel_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"/>
+        android:paddingLeft="1dp"
+        android:paddingRight="1dp"
+        android:paddingTop="1dp"
+        android:paddingBottom="5dp"
+        android:background="@drawable/staggered_view_border"
+        android:descendantFocusability="blocksDescendants">
+        <!--1dp padding is to match with 1dp border so images won't obscure the border -->
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <com.etsy.android.grid.util.DynamicHeightTextView
-            android:id="@+id/staggered_name"
-            android:layout_weight="0.9"
-            android:textSize="15sp"
-            android:ellipsize="marquee"
+        <com.etsy.android.grid.util.DynamicHeightImageView
+            android:id="@+id/staggered_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.etsy.android.grid.util.DynamicHeightTextView
+                android:id="@+id/staggered_name"
+                android:layout_weight="0.9"
+                android:textSize="15sp"
+                android:ellipsize="marquee"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:singleLine="true"
+                android:textColor="@color/black"/>
+            <ImageView
+                android:id="@+id/staggered_checkmark_complete"
+                android:layout_weight="0.1"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_checkmark"
+                android:visibility="visible"
+                />
+        </LinearLayout>
+
+        <com.etsy.android.grid.util.DynamicHeightTextView
+            android:id="@+id/staggered_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:singleLine="true"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:singleLine="true"
-            android:textColor="@color/black"/>
-        <ImageView
-            android:id="@+id/staggered_checkmark_complete"
-            android:layout_weight="0.1"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_checkmark"
-            android:visibility="visible"
-            />
+            android:textColor="@color/medium_grey"/>
+        <!--    android:gravity="center"/> -->
+        <!--android:visibility="gone"/> -->
     </LinearLayout>
-
-    <com.etsy.android.grid.util.DynamicHeightTextView
-        android:id="@+id/staggered_price"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:singleLine="true"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:textColor="@color/medium_grey"/>
-<!--    android:gravity="center"/> -->
-    <!--android:visibility="gone"/> -->
-</LinearLayout>
 </FrameLayout>

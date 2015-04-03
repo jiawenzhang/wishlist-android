@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="notepad_paper">#AAFFFF99</color>
-	<color name="notepad_lines">#FF0000FF</color>
-	<color name="notepad_margin">#90FF0000</color>
-	<color name="notepad_text">#AA0000FF</color>
-	
-	<color name="item_backgrd">#FFFFFFFF</color>
-	
-	<color name="red">#FFFF0000</color>
-	<color name="yellow">#FFFFFF00</color>
-	<color name="green">#FF00FF00</color>
-	<color name="black">#FF000000</color>
-	<color name="grey">#545454</color>
-	<color name="dark_grey">#4F4F4F</color>
-	<color name="white">#FFFFFFFF</color>
-	<color name="logo_color">#FFFF0F</color>
-	<color name="version_color">#f0f0f0</color>
-	<color name="version_bkgrd">#1a1a48</color>
-	<color name="title_color">#f0f0f0</color>
-	<color name="title_glow">#F00</color>
-	<color name="menu_color">#FFFF0F</color>
-	<color name="menu_glow">#F00</color>
-	<color name="error_color">#F00</color>
-	
-	 <color name="title_background">#ff355689</color>
+    <color name="notepad_paper">#AAFFFF99</color>
+    <color name="notepad_lines">#FF0000FF</color>
+    <color name="notepad_margin">#90FF0000</color>
+    <color name="notepad_text">#AA0000FF</color>
+
+    <color name="item_backgrd">#FFFFFFFF</color>
+
+    <color name="red">#FFFF0000</color>
+    <color name="yellow">#FFFFFF00</color>
+    <color name="green">#FF00FF00</color>
+    <color name="black">#FF000000</color>
+    <color name="grey">#545454</color>
+    <color name="dark_grey">#4F4F4F</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="logo_color">#FFFF0F</color>
+    <color name="version_color">#f0f0f0</color>
+    <color name="version_bkgrd">#1a1a48</color>
+    <color name="title_color">#f0f0f0</color>
+    <color name="title_glow">#F00</color>
+    <color name="menu_color">#FFFF0F</color>
+    <color name="menu_glow">#F00</color>
+    <color name="error_color">#F00</color>
+
+    <color name="title_background">#ff355689</color>
     <color name="title_text">#ffffffff</color>
     <color name="title_text_alt">#ff000000</color>
     <color name="foreground1">#ff355689</color>
@@ -34,18 +34,18 @@
     <color name="title_separator">#40ffffff</color>
     <color name="light_yellow">#F5E856</color>
     <color name="wishlist_yellow_color">#f6be27</color>
-    
+
     <color name="headBarBackground_dark_grey">#222222</color>
     <color name="headBarText_light_grey">#aeaeae</color>
-    
+
     <color name="footerBarBackground_dark_grey">#222222</color>
-    
+
     <color name="bodyBackground_light_grey">#F1F1F1</color>
     <color name="semitransparent_white">#77ffffff</color>
-	<color name="bodyText_dark_grey">#424242</color>
+    <color name="bodyText_dark_grey">#424242</color>
     <color name="medium_grey">#939393</color>
 
     <color name="dark_purple">#790980</color>
-  
-    
+
+
 </resources>

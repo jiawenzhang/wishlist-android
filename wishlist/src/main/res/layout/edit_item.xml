@@ -6,151 +6,151 @@
     android:background="@color/bodyBackground_light_grey"
     >
 
- 	<include android:id="@+id/addItemView_header" layout="@layout/header" />
+    <include android:id="@+id/addItemView_header" layout="@layout/header" />
 
-<!-- we must use a relativelayout here to correctly position the scrollview and the footer.
-	the footer must be defined before the scrollview and the scrollview's aligment 
-	must be set to android:layout_above="@id/footer_bar. This will make sure that
-	the footer does not disappear when the content in the scrollview grows up.
-	This trick takes me hours to figure out! -->
-<RelativeLayout 
-    android:id="@+id/addItem"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-	android:background="@color/bodyBackground_light_grey">
+    <!-- we must use a relativelayout here to correctly position the scrollview and the footer.
+        the footer must be defined before the scrollview and the scrollview's aligment
+        must be set to android:layout_above="@id/footer_bar. This will make sure that
+        the footer does not disappear when the content in the scrollview grows up.
+        This trick takes me hours to figure out! -->
+    <RelativeLayout
+        android:id="@+id/addItem"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@color/bodyBackground_light_grey">
 
-    	<LinearLayout style="@style/FooterBar"
-    	    android:id="@+id/footer_bar">
-		<ImageButton style="@style/TitleBarAction"
-			android:id="@+id/imageButton_map"
-			android:contentDescription="@string/description_location" 
-			android:src="@drawable/ic_action_location"
-            android:background="@drawable/selectable_background_wishlist"
-			android:onClick="onClickMap"
-			android:layout_gravity="left"
-			android:layout_weight="1"/>
+        <LinearLayout style="@style/FooterBar"
+            android:id="@+id/footer_bar">
+            <ImageButton style="@style/TitleBarAction"
+                android:id="@+id/imageButton_map"
+                android:contentDescription="@string/description_location"
+                android:src="@drawable/ic_action_location"
+                android:background="@drawable/selectable_background_wishlist"
+                android:onClick="onClickMap"
+                android:layout_gravity="left"
+                android:layout_weight="1"/>
             <!--android:src="@drawable/ic_pin_blue_default_72by72"-->
 
-		<ImageButton style="@style/TitleBarAction"
-            android:id="@+id/imageButton_camera"
-            android:src="@drawable/ic_action_camera"
-            android:background="@drawable/selectable_background_wishlist"
-            android:contentDescription="@string/description_camera"
-            android:onClick="onClickCamera"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
+            <ImageButton style="@style/TitleBarAction"
+                android:id="@+id/imageButton_camera"
+                android:src="@drawable/ic_action_camera"
+                android:background="@drawable/selectable_background_wishlist"
+                android:contentDescription="@string/description_camera"
+                android:onClick="onClickCamera"
+                android:layout_gravity="center"
+                android:layout_weight="1"/>
             <!--android:src="@drawable/ic_camera_default_72by72"-->
 
-        <ImageButton style="@style/TitleBarAction"
-            android:id="@+id/imageButton_tag"
-            android:contentDescription="@string/description_tag"
-            android:src="@drawable/ic_action_tag"
-            android:background="@drawable/selectable_background_wishlist"
-            android:onClick="onClickTag"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
+            <ImageButton style="@style/TitleBarAction"
+                android:id="@+id/imageButton_tag"
+                android:contentDescription="@string/description_tag"
+                android:src="@drawable/ic_action_tag"
+                android:background="@drawable/selectable_background_wishlist"
+                android:onClick="onClickTag"
+                android:layout_gravity="center"
+                android:layout_weight="1"/>
             <!--android:src="@drawable/ic_tag_default_72by72"-->
 
-		<ImageButton style="@style/TitleBarAction"
-			android:id="@+id/imageButton_gallery"
-			android:contentDescription="@string/description_gallery"
-			android:src="@drawable/ic_action_camera"
-            android:background="@drawable/selectable_background_wishlist"
-			android:onClick="onClickCamera"
-			android:layout_gravity="right"
-			android:layout_weight="1"
-			android:visibility="gone"/>
+            <ImageButton style="@style/TitleBarAction"
+                android:id="@+id/imageButton_gallery"
+                android:contentDescription="@string/description_gallery"
+                android:src="@drawable/ic_action_camera"
+                android:background="@drawable/selectable_background_wishlist"
+                android:onClick="onClickCamera"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:visibility="gone"/>
             <!--android:src="@drawable/ic_camera_default_72by72"-->
-	</LinearLayout>
-	<ScrollView
-	    android:id="@+id/editItem_ScrollView"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:layout_above="@id/footer_bar"
-	    android:background="@color/bodyBackground_light_grey"
-	    android:orientation="vertical" >
+        </LinearLayout>
+        <ScrollView
+            android:id="@+id/editItem_ScrollView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_above="@id/footer_bar"
+            android:background="@color/bodyBackground_light_grey"
+            android:orientation="vertical" >
 
-		<LinearLayout
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:layout_margin="10dp"
-		    android:background="@color/bodyBackground_light_grey"
-		    android:orientation="vertical" >
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@color/bodyBackground_light_grey"
+                android:orientation="vertical" >
 
-			<EditText
-			    android:id="@+id/itemname"
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:layout_marginBottom="5dp"
-			    android:hint="Name"
-			    android:inputType="textMultiLine|textCapSentences"
-			    android:textSize="@dimen/text_size_medium" 
-				android:textColor="@color/bodyText_dark_grey"
-                android:imeOptions="flagNoExtractUi"
-			/>
+                <EditText
+                    android:id="@+id/itemname"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:hint="Name"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/bodyText_dark_grey"
+                    android:imeOptions="flagNoExtractUi"
+                    />
 
-			<EditText
-			    android:id="@+id/note"
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:layout_marginBottom="5dp"
-			    android:hint="Note"
-			    android:inputType="textMultiLine|textCapSentences"
-			    android:textSize="@dimen/text_size_medium" 
-			    android:textColor="@color/bodyText_dark_grey"
-                android:imeOptions="flagNoExtractUi"
-			 />
+                <EditText
+                    android:id="@+id/note"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:hint="Note"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/bodyText_dark_grey"
+                    android:imeOptions="flagNoExtractUi"
+                    />
 
-			<EditText
-			    android:id="@+id/price"
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:layout_marginBottom="5dp"
-			    android:hint="Price"
-			    android:inputType="numberDecimal"
-			    android:textSize="@dimen/text_size_medium"
-			    android:textColor="@color/bodyText_dark_grey"
-                android:imeOptions="flagNoExtractUi"
-			/>
-			
-			<EditText
-			    android:id="@+id/store"
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:layout_marginBottom="5dp"
-			    android:hint="Store"
-			    android:inputType="textMultiLine|textCapSentences"
-			    android:textSize="@dimen/text_size_medium" 
-				android:textColor="@color/bodyText_dark_grey"
-                android:imeOptions="flagNoExtractUi"
-			/>
+                <EditText
+                    android:id="@+id/price"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:hint="Price"
+                    android:inputType="numberDecimal"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/bodyText_dark_grey"
+                    android:imeOptions="flagNoExtractUi"
+                    />
 
-			<EditText
-			    android:id="@+id/location"
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:layout_marginBottom="10dp"
-			    android:hint="Location"
-			    android:inputType="textMultiLine|textPostalAddress|textCapWords"
-			    android:textSize="@dimen/text_size_medium" 
-			    android:textColor="@color/bodyText_dark_grey"
-                android:imeOptions="flagNoExtractUi"
-			/>
+                <EditText
+                    android:id="@+id/store"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:hint="Store"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/bodyText_dark_grey"
+                    android:imeOptions="flagNoExtractUi"
+                    />
 
-				<!--android:scrollHorizontally="false" -->
+                <EditText
+                    android:id="@+id/location"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:hint="Location"
+                    android:inputType="textMultiLine|textPostalAddress|textCapWords"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/bodyText_dark_grey"
+                    android:imeOptions="flagNoExtractUi"
+                    />
 
-			<CheckBox
-			    android:id="@+id/completeCheckBox"
-			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content"
-			    android:layout_marginBottom="10dp"
-			    android:text="Mark as completed"
-			    android:visibility="gone"
-			    android:textSize="@dimen/text_size_medium" 
-			 	android:textColor="@color/bodyText_dark_grey"
-			 />
+                <!--android:scrollHorizontally="false" -->
+
+                <CheckBox
+                    android:id="@+id/completeCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Mark as completed"
+                    android:visibility="gone"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/bodyText_dark_grey"
+                    />
 
                 <ImageView android:id="@+id/image_photo"
                     android:layout_width="120dp"
@@ -160,10 +160,10 @@
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/wishlist_yellow_list_selector_holo_light"
                     />
-		<!--		android:src="@drawable/icon"/> -->
+                <!--		android:src="@drawable/icon"/> -->
 
-		</LinearLayout>
-	</ScrollView>
+            </LinearLayout>
+        </ScrollView>
 
- </RelativeLayout> 
+    </RelativeLayout>
 </LinearLayout>

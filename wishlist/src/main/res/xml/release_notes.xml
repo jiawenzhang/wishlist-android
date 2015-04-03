@@ -17,32 +17,32 @@
     <release versionName="1.0.9" versionCode="12">
         <note>Users can customize the currency symbol of the wished item's price.</note>
     </release>
-	<release versionName="1.0.8" versionCode="11">
-		<note>Users can mark wishes as completed, and view wishes filtered by completed or in progress.</note>
-	</release>
-	<release versionName="1.0.7" versionCode="10">
-		<note>Redesigned the header bar and improved its navigation for Android 3.0+.</note>
-		<note>Applied the Android holo theme across the app for Android 3.0+.</note>
-		<note>Improved the wishlist detail view.</note>
-	</release>
-	<release versionName="1.0.6" versionCode="9">
-		<note>Added a Settings section where users can enable/disable auto location tagging, view release notes and rate the app.</note>
-		<note>Improved the experience of location tagging while new wish is being created.</note>
-	</release>
-	<release versionName="1.0.5" versionCode="8">
-		<note>Users can import existing photos on the phone when creating and editing wishes.</note>
-		<note>Improved the list and grid view. The views now adjust layout according to different screen size.</note>
-	</release>    
-	<release versionName="1.0.4" versionCode="7">
-		<note>Share wishes to friends via various social network including facebook, google+, twitter and more.</note>
-		<note>Send wishes through e-mail or to other applications such as Evernote.</note>
-		<note>Automatically detect and record location when a new wish is added.</note>
-	</release>    
-	<release versionName="1.0.3">
-		<note>Enable searching wishes by name.</note>
-		<note>Support both portrait and landscape mode.</note>
-		<note>Display wishes faster, especially those with photos.</note>
-		<note>Add menu to wish details page.</note>
-		<note>Improve stability.</note>
-	</release>
+    <release versionName="1.0.8" versionCode="11">
+        <note>Users can mark wishes as completed, and view wishes filtered by completed or in progress.</note>
+    </release>
+    <release versionName="1.0.7" versionCode="10">
+        <note>Redesigned the header bar and improved its navigation for Android 3.0+.</note>
+        <note>Applied the Android holo theme across the app for Android 3.0+.</note>
+        <note>Improved the wishlist detail view.</note>
+    </release>
+    <release versionName="1.0.6" versionCode="9">
+        <note>Added a Settings section where users can enable/disable auto location tagging, view release notes and rate the app.</note>
+        <note>Improved the experience of location tagging while new wish is being created.</note>
+    </release>
+    <release versionName="1.0.5" versionCode="8">
+        <note>Users can import existing photos on the phone when creating and editing wishes.</note>
+        <note>Improved the list and grid view. The views now adjust layout according to different screen size.</note>
+    </release>
+    <release versionName="1.0.4" versionCode="7">
+        <note>Share wishes to friends via various social network including facebook, google+, twitter and more.</note>
+        <note>Send wishes through e-mail or to other applications such as Evernote.</note>
+        <note>Automatically detect and record location when a new wish is added.</note>
+    </release>
+    <release versionName="1.0.3">
+        <note>Enable searching wishes by name.</note>
+        <note>Support both portrait and landscape mode.</note>
+        <note>Display wishes faster, especially those with photos.</note>
+        <note>Add menu to wish details page.</note>
+        <note>Improve stability.</note>
+    </release>
 </releaseNote>
