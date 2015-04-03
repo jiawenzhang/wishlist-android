@@ -43,7 +43,7 @@
 				android:layout_below="@android:id/title"
 				android:layout_alignLeft="@android:id/title"
 				android:textSize="14sp"
-				android:textColor="?android:attr/textColorSecondary"
+                android:textColor="@color/medium_grey"
 				android:maxLines="4" />
 		<!--android:textAppearance="?android:attr/textAppearanceSmall" -->
 
