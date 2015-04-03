@@ -567,15 +567,20 @@ public class FacebookPost extends Activity {
         //wish.setProperty("url", "https://example.com/cooking-app/meal/Buffalo-Tacos.html");
         wish.setProperty("description", _wishItem.getDesc());
 
-        Bitmap bitmap = BitmapFactory.decodeFile(_wishItem.getFullsizePicPath());
+        List<Bitmap> images = new ArrayList<Bitmap>();
         Boolean userGenerated = true;
-        if (bitmap != null && (bitmap.getWidth() < 480 || bitmap.getHeight() < 480)) {
-            userGenerated = false;
+        String fullSizePicPath = _wishItem.getFullsizePicPath();
+        if (fullSizePicPath != null) {
+            Bitmap bitmap = BitmapFactory.decodeFile(fullSizePicPath);
+            if (bitmap != null) {
+                images.add(bitmap);
+                if (bitmap.getWidth() < 480 || bitmap.getHeight() < 480) {
+                    userGenerated = false;
+                }
+            }
         }
 
         wish.setProperty("isUserGeneratedImage", userGenerated);
-        List<Bitmap> images = new ArrayList<Bitmap>();
-        images.add(bitmap);
 
         OpenGraphAction action = OpenGraphAction.Factory.createForPost("beans_wishlist:make");
         action.setProperty("wish", wish);
