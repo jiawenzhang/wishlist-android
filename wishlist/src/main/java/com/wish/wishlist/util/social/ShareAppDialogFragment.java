@@ -105,6 +105,8 @@ public class ShareAppDialogFragment extends DialogFragment {
                         .setAction("ShareWish")
                         .setLabel(info.activityInfo.packageName)
                         .build());
+
+                dismiss();
             }
         });
         gridView.setAdapter(adapter);

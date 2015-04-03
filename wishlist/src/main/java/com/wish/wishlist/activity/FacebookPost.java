@@ -605,6 +605,7 @@ public class FacebookPost extends Activity {
                         //.setImageAttachmentsForAction(images, true)
                 .build();
         _uiHelper.trackPendingDialogCall(shareDialog.present());
+        finish();
 
 
         //LoginButton authButton = (LoginButton) findViewById(R.id.facebook_login_button);
