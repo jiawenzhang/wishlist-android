@@ -116,7 +116,7 @@ public class EditItem extends Activity implements Observer {
 	static final private int TAKE_PICTURE = 1;
 	private static final int SELECT_PICTURE = 2;
     private static final int ADD_TAG = 3;
-    private Boolean _selectedPic;
+    private Boolean _selectedPic = false;
 
     static final public String IMG_URLS = "IMG_URLS";
 
