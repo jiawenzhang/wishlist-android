@@ -69,6 +69,16 @@ public class WishListPreference extends PreferenceActivity implements
                 return true;
             }
         });
+
+        Preference privacy = (Preference) findPreference("privacy");
+        privacy.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Uri link = Uri.parse("http://beanswishlist.com/privacy.html");
+                Intent launchBrowser = new Intent(Intent.ACTION_VIEW, link);
+                startActivity(launchBrowser);
+                return true;
+            }
+        });
     }
 
     @Override
