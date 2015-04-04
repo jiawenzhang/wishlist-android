@@ -70,6 +70,16 @@ public class WishListPreference extends PreferenceActivity implements
             }
         });
 
+        Preference facebook = (Preference) findPreference("facebook");
+        facebook.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Uri link = Uri.parse("https://www.facebook.com/BeansWishlist");
+                Intent launchBrowser = new Intent(Intent.ACTION_VIEW, link);
+                startActivity(launchBrowser);
+                return true;
+            }
+        });
+
         Preference privacy = (Preference) findPreference("privacy");
         privacy.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
