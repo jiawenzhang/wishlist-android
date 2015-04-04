@@ -34,7 +34,8 @@
             android:singleLine="false"
             android:textSize="20sp"
             android:ellipsize="marquee"
-            android:fadingEdge="horizontal" />
+            android:fadingEdge="horizontal"
+            android:textColor="@color/dark_grey"/>
         <!--android:textAppearance="?android:attr/textAppearanceMedium" -->
 
         <TextView android:id="@+android:id/summary"

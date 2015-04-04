@@ -187,6 +187,22 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
+    <style name="PreferenceListHeader" >
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/dark_grey</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingLeft">10dp</item>
+    </style>
+
+    <style name="WishList_Yellow_PreferenceCategory" parent="style/_Wishlist_Yellow">
+        <item name="android:listSeparatorTextViewStyle">@style/PreferenceListHeader</item>
+    </style>
+
     <!--
         <style name="WishList.EditWish.ActionBar"
             parent="@android:style/Widget.Holo.ActionBar">
