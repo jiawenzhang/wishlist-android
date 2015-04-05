@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_weight="1"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <TextView android:id="@+id/newFeatureText"
+        android:textSize="20sp"
+        android:singleLine="false"
+        android:ellipsize="marquee"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal|bottom"
+        android:textColor="@color/white"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:layout_gravity="top"
+        />
+    <!--android:background="@color/dark_purple"-->
+
+    <ImageView android:id="@+id/newFeatureImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside"
+        android:padding="1dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="80dp"
+        />
+    <Button android:id="@+id/newFeatureButton"
+        android:background="@drawable/button_yellow_selector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:textColor="@color/wishlist_yellow_color"
+        android:textSize="20sp"
+        android:text="OK"
+        android:visibility="gone"
+        />
+
+</LinearLayout>

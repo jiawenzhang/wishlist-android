@@ -50,15 +50,15 @@ public class Splash extends Activity{
             }
 
             if (currentVersionNumber > savedVersionNumber) {
-                showWhatsNewDialog();
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putInt(VERSION_KEY, currentVersionNumber);
                 editor.commit();
+                startActivity(new Intent(getApplication(), NewFeatureFragmentActivity.class));
             }
             else {
                 startActivity(new Intent(getApplication(), WishList.class));
-                Splash.this.finish();
             }
+            Splash.this.finish();
         }
 
         private void showWhatsNewDialog() {

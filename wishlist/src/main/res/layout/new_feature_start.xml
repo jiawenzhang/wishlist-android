@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_weight="1"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <TextView android:id="@+id/newFeatureStartTitle"
+        android:textSize="32sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="New feature"
+        android:textColor="@color/white"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        />
+    <TextView android:id="@+id/newFeatureStartVersion"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Version 1.1.2"
+        android:textColor="@color/wishlist_yellow_color"
+        android:gravity="center_horizontal"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        />
+
+    <TextView android:id="@+id/newFeatureStartText"
+        android:textSize="20sp"
+        android:singleLine="false"
+        android:ellipsize="marquee"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal"
+        android:text="Share your wishes as Facebook stories and engage your friends to like or comment."
+        android:textColor="@color/white"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        />
+</LinearLayout>

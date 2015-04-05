@@ -38,7 +38,7 @@ public class StaggeredGridActivityFragment extends FragmentActivity {
         }
     }
 
-    private class StaggeredGridFragment extends Fragment implements
+    public static class StaggeredGridFragment extends Fragment implements
             AbsListView.OnScrollListener, AbsListView.OnItemClickListener {
 
         private StaggeredGridView mGridView;
