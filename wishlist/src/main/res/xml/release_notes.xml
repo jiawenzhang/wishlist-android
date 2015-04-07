@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <releaseNote>
+    <release versionName="1.1.2" versionCode="19">
+        <note>Support sharing wishes as Facebook stories.</note>
+    </release>
     <release versionName="1.1.1" versionCode="18">
         <note>Completely renovated grid view, showing wishes in multi-column staggered fashion.</note>
         <note>Improved list view.</note>

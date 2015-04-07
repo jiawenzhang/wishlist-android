@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wish.wishlist"
-    android:versionCode="18"
-    android:versionName="1.1.1" >
+    android:versionCode="19"
+    android:versionName="1.1.2" >
 
     <!-- min sdkversion earlier than 4 will implicitly require WRITE_EXTERNAL_STORAGE and READ_PHONE_STATE 
     user permission. set the min version >= 4 to avoid that -->
