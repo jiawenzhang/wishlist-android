@@ -184,6 +184,7 @@ public class EditItem extends Activity implements Observer {
 				Intent i = new Intent(EditItem.this, FullscreenPhoto.class);
 				if (_fullsizePhotoPath != null) {
 					i.putExtra("fullsize_pic_str", _fullsizePhotoPath);
+                    i.putExtra("selectedPicUri", _selectedPicUri);
 					startActivity(i);
 				}
 			}
@@ -213,6 +214,10 @@ public class EditItem extends Activity implements Observer {
             //dashboard camera
             _fullsizePhotoPath = intent.getStringExtra("fullsizePhotoPath");
             setTakenPhoto();
+            if (intent.getStringExtra("selectedPicUri") != null) {
+                _selectedPicUri = Uri.parse(intent.getStringExtra("selectedPicUri"));
+                setSelectedPic();
+            }
         }
 
 		//get item id from previous intent, if there is an item id, we know this EditItemInfo is launched
@@ -344,7 +349,14 @@ public class EditItem extends Activity implements Observer {
 			// restore the current selected item in the list
 			_newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
 			_fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
-            Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
+            if (intent.getStringExtra("selectedPicUri") != null) {
+                _selectedPicUri = Uri.parse(intent.getStringExtra("selectedPicUri"));
+            }
+            if (_fullsizePhotoPath != null) {
+                Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
+            } else {
+                Picasso.with(this).load(_selectedPicUri).fit().centerCrop().into(_imageItem);
+            }
 		}
 	}
 
@@ -705,29 +717,39 @@ public class EditItem extends Activity implements Observer {
 		return false;
 	}
 	
-	private void setTakenPhoto() {
+	private Boolean setTakenPhoto() {
         if (_fullsizePhotoPath == null) {
-            return;
+            return false;
         }
         _imageItem.setVisibility(View.VISIBLE);
         Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
+        _selectedPicUri = null;
         _selectedPic = false;
+        return true;
 	}
 
-    private void setSelectedPic() {
+    private Boolean setSelectedPic() {
         if (_selectedPicUri == null) {
-            return;
+            return false;
         }
         _imageItem.setVisibility(View.VISIBLE);
         Picasso.with(this).load(_selectedPicUri).fit().centerCrop().into(_imageItem);
+        _fullsizePhotoPath = null;
         _selectedPic = true;
+        return true;
     }
 
 	//this will make the photo taken before to show up if user cancels taking a second photo
 	//this will also save the thumbnail on switching screen orientation
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("newfullsizePhotoPath", _newfullsizePhotoPath);
+        if (_newfullsizePhotoPath !=null) {
+            savedInstanceState.putString("newfullsizePhotoPath", _newfullsizePhotoPath.toString());
+        }
+        if (_selectedPicUri != null) {
+            savedInstanceState.putString("selectedPicUri", _selectedPicUri.toString());
+        }
+
 		savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -739,7 +761,12 @@ public class EditItem extends Activity implements Observer {
 		if (savedInstanceState != null) {
 			_newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
 			_fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
-            Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
+            if (savedInstanceState.getString("selectedPicUri") != null) {
+                _selectedPicUri = Uri.parse(savedInstanceState.getString("selectedPicUri"));
+            }
+            if (!setTakenPhoto()) {
+                setSelectedPic();
+            }
 		}
 	}
 
