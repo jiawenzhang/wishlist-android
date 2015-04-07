@@ -39,6 +39,14 @@ public class WishListPreference extends PreferenceActivity implements
         EditTextPreference currencyTextPref = (EditTextPreference) findPreference("currency");
         currencyTextPref.setSummary(currencyTextPref.getText());
 
+        Preference newFeature = (Preference) findPreference("newFeature");
+        newFeature.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                startActivity(new Intent(getApplication(), NewFeatureFragmentActivity.class));
+                return true;
+            }
+        });
+
         Preference releaseNotes = (Preference) findPreference("releaseNotes");
         releaseNotes.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {

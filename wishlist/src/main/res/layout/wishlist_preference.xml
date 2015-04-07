@@ -23,6 +23,11 @@
         android:key="about">
 
         <Preference
+            android:title="New feature"
+            android:key="newFeature"
+            android:layout="@xml/preference_style"/>
+
+        <Preference
             android:title="Release notes"
             android:key="releaseNotes"
             android:layout="@xml/preference_style"/>

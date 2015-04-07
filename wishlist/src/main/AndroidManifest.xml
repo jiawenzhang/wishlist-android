@@ -198,7 +198,7 @@
         <activity
             android:name=".activity.NewFeatureFragmentActivity"
             android:label="Wishlist"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.D1.noActionBar" >
         </activity>
         <!--    android:theme="@style/ToDoTheme"></activity> -->
