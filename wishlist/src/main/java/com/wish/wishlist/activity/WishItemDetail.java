@@ -166,7 +166,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 			public void onClick(View view) {
 				Intent i = new Intent(WishItemDetail.this, FullscreenPhoto.class);
 				if (_fullsize_picture_str != null) {
-					i.putExtra("fullsize_pic_str", _fullsize_picture_str);
+					i.putExtra(EditItem.FULLSIZE_PHOTO_PATH, _fullsize_picture_str);
 					startActivity(i);
 				}
 			}

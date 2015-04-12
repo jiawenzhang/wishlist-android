@@ -119,6 +119,9 @@ public class EditItem extends Activity implements Observer {
     private Boolean _selectedPic = false;
 
     static final public String IMG_URLS = "IMG_URLS";
+    static final public String FULLSIZE_PHOTO_PATH = "FULLSIZE_PHOTO_PATH";
+    static final public String NEW_FULLSIZE_PHOTO_PATH = "NEW_FULLSIZE_PHOTO_PATH";
+    static final public String SELECTED_PIC_URL = "SELECTED_PIC_URL";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -183,8 +186,8 @@ public class EditItem extends Activity implements Observer {
 			public void onClick(View view) {
 				Intent i = new Intent(EditItem.this, FullscreenPhoto.class);
 				if (_fullsizePhotoPath != null) {
-					i.putExtra("fullsize_pic_str", _fullsizePhotoPath);
-                    i.putExtra("selectedPicUri", _selectedPicUri);
+                    i.putExtra(FULLSIZE_PHOTO_PATH, _fullsizePhotoPath);
+                    i.putExtra(SELECTED_PIC_URL, _selectedPicUri);
 					startActivity(i);
 				}
 			}
@@ -212,10 +215,10 @@ public class EditItem extends Activity implements Observer {
             //Handle other intents, such as being started from the home screen
             //get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from
             //dashboard camera
-            _fullsizePhotoPath = intent.getStringExtra("fullsizePhotoPath");
+            _fullsizePhotoPath = intent.getStringExtra(FULLSIZE_PHOTO_PATH);
             setTakenPhoto();
-            if (intent.getStringExtra("selectedPicUri") != null) {
-                _selectedPicUri = Uri.parse(intent.getStringExtra("selectedPicUri"));
+            if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
+                _selectedPicUri = Uri.parse(intent.getStringExtra(SELECTED_PIC_URL));
                 setSelectedPic();
             }
         }
@@ -347,10 +350,10 @@ public class EditItem extends Activity implements Observer {
 
 		if (savedInstanceState != null) {
 			// restore the current selected item in the list
-			_newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
-			_fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
-            if (intent.getStringExtra("selectedPicUri") != null) {
-                _selectedPicUri = Uri.parse(intent.getStringExtra("selectedPicUri"));
+			_newfullsizePhotoPath = savedInstanceState.getString(NEW_FULLSIZE_PHOTO_PATH);
+			_fullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
+            if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
+                _selectedPicUri = Uri.parse(intent.getStringExtra(SELECTED_PIC_URL));
             }
             if (_fullsizePhotoPath != null) {
                 Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
@@ -744,13 +747,13 @@ public class EditItem extends Activity implements Observer {
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
         if (_newfullsizePhotoPath !=null) {
-            savedInstanceState.putString("newfullsizePhotoPath", _newfullsizePhotoPath.toString());
+            savedInstanceState.putString(NEW_FULLSIZE_PHOTO_PATH, _newfullsizePhotoPath.toString());
         }
         if (_selectedPicUri != null) {
-            savedInstanceState.putString("selectedPicUri", _selectedPicUri.toString());
+            savedInstanceState.putString(SELECTED_PIC_URL, _selectedPicUri.toString());
         }
 
-		savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
+		savedInstanceState.putString(FULLSIZE_PHOTO_PATH, _fullsizePhotoPath);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -759,10 +762,10 @@ public class EditItem extends Activity implements Observer {
 		super.onRestoreInstanceState(savedInstanceState);
 		// restore the current selected item in the list
 		if (savedInstanceState != null) {
-			_newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
-			_fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
-            if (savedInstanceState.getString("selectedPicUri") != null) {
-                _selectedPicUri = Uri.parse(savedInstanceState.getString("selectedPicUri"));
+			_newfullsizePhotoPath = savedInstanceState.getString(NEW_FULLSIZE_PHOTO_PATH);
+			_fullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
+            if (savedInstanceState.getString(SELECTED_PIC_URL) != null) {
+                _selectedPicUri = Uri.parse(savedInstanceState.getString(SELECTED_PIC_URL));
             }
             if (!setTakenPhoto()) {
                 setSelectedPic();

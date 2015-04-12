@@ -16,8 +16,8 @@ public class FullscreenPhoto extends Activity {
 		   setContentView(R.layout.fullscreen_photo);
 
 		   Intent intent = getIntent();
-		   _fullsizePhotoPath = intent.getStringExtra("fullsize_pic_str");
-		   
+           _fullsizePhotoPath = intent.getStringExtra(EditItem.FULLSIZE_PHOTO_PATH);
+
 		   if (savedInstanceState != null) {
 			   //we are restoring on switching screen orientation
 				_fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
