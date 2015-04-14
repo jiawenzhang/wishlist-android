@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.LocationDBManager;
 import com.wish.wishlist.db.StoreDBManager;
@@ -41,6 +42,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -112,6 +114,7 @@ public class EditItem extends Activity implements Observer {
 	private boolean _editNew = true;
 	private boolean _isGettingLocation = false;
     private ArrayList<String> _tags = new ArrayList<String>();
+    private Bitmap _webBitmap = null;
 	
 	private static final int TAKE_PICTURE = 1;
 	private static final int SELECT_PICTURE = 2;
@@ -367,7 +370,6 @@ public class EditItem extends Activity implements Observer {
 	}
 
     void handleSendAll(Intent intent) {
-        Log.v("AAA", "all");
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (sharedText != null) {
             _noteEditText.setText(sharedText);
@@ -573,7 +575,9 @@ public class EditItem extends Activity implements Observer {
 			_storeDBManager.updateStore(mStore_id, itemStoreName, mLocation_id);
 		}
 
-        if (_selectedPic && _selectedPicUri != null) {
+        if (_webBitmap != null) {
+            _fullsizePhotoPath = saveBitmapToAlbum(_webBitmap);
+        } else if (_selectedPic && _selectedPicUri != null) {
             _fullsizePhotoPath = copyPhotoToAlbum(_selectedPicUri);
         }
 		WishItem item = new WishItem(this, mItem_id, mStore_id, itemStoreName, itemName, itemDesc,
@@ -676,6 +680,27 @@ public class EditItem extends Activity implements Observer {
 		return null;
 	}
 
+    private String saveBitmapToAlbum(Bitmap bitmap) {
+        try {
+            //save the image to a file we created in wishlist album
+            File f = PhotoFileCreater.getInstance().setUpPhotoFile(false);
+            String path = f.getAbsolutePath();
+            OutputStream stream = new FileOutputStream(path);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+            stream.flush();
+            stream.close();
+            return path;
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
 	private boolean navigateBack(){
 		//all fields are empty
 		if(_itemNameEditText.getText().toString().length() == 0 &&
@@ -752,8 +777,22 @@ public class EditItem extends Activity implements Observer {
     }
 
     private Boolean setWebPic(String url) {
-        _imageItem.setVisibility(View.VISIBLE);
-        Picasso.with(this).load(url).fit().centerCrop().into(_imageItem);
+        final Target target = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                _imageItem.setImageBitmap(bitmap);
+                _imageItem.setVisibility(View.VISIBLE);
+                _webBitmap = bitmap;
+            }
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {}
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {}
+        };
+        _imageItem.setTag(target);
+
+        Picasso.with(this).load(url).into(target);
         _fullsizePhotoPath = null;
         _selectedPic = false;
         return true;
