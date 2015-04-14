@@ -111,7 +111,7 @@
             >
             <!--android:theme="@style/Theme.D1"-->
             <!--  android:screenOrientation="portrait"> -->
-<!--            <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="*/*" />
@@ -131,7 +131,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
             </intent-filter>
-            -->
         </activity>
 
         <activity android:name=".fragment.StaggeredGridActivityFragment"

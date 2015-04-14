@@ -113,10 +113,13 @@ public class EditItem extends Activity implements Observer {
 	private boolean _isGettingLocation = false;
     private ArrayList<String> _tags = new ArrayList<String>();
 	
-	static final private int TAKE_PICTURE = 1;
+	private static final int TAKE_PICTURE = 1;
 	private static final int SELECT_PICTURE = 2;
     private static final int ADD_TAG = 3;
+    private static final int GET_WEB_IMAGE = 4;
     private Boolean _selectedPic = false;
+
+    private static ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
 
     static final public String IMG_URLS = "IMG_URLS";
     static final public String FULLSIZE_PHOTO_PATH = "FULLSIZE_PHOTO_PATH";
@@ -382,17 +385,17 @@ public class EditItem extends Activity implements Observer {
                 return;
             }
             String url = links.get(0);
-            ArrayList<WebImage> image_urls = new ArrayList<WebImage>();
+            _webImages = new ArrayList<WebImage>();
             try {
-                image_urls = new getImageAsync().execute(url).get();
+                _webImages = new getImageAsync().execute(url).get();
             }
             catch (ExecutionException e) {
             }
             catch (InterruptedException e) {
             }
             Intent fg_intent = new Intent(this, StaggeredGridActivityFragment.class);
-            fg_intent.putParcelableArrayListExtra(IMG_URLS, image_urls);
-            startActivity(fg_intent);
+            fg_intent.putParcelableArrayListExtra(IMG_URLS, _webImages);
+            startActivityForResult(fg_intent, GET_WEB_IMAGE);
         }
     }
 
@@ -623,6 +626,12 @@ public class EditItem extends Activity implements Observer {
                     _tags = data.getStringArrayListExtra(AddTagFromEditItem.TAGS);
                 }
             }
+            case GET_WEB_IMAGE: {
+                if (resultCode == RESULT_OK) {
+                    int position = data.getIntExtra("position", -1);
+                    setWebPic(_webImages.get(position).mUrl);
+                }
+            }
 		}//switch
 	}
 	
@@ -739,6 +748,14 @@ public class EditItem extends Activity implements Observer {
         Picasso.with(this).load(_selectedPicUri).fit().centerCrop().into(_imageItem);
         _fullsizePhotoPath = null;
         _selectedPic = true;
+        return true;
+    }
+
+    private Boolean setWebPic(String url) {
+        _imageItem.setVisibility(View.VISIBLE);
+        Picasso.with(this).load(url).fit().centerCrop().into(_imageItem);
+        _fullsizePhotoPath = null;
+        _selectedPic = false;
         return true;
     }
 

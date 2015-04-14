@@ -1,5 +1,6 @@
 package com.wish.wishlist.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -93,6 +94,11 @@ public class StaggeredGridActivityFragment extends FragmentActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             //Toast.makeText(getActivity(), "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
+
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("position", position);
+            getActivity().setResult(RESULT_OK, resultIntent);
+            getActivity().finish();
         }
     }
 }
