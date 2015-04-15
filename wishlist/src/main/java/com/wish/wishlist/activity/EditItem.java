@@ -65,6 +65,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.app.ProgressDialog;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -201,7 +202,6 @@ public class EditItem extends Activity implements Observer {
 
 
         Intent intent = getIntent();
-
         String action = intent.getAction();
         String type = intent.getType();
 
@@ -388,16 +388,7 @@ public class EditItem extends Activity implements Observer {
             }
             String url = links.get(0);
             _webImages = new ArrayList<WebImage>();
-            try {
-                _webImages = new getImageAsync().execute(url).get();
-            }
-            catch (ExecutionException e) {
-            }
-            catch (InterruptedException e) {
-            }
-            Intent fg_intent = new Intent(this, StaggeredGridActivityFragment.class);
-            fg_intent.putParcelableArrayListExtra(IMG_URLS, _webImages);
-            startActivityForResult(fg_intent, GET_WEB_IMAGE);
+            new getImageAsync().execute(url);
         }
     }
 
@@ -413,8 +404,10 @@ public class EditItem extends Activity implements Observer {
         }
     }
     private class getImageAsync extends AsyncTask<String, Integer, ArrayList<WebImage>> {
+        ProgressDialog asyncDialog = new ProgressDialog(EditItem.this);
+
         protected ArrayList<WebImage> doInBackground(String... urls) {
-            ArrayList<WebImage> imgURLs = new ArrayList<WebImage>();
+            ArrayList<WebImage> webImages = new ArrayList<WebImage>();
             try {
                 Document doc = Jsoup.connect(urls[0]).get();
                 Log.d("info", doc.title());
@@ -438,21 +431,32 @@ public class EditItem extends Activity implements Observer {
                         if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
                             continue;
                         }
-                        imgURLs.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id()));
+                        webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id()));
                     } catch (IOException e) { }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return imgURLs;
+            return webImages;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            asyncDialog.setMessage("Loading images");
+            asyncDialog.show();
+            super.onPreExecute();
         }
 
         protected void onProgressUpdate(Integer... progress) {
             //setProgressPercent(progress[0]);
         }
 
-        protected void onPostExecute(HashMap<String, WebImage> imgURLs) {
-            //showDialog("Downloaded " + result + " bytes");
+        protected void onPostExecute(ArrayList<WebImage> webImages) {
+            asyncDialog.dismiss();
+            EditItem._webImages = webImages;
+            Intent fg_intent = new Intent(EditItem.this, StaggeredGridActivityFragment.class);
+            fg_intent.putParcelableArrayListExtra(IMG_URLS, _webImages);
+            startActivityForResult(fg_intent, GET_WEB_IMAGE);
         }
     }
 
@@ -857,6 +861,7 @@ public class EditItem extends Activity implements Observer {
 				_ddStr = _pManager.getCuttentAddStr();
 				return _ddStr;
 			}
+
 		@Override
 			protected void onPostExecute(String add) {
 				if (_ddStr.equals("unknown")) {
