@@ -11,10 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Observer;
 import java.util.Observable;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -129,6 +127,11 @@ public class EditItem extends Activity implements Observer {
     static final public String FULLSIZE_PHOTO_PATH = "FULLSIZE_PHOTO_PATH";
     static final public String NEW_FULLSIZE_PHOTO_PATH = "NEW_FULLSIZE_PHOTO_PATH";
     static final public String SELECTED_PIC_URL = "SELECTED_PIC_URL";
+
+    private class WebResult {
+        public ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
+        public String _title;
+    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -403,14 +406,14 @@ public class EditItem extends Activity implements Observer {
             // Update UI to reflect multiple images being shared
         }
     }
-    private class getImageAsync extends AsyncTask<String, Integer, ArrayList<WebImage>> {
+    private class getImageAsync extends AsyncTask<String, Integer, WebResult> {
         ProgressDialog asyncDialog = new ProgressDialog(EditItem.this);
 
-        protected ArrayList<WebImage> doInBackground(String... urls) {
-            ArrayList<WebImage> webImages = new ArrayList<WebImage>();
+        protected WebResult doInBackground(String... urls) {
+            WebResult result = new WebResult();
             try {
                 Document doc = Jsoup.connect(urls[0]).get();
-                Log.d("info", doc.title());
+                result._title = doc.title();
                 Elements img = doc.getElementsByTag("img");
 
                 for (Element el : img) {
@@ -431,13 +434,13 @@ public class EditItem extends Activity implements Observer {
                         if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
                             continue;
                         }
-                        webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id()));
+                        result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id()));
                     } catch (IOException e) { }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return webImages;
+            return result;
         }
 
         @Override
@@ -451,9 +454,10 @@ public class EditItem extends Activity implements Observer {
             //setProgressPercent(progress[0]);
         }
 
-        protected void onPostExecute(ArrayList<WebImage> webImages) {
+        protected void onPostExecute(WebResult result) {
             asyncDialog.dismiss();
-            EditItem._webImages = webImages;
+            EditItem._webImages = result._webImages;
+            _itemNameEditText.setText(result._title);
             Intent fg_intent = new Intent(EditItem.this, StaggeredGridActivityFragment.class);
             fg_intent.putParcelableArrayListExtra(IMG_URLS, _webImages);
             startActivityForResult(fg_intent, GET_WEB_IMAGE);
