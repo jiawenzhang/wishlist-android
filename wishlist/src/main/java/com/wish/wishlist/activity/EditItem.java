@@ -471,13 +471,15 @@ public class EditItem extends Activity implements Observer {
 
         protected void onPostExecute(WebResult result) {
             asyncDialog.dismiss();
-            EditItem._webImages = result._webImages;
             if (_itemNameEditText.getText().toString().isEmpty()) {
                 _itemNameEditText.setText(result._title);
             }
-            Intent fg_intent = new Intent(EditItem.this, StaggeredGridActivityFragment.class);
-            fg_intent.putParcelableArrayListExtra(IMG_URLS, _webImages);
-            startActivityForResult(fg_intent, GET_WEB_IMAGE);
+            EditItem._webImages = result._webImages;
+            if (!result._webImages.isEmpty()) {
+                Intent fg_intent = new Intent(EditItem.this, StaggeredGridActivityFragment.class);
+                fg_intent.putParcelableArrayListExtra(IMG_URLS, _webImages);
+                startActivityForResult(fg_intent, GET_WEB_IMAGE);
+            }
         }
     }
 
