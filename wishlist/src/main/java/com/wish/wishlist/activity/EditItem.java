@@ -384,13 +384,15 @@ public class EditItem extends Activity implements Observer {
     void handleSendText(Intent intent) {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (sharedText != null) {
-            _noteEditText.setText(sharedText);
             ArrayList<String> links = extractLinks(sharedText);
             if (links.isEmpty()) {
+                _itemNameEditText.setText(sharedText);
                 return;
             }
             String url = links.get(0);
-            _webImages = new ArrayList<WebImage>();
+            // remove the link from the text;
+            String name = sharedText.replace(url, "");
+            _itemNameEditText.setText(name);
             new getImageAsync().execute(url);
         }
     }
@@ -457,7 +459,9 @@ public class EditItem extends Activity implements Observer {
         protected void onPostExecute(WebResult result) {
             asyncDialog.dismiss();
             EditItem._webImages = result._webImages;
-            _itemNameEditText.setText(result._title);
+            if (_itemNameEditText.getText().toString().isEmpty()) {
+                _itemNameEditText.setText(result._title);
+            }
             Intent fg_intent = new Intent(EditItem.this, StaggeredGridActivityFragment.class);
             fg_intent.putParcelableArrayListExtra(IMG_URLS, _webImages);
             startActivityForResult(fg_intent, GET_WEB_IMAGE);
