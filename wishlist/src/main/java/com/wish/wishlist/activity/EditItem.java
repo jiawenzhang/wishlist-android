@@ -14,7 +14,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Observer;
 import java.util.Observable;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -208,7 +207,6 @@ public class EditItem extends Activity implements Observer {
 			}
 		});
 
-
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
@@ -255,8 +253,7 @@ public class EditItem extends Activity implements Observer {
 			_complete = item.getComplete();
 			if (_complete == 1) {
 				_completeCheckBox.setChecked(true);
-			}
-			else {
+			} else {
 				_completeCheckBox.setChecked(false);
 			}
 
@@ -274,9 +271,7 @@ public class EditItem extends Activity implements Observer {
                  _imageItem.setVisibility(View.VISIBLE);
             }
             _tags = TagItemDBManager.instance(this).tags_of_item(mItem_id);
-		}
-		
-		else { //we are editing a new wish, get the location in background
+		} else { //we are editing a new wish, get the location in background
 			boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true);
 			if (tagLocation) {
 				_pManager.startLocationUpdates();
@@ -542,7 +537,7 @@ public class EditItem extends Activity implements Observer {
 		String itemName = "";
 		String itemDesc = "";
 		String itemStoreName = "";
-		double itemPrice = 0;
+		double itemPrice;
 		int itemPriority = 0;
 		int itemComplete = 0;
 		
@@ -688,7 +683,7 @@ public class EditItem extends Activity implements Observer {
 			OutputStream stream = new BufferedOutputStream(new FileOutputStream(f)); 
 			int bufferSize = 1024;
 			byte[] buffer = new byte[bufferSize];
-			int len = 0;
+			int len;
 			while ((len = in.read(buffer)) != -1) {
 				stream.write(buffer, 0, len);
 			}
