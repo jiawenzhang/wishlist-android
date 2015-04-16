@@ -7,12 +7,14 @@ import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Observer;
 import java.util.Observable;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -36,7 +38,6 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -57,7 +58,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -67,6 +67,8 @@ import android.widget.Toast;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.app.ProgressDialog;
+
+import java.net.URL;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -394,11 +396,17 @@ public class EditItem extends Activity implements Observer {
                 _itemNameEditText.setText(sharedText);
                 return;
             }
-            String url = links.get(0);
+
+            String link = links.get(0);
+            try {
+                URL url = new URL(link);
+                _storeEditText.setText(url.getHost());
+            } catch (MalformedURLException e) {}
+
             // remove the link from the text;
-            String name = sharedText.replace(url, "");
+            String name = sharedText.replace(link, "");
             _itemNameEditText.setText(name);
-            new getImageAsync().execute(url);
+            new getImageAsync().execute(link);
         }
     }
 
