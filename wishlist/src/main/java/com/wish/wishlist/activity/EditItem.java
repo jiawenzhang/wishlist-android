@@ -36,6 +36,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -55,6 +56,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -209,6 +212,8 @@ public class EditItem extends Activity implements Observer {
         String type = intent.getType();
 
         if (Intent.ACTION_SEND.equals(action) && type != null) {
+            getWindow().setSoftInputMode(WindowManager.
+                    LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             if ("*/*".equals(type)) {
                 handleSendAll(intent);
             } else if ("text/plain".equals(type)) {
@@ -375,7 +380,7 @@ public class EditItem extends Activity implements Observer {
     void handleSendAll(Intent intent) {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (sharedText != null) {
-            _noteEditText.setText(sharedText);
+            _itemNameEditText.setText(sharedText);
         }
         _selectedPicUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         setSelectedPic();
