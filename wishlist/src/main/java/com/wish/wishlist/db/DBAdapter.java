@@ -29,7 +29,7 @@ public class DBAdapter {
 	public static final String DB_NAME = "WishList";
 
 	//Database version
-	public static final int DB_VERSION = 4;
+	public static final int DB_VERSION = 5;
 	private static final String TAG="DBAdapter";
 
 	public static final Patch[] PATCHES = new Patch[] {
@@ -76,8 +76,21 @@ public class DBAdapter {
                 String sql = "DROP TABLE IF EXISTS ItemCategory";
                 db.execSQL(sql);
                 db.execSQL(CREATE_TABLE_TAG);
-                db.execSQL(CREATE_TABLE_TAGITEM); }
+                db.execSQL(CREATE_TABLE_TAGITEM);
+            }
 		}
+
+        , new Patch() {//db version 5, 1.0.12 -> 1.0.13
+            public void apply(SQLiteDatabase db) {
+              //add wish link column in the Item table
+             //representing the url of the wish
+                String sql = "ALTER TABLE "
+                        + ItemDBManager.DB_TABLE
+                        + " ADD COLUMN link TEXT ";
+
+                db.execSQL(sql);
+            }
+        }
 	};
 	
 	//Query string to create table "Item"
@@ -94,7 +107,8 @@ public class DBAdapter {
 			+ ItemDBManager.KEY_PRICE 		+ " REAL, "
 			+ ItemDBManager.KEY_ADDRESS 	+ " TEXT, "
 			+ ItemDBManager.KEY_PRIORITY 	+ " INTEGER, "
-			+ ItemDBManager.KEY_COMPLETE 	+ " INTEGER"
+			+ ItemDBManager.KEY_COMPLETE 	+ " INTEGER, "
+            + ItemDBManager.KEY_LINK 	    + " TEXT"
 			+ ");";
 
 
@@ -106,7 +120,7 @@ public class DBAdapter {
             + TagDBManager.KEY_NAME + " TEXT UNIQUE"
 			+ ");";
 
-    //Query string to create table "Tag"
+    //Query string to create table "TagItem"
     private static final String CREATE_TABLE_TAGITEM = "create table "
             + TagItemDBManager.DB_TABLE + " ("
             + TagItemDBManager.TAG_ID + " INTEGER, "
@@ -212,7 +226,8 @@ public class DBAdapter {
 										529f,
 										"220 Yonge Street, Toronto, ON, M5B 2H1",
 										0,
-										0);
+										0,
+                                        "");
 				
 				picUrl = Integer.toHexString(R.drawable.cake) + "sample";
 				mItemDBManager.addItem(	2,
@@ -225,7 +240,8 @@ public class DBAdapter {
 										2.99f,
 										"2243 Bloor ST W\nToronto, ON M6S 1N7\nCanada",
 										3,
-										0);
+										0,
+                                        "");
 				
 				picUrl = Integer.toHexString(R.drawable.tiffany) + "sample";
 				mItemDBManager.addItem(	3,
@@ -238,7 +254,8 @@ public class DBAdapter {
 										389f,
 										"85 Bloor Street West, Toronto, Ontario\nM5S 1M1 Canada",
 										2,
-										0);
+										0,
+                                        "");
 				
 				picUrl = Integer.toHexString(R.drawable.d3) + "sample";
 				mItemDBManager.addItem(	4,
@@ -251,7 +268,8 @@ public class DBAdapter {
 										59.0f,
 										"65 Dundas Street West\nToronto, ON, M5G 2C3",
 										1,
-										0);
+										0,
+                                        "");
 				
 				picUrl = Integer.toHexString(R.drawable.mini_cooper) + "sample";
 				mItemDBManager.addItem(	5,
@@ -264,7 +282,8 @@ public class DBAdapter {
 										20000.0f,
 										"11 Sunlight Park Rd\nToronto, ON, M4M 1B5",
 										1,
-										0);
+										0,
+                                        "");
 				
 				picUrl = Integer.toHexString(R.drawable.sjobs_bio) + "sample";
 				mItemDBManager.addItem(	6,
@@ -277,7 +296,8 @@ public class DBAdapter {
 										30.0f,
 										"259 Richmond Street West Toronto ON M5V 3M6",
 										1,
-										0);
+										0,
+                                        "");
 
 				mItemDBManager.close();
 			}

@@ -10,6 +10,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -67,6 +69,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 	private TextView _priceView;
 	private TextView _storeView;
 	private TextView _locationView;
+    private TextView _linkView;
 	private ImageButton _backImageButton;
 	private ImageButton _deleteImageButton;
 	private ImageButton _editImageButton;
@@ -123,6 +126,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 		_priceView = (TextView) findViewById(R.id.itemPriceDetail);
 		_storeView = (TextView) findViewById(R.id.itemStoreDetail);
 		_locationView = (TextView) findViewById(R.id.itemLocationDetail);
+        _linkView = (TextView) findViewById(R.id.itemLink);
 		_photoView = (ImageView) findViewById(R.id.imgPhotoDetail);
 
         // tagsView will gain focus automatically when the activity starts, and it will trigger the keyboard to
@@ -236,6 +240,16 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 		else {
 			_locationView.setVisibility(View.GONE);
 		}
+
+        String link = item.getLink();
+        if (link != null && !link.isEmpty()) {
+            String text = "<a href=\"" + item.getLink() + "\">Link</a>";
+            _linkView.setText(Html.fromHtml(text));
+            _linkView.setMovementMethod(LinkMovementMethod.getInstance());
+            _linkView.setVisibility(View.VISIBLE);
+        } else {
+            _linkView.setVisibility(View.GONE);
+        }
 	}
 
     void addTags() {

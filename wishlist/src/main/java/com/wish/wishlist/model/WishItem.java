@@ -33,6 +33,7 @@ public class WishItem {
 	private String _fullsizePicPath;
 	private int _priority;
 	private int _complete;
+    private String _link;
 	//private Bitmap _fullsizePhoto;
 	//public static final String KEY_PHOTO_URL = "picture";
 	private double _price;
@@ -64,7 +65,7 @@ public class WishItem {
 
 	public WishItem(Context ctx, long itemId, long storeId, String storeName, String name, String desc, 
 			String date, String picStr, String fullsizePicPath, double price, double latitude, double longitude, 
-			String address, int priority, int complete) {
+			String address, int priority, int complete, String link) {
 		_id = itemId;
 		_fullsizePicPath = fullsizePicPath;
 		_price = price;
@@ -81,6 +82,7 @@ public class WishItem {
 		_date = date;
 		_priority = priority;
 		_complete = complete;
+        _link = link;
 	}
 
 	public long getId() {
@@ -167,10 +169,18 @@ public class WishItem {
 	public int getComplete() {
 		return _complete;
 	}
-	
+
 	public void setComplete(int complete) {
 		this._complete = complete;
 	}
+
+    public String getLink() {
+        return _link;
+    }
+
+    public void setLink(String link) {
+        _link = link;
+    }
 
 	public String getName() {
 		return _name;
@@ -339,11 +349,11 @@ public class WishItem {
 		mItemDBManager.open();
 		if(_id == -1) {
 			_id = mItemDBManager.addItem(_storeId, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
-					_price, _address, _priority, _complete);
+					_price, _address, _priority, _complete, _link);
 		}
 		else {
 			mItemDBManager.updateItem(_id, _storeId, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
-					_price, _address, _priority, _complete);
+					_price, _address, _priority, _complete, _link);
 		}
 		mItemDBManager.close();
 		return _id;

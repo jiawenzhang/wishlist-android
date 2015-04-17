@@ -139,7 +139,17 @@
                     android:imeOptions="flagNoExtractUi"
                     />
 
-                <!--android:scrollHorizontally="false" -->
+                <EditText
+                    android:id="@+id/link"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:hint="Link"
+                    android:inputType="textMultiLine|textPostalAddress|textCapWords"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/bodyText_dark_grey"
+                    android:imeOptions="flagNoExtractUi"
+                    />
 
                 <CheckBox
                     android:id="@+id/completeCheckBox"

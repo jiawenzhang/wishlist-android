@@ -91,10 +91,13 @@ public class WishItemManager {
 		
 		int itemComplete = wishItemCursor.getInt(wishItemCursor
 				.getColumnIndexOrThrow(ItemDBManager.KEY_COMPLETE));
-		
+
+        String itemLink = wishItemCursor.getString(wishItemCursor
+                .getColumnIndexOrThrow(ItemDBManager.KEY_LINK));
+
 		WishItem item = new WishItem(_ctx, itemId, storeID, storeName, itemName, itemDesc, 
 				date, picture_str, fullsize_pic_path, itemPrice, latitude, longitude,
-				itemLocation, itemPriority, itemComplete);
+				itemLocation, itemPriority, itemComplete, itemLink);
 		
 		wishItemCursor.close();
 		mStoreCursor.close();
@@ -116,5 +119,4 @@ public class WishItemManager {
 		mItemDBManager.deleteItem(itemId);
 		mItemDBManager.close();
 	}
-
 }

@@ -30,6 +30,7 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_ADDRESS = "location";
 	public static final String KEY_PRIORITY = "priority";
 	public static final String KEY_COMPLETE = "complete";
+    public static final String KEY_LINK = "link";
 
 	public static final String DB_TABLE = "Item";
 	private static final String TAG="ItemDBManager";
@@ -125,7 +126,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public long addItem(long store_id, String store_name, String name, String description, String date_time,
 			String picture_uri, String fullsize_picture_path, double price, String location,
-			int priority, int complete) {
+			int priority, int complete, String link) {
 		// String sql = String.format(
 		// "INSERT INTO ITEM (_id, name, description, create_date, store_id,  picture, price, location, priority) "
 		// +
@@ -146,6 +147,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_ADDRESS, location);
 		initialValues.put(KEY_PRIORITY, priority);
 		initialValues.put(KEY_COMPLETE, complete);
+        initialValues.put(KEY_LINK, link);
 
 		long id = this.mDb.insert(DB_TABLE, null, initialValues);
 		return id;
@@ -163,7 +165,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public void updateItem(long _id, long store_id, String store_name, String name, String description, String date_time,
 			String picture_uri, String fullsize_picture_path, double price, String address,
-			int priority, int complete) {
+			int priority, int complete, String link) {
 
 //		String sql = String.format("UPDATE Item " + "SET item_name = '%s',  "
 //				+ " description = '%s', " + " date_time = '%s', "
@@ -190,10 +192,10 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_ADDRESS, address);
 		initialValues.put(KEY_PRIORITY, priority);
 		initialValues.put(KEY_COMPLETE, complete);
-		
+        initialValues.put(KEY_LINK, link);
+
 		String where = String.format("_id = '%d'", _id);
 		this.mDb.update(DB_TABLE, initialValues, where, null);
-
 	}
 
 	 /** Replace or Update an item in the database. 

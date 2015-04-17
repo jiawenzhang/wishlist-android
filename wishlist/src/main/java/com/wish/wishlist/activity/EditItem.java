@@ -86,6 +86,7 @@ public class EditItem extends Activity implements Observer {
 	private EditText _priceEditText;
 	private EditText _storeEditText;
 	private EditText _locationEditText;
+    private EditText _linkEditText;
 	private CheckBox _completeCheckBox;
 
 	private ImageButton _backImageButton;
@@ -174,8 +175,8 @@ public class EditItem extends Activity implements Observer {
 		_priceEditText = (EditText) findViewById(R.id.price);
 		_storeEditText = (EditText) findViewById(R.id.store);
 		_locationEditText = (EditText) findViewById(R.id.location);
+        _linkEditText = (EditText) findViewById(R.id.link);
 		_completeCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
-		
 
 		_cameraImageButton = (ImageButton) findViewById(R.id.imageButton_camera);
 
@@ -264,6 +265,7 @@ public class EditItem extends Activity implements Observer {
 				_priceEditText.setText(priceStr);
 			}
 			_locationEditText.setText(item.getAddress());
+            _linkEditText.setText(item.getLink());
 			_storeEditText.setText(item.getStoreName());
 			_fullsizePhotoPath = item.getFullsizePicPath();
             if (_fullsizePhotoPath != null) {
@@ -393,6 +395,7 @@ public class EditItem extends Activity implements Observer {
             }
 
             String link = links.get(0);
+            _linkEditText.setText(link);
             try {
                 URL url = new URL(link);
                 _storeEditText.setText(url.getHost());
@@ -540,6 +543,7 @@ public class EditItem extends Activity implements Observer {
 		double itemPrice;
 		int itemPriority = 0;
 		int itemComplete = 0;
+        String itemLink = "";
 		
 		try {
 			// read in the name, description, price and location of the item
@@ -547,6 +551,7 @@ public class EditItem extends Activity implements Observer {
 			itemName = _itemNameEditText.getText().toString().trim();
 			itemDesc = _noteEditText.getText().toString().trim();
 			itemStoreName = _storeEditText.getText().toString().trim();
+            itemLink = _linkEditText.getText().toString().trim();
 			_ddStr = _locationEditText.getText().toString().trim();
 			if (_ddStr.equals("Loading location...")) {
 				_ddStr = "unknown";
@@ -604,7 +609,7 @@ public class EditItem extends Activity implements Observer {
         }
 		WishItem item = new WishItem(this, mItem_id, mStore_id, itemStoreName, itemName, itemDesc,
 				date, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
-				_ddStr, itemPriority, itemComplete);
+				_ddStr, itemPriority, itemComplete, itemLink);
 
 		mItem_id = item.save();
 
