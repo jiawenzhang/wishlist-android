@@ -396,6 +396,7 @@ public class EditItem extends Activity implements Observer {
 
             String link = links.get(0);
             _linkEditText.setText(link);
+            _linkEditText.setEnabled(false);
             try {
                 URL url = new URL(link);
                 _storeEditText.setText(url.getHost());
