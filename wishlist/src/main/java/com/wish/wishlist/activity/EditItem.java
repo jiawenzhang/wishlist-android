@@ -544,14 +544,21 @@ public class EditItem extends Activity implements Observer {
 		int itemPriority = 0;
 		int itemComplete = 0;
         String itemLink = "";
-		
+        itemLink = _linkEditText.getText().toString().trim();
+        if (!itemLink.isEmpty() && !Patterns.WEB_URL.matcher(itemLink).matches()) {
+            Toast toast = Toast.makeText(this, "Link invalid", Toast.LENGTH_SHORT);
+            int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+            toast.setGravity(Gravity.TOP | Gravity.CENTER, 0, screenHeight/4);
+            toast.show();
+            return;
+        }
+
 		try {
 			// read in the name, description, price and location of the item
 			// from the EditText
 			itemName = _itemNameEditText.getText().toString().trim();
 			itemDesc = _noteEditText.getText().toString().trim();
 			itemStoreName = _storeEditText.getText().toString().trim();
-            itemLink = _linkEditText.getText().toString().trim();
 			_ddStr = _locationEditText.getText().toString().trim();
 			if (_ddStr.equals("Loading location...")) {
 				_ddStr = "unknown";

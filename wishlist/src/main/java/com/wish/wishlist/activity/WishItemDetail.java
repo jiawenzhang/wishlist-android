@@ -243,7 +243,11 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 
         String link = item.getLink();
         if (link != null && !link.isEmpty()) {
-            String text = "<a href=\"" + item.getLink() + "\">Link</a>";
+            String url = item.getLink();
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "http://" + url;
+            }
+            String text = "<a href=\"" + url + "\">Link</a>";
             _linkView.setText(Html.fromHtml(text));
             _linkView.setMovementMethod(LinkMovementMethod.getInstance());
             _linkView.setVisibility(View.VISIBLE);
