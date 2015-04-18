@@ -24,7 +24,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.db.LocationDBManager;
 import com.wish.wishlist.db.StoreDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
-import com.wish.wishlist.fragment.StaggeredGridActivityFragment;
+import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.AnalyticsHelper;
@@ -37,6 +37,8 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -79,7 +81,7 @@ import org.jsoup.select.Elements;
  * as a row in the Item table in the database
  */
 @SuppressLint("NewApi")
-public class EditItem extends Activity implements Observer {
+public class EditItem extends Activity implements Observer, WebImageFragmentDialog.OnWebImageSelectedListener {
 
 	private EditText _itemNameEditText;
 	private EditText _noteEditText;
@@ -123,7 +125,6 @@ public class EditItem extends Activity implements Observer {
 	private static final int TAKE_PICTURE = 1;
 	private static final int SELECT_PICTURE = 2;
     private static final int ADD_TAG = 3;
-    private static final int GET_WEB_IMAGE = 4;
     private Boolean _selectedPic = false;
 
     private static ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
@@ -483,9 +484,9 @@ public class EditItem extends Activity implements Observer {
             }
             EditItem._webImages = result._webImages;
             if (!result._webImages.isEmpty()) {
-                Intent fg_intent = new Intent(EditItem.this, StaggeredGridActivityFragment.class);
-                fg_intent.putParcelableArrayListExtra(IMG_URLS, _webImages);
-                startActivityForResult(fg_intent, GET_WEB_IMAGE);
+                DialogFragment fragment = WebImageFragmentDialog.newInstance(_webImages);
+                final FragmentManager fm = getFragmentManager();
+                fragment.show(fm, "dialog");
             }
         }
     }
@@ -639,6 +640,11 @@ public class EditItem extends Activity implements Observer {
 		finish();
 	}
 
+    public void onWebImageSelected(int position) {
+        // After the dialog fragment completes, it calls this callback.
+        setWebPic(_webImages.get(position).mUrl);
+    }
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
@@ -671,12 +677,6 @@ public class EditItem extends Activity implements Observer {
             case ADD_TAG: {
                 if (resultCode == RESULT_OK) {
                     _tags = data.getStringArrayListExtra(AddTagFromEditItem.TAGS);
-                }
-            }
-            case GET_WEB_IMAGE: {
-                if (resultCode == RESULT_OK) {
-                    int position = data.getIntExtra("position", -1);
-                    setWebPic(_webImages.get(position).mUrl);
                 }
             }
 		}//switch

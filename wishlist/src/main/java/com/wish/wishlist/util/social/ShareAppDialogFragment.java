@@ -39,7 +39,7 @@ public class ShareAppDialogFragment extends DialogFragment {
      * Create a new instance of MyDialogFragment, providing "num"
      * as an argument.
      */
-    static ShareAppDialogFragment newInstance( long itemId, Context context) {
+    static ShareAppDialogFragment newInstance(long itemId, Context context) {
         _itemId = itemId;
         _ctx = context;
         return new ShareAppDialogFragment();
