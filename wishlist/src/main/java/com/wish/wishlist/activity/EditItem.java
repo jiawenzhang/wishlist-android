@@ -460,6 +460,14 @@ public class EditItem extends Activity implements Observer {
         @Override
         protected void onPreExecute() {
             asyncDialog.setMessage("Loading images");
+            asyncDialog.setCancelable(true);
+            asyncDialog.setCanceledOnTouchOutside(false);
+            asyncDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
+                public void onCancel(DialogInterface dialog) {
+                    cancel(true);
+                }
+            });
+
             asyncDialog.show();
             super.onPreExecute();
         }
