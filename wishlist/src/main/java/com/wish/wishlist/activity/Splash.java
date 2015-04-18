@@ -20,9 +20,9 @@ import com.wish.wishlist.util.DialogOnShowListener;
 public class Splash extends Activity{
     private static final String VERSION_KEY = "version_number";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
         t.send(new HitBuilders.EventBuilder()
@@ -30,14 +30,14 @@ public class Splash extends Activity{
                 .setAction("Start")
                 .build());
 
-		setContentView(R.layout.splash);
+        setContentView(R.layout.splash);
 
-		Handler x = new Handler();
-		x.postDelayed(new splashhandler(), 2000);
+        Handler x = new Handler();
+        x.postDelayed(new splashhandler(), 2000);
         DBAdapter.getInstance(this).createDB();
-	}
-	
-	class splashhandler implements Runnable {
+    }
+
+    class splashhandler implements Runnable {
         public void run() {
             //show the what's new dialog if necessary
             SharedPreferences sharedPref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);

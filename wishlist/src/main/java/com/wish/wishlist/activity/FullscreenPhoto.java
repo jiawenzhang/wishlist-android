@@ -10,26 +10,26 @@ import android.os.Bundle;
 import com.wish.wishlist.view.ZoomPanImageView;
 
 public class FullscreenPhoto extends Activity {
-	String _fullsizePhotoPath;
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		   setContentView(R.layout.fullscreen_photo);
+    String _fullsizePhotoPath;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fullscreen_photo);
 
-		   Intent intent = getIntent();
-           _fullsizePhotoPath = intent.getStringExtra(EditItem.FULLSIZE_PHOTO_PATH);
+        Intent intent = getIntent();
+        _fullsizePhotoPath = intent.getStringExtra(EditItem.FULLSIZE_PHOTO_PATH);
 
-		   if (savedInstanceState != null) {
-			   //we are restoring on switching screen orientation
-				_fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
-		   }
-		   
-		   ZoomPanImageView imageItem = (ZoomPanImageView) findViewById(R.id.fullscreen_photo);
-		   
-		   if (_fullsizePhotoPath != null){
-			   Bitmap bitmap = BitmapFactory.decodeFile(_fullsizePhotoPath, null);
-			   imageItem.setImageBitmap(bitmap);
-		   }
-		   //Bitmap bitmap = null;
+        if (savedInstanceState != null) {
+            //we are restoring on switching screen orientation
+            _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
+        }
+
+        ZoomPanImageView imageItem = (ZoomPanImageView) findViewById(R.id.fullscreen_photo);
+
+        if (_fullsizePhotoPath != null){
+            Bitmap bitmap = BitmapFactory.decodeFile(_fullsizePhotoPath, null);
+            imageItem.setImageBitmap(bitmap);
+        }
+        //Bitmap bitmap = null;
 //			
 //			//check if pic_str is null, which user added this item without taking a pic.
 //			if (picture_str != null){
@@ -51,16 +51,16 @@ public class FullscreenPhoto extends Activity {
 //
 //				}
 //			}
-		   
+
 //			imageItem.setLayoutParams( new ViewGroup.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT));
 //
 //			
 //					imageView.setImageResource(imageId);
 //					imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
-			
-			
-			
+
+
+
 //			/* There isn't enough memory to open up more than a couple camera photos */
 //			/* So pre-scale the target bitmap into which the file is decoded */
 //
@@ -88,20 +88,20 @@ public class FullscreenPhoto extends Activity {
 
 			/* Decode the JPEG file into a Bitmap */
 //			Bitmap bitmap = BitmapFactory.decodeFile(picture_str, bmOptions);
-			//to-do save mCurrentPhotoPath to db
+        //to-do save mCurrentPhotoPath to db
 			
 			/* Associate the Bitmap to the ImageView */
 //			imageItem.setImageBitmap(bitmap);
 //			mVideoUri = null;
 //			mImageView.setVisibility(View.VISIBLE);
 //			mVideoView.setVisibility(View.INVISIBLE);
-		   }
-	 
-	 //this will also save the photo on switching screen orientation
-	 @Override
-	 protected void onSaveInstanceState(Bundle savedInstanceState) {
-		 savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
-		 super.onSaveInstanceState(savedInstanceState);
-	 }
+    }
+
+    //this will also save the photo on switching screen orientation
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
 }

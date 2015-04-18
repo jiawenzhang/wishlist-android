@@ -83,47 +83,47 @@ import org.jsoup.select.Elements;
 @SuppressLint("NewApi")
 public class EditItem extends Activity implements Observer, WebImageFragmentDialog.OnWebImageSelectedListener {
 
-	private EditText _itemNameEditText;
-	private EditText _noteEditText;
-	private EditText _priceEditText;
-	private EditText _storeEditText;
-	private EditText _locationEditText;
+    private EditText _itemNameEditText;
+    private EditText _noteEditText;
+    private EditText _priceEditText;
+    private EditText _storeEditText;
+    private EditText _locationEditText;
     private EditText _linkEditText;
-	private CheckBox _completeCheckBox;
+    private CheckBox _completeCheckBox;
 
-	private ImageButton _backImageButton;
-	private ImageButton _saveImageButton;
-	private ImageButton _mapImageButton;
-	private ImageButton _cameraImageButton;
-	private ImageButton _galleryImageButton;
-	private ImageView _imageItem;
-	private Date mDate;
-	private double _lat = Double.MIN_VALUE;
-	private double _lng = Double.MIN_VALUE;
-	private String _ddStr = "unknown";
+    private ImageButton _backImageButton;
+    private ImageButton _saveImageButton;
+    private ImageButton _mapImageButton;
+    private ImageButton _cameraImageButton;
+    private ImageButton _galleryImageButton;
+    private ImageView _imageItem;
+    private Date mDate;
+    private double _lat = Double.MIN_VALUE;
+    private double _lng = Double.MIN_VALUE;
+    private String _ddStr = "unknown";
     private Uri _selectedPicUri = null;
-	private String _fullsizePhotoPath = null;
-	private String _newfullsizePhotoPath = null;
-	private StoreDBManager _storeDBManager;
-	private LocationDBManager _locationDBManager;
-	PositionManager _pManager;
-	private int mYear = -1;
-	private int mMonth = -1;
-	private int mDay = -1;
-	private int mHour = 0;
-	private int mMin = 0;
-	private int mSec = 0;
-	private long mItem_id = -1;
-	private long mLocation_id = -1;
-	private long mStore_id = -1;
-	private int _complete = -1;
-	private boolean _editNew = true;
-	private boolean _isGettingLocation = false;
+    private String _fullsizePhotoPath = null;
+    private String _newfullsizePhotoPath = null;
+    private StoreDBManager _storeDBManager;
+    private LocationDBManager _locationDBManager;
+    PositionManager _pManager;
+    private int mYear = -1;
+    private int mMonth = -1;
+    private int mDay = -1;
+    private int mHour = 0;
+    private int mMin = 0;
+    private int mSec = 0;
+    private long mItem_id = -1;
+    private long mLocation_id = -1;
+    private long mStore_id = -1;
+    private int _complete = -1;
+    private boolean _editNew = true;
+    private boolean _isGettingLocation = false;
     private ArrayList<String> _tags = new ArrayList<String>();
     private Bitmap _webBitmap = null;
-	
-	private static final int TAKE_PICTURE = 1;
-	private static final int SELECT_PICTURE = 2;
+
+    private static final int TAKE_PICTURE = 1;
+    private static final int SELECT_PICTURE = 2;
     private static final int ADD_TAG = 3;
     private Boolean _selectedPic = false;
 
@@ -139,47 +139,47 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
         public String _title;
     }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.edit_item);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.edit_item);
 
-		setUpActionBar();
+        setUpActionBar();
 
-		_mapImageButton = (ImageButton) findViewById(R.id.imageButton_map);
-		_mapImageButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				//get the location
-				if (!_isGettingLocation) {
-					_pManager.startLocationUpdates();
-					_isGettingLocation = true;
-					_locationEditText.setText("Loading location...");
-				}
-			}
-		});
-		
-		// Open the Store table in the database		
-		_storeDBManager = new StoreDBManager(this);
-		_storeDBManager.open();
+        _mapImageButton = (ImageButton) findViewById(R.id.imageButton_map);
+        _mapImageButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //get the location
+                if (!_isGettingLocation) {
+                    _pManager.startLocationUpdates();
+                    _isGettingLocation = true;
+                    _locationEditText.setText("Loading location...");
+                }
+            }
+        });
 
-		// Open the Location table in the database
-		_locationDBManager = new LocationDBManager(this);
-		_locationDBManager.open();
-		
-		_pManager = new PositionManager(EditItem.this);
-		_pManager.addObserver(this);
+        // Open the Store table in the database
+        _storeDBManager = new StoreDBManager(this);
+        _storeDBManager.open();
 
-		//find the resources by their ids
-		_itemNameEditText = (EditText) findViewById(R.id.itemname);
-		_noteEditText = (EditText) findViewById(R.id.note);
-		_priceEditText = (EditText) findViewById(R.id.price);
-		_storeEditText = (EditText) findViewById(R.id.store);
-		_locationEditText = (EditText) findViewById(R.id.location);
+        // Open the Location table in the database
+        _locationDBManager = new LocationDBManager(this);
+        _locationDBManager.open();
+
+        _pManager = new PositionManager(EditItem.this);
+        _pManager.addObserver(this);
+
+        //find the resources by their ids
+        _itemNameEditText = (EditText) findViewById(R.id.itemname);
+        _noteEditText = (EditText) findViewById(R.id.note);
+        _priceEditText = (EditText) findViewById(R.id.price);
+        _storeEditText = (EditText) findViewById(R.id.store);
+        _locationEditText = (EditText) findViewById(R.id.location);
         _linkEditText = (EditText) findViewById(R.id.link);
-		_completeCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
+        _completeCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
 
-		_cameraImageButton = (ImageButton) findViewById(R.id.imageButton_camera);
+        _cameraImageButton = (ImageButton) findViewById(R.id.imageButton_camera);
 
         ImageButton tagImageButton = (ImageButton) findViewById(R.id.imageButton_tag);
         tagImageButton.setOnClickListener(new OnClickListener() {
@@ -191,23 +191,23 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
             }
         });
 
-		_galleryImageButton = (ImageButton) findViewById(R.id.imageButton_gallery);
-		_imageItem = (ImageView) findViewById(R.id.image_photo);
+        _galleryImageButton = (ImageButton) findViewById(R.id.imageButton_gallery);
+        _imageItem = (ImageView) findViewById(R.id.image_photo);
         int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         _imageItem.setLayoutParams(new LinearLayout.LayoutParams(screenWidth/3, screenWidth/3));
         _imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         _imageItem.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Intent i = new Intent(EditItem.this, FullscreenPhoto.class);
-				if (_fullsizePhotoPath != null) {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(EditItem.this, FullscreenPhoto.class);
+                if (_fullsizePhotoPath != null) {
                     i.putExtra(FULLSIZE_PHOTO_PATH, _fullsizePhotoPath);
                     i.putExtra(SELECTED_PIC_URL, _selectedPicUri);
-					startActivity(i);
-				}
-			}
-		});
+                    startActivity(i);
+                }
+            }
+        });
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -239,133 +239,133 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
             }
         }
 
-		//get item id from previous intent, if there is an item id, we know this EditItemInfo is launched
-		//by editing an existing item, so fill the empty box
-		mItem_id = intent.getLongExtra("item_id", -1);
-		
-		if (mItem_id != -1) {
-			_editNew = false;
+        //get item id from previous intent, if there is an item id, we know this EditItemInfo is launched
+        //by editing an existing item, so fill the empty box
+        mItem_id = intent.getLongExtra("item_id", -1);
 
-			_mapImageButton.setVisibility(View.GONE);
-			_completeCheckBox.setVisibility(View.VISIBLE);
-			
-			WishItem item = WishItemManager.getInstance(this).retrieveItembyId(mItem_id);
-			mLocation_id = item.getLocatonId();
-			mStore_id = item.getStoreId();
-			_complete = item.getComplete();
-			if (_complete == 1) {
-				_completeCheckBox.setChecked(true);
-			} else {
-				_completeCheckBox.setChecked(false);
-			}
+        if (mItem_id != -1) {
+            _editNew = false;
 
-			_itemNameEditText.setText(item.getName());
-			_noteEditText.setText(item.getDesc());
-			String priceStr = item.getPriceAsString();
-			if (priceStr != null) {
-				_priceEditText.setText(priceStr);
-			}
-			_locationEditText.setText(item.getAddress());
+            _mapImageButton.setVisibility(View.GONE);
+            _completeCheckBox.setVisibility(View.VISIBLE);
+
+            WishItem item = WishItemManager.getInstance(this).retrieveItembyId(mItem_id);
+            mLocation_id = item.getLocatonId();
+            mStore_id = item.getStoreId();
+            _complete = item.getComplete();
+            if (_complete == 1) {
+                _completeCheckBox.setChecked(true);
+            } else {
+                _completeCheckBox.setChecked(false);
+            }
+
+            _itemNameEditText.setText(item.getName());
+            _noteEditText.setText(item.getDesc());
+            String priceStr = item.getPriceAsString();
+            if (priceStr != null) {
+                _priceEditText.setText(priceStr);
+            }
+            _locationEditText.setText(item.getAddress());
             _linkEditText.setText(item.getLink());
-			_storeEditText.setText(item.getStoreName());
-			_fullsizePhotoPath = item.getFullsizePicPath();
+            _storeEditText.setText(item.getStoreName());
+            _fullsizePhotoPath = item.getFullsizePicPath();
             if (_fullsizePhotoPath != null) {
                 Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
-                 _imageItem.setVisibility(View.VISIBLE);
+                _imageItem.setVisibility(View.VISIBLE);
             }
             _tags = TagItemDBManager.instance(this).tags_of_item(mItem_id);
-		} else { //we are editing a new wish, get the location in background
-			boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true);
-			if (tagLocation) {
-				_pManager.startLocationUpdates();
-				_isGettingLocation = true;
-				_locationEditText.setText("Loading location...");
-			}
-		}
+        } else { //we are editing a new wish, get the location in background
+            boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true);
+            if (tagLocation) {
+                _pManager.startLocationUpdates();
+                _isGettingLocation = true;
+                _locationEditText.setText("Loading location...");
+            }
+        }
 
-		_cameraImageButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(EditItem.this);
-				final CharSequence[] items = {"Take a photo", "From gallery"};
-				builder.setItems(items, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-					// The 'which' argument contains the index position
-					// of the selected item
-						if (which == 0) {
-							dispatchTakePictureIntent();
-						}
-						else if (which == 1) {
-							dispatchImportPictureIntent();
-						}
-					}
-				});
-				AlertDialog dialog = builder.create();
+        _cameraImageButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditItem.this);
+                final CharSequence[] items = {"Take a photo", "From gallery"};
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // The 'which' argument contains the index position
+                        // of the selected item
+                        if (which == 0) {
+                            dispatchTakePictureIntent();
+                        }
+                        else if (which == 1) {
+                            dispatchImportPictureIntent();
+                        }
+                    }
+                });
+                AlertDialog dialog = builder.create();
                 dialog.setOnShowListener(new DialogOnShowListener(EditItem.this));
-				dialog.show();
-			};
-		});
+                dialog.show();
+            };
+        });
 
-		_galleryImageButton.setOnClickListener(new OnClickListener() {
-				@Override
-			public void onClick(View view) {
-				//open gallery;
-				dispatchImportPictureIntent();
-			}
-		});
+        _galleryImageButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //open gallery;
+                dispatchImportPictureIntent();
+            }
+        });
 
-		//set the keyListener for the Item Name EditText
-		_itemNameEditText.setOnKeyListener(new OnKeyListener() {
-			@Override
-			public boolean onKey(View view, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN)
-					if (keyCode == KeyEvent.KEYCODE_ENTER) {
-						_itemNameEditText.setSelected(false);
-					}
-				return false;
-			}
-		});
+        //set the keyListener for the Item Name EditText
+        _itemNameEditText.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN)
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                        _itemNameEditText.setSelected(false);
+                    }
+                return false;
+            }
+        });
 
-		//set the keyListener for the Item Description EditText
-		_noteEditText.setOnKeyListener(new OnKeyListener() {
-			@Override
-			public boolean onKey(View view, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN)
-					if (keyCode == KeyEvent.KEYCODE_ENTER) {
-						_noteEditText.setSelected(false);
-					}
-				return false;
-			}
-		});
+        //set the keyListener for the Item Description EditText
+        _noteEditText.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN)
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                        _noteEditText.setSelected(false);
+                    }
+                return false;
+            }
+        });
 
-		//set the keyListener for the Item Price EditText
-		_priceEditText.setOnKeyListener(new OnKeyListener() {
-			@Override
-			public boolean onKey(View view, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN)
-					if (keyCode == KeyEvent.KEYCODE_ENTER) {
-						_priceEditText.setSelected(false);
-					}
-				return false;
-			}
-		});
+        //set the keyListener for the Item Price EditText
+        _priceEditText.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN)
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                        _priceEditText.setSelected(false);
+                    }
+                return false;
+            }
+        });
 
-		//set the keyListener for the Item Location EditText
-		_locationEditText.setOnKeyListener(new OnKeyListener() {
-			@Override
-			public boolean onKey(View view, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN)
-					if (keyCode == KeyEvent.KEYCODE_ENTER) {
-						_locationEditText.setSelected(false);
-					}
-				return false;
-			}
-		});
+        //set the keyListener for the Item Location EditText
+        _locationEditText.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN)
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                        _locationEditText.setSelected(false);
+                    }
+                return false;
+            }
+        });
 
-		if (savedInstanceState != null) {
-			// restore the current selected item in the list
-			_newfullsizePhotoPath = savedInstanceState.getString(NEW_FULLSIZE_PHOTO_PATH);
-			_fullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
+        if (savedInstanceState != null) {
+            // restore the current selected item in the list
+            _newfullsizePhotoPath = savedInstanceState.getString(NEW_FULLSIZE_PHOTO_PATH);
+            _fullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
             if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
                 _selectedPicUri = Uri.parse(intent.getStringExtra(SELECTED_PIC_URL));
             }
@@ -374,8 +374,8 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
             } else {
                 Picasso.with(this).load(_selectedPicUri).fit().centerCrop().into(_imageItem);
             }
-		}
-	}
+        }
+    }
 
     void handleSendAll(Intent intent) {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
@@ -502,43 +502,43 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
         return links;
     }
 
-	@Override
-		public boolean onCreateOptionsMenu(Menu menu) {
-			MenuInflater inflater = getMenuInflater();
-			inflater.inflate(R.menu.menu_actionbar_edititeminfo, menu);
-			return true;
-		}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_actionbar_edititeminfo, menu);
+        return true;
+    }
 
-	@Override
-		public boolean onOptionsItemSelected(MenuItem item) {
-			int id = item.getItemId();
-			if (id == android.R.id.home) {
-				navigateBack();
-				return true;
-			}
-			else if (id == R.id.menu_done) {
-				//this replaced the saveImageButton used in GingerBread
-				// app icon save in action bar clicked; 
-				saveWishItem();
-				return true;
-			}
-			else {
-				return super.onOptionsItemSelected(item);
-			}
-		}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            navigateBack();
+            return true;
+        }
+        else if (id == R.id.menu_done) {
+            //this replaced the saveImageButton used in GingerBread
+            // app icon save in action bar clicked;
+            saveWishItem();
+            return true;
+        }
+        else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
 
-	/***
-	 * Save user input as a wish item
-	 */
-	private void saveWishItem() {
+    /***
+     * Save user input as a wish item
+     */
+    private void saveWishItem() {
 
-		if(_itemNameEditText.getText().toString().trim().length() == 0){
-			Toast toast = Toast.makeText(this, "Please give a name to your wish", Toast.LENGTH_SHORT);
+        if(_itemNameEditText.getText().toString().trim().length() == 0){
+            Toast toast = Toast.makeText(this, "Please give a name to your wish", Toast.LENGTH_SHORT);
             int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
             toast.setGravity(Gravity.TOP | Gravity.CENTER, 0, screenHeight/4);
-			toast.show();
-			return;
-		}
+            toast.show();
+            return;
+        }
 
         Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
         t.send(new HitBuilders.EventBuilder()
@@ -546,13 +546,13 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                 .setAction("Save")
                 .build());
 
-		//define variables to hold the item info.
-		String itemName = "";
-		String itemDesc = "";
-		String itemStoreName = "";
-		double itemPrice;
-		int itemPriority = 0;
-		int itemComplete = 0;
+        //define variables to hold the item info.
+        String itemName = "";
+        String itemDesc = "";
+        String itemStoreName = "";
+        double itemPrice;
+        int itemPriority = 0;
+        int itemComplete = 0;
         String itemLink = "";
         itemLink = _linkEditText.getText().toString().trim();
         if (!itemLink.isEmpty() && !Patterns.WEB_URL.matcher(itemLink).matches()) {
@@ -563,95 +563,95 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
             return;
         }
 
-		try {
-			// read in the name, description, price and location of the item
-			// from the EditText
-			itemName = _itemNameEditText.getText().toString().trim();
-			itemDesc = _noteEditText.getText().toString().trim();
-			itemStoreName = _storeEditText.getText().toString().trim();
-			_ddStr = _locationEditText.getText().toString().trim();
-			if (_ddStr.equals("Loading location...")) {
-				_ddStr = "unknown";
-			}
+        try {
+            // read in the name, description, price and location of the item
+            // from the EditText
+            itemName = _itemNameEditText.getText().toString().trim();
+            itemDesc = _noteEditText.getText().toString().trim();
+            itemStoreName = _storeEditText.getText().toString().trim();
+            _ddStr = _locationEditText.getText().toString().trim();
+            if (_ddStr.equals("Loading location...")) {
+                _ddStr = "unknown";
+            }
 
-			if (_completeCheckBox.isChecked()) {
-				itemComplete = 1;
-			}
-			else {
-				itemComplete = 0;
-			}
+            if (_completeCheckBox.isChecked()) {
+                itemComplete = 1;
+            }
+            else {
+                itemComplete = 0;
+            }
 
-			itemPrice = Double.valueOf(_priceEditText.getText().toString().trim());
-		}
+            itemPrice = Double.valueOf(_priceEditText.getText().toString().trim());
+        }
 
-		catch (NumberFormatException e) {
-			// need some error message here
-			// price format incorrect
-			e.toString();
-			itemPrice = Double.MIN_VALUE;
-		}
+        catch (NumberFormatException e) {
+            // need some error message here
+            // price format incorrect
+            e.toString();
+            itemPrice = Double.MIN_VALUE;
+        }
 
-		// user did not specify date_time, use dddd"now" as default date_time
-		if (mYear == -1) {
-			// get the current date_time
-			final Calendar c = Calendar.getInstance();
-			mYear = c.get(Calendar.YEAR);
-			mMonth = c.get(Calendar.MONTH);
-			mDay = c.get(Calendar.DAY_OF_MONTH);
-			mHour = c.get(Calendar.HOUR_OF_DAY);//24 hour format
-			mMin = c.get(Calendar.MINUTE);
-			mSec = c.get(Calendar.SECOND);
-		}
+        // user did not specify date_time, use dddd"now" as default date_time
+        if (mYear == -1) {
+            // get the current date_time
+            final Calendar c = Calendar.getInstance();
+            mYear = c.get(Calendar.YEAR);
+            mMonth = c.get(Calendar.MONTH);
+            mDay = c.get(Calendar.DAY_OF_MONTH);
+            mHour = c.get(Calendar.HOUR_OF_DAY);//24 hour format
+            mMin = c.get(Calendar.MINUTE);
+            mSec = c.get(Calendar.SECOND);
+        }
 
-		// Format the date_time and save it as a string 
-		mDate = new Date(mYear - 1900, mMonth, mDay, mHour, mMin, mSec);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String date = sdf.format(mDate);
+        // Format the date_time and save it as a string
+        mDate = new Date(mYear - 1900, mMonth, mDay, mHour, mMin, mSec);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = sdf.format(mDate);
 
-		if (_editNew) {//we are creating a new item
-			// insert the location to the Location table in database
-			mLocation_id = _locationDBManager.addLocation(_lat, _lng, _ddStr, -1, "N/A", "N/A", "N/A", "N/A", "N/A");
+        if (_editNew) {//we are creating a new item
+            // insert the location to the Location table in database
+            mLocation_id = _locationDBManager.addLocation(_lat, _lng, _ddStr, -1, "N/A", "N/A", "N/A", "N/A", "N/A");
 
-			// insert the store to the Store table in database, linked to the location
-			mStore_id = _storeDBManager.addStore(itemStoreName, mLocation_id);
-		}
-		else {//we are editing an existing item
-			_storeDBManager.updateStore(mStore_id, itemStoreName, mLocation_id);
-		}
+            // insert the store to the Store table in database, linked to the location
+            mStore_id = _storeDBManager.addStore(itemStoreName, mLocation_id);
+        }
+        else {//we are editing an existing item
+            _storeDBManager.updateStore(mStore_id, itemStoreName, mLocation_id);
+        }
 
         if (_webBitmap != null) {
             _fullsizePhotoPath = saveBitmapToAlbum(_webBitmap);
         } else if (_selectedPic && _selectedPicUri != null) {
             _fullsizePhotoPath = copyPhotoToAlbum(_selectedPicUri);
         }
-		WishItem item = new WishItem(this, mItem_id, mStore_id, itemStoreName, itemName, itemDesc,
-				date, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
-				_ddStr, itemPriority, itemComplete, itemLink);
+        WishItem item = new WishItem(this, mItem_id, mStore_id, itemStoreName, itemName, itemDesc,
+                date, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
+                _ddStr, itemPriority, itemComplete, itemLink);
 
-		mItem_id = item.save();
+        mItem_id = item.save();
 
         //save the tags of this item
         TagItemDBManager.instance(EditItem.this).Update_item_tags(mItem_id, _tags);
 
-		//close this activity
-		Intent resultIntent = new Intent();
-		resultIntent.putExtra("itemID", mItem_id);
-		setResult(RESULT_OK, resultIntent);
-		finish();
-	}
+        //close this activity
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("itemID", mItem_id);
+        setResult(RESULT_OK, resultIntent);
+        finish();
+    }
 
     public void onWebImageSelected(int position) {
         // After the dialog fragment completes, it calls this callback.
         setWebPic(_webImages.get(position).mUrl);
     }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-			case TAKE_PICTURE: {
-				if (resultCode == RESULT_OK) {
-					_fullsizePhotoPath = String.valueOf(_newfullsizePhotoPath);
-					_newfullsizePhotoPath = null;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case TAKE_PICTURE: {
+                if (resultCode == RESULT_OK) {
+                    _fullsizePhotoPath = String.valueOf(_newfullsizePhotoPath);
+                    _newfullsizePhotoPath = null;
                     Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
                             .setCategory("Wish")
@@ -659,69 +659,69 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                             .setLabel("FromEditItemCameraButton")
                             .build());
                     setTakenPhoto();
-				}
-				break;
-			} 
-			case SELECT_PICTURE: {
-				if (resultCode == RESULT_OK) {
-					_selectedPicUri = data.getData();
+                }
+                break;
+            }
+            case SELECT_PICTURE: {
+                if (resultCode == RESULT_OK) {
+                    _selectedPicUri = data.getData();
                     Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
                             .setCategory("Wish")
                             .setAction("SelectedPicture")
                             .build());
-					setSelectedPic();
-				}
+                    setSelectedPic();
+                }
                 break;
-			}
+            }
             case ADD_TAG: {
                 if (resultCode == RESULT_OK) {
                     _tags = data.getStringArrayListExtra(AddTagFromEditItem.TAGS);
                 }
             }
-		}//switch
-	}
-	
-	private void dispatchTakePictureIntent() {	
-		CameraManager c = new CameraManager();
-		_newfullsizePhotoPath = c.getPhotoPath();
-		startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
-	}
+        }//switch
+    }
 
-	private void dispatchImportPictureIntent() {
-		Intent intent = new Intent();
-		intent.setType("image/*");
-		intent.setAction(Intent.ACTION_GET_CONTENT);
-		startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURE);
-	}
+    private void dispatchTakePictureIntent() {
+        CameraManager c = new CameraManager();
+        _newfullsizePhotoPath = c.getPhotoPath();
+        startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
+    }
 
-	private String copyPhotoToAlbum(Uri uri) {
-		try {
-			//save the photo to a file we created in wishlist album
-			final InputStream in = getContentResolver().openInputStream(uri);
-			File f = PhotoFileCreater.getInstance().setUpPhotoFile(false);
-			String path = f.getAbsolutePath();
-			OutputStream stream = new BufferedOutputStream(new FileOutputStream(f)); 
-			int bufferSize = 1024;
-			byte[] buffer = new byte[bufferSize];
-			int len;
-			while ((len = in.read(buffer)) != -1) {
-				stream.write(buffer, 0, len);
-			}
-			in.close();
-			if (stream != null) {
-				stream.close();
-			}
-			return path;
-		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    private void dispatchImportPictureIntent() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURE);
+    }
+
+    private String copyPhotoToAlbum(Uri uri) {
+        try {
+            //save the photo to a file we created in wishlist album
+            final InputStream in = getContentResolver().openInputStream(uri);
+            File f = PhotoFileCreater.getInstance().setUpPhotoFile(false);
+            String path = f.getAbsolutePath();
+            OutputStream stream = new BufferedOutputStream(new FileOutputStream(f));
+            int bufferSize = 1024;
+            byte[] buffer = new byte[bufferSize];
+            int len;
+            while ((len = in.read(buffer)) != -1) {
+                stream.write(buffer, 0, len);
+            }
+            in.close();
+            if (stream != null) {
+                stream.close();
+            }
+            return path;
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     private String saveBitmapToAlbum(Bitmap bitmap) {
         try {
@@ -744,60 +744,60 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
 
     }
 
-	private boolean navigateBack(){
-		//all fields are empty
-		if(_itemNameEditText.getText().toString().length() == 0 &&
-				_noteEditText.getText().toString().length() == 0 &&
-				_priceEditText.getText().toString().length() == 0 &&
-				_locationEditText.getText().toString().length() == 0 &&
-				_storeEditText.getText().toString().length() == 0){
+    private boolean navigateBack(){
+        //all fields are empty
+        if(_itemNameEditText.getText().toString().length() == 0 &&
+                _noteEditText.getText().toString().length() == 0 &&
+                _priceEditText.getText().toString().length() == 0 &&
+                _locationEditText.getText().toString().length() == 0 &&
+                _storeEditText.getText().toString().length() == 0){
 
-			setResult(RESULT_CANCELED, null);
-			finish();
-			return false;
-		}
-		
-		//only show warning if user is editing a new item
-		if(_editNew){
+            setResult(RESULT_CANCELED, null);
+            finish();
+            return false;
+        }
+
+        //only show warning if user is editing a new item
+        if(_editNew){
             AlertDialog dialog;
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("Discard the wish?").setCancelable(
-					false).setPositiveButton("Yes",
-							new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							setResult(RESULT_CANCELED, null);
-							EditItem.this.finish();
-						}
-					}).setNegativeButton("No",
-							new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							dialog.cancel();
-						}
-					});
-			dialog = builder.create();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Discard the wish?").setCancelable(
+                    false).setPositiveButton("Yes",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            setResult(RESULT_CANCELED, null);
+                            EditItem.this.finish();
+                        }
+                    }).setNegativeButton("No",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            dialog = builder.create();
             dialog.setOnShowListener(new DialogOnShowListener(this));
-			dialog.show();
-		}
-		else{
-			setResult(RESULT_CANCELED, null);
-			finish();
-		}
-	return false;
-		
-	}
-	
-	/***
-	 * called when the "return" button is clicked
-	 */
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			return navigateBack();
-		}
-		return false;
-	}
-	
-	private Boolean setTakenPhoto() {
+            dialog.show();
+        }
+        else{
+            setResult(RESULT_CANCELED, null);
+            finish();
+        }
+        return false;
+
+    }
+
+    /***
+     * called when the "return" button is clicked
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            return navigateBack();
+        }
+        return false;
+    }
+
+    private Boolean setTakenPhoto() {
         if (_fullsizePhotoPath == null) {
             return false;
         }
@@ -806,7 +806,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
         _selectedPicUri = null;
         _selectedPic = false;
         return true;
-	}
+    }
 
     private Boolean setSelectedPic() {
         if (_selectedPicUri == null) {
@@ -841,10 +841,10 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
         return true;
     }
 
-	//this will make the photo taken before to show up if user cancels taking a second photo
-	//this will also save the thumbnail on switching screen orientation
-	@Override
-	protected void onSaveInstanceState(Bundle savedInstanceState) {
+    //this will make the photo taken before to show up if user cancels taking a second photo
+    //this will also save the thumbnail on switching screen orientation
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
         if (_newfullsizePhotoPath !=null) {
             savedInstanceState.putString(NEW_FULLSIZE_PHOTO_PATH, _newfullsizePhotoPath.toString());
         }
@@ -852,93 +852,93 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
             savedInstanceState.putString(SELECTED_PIC_URL, _selectedPicUri.toString());
         }
 
-		savedInstanceState.putString(FULLSIZE_PHOTO_PATH, _fullsizePhotoPath);
-		super.onSaveInstanceState(savedInstanceState);
-	}
+        savedInstanceState.putString(FULLSIZE_PHOTO_PATH, _fullsizePhotoPath);
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		// restore the current selected item in the list
-		if (savedInstanceState != null) {
-			_newfullsizePhotoPath = savedInstanceState.getString(NEW_FULLSIZE_PHOTO_PATH);
-			_fullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // restore the current selected item in the list
+        if (savedInstanceState != null) {
+            _newfullsizePhotoPath = savedInstanceState.getString(NEW_FULLSIZE_PHOTO_PATH);
+            _fullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
             if (savedInstanceState.getString(SELECTED_PIC_URL) != null) {
                 _selectedPicUri = Uri.parse(savedInstanceState.getString(SELECTED_PIC_URL));
             }
             if (!setTakenPhoto()) {
                 setSelectedPic();
             }
-		}
-	}
+        }
+    }
 
-	@Override
-		public void update(Observable observable, Object data) {
-			// This method is notified after data changes.
-			//get the location
-			Location location = _pManager.getCurrentLocation();
-			if (location == null){
-				_ddStr = "unknown";
-				//need better value to indicate it's not valid lat and lng
-				_lat = Double.MIN_VALUE;
-				_lng = Double.MIN_VALUE;
-				_locationEditText.setText(_ddStr);
-				_isGettingLocation = false;
-			}
-			else {
-				//get current latitude and longitude
-				_lat = location.getLatitude();
-				_lng = location.getLongitude();
-				new GetAddressTask().execute("");
-			}
-		}
+    @Override
+    public void update(Observable observable, Object data) {
+        // This method is notified after data changes.
+        //get the location
+        Location location = _pManager.getCurrentLocation();
+        if (location == null){
+            _ddStr = "unknown";
+            //need better value to indicate it's not valid lat and lng
+            _lat = Double.MIN_VALUE;
+            _lng = Double.MIN_VALUE;
+            _locationEditText.setText(_ddStr);
+            _isGettingLocation = false;
+        }
+        else {
+            //get current latitude and longitude
+            _lat = location.getLatitude();
+            _lng = location.getLongitude();
+            new GetAddressTask().execute("");
+        }
+    }
 
-	private class GetAddressTask extends AsyncTask<String, Void, String> {//<param, progress, result>
-		@Override
-			protected String doInBackground(String... arg) {
-				//getCuttentAddStr using geocode, may take a while, need to put this to a separate thread
-				_ddStr = _pManager.getCuttentAddStr();
-				return _ddStr;
-			}
+    private class GetAddressTask extends AsyncTask<String, Void, String> {//<param, progress, result>
+        @Override
+        protected String doInBackground(String... arg) {
+            //getCuttentAddStr using geocode, may take a while, need to put this to a separate thread
+            _ddStr = _pManager.getCuttentAddStr();
+            return _ddStr;
+        }
 
-		@Override
-			protected void onPostExecute(String add) {
-				if (_ddStr.equals("unknown")) {
-					Toast.makeText(EditItem.this, "location not available", Toast.LENGTH_LONG);
-				}
-				_locationEditText.setText(_ddStr);
-				_isGettingLocation = false;
-			}
-	}
+        @Override
+        protected void onPostExecute(String add) {
+            if (_ddStr.equals("unknown")) {
+                Toast.makeText(EditItem.this, "location not available", Toast.LENGTH_LONG);
+            }
+            _locationEditText.setText(_ddStr);
+            _isGettingLocation = false;
+        }
+    }
 
-	@SuppressLint("NewApi")
-	private void setUpActionBar() {
-		// Make sure we're running on Honeycomb or higher to use ActionBar APIs
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			findViewById(R.id.addItemView_header).setVisibility(View.GONE);
-			ActionBar actionBar = getActionBar();
-			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
-		else {
-			// we use the header instead of action bar for GingerBread and lower
-			findViewById(R.id.addItemView_header).findViewById(R.id.imageButton_back_logo).setVisibility(View.VISIBLE);
-			findViewById(R.id.addItemView_header).findViewById(R.id.imageButton_save).setVisibility(View.VISIBLE);
+    @SuppressLint("NewApi")
+    private void setUpActionBar() {
+        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            findViewById(R.id.addItemView_header).setVisibility(View.GONE);
+            ActionBar actionBar = getActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        else {
+            // we use the header instead of action bar for GingerBread and lower
+            findViewById(R.id.addItemView_header).findViewById(R.id.imageButton_back_logo).setVisibility(View.VISIBLE);
+            findViewById(R.id.addItemView_header).findViewById(R.id.imageButton_save).setVisibility(View.VISIBLE);
 
-			_backImageButton = (ImageButton) findViewById(R.id.imageButton_back_logo);
-			_saveImageButton = (ImageButton) findViewById(R.id.imageButton_save);
+            _backImageButton = (ImageButton) findViewById(R.id.imageButton_back_logo);
+            _saveImageButton = (ImageButton) findViewById(R.id.imageButton_save);
 
-			_backImageButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					navigateBack();
-				}
-			});
-			_saveImageButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					saveWishItem();
-				}
-			});
-		}
-	}
+            _backImageButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    navigateBack();
+                }
+            });
+            _saveImageButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    saveWishItem();
+                }
+            });
+        }
+    }
 }

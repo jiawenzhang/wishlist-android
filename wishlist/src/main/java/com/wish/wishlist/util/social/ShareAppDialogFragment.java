@@ -88,9 +88,9 @@ public class ShareAppDialogFragment extends DialogFragment {
                     facebookPostIntent.putExtra("itemId", _itemId);
                     ((Activity) _ctx).startActivityForResult(facebookPostIntent, 1);
 
-                   // Intent snsIntent = new Intent(_ctx, WishItemPostToSNS.class);
-                   // snsIntent.putExtra("itemId", _itemId);
-                   // ((Activity)_ctx).startActivityForResult(snsIntent, 1);
+                    // Intent snsIntent = new Intent(_ctx, WishItemPostToSNS.class);
+                    // snsIntent.putExtra("itemId", _itemId);
+                    // ((Activity)_ctx).startActivityForResult(snsIntent, 1);
                     //new PostToFacebookDialog(_ctx, _message).show();
                 } else {
                     WishItem item = WishItemManager.getInstance(_ctx).retrieveItembyId(_itemId);

@@ -11,11 +11,11 @@ import java.util.ArrayList;
  * TagDBManager provides access to operations on data in ItemCategory table
  */
 public class TagDBManager extends DBManager {
-	public static final String KEY_ID = "_id";
-	public static final String KEY_NAME = "name";
+    public static final String KEY_ID = "_id";
+    public static final String KEY_NAME = "name";
 
-	public static final String DB_TABLE = "Tag";
-	private static final String TAG="TagDBManager";
+    public static final String DB_TABLE = "Tag";
+    private static final String TAG="TagDBManager";
 
     private static TagDBManager _instance = null;
 
@@ -26,25 +26,25 @@ public class TagDBManager extends DBManager {
         return _instance;
     }
 
-	/**
-	 * Constructor - takes the context to allow the database to be
-	 * opened/created
-	 * 
-	 * @param ctx
-	 *            the Context within which to work
-	 */
-	private TagDBManager(Context ctx) {
+    /**
+     * Constructor - takes the context to allow the database to be
+     * opened/created
+     *
+     * @param ctx
+     *            the Context within which to work
+     */
+    private TagDBManager(Context ctx) {
         super(ctx);
-	}
+    }
 
-	/**
-	 * Create a new tag. If the tag exists, replace it. If successfully created return the new rowId
-	 * for that tag, otherwise return a -1 to indicate failure.
-	 * 
-	 * @param name
-	 * @return rowId or -1 if failed
-	 */
-	public long createTag(String name) {
+    /**
+     * Create a new tag. If the tag exists, replace it. If successfully created return the new rowId
+     * for that tag, otherwise return a -1 to indicate failure.
+     *
+     * @param name
+     * @return rowId or -1 if failed
+     */
+    public long createTag(String name) {
         open();
         String where = KEY_NAME + " = ?";
         Cursor cursor = mDb.query(DB_TABLE, new String[] { KEY_ID }, where, new String[]{name}, null, null, null);
@@ -53,12 +53,12 @@ public class TagDBManager extends DBManager {
             close();
             return tagId;
         }
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(KEY_NAME, name);
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_NAME, name);
         long tagId = mDb.insert(DB_TABLE, null, initialValues);
         close();
         return tagId;
-	}
+    }
 
     public void deleteTag(String name) {
         open();
@@ -80,15 +80,15 @@ public class TagDBManager extends DBManager {
         return success;
     }
 
-	/**
-	 * Return a Cursor over the list of all tags in the database
-	 * 
-	 * @return Cursor over all cars
-	 */
-	public ArrayList<String> getAllTags() {
+    /**
+     * Return a Cursor over the list of all tags in the database
+     *
+     * @return Cursor over all cars
+     */
+    public ArrayList<String> getAllTags() {
         open();
         ArrayList<String> tagList = new ArrayList<String>();
-		Cursor cursor = mDb.query(DB_TABLE, new String[] { KEY_ID, KEY_NAME }, null, null, null, null, null);
+        Cursor cursor = mDb.query(DB_TABLE, new String[] { KEY_ID, KEY_NAME }, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
                 String tagName = cursor.getString(cursor.getColumnIndexOrThrow(TagDBManager.KEY_NAME));
@@ -97,7 +97,7 @@ public class TagDBManager extends DBManager {
         }
         close();
         return tagList;
-	}
+    }
 
     public ArrayList<String> getTagsByIds(String[] ids) {
         ArrayList<String> tags = new ArrayList<String>();
@@ -124,37 +124,37 @@ public class TagDBManager extends DBManager {
         return tagId;
     }
 
-	/**
-	 * Return a Cursor positioned at the Tag that matches the given rowId
-	 * 
-	 * @param rowId
-	 * @return Cursor positioned to matching tags, if found
-	 * @throws SQLException
-	 *             if car could not be found/retrieved
-	 */
-	public Cursor getTag(long rowId) throws SQLException {
+    /**
+     * Return a Cursor positioned at the Tag that matches the given rowId
+     *
+     * @param rowId
+     * @return Cursor positioned to matching tags, if found
+     * @throws SQLException
+     *             if car could not be found/retrieved
+     */
+    public Cursor getTag(long rowId) throws SQLException {
 
-		Cursor mCursor =
+        Cursor mCursor =
 
-		this.mDb.query(true, DB_TABLE, new String[] { KEY_ID, KEY_NAME },
-				KEY_ID + "=" + rowId, null, null, null, null, null);
-		if (mCursor != null) {
-			mCursor.moveToFirst();
-		}
-		return mCursor;
-	}
+                this.mDb.query(true, DB_TABLE, new String[] { KEY_ID, KEY_NAME },
+                        KEY_ID + "=" + rowId, null, null, null, null, null);
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        return mCursor;
+    }
 
-	/**
-	 * Update the Tag.
-	 * 
-	 * @param rowId
-	 * @param name
-	 * @return true if the note was successfully updated, false otherwise
-	 */
-	public boolean updateTag(long rowId, String name) {
-		ContentValues args = new ContentValues();
-		args.put(KEY_NAME, name);
+    /**
+     * Update the Tag.
+     *
+     * @param rowId
+     * @param name
+     * @return true if the note was successfully updated, false otherwise
+     */
+    public boolean updateTag(long rowId, String name) {
+        ContentValues args = new ContentValues();
+        args.put(KEY_NAME, name);
 
-		return this.mDb.update(DB_TABLE, args, KEY_ID + "=" + rowId, null) > 0;
-	}
+        return this.mDb.update(DB_TABLE, args, KEY_ID + "=" + rowId, null) > 0;
+    }
 }
