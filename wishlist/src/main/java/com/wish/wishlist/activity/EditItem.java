@@ -470,8 +470,12 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
             WebResult result = new WebResult();
             try {
                 //Connection.Response response = Jsoup.connect(urls[0]).followRedirects(true).execute();
-                //String url = response.url().toString();
-                Document doc = Jsoup.connect(urls[0]).get();
+                Document doc = Jsoup.connect(urls[0])
+                        .header("Accept-Encoding", "gzip, deflate")
+                        .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+                        .maxBodySize(0)
+                        .timeout(600000)
+                        .get();
 
                 // Prefer og:title if the site has it
                 Elements og_title_element = doc.head().select("meta[property=og:title]");
@@ -491,11 +495,19 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                 Elements og_image = doc.head().select("meta[property=og:image]");
                 if (!og_image.isEmpty()) {
                     String og_image_src = og_image.first().attr("content");
+                    Bitmap image = null;
                     try {
-                        final Bitmap image = Picasso.with(EditItem.this).load(og_image_src).get();
+                        image = Picasso.with(EditItem.this).load(og_image_src).get();
+                    } catch (IOException e) {}
+
+                    if (image != null) {
                         result._webImages.add(new WebImage(og_image_src, image.getWidth(), image.getHeight(), ""));
-                    } catch (IOException e) { }
-                    return result;
+                        // some websites like kijiji will return us a tiny og:image
+                        // let's try to get more images if this happens.
+                        if (image.getWidth() >= 100 && image.getHeight() >= 100) {
+                            return result;
+                        }
+                    }
                 }
 
                 // Didn't find og:image tag, so retrieve all the images in the website, filter them by type and size, and
