@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -71,6 +72,9 @@ import android.app.ProgressDialog;
 
 import java.net.URL;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -398,14 +402,24 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
             String link = links.get(0);
             _linkEditText.setText(link);
             _linkEditText.setEnabled(false);
+            String host = null;
             try {
                 URL url = new URL(link);
-                _storeEditText.setText(url.getHost());
+                host = url.getHost();
+                _storeEditText.setText(host);
+
             } catch (MalformedURLException e) {}
 
             // remove the link from the text;
             String name = sharedText.replace(link, "");
             _itemNameEditText.setText(name);
+
+            if (host != null && host.equals("pages.ebay.com")) {
+                String redirected_link = getEbayLink(link);
+                if (redirected_link != null) {
+                    link = redirected_link;
+                }
+            }
             new getImageAsync().execute(link);
         }
     }
@@ -421,6 +435,33 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
             // Update UI to reflect multiple images being shared
         }
     }
+
+    private String getEbayLink(String link) {
+        // ebay app will send us link like:
+        // http://pages.ebay.com/link/?nav=item.view&id=201331161611&alt=web
+
+        // If we open this link, the site will be redirected to a new link by javascript
+        // and the product information are all stored in the new link
+        // http://www.ebay.com/itm/201331161611
+
+        // So what we do is to convert the given link to the redirected link
+
+        // Retrieve the product id from the given link
+        String id = null;
+        for (NameValuePair nvp : URLEncodedUtils.parse(URI.create(link), "UTF-8")) {
+            if ("id".equals(nvp.getName())) {
+                id = nvp.getValue();
+            }
+        }
+
+        if (id == null) {
+            return null;
+        }
+
+        // Construct the redirected link
+        return  "http://www.ebay.com/itm/" + id;
+    }
+
     private class getImageAsync extends AsyncTask<String, Integer, WebResult> {
         ProgressDialog asyncDialog = new ProgressDialog(EditItem.this);
 
