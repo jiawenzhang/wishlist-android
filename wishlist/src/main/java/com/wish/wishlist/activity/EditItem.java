@@ -498,7 +498,12 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
 
                 // Prefer twitter image over facebook image, because facebook og:image requires dimension of
                 // 1200 x 630 or 600 x 315, which will crop a tall image in an ugly way
-                Elements twitter_image_element = doc.head().select("meta[property=twitter:image:src]");
+
+                // Some websites use twitter:image, some use twitter:image:src, make sure we cover both.
+                Elements twitter_image_element = doc.head().select("meta[property=twitter:image]");
+                if (twitter_image_element.isEmpty()) {
+                    twitter_image_element = doc.head().select("meta[property=twitter:image:src]");
+                }
                 if (!twitter_image_element.isEmpty()) {
                     String twitter_image_src = twitter_image_element.first().attr("content");
                     Bitmap image = null;
@@ -509,7 +514,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                     if (image != null) {
                         result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), ""));
                         if (image.getWidth() >= 100 && image.getHeight() >= 100) {
-                            Log.d(TAG, "twitter:image:src " + twitter_image_src);
+                            Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "X" + image.getHeight());
                             return result;
                         }
                     }
@@ -528,7 +533,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                         // some websites like kijiji will return us a tiny og:image
                         // let's try to get more images if this happens.
                         if (image.getWidth() >= 100 && image.getHeight() >= 100) {
-                            Log.d(TAG, "og:image src: " + og_image_src);
+                            Log.d(TAG, "og:image src: " + og_image_src + " " + image.getWidth() + "X" + image.getHeight());
                             return result;
                         }
                     }
