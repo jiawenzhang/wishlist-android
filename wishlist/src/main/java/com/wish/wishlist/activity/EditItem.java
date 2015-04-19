@@ -133,10 +133,11 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
 
     private static ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
 
-    static final public String IMG_URLS = "IMG_URLS";
     static final public String FULLSIZE_PHOTO_PATH = "FULLSIZE_PHOTO_PATH";
     static final public String NEW_FULLSIZE_PHOTO_PATH = "NEW_FULLSIZE_PHOTO_PATH";
     static final public String SELECTED_PIC_URL = "SELECTED_PIC_URL";
+
+    static final private String TAG = "EditItem";
 
     private class WebResult {
         public ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
@@ -419,6 +420,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                     link = redirected_link;
                 }
             }
+            Log.d(TAG, "extracted link: " + link);
             _linkEditText.setText(link);
             _linkEditText.setEnabled(false);
             new getImageAsync().execute(link);
@@ -481,6 +483,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                 Elements og_title_element = doc.head().select("meta[property=og:title]");
                 if (!og_title_element.isEmpty()) {
                     String og_title = og_title_element.first().attr("content");
+                    Log.d(TAG, "og:title : " + og_title);
                     result._title = og_title;
                 } else {
                     result._title = doc.title();
@@ -489,7 +492,27 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                 Elements og_description_element = doc.head().select("meta[property=og:description]");
                 if (!og_description_element.isEmpty()) {
                     String og_description = og_description_element.first().attr("content");
+                    Log.d(TAG, "og:description : " + og_description);
                     result._description = og_description;
+                }
+
+                // Prefer twitter image over facebook image, because facebook og:image requires dimension of
+                // 1200 x 630 or 600 x 315, which will crop a tall image in an ugly way
+                Elements twitter_image_element = doc.head().select("meta[property=twitter:image:src]");
+                if (!twitter_image_element.isEmpty()) {
+                    String twitter_image_src = twitter_image_element.first().attr("content");
+                    Bitmap image = null;
+                    try {
+                        image = Picasso.with(EditItem.this).load(twitter_image_src).get();
+                    } catch (IOException e) {}
+
+                    if (image != null) {
+                        result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), ""));
+                        if (image.getWidth() >= 100 && image.getHeight() >= 100) {
+                            Log.d(TAG, "twitter:image:src " + twitter_image_src);
+                            return result;
+                        }
+                    }
                 }
 
                 Elements og_image = doc.head().select("meta[property=og:image]");
@@ -505,6 +528,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                         // some websites like kijiji will return us a tiny og:image
                         // let's try to get more images if this happens.
                         if (image.getWidth() >= 100 && image.getHeight() >= 100) {
+                            Log.d(TAG, "og:image src: " + og_image_src);
                             return result;
                         }
                     }
@@ -569,6 +593,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
             }
             EditItem._webImages = result._webImages;
             if (!result._webImages.isEmpty()) {
+                Log.d(TAG, "Got " + result._webImages.size() + " images to choose from");
                 DialogFragment fragment = WebImageFragmentDialog.newInstance(_webImages);
                 final FragmentManager fm = getFragmentManager();
                 fragment.show(fm, "dialog");
@@ -581,7 +606,6 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
         Matcher m = Patterns.WEB_URL.matcher(text);
         while (m.find()) {
             String url = m.group();
-            Log.d("AAA", "URL extracted: " + url);
             links.add(url);
         }
         return links;
