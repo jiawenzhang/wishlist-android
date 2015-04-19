@@ -141,6 +141,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
     private class WebResult {
         public ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
         public String _title;
+        public String _description;
     }
 
     @Override
@@ -400,8 +401,6 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
             }
 
             String link = links.get(0);
-            _linkEditText.setText(link);
-            _linkEditText.setEnabled(false);
             String host = null;
             try {
                 URL url = new URL(link);
@@ -420,6 +419,8 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                     link = redirected_link;
                 }
             }
+            _linkEditText.setText(link);
+            _linkEditText.setEnabled(false);
             new getImageAsync().execute(link);
         }
     }
@@ -468,11 +469,39 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
         protected WebResult doInBackground(String... urls) {
             WebResult result = new WebResult();
             try {
+                //Connection.Response response = Jsoup.connect(urls[0]).followRedirects(true).execute();
+                //String url = response.url().toString();
                 Document doc = Jsoup.connect(urls[0]).get();
-                result._title = doc.title();
-                Elements img = doc.getElementsByTag("img");
 
-                for (Element el : img) {
+                // Prefer og:title if the site has it
+                Elements og_title_element = doc.head().select("meta[property=og:title]");
+                if (!og_title_element.isEmpty()) {
+                    String og_title = og_title_element.first().attr("content");
+                    result._title = og_title;
+                } else {
+                    result._title = doc.title();
+                }
+
+                Elements og_description_element = doc.head().select("meta[property=og:description]");
+                if (!og_description_element.isEmpty()) {
+                    String og_description = og_description_element.first().attr("content");
+                    result._description = og_description;
+                }
+
+                Elements og_image = doc.head().select("meta[property=og:image]");
+                if (!og_image.isEmpty()) {
+                    String og_image_src = og_image.first().attr("content");
+                    try {
+                        final Bitmap image = Picasso.with(EditItem.this).load(og_image_src).get();
+                        result._webImages.add(new WebImage(og_image_src, image.getWidth(), image.getHeight(), ""));
+                    } catch (IOException e) { }
+                    return result;
+                }
+
+                // Didn't find og:image tag, so retrieve all the images in the website, filter them by type and size, and
+                // let user choose one.
+                Elements img_elements = doc.getElementsByTag("img");
+                for (Element el : img_elements) {
                     String src = el.absUrl("src");
                     // width and height can be in the format of 100px,
                     // remove the non digit part of the string.
@@ -520,8 +549,11 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
 
         protected void onPostExecute(WebResult result) {
             asyncDialog.dismiss();
-            if (_itemNameEditText.getText().toString().isEmpty()) {
+            if (_itemNameEditText.getText().toString().trim().isEmpty()) {
                 _itemNameEditText.setText(result._title);
+            }
+            if (_noteEditText.getText().toString().trim().isEmpty()) {
+                _noteEditText.setText(result._description);
             }
             EditItem._webImages = result._webImages;
             if (!result._webImages.isEmpty()) {
