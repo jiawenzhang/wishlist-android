@@ -1,12 +1,16 @@
 package com.wish.wishlist.activity;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
@@ -542,6 +546,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                 // Didn't find og:image tag, so retrieve all the images in the website, filter them by type and size, and
                 // let user choose one.
                 Elements img_elements = doc.getElementsByTag("img");
+                Log.d(TAG, "Found " + img_elements.size() + " img elements");
                 for (Element el : img_elements) {
                     String src = el.absUrl("src");
                     // width and height can be in the format of 100px,
@@ -554,6 +559,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                     if (src.isEmpty() || style.contains("display:none") || src.endsWith(".gif") || src.endsWith(".png")) {
                         continue;
                     }
+
                     try {
                         final Bitmap image = Picasso.with(EditItem.this).load(src).get();
                         // filter out small images
@@ -561,7 +567,9 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                             continue;
                         }
                         result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id()));
-                    } catch (IOException e) { }
+                    } catch (IOException e) {
+                        Log.d(TAG, "IOException" + e.toString());
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -1053,6 +1061,36 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                     saveWishItem();
                 }
             });
+        }
+    }
+
+    private void loadPartialImage() {
+        try {
+            Log.d(TAG, "Downloading image: " + src);
+            URL imageUrl = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+            connection.setRequestProperty("Range", "bytes=0-168");
+            Log.d(TAG, "content length " + connection.getContentLength());
+            int response = connection.getResponseCode();
+            Log.d(TAG, "response code: " + response);
+            Log.d(TAG, "\n");
+
+            InputStream is = connection.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            StringBuilder sb = new StringBuilder();
+            BufferedReader br = new BufferedReader(isr);
+            try {
+                String read = br.readLine();
+
+                while(read != null){
+                    sb.append(read);
+                    read = br.readLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            Log.d(TAG, "IOException" + e.toString());
         }
     }
 }
