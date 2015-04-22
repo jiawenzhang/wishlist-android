@@ -1064,7 +1064,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
         }
     }
 
-    private void loadPartialImage() {
+    private void loadPartialImage(String src) {
         try {
             Log.d(TAG, "Downloading image: " + src);
             URL imageUrl = new URL(src);
