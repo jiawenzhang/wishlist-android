@@ -489,7 +489,16 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                     String og_title = og_title_element.first().attr("content");
                     Log.d(TAG, "og:title : " + og_title);
                     result._title = og_title;
-                } else {
+                }
+                if (result._title == null || result._title.trim().isEmpty()) {
+                    Elements meta_title_element = doc.head().select("meta[name=title]");
+                    if (!meta_title_element.isEmpty()) {
+                        String meta_title = meta_title_element.first().attr("content");
+                        Log.d(TAG, "meta:title : " + meta_title);
+                        result._title = meta_title;
+                    }
+                }
+                if (result._title == null || result._title.trim().isEmpty()) {
                     result._title = doc.title();
                 }
 
@@ -498,6 +507,14 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                     String og_description = og_description_element.first().attr("content");
                     Log.d(TAG, "og:description : " + og_description);
                     result._description = og_description;
+                }
+                if (result._description == null || result._description.trim().isEmpty()) {
+                    Elements meta_description_element = doc.head().select("meta[name=description]");
+                    if (!meta_description_element.isEmpty()) {
+                        String meta_description = meta_description_element.first().attr("content");
+                        Log.d(TAG, "meta:description : " + meta_description);
+                        result._description = meta_description;
+                    }
                 }
 
                 // Prefer twitter image over facebook image, because facebook og:image requires dimension of
@@ -598,10 +615,10 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
 
         protected void onPostExecute(WebResult result) {
             asyncDialog.dismiss();
-            if (_itemNameEditText.getText().toString().trim().isEmpty()) {
+            if (result._title != null && !result._title.trim().isEmpty()) {
                 _itemNameEditText.setText(result._title);
             }
-            if (_noteEditText.getText().toString().trim().isEmpty()) {
+            if (result._description != null && !result._description.trim().isEmpty()) {
                 _noteEditText.setText(result._description);
             }
             EditItem._webImages = result._webImages;
