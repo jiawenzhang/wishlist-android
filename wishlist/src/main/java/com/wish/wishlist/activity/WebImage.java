@@ -1,5 +1,6 @@
 package com.wish.wishlist.activity;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -11,6 +12,7 @@ public class WebImage implements Parcelable {
     public int mWidth;
     public int mHeight;
     public String mId;
+    public Bitmap mBitmap;
 
     public WebImage(Parcel in) {
         mUrl = in.readString();
@@ -18,11 +20,12 @@ public class WebImage implements Parcelable {
         mHeight = in.readInt();
         mId = in.readString();
     }
-    public WebImage(String url, int width, int height, String id) {
+    public WebImage(String url, int width, int height, String id, Bitmap bitmap) {
         mUrl = url;
         mWidth = width;
         mHeight = height;
         mId = id;
+        mBitmap = bitmap;
     }
     @Override
     public int describeContents() {

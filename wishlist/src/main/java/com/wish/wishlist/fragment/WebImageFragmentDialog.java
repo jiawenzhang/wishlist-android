@@ -1,13 +1,18 @@
 package com.wish.wishlist.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 
 import com.etsy.android.grid.StaggeredGridView;
 import com.wish.wishlist.R;
@@ -22,6 +27,9 @@ public class WebImageFragmentDialog extends DialogFragment implements
     private StaggeredGridView mGridView;
     private WebImageAdapter mAdapter;
     private static ArrayList<WebImage> mList;
+    private OnWebImageSelectedListener mWebImageSelectedListener;
+    private OnLoadMoreSelectedListener mLoadMoreSelectedListener;
+    final private static String TAG = "WebImageFragmentDialog";
 
     public static WebImageFragmentDialog newInstance(ArrayList<WebImage> list) {
         mList = list;
@@ -39,7 +47,43 @@ public class WebImageFragmentDialog extends DialogFragment implements
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (mList.size() > 1) {
+            // We have multiple images, we show them in a grid view that is loaded in onCreateView
+            return super.onCreateDialog(savedInstanceState);
+        }
+
+        if (savedInstanceState == null) {
+            final LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+        }
+
+        // We only have one image, show the image in an AlertDialog with a "Load more" button
+        final View v = getActivity().getLayoutInflater().inflate(R.layout.single_web_image_view, null);
+        final ImageView imageView = (ImageView) v.findViewById(R.id.single_web_image);
+        if (mList.get(0).mBitmap != null) {
+            imageView.setImageBitmap(mList.get(0).mBitmap);
+        }
+
+        final AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setPositiveButton("Load more",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                mLoadMoreSelectedListener.onLoadMore();
+                            }
+                        }
+                )
+                .create();
+
+        dialog.setView(v, 0, 0, 0, 0);
+        return dialog;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (mList.size() <= 1) {
+           return super.onCreateView(inflater, container, savedInstanceState);
+        }
+
         View v = inflater.inflate(R.layout.web_image_view, container, false);
         mGridView = (StaggeredGridView) v.findViewById(R.id.staggered_web_image_view);
 
@@ -49,10 +93,10 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
         if (mAdapter == null) {
             if (mList == null) {
-                //Log.d("AAA", "list null");
+                Log.d(TAG, "mList is null");
             } else {
                 for (WebImage img : mList) {
-                    //Log.d("AAA", img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
+                    Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
                 }
             }
             mAdapter = new WebImageAdapter(getActivity(), 0, mList);
@@ -68,13 +112,17 @@ public class WebImageFragmentDialog extends DialogFragment implements
         public abstract void onWebImageSelected(int position);
     }
 
-    private OnWebImageSelectedListener mListener;
+    public static interface OnLoadMoreSelectedListener {
+        public abstract void onLoadMore();
+    }
+
 
     // make sure the Activity implemented it
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            this.mListener = (OnWebImageSelectedListener)activity;
+            this.mWebImageSelectedListener = (OnWebImageSelectedListener) activity;
+            this.mLoadMoreSelectedListener = (OnLoadMoreSelectedListener) activity;
         }
         catch (final ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnWebImageSelectedListener");
@@ -83,7 +131,6 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
     @Override
     public void onScrollStateChanged(final AbsListView view, final int scrollState) {
-        //Log.d(TAG, "onScrollStateChanged:" + scrollState);
     }
 
     @Override
@@ -92,7 +139,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        this.mListener.onWebImageSelected(position);
+        this.mWebImageSelectedListener.onWebImageSelected(position);
         dismiss();
     }
 }

@@ -89,7 +89,10 @@ import org.jsoup.select.Elements;
  * as a row in the Item table in the database
  */
 @SuppressLint("NewApi")
-public class EditItem extends Activity implements Observer, WebImageFragmentDialog.OnWebImageSelectedListener {
+public class EditItem extends Activity
+        implements Observer,
+        WebImageFragmentDialog.OnWebImageSelectedListener,
+        WebImageFragmentDialog.OnLoadMoreSelectedListener {
 
     private EditText _itemNameEditText;
     private EditText _noteEditText;
@@ -134,6 +137,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
     private static final int SELECT_PICTURE = 2;
     private static final int ADD_TAG = 3;
     private Boolean _selectedPic = false;
+    private String mLink;
 
     private static ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
 
@@ -143,6 +147,10 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
 
     static final private String TAG = "EditItem";
 
+    private class WebRequest {
+        public String url;
+        public Boolean getAllImages = false;
+    }
     private class WebResult {
         public ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
         public String _title;
@@ -405,29 +413,32 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                 return;
             }
 
-            String link = links.get(0);
+            mLink = links.get(0);
             String host = null;
             try {
-                URL url = new URL(link);
+                URL url = new URL(mLink);
                 host = url.getHost();
                 _storeEditText.setText(host);
 
             } catch (MalformedURLException e) {}
 
             // remove the link from the text;
-            String name = sharedText.replace(link, "");
+            String name = sharedText.replace(mLink, "");
             _itemNameEditText.setText(name);
 
             if (host != null && host.equals("pages.ebay.com")) {
-                String redirected_link = getEbayLink(link);
+                String redirected_link = getEbayLink(mLink);
                 if (redirected_link != null) {
-                    link = redirected_link;
+                    mLink = redirected_link;
                 }
             }
-            Log.d(TAG, "extracted link: " + link);
-            _linkEditText.setText(link);
+            Log.d(TAG, "extracted link: " + mLink);
+            _linkEditText.setText(mLink);
             _linkEditText.setEnabled(false);
-            new getImageAsync().execute(link);
+            WebRequest request = new WebRequest();
+            request.url = mLink;
+            request.getAllImages = false;
+            new getImageAsync().execute(request);
         }
     }
 
@@ -469,14 +480,15 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
         return  "http://www.ebay.com/itm/" + id;
     }
 
-    private class getImageAsync extends AsyncTask<String, Integer, WebResult> {
+    private class getImageAsync extends AsyncTask<WebRequest, Integer, WebResult> {
         ProgressDialog asyncDialog = new ProgressDialog(EditItem.this);
 
-        protected WebResult doInBackground(String... urls) {
+        protected WebResult doInBackground(WebRequest... requests) {
+            WebRequest request = requests[0];
             WebResult result = new WebResult();
             try {
                 //Connection.Response response = Jsoup.connect(urls[0]).followRedirects(true).execute();
-                Document doc = Jsoup.connect(urls[0])
+                Document doc = Jsoup.connect(request.url)
                         .header("Accept-Encoding", "gzip, deflate")
                         .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
                         .maxBodySize(0)
@@ -533,10 +545,12 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                     } catch (IOException e) {}
 
                     if (image != null) {
-                        result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), ""));
+                        result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), "", image));
                         if (image.getWidth() >= 100 && image.getHeight() >= 100) {
                             Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "X" + image.getHeight());
-                            return result;
+                            if (!request.getAllImages) {
+                                return result;
+                            }
                         }
                     }
                 }
@@ -550,12 +564,14 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                     } catch (IOException e) {}
 
                     if (image != null) {
-                        result._webImages.add(new WebImage(og_image_src, image.getWidth(), image.getHeight(), ""));
+                        result._webImages.add(new WebImage(og_image_src, image.getWidth(), image.getHeight(), "", image));
                         // some websites like kijiji will return us a tiny og:image
                         // let's try to get more images if this happens.
                         if (image.getWidth() >= 100 && image.getHeight() >= 100) {
                             Log.d(TAG, "og:image src: " + og_image_src + " " + image.getWidth() + "X" + image.getHeight());
-                            return result;
+                            if (!request.getAllImages) {
+                                return result;
+                            }
                         }
                     }
                 }
@@ -583,7 +599,7 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
                         if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
                             continue;
                         }
-                        result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id()));
+                        result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), null));
                     } catch (IOException e) {
                         Log.d(TAG, "IOException" + e.toString());
                     }
@@ -782,6 +798,14 @@ public class EditItem extends Activity implements Observer, WebImageFragmentDial
     public void onWebImageSelected(int position) {
         // After the dialog fragment completes, it calls this callback.
         setWebPic(_webImages.get(position).mUrl);
+    }
+
+    public void onLoadMore() {
+        Log.d(TAG, "onLoadMore");
+        WebRequest request = new WebRequest();
+        request.url = mLink;
+        request.getAllImages = true;
+        new getImageAsync().execute(request);
     }
 
     @Override
