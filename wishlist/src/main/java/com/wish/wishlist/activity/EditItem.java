@@ -114,6 +114,7 @@ public class EditItem extends Activity
     private double _lng = Double.MIN_VALUE;
     private String _ddStr = "unknown";
     private Uri _selectedPicUri = null;
+    private String _webPicUrl = null;
     private String _fullsizePhotoPath = null;
     private String _newfullsizePhotoPath = null;
     private StoreDBManager _storeDBManager;
@@ -145,6 +146,7 @@ public class EditItem extends Activity
     static final public String FULLSIZE_PHOTO_PATH = "FULLSIZE_PHOTO_PATH";
     static final public String NEW_FULLSIZE_PHOTO_PATH = "NEW_FULLSIZE_PHOTO_PATH";
     static final public String SELECTED_PIC_URL = "SELECTED_PIC_URL";
+    static final public String WEB_PIC_URL = "WEB_PIC_URL";
 
     static final private String TAG = "EditItem";
 
@@ -259,6 +261,10 @@ public class EditItem extends Activity
         if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
             _selectedPicUri = Uri.parse(intent.getStringExtra(SELECTED_PIC_URL));
             setSelectedPic();
+        }
+        if (intent.getStringExtra(WEB_PIC_URL) != null) {
+            _webPicUrl = intent.getStringExtra(WEB_PIC_URL);
+            setWebPic(_webPicUrl);
         }
 
         //get item id from previous intent, if there is an item id, we know this EditItemInfo is launched
@@ -391,6 +397,9 @@ public class EditItem extends Activity
             _fullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
             if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
                 _selectedPicUri = Uri.parse(intent.getStringExtra(SELECTED_PIC_URL));
+            }
+            if (intent.getStringExtra(WEB_PIC_URL) != null) {
+                _webPicUrl = intent.getStringExtra(WEB_PIC_URL);
             }
             if (_fullsizePhotoPath != null) {
                 Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
@@ -819,7 +828,8 @@ public class EditItem extends Activity
 
     public void onWebImageSelected(int position) {
         // After the dialog fragment completes, it calls this callback.
-        setWebPic(_webImages.get(position).mUrl);
+        _webPicUrl = _webImages.get(position).mUrl;
+        setWebPic(_webPicUrl);
         unlockScreenOrientation();
     }
 
@@ -992,9 +1002,11 @@ public class EditItem extends Activity
         if (_fullsizePhotoPath == null) {
             return false;
         }
+        Log.d(TAG, "setTakePhoto " + _fullsizePhotoPath);
         _imageItem.setVisibility(View.VISIBLE);
         Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
         _selectedPicUri = null;
+        _webPicUrl = null;
         _selectedPic = false;
         return true;
     }
@@ -1003,14 +1015,17 @@ public class EditItem extends Activity
         if (_selectedPicUri == null) {
             return false;
         }
+        Log.d(TAG, "setSelectedPic " + _selectedPicUri.toString());
         _imageItem.setVisibility(View.VISIBLE);
         Picasso.with(this).load(_selectedPicUri).fit().centerCrop().into(_imageItem);
         _fullsizePhotoPath = null;
+        _webPicUrl = null;
         _selectedPic = true;
         return true;
     }
 
     private Boolean setWebPic(String url) {
+        Log.d(TAG, "setWebPic " + url);
         final Target target = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -1028,6 +1043,7 @@ public class EditItem extends Activity
 
         Picasso.with(this).load(url).into(target);
         _fullsizePhotoPath = null;
+        _selectedPicUri = null;
         _selectedPic = false;
         return true;
     }
@@ -1036,11 +1052,16 @@ public class EditItem extends Activity
     //this will also save the thumbnail on switching screen orientation
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
-        if (_newfullsizePhotoPath !=null) {
+        Log.d(TAG, "onSaveInstanceState");
+        if (_newfullsizePhotoPath != null) {
             savedInstanceState.putString(NEW_FULLSIZE_PHOTO_PATH, _newfullsizePhotoPath.toString());
         }
         if (_selectedPicUri != null) {
             savedInstanceState.putString(SELECTED_PIC_URL, _selectedPicUri.toString());
+        }
+        if (_webPicUrl != null) {
+            savedInstanceState.putString(WEB_PIC_URL, _webPicUrl);
+            Log.d(TAG, "_webPicUrl " + _webPicUrl);
         }
 
         savedInstanceState.putString(FULLSIZE_PHOTO_PATH, _fullsizePhotoPath);
@@ -1057,8 +1078,15 @@ public class EditItem extends Activity
             if (savedInstanceState.getString(SELECTED_PIC_URL) != null) {
                 _selectedPicUri = Uri.parse(savedInstanceState.getString(SELECTED_PIC_URL));
             }
-            if (!setTakenPhoto()) {
+            if (savedInstanceState.getString(WEB_PIC_URL) != null) {
+                _webPicUrl = savedInstanceState.getString(WEB_PIC_URL);
+            }
+            if (_fullsizePhotoPath != null) {
+                setTakenPhoto();
+            } else if (_selectedPicUri != null) {
                 setSelectedPic();
+            } else if (_webPicUrl != null){
+                setWebPic(_webPicUrl);
             }
         }
     }
