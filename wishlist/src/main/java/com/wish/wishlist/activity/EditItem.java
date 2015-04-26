@@ -137,7 +137,7 @@ public class EditItem extends Activity
     private static final int SELECT_PICTURE = 2;
     private static final int ADD_TAG = 3;
     private Boolean _selectedPic = false;
-    private String mLink;
+    private String mLink = null;
 
     private static ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
 
@@ -407,20 +407,30 @@ public class EditItem extends Activity
     void handleSendText(Intent intent) {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (sharedText != null) {
+            Log.d(TAG, "shared text: " + sharedText);
             ArrayList<String> links = extractLinks(sharedText);
             if (links.isEmpty()) {
                 _itemNameEditText.setText(sharedText);
                 return;
             }
 
-            mLink = links.get(0);
             String host = null;
-            try {
-                URL url = new URL(mLink);
-                host = url.getHost();
-                _storeEditText.setText(host);
+            for (String link : links) {
+                try {
+                    URL url = new URL(link);
+                    mLink = link;
+                    host = url.getHost();
+                    _storeEditText.setText(host);
+                    break;
+                } catch (MalformedURLException e) {
+                    Log.d(TAG, e.toString());
+                }
+            }
 
-            } catch (MalformedURLException e) {}
+            if (mLink == null) {
+                _itemNameEditText.setText(sharedText);
+                return;
+            }
 
             // remove the link from the text;
             String name = sharedText.replace(mLink, "");
