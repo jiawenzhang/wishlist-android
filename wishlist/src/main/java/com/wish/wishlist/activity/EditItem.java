@@ -67,6 +67,7 @@ import android.view.View.OnKeyListener;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -214,12 +215,12 @@ public class EditItem extends Activity
         });
 
         _galleryImageButton = (ImageButton) findViewById(R.id.imageButton_gallery);
+
         _imageItem = (ImageView) findViewById(R.id.image_photo);
-        int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-        _imageItem.setLayoutParams(new LinearLayout.LayoutParams(screenWidth/3, screenWidth/3));
         _imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        _imageItem.setOnClickListener(new OnClickListener() {
+        final View imageFrame = findViewById(R.id.image_photo_frame);
+        imageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(EditItem.this, FullscreenPhoto.class);
