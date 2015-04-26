@@ -80,7 +80,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
     private int _position;
     private int _prevPosition;
     private int _nextPosition;
-    private String _fullsize_picture_str=null;
+    private String _fullsize_picture_str = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,8 +164,8 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 //				return false;
 //			}
 //		};
-
-        _photoView.setOnClickListener(new OnClickListener() {
+        final View imageFrame = findViewById(R.id.imagePhotoDetailFrame);
+        imageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(WishItemDetail.this, FullscreenPhoto.class);
@@ -174,9 +174,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
                     startActivity(i);
                 }
             }
-
         });
-
     }
 
     private void showItemInfo(WishItem item) {

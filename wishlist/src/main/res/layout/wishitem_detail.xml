@@ -26,14 +26,20 @@
                 android:gravity="center_horizontal"
                 android:layout_weight="12">
 
-                <ImageView android:id="@+id/imgPhotoDetail"
+                <FrameLayout
+                    android:id="@+id/imagePhotoDetailFrame"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:adjustViewBounds="true"
-                    android:padding="2dp"
-                    android:background="@color/bodyText_dark_grey"
-                    android:gravity="center_horizontal"
-                    />
+                    android:layout_height="wrap_content"
+                    android:foreground="?android:attr/selectableItemBackground">
+                    <!-- framelayout is for tap effect -->
+
+                    <ImageView android:id="@+id/imgPhotoDetail"
+                               android:layout_width="match_parent"
+                               android:layout_height="300dp"
+                               android:adjustViewBounds="true"
+                               android:gravity="center_horizontal"
+                        />
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
