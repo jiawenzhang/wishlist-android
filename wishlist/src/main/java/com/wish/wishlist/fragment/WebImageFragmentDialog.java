@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.util.Log;
@@ -61,18 +62,13 @@ public class WebImageFragmentDialog extends DialogFragment implements
         final View v = getActivity().getLayoutInflater().inflate(R.layout.single_web_image_view, null);
 
         final View imageFrame = v.findViewById(R.id.single_web_image_frame);
-        imageFrame.setOnClickListener(new View.OnClickListener(){
+        imageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mWebImageSelectedListener.onWebImageSelected(0);
                 dismiss();
             }
         });
-
-        if (mList.get(0).mBitmap != null) {
-            final ImageView imageView = (ImageView) v.findViewById(R.id.single_web_image);
-            imageView.setImageBitmap(mList.get(0).mBitmap);
-        }
 
         final AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setPositiveButton("Load more",
@@ -85,6 +81,26 @@ public class WebImageFragmentDialog extends DialogFragment implements
                 .create();
 
         dialog.setView(v, 0, 0, 0, 0);
+
+        final Bitmap bitmap = mList.get(0).mBitmap;
+        final ImageView imageView = (ImageView) v.findViewById(R.id.single_web_image);
+
+        // We have to get the width of the imageFrame after the dialog is shown, otherwise,
+        // the UI has not been rendered and the width is always zero.
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                int width = imageFrame.getWidth();
+                if (bitmap != null) {
+                    // Resize the image to fit the dialog's width
+                    final float ratio = (float) bitmap.getHeight() / (float) bitmap.getWidth();
+                    int height = (int) (width * ratio);
+                    final Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+                    imageView.setImageBitmap(resizedBitmap);
+                }
+            }
+        });
+
         return dialog;
     }
 
