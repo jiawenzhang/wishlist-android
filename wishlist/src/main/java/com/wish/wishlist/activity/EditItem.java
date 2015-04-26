@@ -303,7 +303,8 @@ public class EditItem extends Activity
             }
             _tags = TagItemDBManager.instance(this).tags_of_item(mItem_id);
         } else { //we are editing a new wish, get the location in background
-            boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true);
+            boolean action_send = (Intent.ACTION_SEND.equals(action) && type != null);
+            boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true) && !action_send;
             if (tagLocation) {
                 _pManager.startLocationUpdates();
                 _isGettingLocation = true;
