@@ -30,6 +30,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
     private static ArrayList<WebImage> mList;
     private OnWebImageSelectedListener mWebImageSelectedListener;
     private OnLoadMoreSelectedListener mLoadMoreSelectedListener;
+    private OnWebImageCancelledListener mWebImageCancelledListener;
     final private static String TAG = "WebImageFragmentDialog";
 
     public static WebImageFragmentDialog newInstance(ArrayList<WebImage> list) {
@@ -142,6 +143,9 @@ public class WebImageFragmentDialog extends DialogFragment implements
         public abstract void onLoadMore();
     }
 
+    public static interface OnWebImageCancelledListener {
+        public abstract void onWebImageCancelled();
+    }
 
     // make sure the Activity implemented it
     public void onAttach(Activity activity) {
@@ -149,10 +153,24 @@ public class WebImageFragmentDialog extends DialogFragment implements
         try {
             this.mWebImageSelectedListener = (OnWebImageSelectedListener) activity;
             this.mLoadMoreSelectedListener = (OnLoadMoreSelectedListener) activity;
+            this.mWebImageCancelledListener = (OnWebImageCancelledListener) activity;
         }
         catch (final ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnWebImageSelectedListener");
         }
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        Log.d(TAG, "onCancel");
+        mWebImageCancelledListener.onWebImageCancelled();
+    }
+
+    public void onDismiss(DialogInterface dialog)
+    {
+        Log.d(TAG, "onDismiss");
+        getActivity().getFragmentManager().beginTransaction().remove(this).commit();
     }
 
     @Override

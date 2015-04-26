@@ -1,6 +1,5 @@
 package com.wish.wishlist.activity;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +45,8 @@ import android.app.FragmentManager;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -78,7 +79,6 @@ import java.net.URL;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -92,7 +92,8 @@ import org.jsoup.select.Elements;
 public class EditItem extends Activity
         implements Observer,
         WebImageFragmentDialog.OnWebImageSelectedListener,
-        WebImageFragmentDialog.OnLoadMoreSelectedListener {
+        WebImageFragmentDialog.OnLoadMoreSelectedListener,
+        WebImageFragmentDialog.OnWebImageCancelledListener {
 
     private EditText _itemNameEditText;
     private EditText _noteEditText;
@@ -161,6 +162,7 @@ public class EditItem extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_item);
+        Log.d(TAG, "onCreate");
 
         setUpActionBar();
 
@@ -231,30 +233,32 @@ public class EditItem extends Activity
         String action = intent.getAction();
         String type = intent.getType();
 
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
-            getWindow().setSoftInputMode(WindowManager.
-                    LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-            if ("*/*".equals(type)) {
-                handleSendAll(intent);
-            } else if ("text/plain".equals(type)) {
-                handleSendText(intent); // Handle text being sent
-            } else if (type.startsWith("image/")) {
-                handleSendImage(intent); // Handle single image being sent
+
+        if (savedInstanceState == null) {
+            if (Intent.ACTION_SEND.equals(action) && type != null) {
+                getWindow().setSoftInputMode(WindowManager.
+                        LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                if ("*/*".equals(type)) {
+                    handleSendAll(intent);
+                } else if ("text/plain".equals(type)) {
+                    handleSendText(intent); // Handle text being sent
+                } else if (type.startsWith("image/")) {
+                    handleSendImage(intent); // Handle single image being sent
+                }
+            } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
+                if (type.startsWith("image/")) {
+                    handleSendMultipleImages(intent); // Handle multiple images being sent
+                }
             }
-        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
-            if (type.startsWith("image/")) {
-                handleSendMultipleImages(intent); // Handle multiple images being sent
-            }
-        } else {
-            //Handle other intents, such as being started from the home screen
-            //get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from
-            //dashboard camera
-            _fullsizePhotoPath = intent.getStringExtra(FULLSIZE_PHOTO_PATH);
-            setTakenPhoto();
-            if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
-                _selectedPicUri = Uri.parse(intent.getStringExtra(SELECTED_PIC_URL));
-                setSelectedPic();
-            }
+        }
+
+        //get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from
+        //dashboard camera
+        _fullsizePhotoPath = intent.getStringExtra(FULLSIZE_PHOTO_PATH);
+        setTakenPhoto();
+        if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
+            _selectedPicUri = Uri.parse(intent.getStringExtra(SELECTED_PIC_URL));
+            setSelectedPic();
         }
 
         //get item id from previous intent, if there is an item id, we know this EditItemInfo is launched
@@ -380,6 +384,7 @@ public class EditItem extends Activity
             }
         });
 
+        // We are restoring an instance, for example after screen orientation
         if (savedInstanceState != null) {
             // restore the current selected item in the list
             _newfullsizePhotoPath = savedInstanceState.getString(NEW_FULLSIZE_PHOTO_PATH);
@@ -396,6 +401,7 @@ public class EditItem extends Activity
     }
 
     void handleSendAll(Intent intent) {
+        Log.d(TAG, "handleSendAll");
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (sharedText != null) {
             _itemNameEditText.setText(sharedText);
@@ -405,6 +411,7 @@ public class EditItem extends Activity
     }
 
     void handleSendText(Intent intent) {
+        Log.d(TAG, "handleSendText");
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (sharedText != null) {
             Log.d(TAG, "shared text: " + sharedText);
@@ -492,6 +499,22 @@ public class EditItem extends Activity
 
     private class getImageAsync extends AsyncTask<WebRequest, Integer, WebResult> {
         ProgressDialog asyncDialog = new ProgressDialog(EditItem.this);
+
+        @Override
+        protected void onPreExecute() {
+            lockScreenOrientation();
+            asyncDialog.setMessage("Loading images");
+            asyncDialog.setCancelable(true);
+            asyncDialog.setCanceledOnTouchOutside(false);
+            asyncDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
+                public void onCancel(DialogInterface dialog) {
+                    cancel(true);
+                }
+            });
+
+            asyncDialog.show();
+            super.onPreExecute();
+        }
 
         protected WebResult doInBackground(WebRequest... requests) {
             WebRequest request = requests[0];
@@ -620,27 +643,13 @@ public class EditItem extends Activity
             return result;
         }
 
-        @Override
-        protected void onPreExecute() {
-            asyncDialog.setMessage("Loading images");
-            asyncDialog.setCancelable(true);
-            asyncDialog.setCanceledOnTouchOutside(false);
-            asyncDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
-                public void onCancel(DialogInterface dialog) {
-                    cancel(true);
-                }
-            });
-
-            asyncDialog.show();
-            super.onPreExecute();
-        }
-
         protected void onProgressUpdate(Integer... progress) {
             //setProgressPercent(progress[0]);
         }
 
         protected void onPostExecute(WebResult result) {
             asyncDialog.dismiss();
+
             if (result._title != null && !result._title.trim().isEmpty()) {
                 _itemNameEditText.setText(result._title);
             }
@@ -652,7 +661,10 @@ public class EditItem extends Activity
                 Log.d(TAG, "Got " + result._webImages.size() + " images to choose from");
                 DialogFragment fragment = WebImageFragmentDialog.newInstance(_webImages);
                 final FragmentManager fm = getFragmentManager();
+                Log.d(TAG, "fragment.show");
                 fragment.show(fm, "dialog");
+            } else {
+                unlockScreenOrientation();
             }
         }
     }
@@ -808,6 +820,7 @@ public class EditItem extends Activity
     public void onWebImageSelected(int position) {
         // After the dialog fragment completes, it calls this callback.
         setWebPic(_webImages.get(position).mUrl);
+        unlockScreenOrientation();
     }
 
     public void onLoadMore() {
@@ -816,6 +829,11 @@ public class EditItem extends Activity
         request.url = mLink;
         request.getAllImages = true;
         new getImageAsync().execute(request);
+    }
+
+    public void onWebImageCancelled() {
+        Log.d(TAG, "onWebImageCancelled");
+        unlockScreenOrientation();
     }
 
     @Override
@@ -1113,6 +1131,19 @@ public class EditItem extends Activity
                 }
             });
         }
+    }
+
+    private void lockScreenOrientation() {
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+    }
+
+    private void unlockScreenOrientation() {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 
     private void loadPartialImage(String src) {
