@@ -48,15 +48,15 @@
 
                     <TextView
                         android:id="@+id/itemNameDetail"
-                        style="@style/ItemNameText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:textColor="@color/dark_grey"
                         android:gravity="center_horizontal|left"
                         android:paddingLeft="15dp"
                         android:paddingTop="15dp"
-                        android:singleLine="false"
                         android:layout_weight="1"
-                        android:text="item name" />
+                        android:text="item name"/>
 
                     <TextView
                         android:id="@+id/itemCompleteState"
@@ -74,41 +74,22 @@
 
                 <TextView style="@style/ItemInfoText"
                     android:id="@+id/itemDateDetail"
-                    android:text="item Date"
-                    android:paddingTop="8dip"
-                    android:paddingLeft="15dip"
-                    android:layout_gravity="left" />
+                    android:text="item Date"/>
 
                 <TextView style="@style/ItemInfoText"
-                    android:id="@+id/itemPriceDetail"
-                    android:text="$ XX.X"
-                    android:paddingTop="8dip"
-                    android:paddingLeft="15dip"
-                    android:layout_gravity="left" />
+                    android:id="@+id/itemPriceDetail"/>
 
                 <TextView style="@style/ItemInfoText"
                     android:id="@+id/itemDesriptDetail"
-                    android:text="item description"
-                    android:singleLine="false"
-                    android:paddingTop="8dip"
-                    android:paddingLeft="15dip"
-                    android:layout_gravity="left" />
+                    android:text="item description"/>
 
                 <TextView style="@style/ItemInfoText"
                     android:id="@+id/itemStoreDetail"
-                    android:text="item store name"
-                    android:paddingTop="8dip"
-                    android:singleLine="false"
-                    android:paddingLeft="15dip"
-                    android:layout_gravity="left" />
+                    android:text="item store name"/>
 
                 <TextView style="@style/ItemInfoText"
                     android:id="@+id/itemLocationDetail"
-                    android:text="item location"
-                    android:paddingTop="8dip"
-                    android:paddingLeft="15dip"
-                    android:singleLine="false"
-                    android:layout_gravity="left" />
+                    android:text="item location"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -117,7 +98,7 @@
                     android:textSize="15sp"
                     android:paddingTop="8dp"
                     android:paddingLeft="15dp"
-                    android:layout_gravity="left" />
+                    android:layout_gravity="left"/>
 
                 <!--android:textColorLink="@color/medium_grey"-->
 

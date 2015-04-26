@@ -16,7 +16,7 @@
         android:paddingLeft="1dp"
         android:paddingRight="1dp"
         android:paddingTop="1dp"
-        android:paddingBottom="5dp"
+        android:paddingBottom="8dp"
         android:background="@drawable/staggered_view_border"
         android:descendantFocusability="blocksDescendants">
         <!--1dp padding is to match with 1dp border so images won't obscure the border -->
@@ -34,22 +34,22 @@
             <com.etsy.android.grid.util.DynamicHeightTextView
                 android:id="@+id/staggered_name"
                 android:layout_weight="0.9"
-                android:textSize="15sp"
+                android:textSize="12sp"
                 android:ellipsize="marquee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:singleLine="true"
-                android:textColor="@color/black"/>
+                android:textColor="@color/dark_grey"/>
             <ImageView
                 android:id="@+id/staggered_checkmark_complete"
                 android:layout_weight="0.1"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="5dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_checkmark"
                 android:visibility="visible"
@@ -60,10 +60,10 @@
             android:id="@+id/staggered_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
+            android:textSize="10sp"
             android:singleLine="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:textColor="@color/medium_grey"/>
         <!--    android:gravity="center"/> -->
         <!--android:visibility="gone"/> -->
