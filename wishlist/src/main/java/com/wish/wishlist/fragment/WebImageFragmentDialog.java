@@ -59,8 +59,18 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
         // We only have one image, show the image in an AlertDialog with a "Load more" button
         final View v = getActivity().getLayoutInflater().inflate(R.layout.single_web_image_view, null);
-        final ImageView imageView = (ImageView) v.findViewById(R.id.single_web_image);
+
+        final View imageFrame = v.findViewById(R.id.single_web_image_frame);
+        imageFrame.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                mWebImageSelectedListener.onWebImageSelected(0);
+                dismiss();
+            }
+        });
+
         if (mList.get(0).mBitmap != null) {
+            final ImageView imageView = (ImageView) v.findViewById(R.id.single_web_image);
             imageView.setImageBitmap(mList.get(0).mBitmap);
         }
 
