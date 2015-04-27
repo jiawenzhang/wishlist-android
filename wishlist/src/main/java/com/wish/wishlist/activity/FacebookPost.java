@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
 
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.entity.mime.MultipartEntity;
+//import org.apache.http.entity.mime.content.FileBody;
+//import org.apache.http.entity.mime.content.StringBody;
+//import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
@@ -97,7 +97,7 @@ public class FacebookPost extends Activity {
             Log.i(TAG, "onSessionStateChange: Logged in...");
             String token = session.getAccessToken();
             Log.i(TAG, "onSessionStateChange: access token:" + token);
-            stageImage(token);
+            //stageImage(token);
         }
         else if (state.isClosed()) {
             Log.i(TAG, "onSessionStateChange: Logged out...");
@@ -465,78 +465,78 @@ public class FacebookPost extends Activity {
         dialog.show();
     }
 
-    private String stageImage(String token) {
-        AsyncTask<String, Void, String> stageImageTask = new AsyncTask<String, Void, String>() {
-            @Override
-            protected String doInBackground(String... params) {
-                Log.d(TAG, "doInBackground");
-                Log.d(TAG, "doInBackground passed in token is" + params[0]);
-                try {
-                    String uri = "https://graph.facebook.com/me/staging_resources";
-                    HttpResponse response = null;
-                    try {
-                        HttpClient client = new DefaultHttpClient();
-                        HttpPost post = new HttpPost(uri);
-                        MultipartEntity postEntity = new MultipartEntity();
-                        _wishItem = WishItemManager.getInstance(_ctx).retrieveItembyId(_itemId);
-                        String picUriStr = _wishItem.getPicStr();
-                        Log.d(TAG, "doInBackground pic uri" + picUriStr);
-                        String picPath = (Uri.parse(picUriStr)).getPath();
-                        Log.d(TAG, "doInBackground pic file path: " + picPath);
-                        //File file = new File("/data/local/tmp/images.jpg");
-                        File file = new File(picPath);
-                        Log.d(TAG, "UPLOAD: file length = " + file.length());
-                        Log.d(TAG, "UPLOAD: file exist = " + file.exists());
-
-                        postEntity.addPart("file", new FileBody(file, "image/jpeg"));
-                        postEntity.addPart("access_token", new StringBody(params[0]));
-                        post.setEntity(postEntity);
-                        response = client.execute(post);
-                    }
-                    catch (ClientProtocolException e) {
-                        Log.d(TAG, "exception");
-                        e.printStackTrace();
-                    }
-                    catch (IOException e) {
-                        Log.d(TAG, "exception");
-                        e.printStackTrace();
-                    }
-
-                    HttpEntity responseEntity = response.getEntity();
-                    if (responseEntity== null) {
-                        Log.d(TAG, "responseEntity is null");
-                        return "";
-                    }
-
-                    String result = "";
-                    try {
-                        //Log.d(TAG, "UPLOAD: respose code: " + response.getStatusLine().toString());
-                        // parsing JSON
-                        result = EntityUtils.toString(responseEntity);
-                        JSONObject jo = new JSONObject(result); //Convert String to JSON Object
-                        //Log.d(TAG, "json " + jo.toString());
-                        String imageUri = jo.getString("uri");
-                        return imageUri;
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    //return response;
-                } catch (Exception e) {
-                    //this.exception = e;
-                }
-                return "";
-            }
-            @Override
-            protected void onPostExecute(String imageUri) {
-                Log.d(TAG, "response is " + imageUri);
-                postWish(imageUri);
-            }
-        };
-        stageImageTask.execute(token);
-        return "";
-    }
+//    private String stageImage(String token) {
+//        AsyncTask<String, Void, String> stageImageTask = new AsyncTask<String, Void, String>() {
+//            @Override
+//            protected String doInBackground(String... params) {
+//                Log.d(TAG, "doInBackground");
+//                Log.d(TAG, "doInBackground passed in token is" + params[0]);
+//                try {
+//                    String uri = "https://graph.facebook.com/me/staging_resources";
+//                    HttpResponse response = null;
+//                    try {
+//                        HttpClient client = new DefaultHttpClient();
+//                        HttpPost post = new HttpPost(uri);
+//                        MultipartEntity postEntity = new MultipartEntity();
+//                        _wishItem = WishItemManager.getInstance(_ctx).retrieveItembyId(_itemId);
+//                        String picUriStr = _wishItem.getPicStr();
+//                        Log.d(TAG, "doInBackground pic uri" + picUriStr);
+//                        String picPath = (Uri.parse(picUriStr)).getPath();
+//                        Log.d(TAG, "doInBackground pic file path: " + picPath);
+//                        //File file = new File("/data/local/tmp/images.jpg");
+//                        File file = new File(picPath);
+//                        Log.d(TAG, "UPLOAD: file length = " + file.length());
+//                        Log.d(TAG, "UPLOAD: file exist = " + file.exists());
+//
+//                        postEntity.addPart("file", new FileBody(file, "image/jpeg"));
+//                        postEntity.addPart("access_token", new StringBody(params[0]));
+//                        post.setEntity(postEntity);
+//                        response = client.execute(post);
+//                    }
+//                    catch (ClientProtocolException e) {
+//                        Log.d(TAG, "exception");
+//                        e.printStackTrace();
+//                    }
+//                    catch (IOException e) {
+//                        Log.d(TAG, "exception");
+//                        e.printStackTrace();
+//                    }
+//
+//                    HttpEntity responseEntity = response.getEntity();
+//                    if (responseEntity== null) {
+//                        Log.d(TAG, "responseEntity is null");
+//                        return "";
+//                    }
+//
+//                    String result = "";
+//                    try {
+//                        //Log.d(TAG, "UPLOAD: respose code: " + response.getStatusLine().toString());
+//                        // parsing JSON
+//                        result = EntityUtils.toString(responseEntity);
+//                        JSONObject jo = new JSONObject(result); //Convert String to JSON Object
+//                        //Log.d(TAG, "json " + jo.toString());
+//                        String imageUri = jo.getString("uri");
+//                        return imageUri;
+//                    }
+//                    catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    //return response;
+//                } catch (Exception e) {
+//                    //this.exception = e;
+//                }
+//                return "";
+//            }
+//            @Override
+//            protected void onPostExecute(String imageUri) {
+//                Log.d(TAG, "response is " + imageUri);
+//                postWish(imageUri);
+//            }
+//        };
+//        stageImageTask.execute(token);
+//        return "";
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
