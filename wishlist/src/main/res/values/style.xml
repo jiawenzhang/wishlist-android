@@ -146,6 +146,7 @@
         <item name="android:ellipsize">marquee</item>
         <item name="android:textColor">@color/medium_grey</item>
         <item name="android:paddingLeft">15dp</item>
+        <item name="android:paddingRight">15dp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:layout_gravity">left</item>
     </style>
