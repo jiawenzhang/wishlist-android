@@ -63,7 +63,6 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 
     private ImageView _photoView;
     private TextView _nameView;
-    private TextView _completeView;
     private TextView _descrpView;
     private TextView _dateView;
     private TextView _priceView;
@@ -120,7 +119,6 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
         }
 
         _nameView = (TextView) findViewById(R.id.itemNameDetail);
-        _completeView = (TextView) findViewById(R.id.itemCompleteState);
         _descrpView = (TextView) findViewById(R.id.itemDesriptDetail);
         _dateView = (TextView) findViewById(R.id.itemDateDetail);
         _priceView = (TextView) findViewById(R.id.itemPriceDetail);
@@ -194,7 +192,8 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 
         _nameView.setText(item.getName());
         if (item.getComplete() == 1) {
-            _completeView.setVisibility(View.VISIBLE);
+            final ImageView completeImage = (ImageView) findViewById(R.id.item_checkmark_complete);
+            completeImage.setVisibility(View.VISIBLE);
         }
         _dateView.setText(dateTimeStrNew);
 

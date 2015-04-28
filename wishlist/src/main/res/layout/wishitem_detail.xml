@@ -58,18 +58,17 @@
                         android:layout_weight="1"
                         android:text="item name"/>
 
-                    <TextView
-                        android:id="@+id/itemCompleteState"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <ImageView
+                        android:id="@+id/item_checkmark_complete"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
                         android:gravity="right|center_horizontal"
-                        android:paddingRight="15dp"
-                        android:paddingTop="15dp"
-                        android:text="Completed"
-                        android:textColor="@color/bodyText_dark_grey"
-                        android:textSize="15sp"
-                        android:visibility="gone" />
-
+                        android:layout_marginTop="15dp"
+                        android:layout_marginRight="15dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ic_checkmark"
+                        android:visibility="gone"
+                        />
                 </LinearLayout>
 
                 <TextView style="@style/ItemInfoText"
