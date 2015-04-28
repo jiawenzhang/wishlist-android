@@ -178,7 +178,7 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
                     viewComplete.setVisibility(View.VISIBLE);
                 }
                 else {
-                    viewComplete.setVisibility(View.INVISIBLE);
+                    viewComplete.setVisibility(View.GONE);
                 }
                 return true;
             }
