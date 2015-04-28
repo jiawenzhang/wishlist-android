@@ -84,6 +84,7 @@
 
                 <TextView style="@style/ItemInfoText"
                     android:id="@+id/itemStoreDetail"
+                    android:fontFamily="sans-serif-light"
                     android:text="item store name"/>
 
                 <TextView style="@style/ItemInfoText"

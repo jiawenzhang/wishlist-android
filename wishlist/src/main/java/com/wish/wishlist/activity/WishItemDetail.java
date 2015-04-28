@@ -219,7 +219,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 
         String storeName = item.getStoreName();
         if (!storeName.equals("")) {
-            _storeView.setText("At " + storeName);
+            _storeView.setText(storeName);
             _storeView.setVisibility(View.VISIBLE);
         }
         else {
@@ -228,9 +228,6 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 
         String address = item.getAddress();
         if (!address.equals("unknown") && !address.equals("")) {
-            if (storeName.equals("")) {
-                address = "At " + address;
-            }
             _locationView.setText(address);
             _locationView.setVisibility(View.VISIBLE);
         }

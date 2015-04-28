@@ -135,7 +135,6 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
                 String storeName = cursor.getString(columnIndex);
                 if (!storeName.equals("")) {
                     _hasStoreName = true;
-                    storeName = "At " + storeName;
                     viewStore.setText(storeName);
                     viewStore.setVisibility(View.VISIBLE);
                 }
