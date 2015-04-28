@@ -438,7 +438,8 @@ public class EditItem extends Activity
                     URL url = new URL(link);
                     mLink = link;
                     host = url.getHost();
-                    _storeEditText.setText(host);
+                    String store =  host.startsWith("www.") ? host.substring(4) : host;
+                    _storeEditText.setText(store);
                     break;
                 } catch (MalformedURLException e) {
                     Log.d(TAG, e.toString());
