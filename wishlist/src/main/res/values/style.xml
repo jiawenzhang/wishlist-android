@@ -142,7 +142,7 @@
     <style name="ItemInfoText">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:textColor">@color/medium_grey</item>
         <item name="android:paddingLeft">15dp</item>

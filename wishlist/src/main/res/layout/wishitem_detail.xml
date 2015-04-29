@@ -81,7 +81,7 @@
 
                 <TextView style="@style/ItemInfoText"
                     android:id="@+id/itemDateDetail"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:fontFamily="sans-serif-light"
                     android:layout_marginTop="20dp"
                     android:text="item Date"/>
