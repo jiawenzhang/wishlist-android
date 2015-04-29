@@ -40,25 +40,29 @@ public final class NewFeatureFragment extends Fragment {
         } else {
             View v = inflater.inflate(R.layout.new_feature, container, false);
             View tv = v.findViewById(R.id.newFeatureText);
+            View tv_bottom = v.findViewById(R.id.newFeatureTextBottom);
             View imageView = v.findViewById(R.id.newFeatureImage);
 
             switch (mPosition) {
                 case 1:
-                    ((ImageView) imageView).setImageResource(R.drawable.tap_share);
-                    ((TextView) tv).setText("Tap the share button");
+                    ((ImageView) imageView).setImageResource(R.drawable.etsy_bag);
+                    ((TextView) tv).setText("Browse items in various apps and tap the share button");
                     break;
                 case 2:
-                    ((ImageView) imageView).setImageResource(R.drawable.share_dialog_tapped);
-                    ((TextView) tv).setText("Choose share to Facebook");
+                    ((ImageView) imageView).setImageResource(R.drawable.etsy_share);
+                    ((TextView) tv).setText("Choose Wishlist, and the items are saved directly to your wishlist");
+                    ((TextView) tv_bottom).setText("Supported apps include amazon, eBay, Etsy, Fancy, Pinterest, Wish, Wanelo and much more");
                     break;
                 case 3:
                     ImageView image_view = (ImageView) (imageView);
-                    image_view.setImageResource(R.drawable.facebook_post);
+                    image_view.setImageResource(R.drawable.chrome_share);
                     LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) image_view.getLayoutParams();
-                    params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, 60);
+                    //params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, /*bottomMargin*/ 30);
                     image_view.setLayoutParams(params);
 
-                    ((TextView) tv).setText("Your friends can like, comment or share your wish");
+                    tv_bottom.setVisibility(View.GONE);
+
+                    ((TextView) tv).setText("You can also save items to Wishlist directly from web browser");
                     final Button button = (Button) v.findViewById(R.id.newFeatureButton);
                     button.setVisibility(View.VISIBLE);
                     button.setOnClickListener(new View.OnClickListener() {
