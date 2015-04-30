@@ -236,7 +236,6 @@ public class EditItem extends Activity
         String action = intent.getAction();
         String type = intent.getType();
 
-
         if (savedInstanceState == null) {
             if (Intent.ACTION_SEND.equals(action) && type != null) {
                 getWindow().setSoftInputMode(WindowManager.
@@ -419,6 +418,22 @@ public class EditItem extends Activity
         }
         _selectedPicUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         setSelectedPic();
+
+        if (_selectedPicUri != null) {
+            String host = _selectedPicUri.getHost();
+            Log.d(TAG, "host " + host);
+
+            if (host == null) {
+                return;
+            }
+
+            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            t.send(new HitBuilders.EventBuilder()
+                    .setCategory("Wish")
+                    .setAction("ShareFrom_All")
+                    .set("Host", host)
+                    .build());
+        }
     }
 
     void handleSendText(Intent intent) {
@@ -438,6 +453,7 @@ public class EditItem extends Activity
                     URL url = new URL(link);
                     mLink = link;
                     host = url.getHost();
+
                     String store =  host.startsWith("www.") ? host.substring(4) : host;
                     _storeEditText.setText(store);
                     break;
@@ -462,6 +478,18 @@ public class EditItem extends Activity
                 }
             }
             Log.d(TAG, "extracted link: " + mLink);
+
+            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+
+            if (host != null && mLink !=null) {
+                t.send(new HitBuilders.EventBuilder()
+                        .setCategory("Wish")
+                        .setAction("ShareFrom_Text")
+                        .set("Host", host)
+                        .set("Link", mLink)
+                        .build());
+            }
+
             _linkEditText.setText(mLink);
             _linkEditText.setEnabled(false);
             WebRequest request = new WebRequest();
@@ -472,15 +500,38 @@ public class EditItem extends Activity
     }
 
     void handleSendImage(Intent intent) {
+        Log.d(TAG, "handleSendImage");
         _selectedPicUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         setSelectedPic();
+        if (_selectedPicUri != null) {
+            String host = _selectedPicUri.getHost();
+            if (host == null) {
+                return;
+            }
+
+            Log.d(TAG, "host " + _selectedPicUri.getHost());
+
+            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            t.send(new HitBuilders.EventBuilder()
+                    .setCategory("Wish")
+                    .setAction("ShareFrom_Image")
+                    .set("Host", host)
+                    .build());
+        }
     }
 
     void handleSendMultipleImages(Intent intent) {
+        Log.d(TAG, "handleSendMultipleImages");
         ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
         if (imageUris != null) {
             // Update UI to reflect multiple images being shared
         }
+
+        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        t.send(new HitBuilders.EventBuilder()
+                .setCategory("Wish")
+                .setAction("ShareFrom_MultipleImage")
+                .build());
     }
 
     private String getEbayLink(String link) {
