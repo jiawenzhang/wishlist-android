@@ -291,6 +291,11 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
             MenuItem statusItem = _menu.findItem(R.id.menu_status);
             statusItem.setVisible(false);
 
+            // This is a HACK to fix the bug:
+            // If we have scrolled to the middle of the staggered view, and then sort,
+            // the items will be positioned incorrectly. Calling resetToTop() will somehow refresh the
+            // the view and layout the items correctly.
+            _staggeredView.resetToTop();
         } else {
             // activity is not started from search
             // display all the items saved in the Item table
