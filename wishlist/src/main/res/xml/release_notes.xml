@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <releaseNote>
+    <release versionName="1.2" versionCode="20">
+        <note>Discover interesting items in other apps and share them directly to Beans Wishlist.</note>
+        <note>Improved the list, grid and detail view.</note>
+    </release>
     <release versionName="1.1.2" versionCode="19">
         <note>Support sharing wishes as Facebook stories.</note>
     </release>
