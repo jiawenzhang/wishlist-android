@@ -431,7 +431,7 @@ public class EditItem extends Activity
             t.send(new HitBuilders.EventBuilder()
                     .setCategory("Wish")
                     .setAction("ShareFrom_All")
-                    .set("Host", host)
+                    .setLabel(host)
                     .build());
         }
     }
@@ -477,16 +477,24 @@ public class EditItem extends Activity
                     mLink = redirected_link;
                 }
             }
-            Log.d(TAG, "extracted link: " + mLink);
 
             Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
 
-            if (host != null && mLink !=null) {
+            if (host != null) {
                 t.send(new HitBuilders.EventBuilder()
                         .setCategory("Wish")
                         .setAction("ShareFrom_Text")
-                        .set("Host", host)
-                        .set("Link", mLink)
+                        .setLabel(host)
+                        .build());
+
+            }
+
+            if (mLink != null) {
+                Log.d(TAG, "extracted link: " + mLink);
+                t.send(new HitBuilders.EventBuilder()
+                        .setCategory("Wish")
+                        .setAction("Extracted_Link")
+                        .setLabel(mLink)
                         .build());
             }
 
@@ -515,7 +523,7 @@ public class EditItem extends Activity
             t.send(new HitBuilders.EventBuilder()
                     .setCategory("Wish")
                     .setAction("ShareFrom_Image")
-                    .set("Host", host)
+                    .setLabel(host)
                     .build());
         }
     }
