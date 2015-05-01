@@ -94,7 +94,6 @@
                                android:visibility="gone"
                                android:adjustViewBounds="true"
                                android:layout_gravity="center_horizontal"
-                               android:background="@color/bodyText_dark_grey"
                         />
                 </FrameLayout>
 
