@@ -951,7 +951,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                     _fullsizePhotoPath = String.valueOf(_newfullsizePhotoPath);
                     _newfullsizePhotoPath = null;
                     Intent i = new Intent(this, EditItem.class);
-                    i.putExtra("fullsizePhotoPath", _fullsizePhotoPath);
+                    i.putExtra(EditItem.FULLSIZE_PHOTO_PATH, _fullsizePhotoPath);
                     if (_fullsizePhotoPath != null) {
                         Log.v("photo path", _fullsizePhotoPath);
                     }
