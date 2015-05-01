@@ -734,6 +734,12 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                         dialog.dismiss();
 
                         populateItems(_nameQuery, _where);
+
+                        // This is a HACK to fix the bug:
+                        // If we have scrolled to the middle of the staggered view, and then sort,
+                        // the items will be positioned incorrectly. Calling resetToTop() will somehow refresh the
+                        // the view and layout the items correctly.
+                        _staggeredView.resetToTop();
                     }
                 });
 
@@ -917,6 +923,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
                     if (_tagOption != null) {
                         _itemIds = TagItemDBManager.instance(this).ItemIds_by_tag(_tagOption);
+
                         // This is a HACK to fix the bug:
                         // If we have scrolled to the middle of the staggered view, and then filter wish by tag,
                         // the items will be positioned incorrectly. Calling resetToTop() will somehow refresh the
