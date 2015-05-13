@@ -380,6 +380,10 @@ public class ItemDBManager extends DBManager {
             WHERE = WHERE.substring(0, WHERE.length()-2);
             WHERE += ")";
         }
+		if (sortOption.equals(ItemsCursor.SortBy.date_time.toString())) {
+			// sort by date is most recent at the top
+			sortOption = sortOption + " DESC";
+		}
         sql = "SELECT * FROM Item " + WHERE + " ORDER BY " + sortOption;
 
         SQLiteDatabase d = readableDB();
