@@ -242,7 +242,7 @@ public class EditItem extends Activity
                         LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
                 if ("*/*".equals(type)) {
                     handleSendAll(intent);
-                } else if ("text/plain".equals(type)) {
+                } else if (type.startsWith("text/")) {
                     handleSendText(intent); // Handle text being sent
                 } else if (type.startsWith("image/")) {
                     handleSendImage(intent); // Handle single image being sent
