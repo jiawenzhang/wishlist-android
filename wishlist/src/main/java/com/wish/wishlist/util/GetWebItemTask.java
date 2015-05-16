@@ -163,9 +163,16 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                         continue;
                     }
                     Log.d(TAG, "adding " + src);
-                    result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), null));
+                    result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), image));
                 } catch (IOException e) {
-                    Log.d(TAG, "IOException" + e.toString());
+                    Log.d(TAG, "IOException " + e.toString());
+                }
+            }
+
+            // when there are more than one images, we use picasso to load image from url, so need to pass the bitmap
+            if (result._webImages.size() > 1) {
+                for (WebImage webImage : result._webImages) {
+                    webImage.mBitmap = null;
                 }
             }
         } catch (IOException e) {

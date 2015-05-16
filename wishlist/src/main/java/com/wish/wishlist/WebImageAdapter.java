@@ -21,6 +21,7 @@ import java.util.ArrayList;
  */
 
 public class WebImageAdapter extends ArrayAdapter<WebImage> {
+    static final String TAG = "WebImageAdapter";
 
     static class ViewHolder {
         DynamicHeightImageView imageView;
@@ -29,8 +30,8 @@ public class WebImageAdapter extends ArrayAdapter<WebImage> {
 
     private final LayoutInflater mLayoutInflater;
 
-    public WebImageAdapter(final Context context, final int textViewResourceId, ArrayList<WebImage> imageUrls) {
-        super(context, textViewResourceId, imageUrls);
+    public WebImageAdapter(final Context context, final int textViewResourceId, ArrayList<WebImage> webImages) {
+        super(context, textViewResourceId, webImages);
         mLayoutInflater = LayoutInflater.from(context);
     }
 
