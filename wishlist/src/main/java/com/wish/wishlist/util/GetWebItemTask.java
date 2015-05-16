@@ -13,6 +13,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * Created by jiawen on 15-05-14.
@@ -56,6 +57,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                         .get();
             }
 
+
             // Prefer og:title if the site has it
             Elements og_title_element = doc.head().select("meta[property=og:title]");
             if (!og_title_element.isEmpty()) {
@@ -90,6 +92,9 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                 }
             }
 
+            // start loading images
+            HashSet<String> imageUrls = new HashSet<>();
+
             // Prefer twitter image over facebook image, because facebook og:image requires dimension of
             // 1200 x 630 or 600 x 315, which will crop a tall image in an ugly way
 
@@ -103,33 +108,37 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                 Bitmap image = null;
                 try {
                     image = Picasso.with(mContext).load(twitter_image_src).get();
-                } catch (IOException e) {}
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
 
-                if (image != null) {
+                if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
+                    Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "X" + image.getHeight());
                     result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), "", image));
-                    if (image.getWidth() >= 100 && image.getHeight() >= 100) {
-                        Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "X" + image.getHeight());
-                        if (!request.getAllImages) {
-                            return result;
-                        }
+                    if (!request.getAllImages) {
+                        return result;
                     }
+                    imageUrls.add(twitter_image_src);
                 }
             }
 
             Elements og_image = doc.head().select("meta[property=og:image]");
             if (!og_image.isEmpty()) {
                 String og_image_src = og_image.first().attr("content");
-                Bitmap image = null;
-                try {
-                    image = Picasso.with(mContext).load(og_image_src).get();
-                } catch (IOException e) {}
+                if (!imageUrls.contains(og_image_src)) {
+                    imageUrls.add(og_image_src);
+                    Bitmap image = null;
+                    try {
+                        image = Picasso.with(mContext).load(og_image_src).get();
+                    } catch (IOException e) {
+                        Log.e(TAG, e.toString());
+                    }
 
-                if (image != null) {
-                    result._webImages.add(new WebImage(og_image_src, image.getWidth(), image.getHeight(), "", image));
                     // some websites like kijiji will return us a tiny og:image
                     // let's try to get more images if this happens.
-                    if (image.getWidth() >= 100 && image.getHeight() >= 100) {
+                    if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
                         Log.d(TAG, "og:image src: " + og_image_src + " " + image.getWidth() + "X" + image.getHeight());
+                        result._webImages.add(new WebImage(og_image_src, image.getWidth(), image.getHeight(), "", image));
                         if (!request.getAllImages) {
                             return result;
                         }
@@ -141,10 +150,17 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             // let user choose one.
             Elements img_elements = doc.getElementsByTag("img");
             Log.d(TAG, "Found " + img_elements.size() + " img elements");
+
             for (Element el : img_elements) {
                 //Log.d(TAG, "el tostring " + el.toString());
 
                 String src = el.absUrl("src");
+
+                // there could be duplicate image urls from img_elements, make sure we don't process the same url more than once.
+                if (imageUrls.contains(src)) {
+                    continue;
+                }
+                imageUrls.add(src);
                 // width and height can be in the format of 100px,
                 // remove the non digit part of the string.
                 //String width = el.attr("width").replaceAll("[^0-9]", "");
@@ -165,7 +181,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     Log.d(TAG, "adding " + src);
                     result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), image));
                 } catch (IOException e) {
-                    Log.d(TAG, "IOException " + e.toString());
+                    Log.e(TAG, "IOException " + e.toString());
                 }
             }
 
