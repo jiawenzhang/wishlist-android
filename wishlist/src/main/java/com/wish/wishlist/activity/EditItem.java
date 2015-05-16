@@ -34,6 +34,8 @@ import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.AnalyticsHelper;
 import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.PositionManager;
+import com.wish.wishlist.util.WebRequest;
+import com.wish.wishlist.util.WebResult;
 import com.wish.wishlist.util.camera.PhotoFileCreater;
 import com.wish.wishlist.util.camera.CameraManager;
 
@@ -43,6 +45,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -65,25 +69,23 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.app.ProgressDialog;
 
 import java.net.URL;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+
+import com.wish.wishlist.util.GetWebItemTask;
 
 /*** EditItemInfo.java is responsible for reading in the info. of a newly added item 
  * including its name, description, time, price, location and photo, and saving them
@@ -94,7 +96,8 @@ public class EditItem extends Activity
         implements Observer,
         WebImageFragmentDialog.OnWebImageSelectedListener,
         WebImageFragmentDialog.OnLoadMoreSelectedListener,
-        WebImageFragmentDialog.OnWebImageCancelledListener {
+        WebImageFragmentDialog.OnWebImageCancelledListener,
+        GetWebItemTask.OnWebResult {
 
     private EditText _itemNameEditText;
     private EditText _noteEditText;
@@ -141,6 +144,8 @@ public class EditItem extends Activity
     private static final int ADD_TAG = 3;
     private Boolean _selectedPic = false;
     private String mLink = null;
+    ProgressDialog mProgressDialog = null;
+    GetWebItemTask mGetWebItemTask = null;
 
     private static ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
 
@@ -150,16 +155,6 @@ public class EditItem extends Activity
     static final public String WEB_PIC_URL = "WEB_PIC_URL";
 
     static final private String TAG = "EditItem";
-
-    private class WebRequest {
-        public String url;
-        public Boolean getAllImages = false;
-    }
-    private class WebResult {
-        public ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
-        public String _title;
-        public String _description;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -454,7 +449,7 @@ public class EditItem extends Activity
                     mLink = link;
                     host = url.getHost();
 
-                    String store =  host.startsWith("www.") ? host.substring(4) : host;
+                    String store = host.startsWith("www.") ? host.substring(4) : host;
                     _storeEditText.setText(store);
                     break;
                 } catch (MalformedURLException e) {
@@ -500,10 +495,60 @@ public class EditItem extends Activity
 
             _linkEditText.setText(mLink);
             _linkEditText.setEnabled(false);
+
             WebRequest request = new WebRequest();
             request.url = mLink;
             request.getAllImages = false;
-            new getImageAsync().execute(request);
+            lockScreenOrientation();
+
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage("Loading images");
+            mProgressDialog.setCancelable(true);
+            mProgressDialog.setCanceledOnTouchOutside(false);
+            mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                public void onCancel(DialogInterface dialog) {
+                    mGetWebItemTask.cancel(true);
+                }
+            });
+
+            mProgressDialog.show();
+            mGetWebItemTask = new GetWebItemTask(this, this);
+            mGetWebItemTask.execute(request);
+        }
+    }
+
+    void getGeneratedHtml() {
+        final WebRequest request = new WebRequest();
+        request.url = mLink;
+        request.getAllImages = false;
+
+        final WebView webview = new WebView(EditItem.this);
+        webview.getSettings().setJavaScriptEnabled(true);
+        webview.addJavascriptInterface(new MyJavaScriptInterface(this), "HtmlViewer");
+        webview.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                        /* This call inject JavaScript into the page which just finished loading. */
+                Log.d(TAG, "onPageFinished");
+                webview.loadUrl("javascript:window.HtmlViewer.showHTML" +
+                        "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
+            }
+        });
+
+        webview.loadUrl(request.url);
+    }
+
+    class MyJavaScriptInterface {
+        private Context ctx;
+
+        MyJavaScriptInterface(Context ctx) {
+            this.ctx = ctx;
+        }
+
+        @JavascriptInterface
+        public void showHTML(String html) {
+            Log.d(TAG, "showHTML");
+            ((EditItem) ctx).onLoadImages(html);
         }
     }
 
@@ -566,178 +611,6 @@ public class EditItem extends Activity
 
         // Construct the redirected link
         return  "http://www.ebay.com/itm/" + id;
-    }
-
-    private class getImageAsync extends AsyncTask<WebRequest, Integer, WebResult> {
-        ProgressDialog asyncDialog = new ProgressDialog(EditItem.this);
-
-        @Override
-        protected void onPreExecute() {
-            lockScreenOrientation();
-            asyncDialog.setMessage("Loading images");
-            asyncDialog.setCancelable(true);
-            asyncDialog.setCanceledOnTouchOutside(false);
-            asyncDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
-                public void onCancel(DialogInterface dialog) {
-                    cancel(true);
-                }
-            });
-
-            asyncDialog.show();
-            super.onPreExecute();
-        }
-
-        protected WebResult doInBackground(WebRequest... requests) {
-            WebRequest request = requests[0];
-            WebResult result = new WebResult();
-            try {
-                //Connection.Response response = Jsoup.connect(urls[0]).followRedirects(true).execute();
-                Document doc = Jsoup.connect(request.url)
-                        .header("Accept-Encoding", "gzip, deflate")
-                        .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-                        .maxBodySize(0)
-                        .timeout(600000)
-                        .get();
-
-                // Prefer og:title if the site has it
-                Elements og_title_element = doc.head().select("meta[property=og:title]");
-                if (!og_title_element.isEmpty()) {
-                    String og_title = og_title_element.first().attr("content");
-                    Log.d(TAG, "og:title : " + og_title);
-                    result._title = og_title;
-                }
-                if (result._title == null || result._title.trim().isEmpty()) {
-                    Elements meta_title_element = doc.head().select("meta[name=title]");
-                    if (!meta_title_element.isEmpty()) {
-                        String meta_title = meta_title_element.first().attr("content");
-                        Log.d(TAG, "meta:title : " + meta_title);
-                        result._title = meta_title;
-                    }
-                }
-                if (result._title == null || result._title.trim().isEmpty()) {
-                    result._title = doc.title();
-                }
-
-                Elements og_description_element = doc.head().select("meta[property=og:description]");
-                if (!og_description_element.isEmpty()) {
-                    String og_description = og_description_element.first().attr("content");
-                    Log.d(TAG, "og:description : " + og_description);
-                    result._description = og_description;
-                }
-                if (result._description == null || result._description.trim().isEmpty()) {
-                    Elements meta_description_element = doc.head().select("meta[name=description]");
-                    if (!meta_description_element.isEmpty()) {
-                        String meta_description = meta_description_element.first().attr("content");
-                        Log.d(TAG, "meta:description : " + meta_description);
-                        result._description = meta_description;
-                    }
-                }
-
-                // Prefer twitter image over facebook image, because facebook og:image requires dimension of
-                // 1200 x 630 or 600 x 315, which will crop a tall image in an ugly way
-
-                // Some websites use twitter:image, some use twitter:image:src, make sure we cover both.
-                Elements twitter_image_element = doc.head().select("meta[property=twitter:image]");
-                if (twitter_image_element.isEmpty()) {
-                    twitter_image_element = doc.head().select("meta[property=twitter:image:src]");
-                }
-                if (!twitter_image_element.isEmpty()) {
-                    String twitter_image_src = twitter_image_element.first().attr("content");
-                    Bitmap image = null;
-                    try {
-                        image = Picasso.with(EditItem.this).load(twitter_image_src).get();
-                    } catch (IOException e) {}
-
-                    if (image != null) {
-                        result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), "", image));
-                        if (image.getWidth() >= 100 && image.getHeight() >= 100) {
-                            Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "X" + image.getHeight());
-                            if (!request.getAllImages) {
-                                return result;
-                            }
-                        }
-                    }
-                }
-
-                Elements og_image = doc.head().select("meta[property=og:image]");
-                if (!og_image.isEmpty()) {
-                    String og_image_src = og_image.first().attr("content");
-                    Bitmap image = null;
-                    try {
-                        image = Picasso.with(EditItem.this).load(og_image_src).get();
-                    } catch (IOException e) {}
-
-                    if (image != null) {
-                        result._webImages.add(new WebImage(og_image_src, image.getWidth(), image.getHeight(), "", image));
-                        // some websites like kijiji will return us a tiny og:image
-                        // let's try to get more images if this happens.
-                        if (image.getWidth() >= 100 && image.getHeight() >= 100) {
-                            Log.d(TAG, "og:image src: " + og_image_src + " " + image.getWidth() + "X" + image.getHeight());
-                            if (!request.getAllImages) {
-                                return result;
-                            }
-                        }
-                    }
-                }
-
-                // Didn't find og:image tag, so retrieve all the images in the website, filter them by type and size, and
-                // let user choose one.
-                Elements img_elements = doc.getElementsByTag("img");
-                Log.d(TAG, "Found " + img_elements.size() + " img elements");
-                for (Element el : img_elements) {
-                    String src = el.absUrl("src");
-                    // width and height can be in the format of 100px,
-                    // remove the non digit part of the string.
-                    //String width = el.attr("width").replaceAll("[^0-9]", "");
-                    //String height = el.attr("height").replaceAll("[^0-9]", "");
-                    String style = el.attr("style");
-
-                    // filter out hidden images, gif and png images. (gif and png are usually used for icons etc.)
-                    if (src.isEmpty() || style.contains("display:none") || src.endsWith(".gif") || src.endsWith(".png")) {
-                        continue;
-                    }
-
-                    try {
-                        final Bitmap image = Picasso.with(EditItem.this).load(src).get();
-                        // filter out small images
-                        if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
-                            continue;
-                        }
-                        result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), null));
-                    } catch (IOException e) {
-                        Log.d(TAG, "IOException" + e.toString());
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return result;
-        }
-
-        protected void onProgressUpdate(Integer... progress) {
-            //setProgressPercent(progress[0]);
-        }
-
-        protected void onPostExecute(WebResult result) {
-            asyncDialog.dismiss();
-
-            if (result._title != null && !result._title.trim().isEmpty()) {
-                _itemNameEditText.setText(result._title);
-            }
-            if (result._description != null && !result._description.trim().isEmpty()) {
-                _noteEditText.setText(result._description);
-            }
-            EditItem._webImages = result._webImages;
-            if (!result._webImages.isEmpty()) {
-                Log.d(TAG, "Got " + result._webImages.size() + " images to choose from");
-                DialogFragment fragment = WebImageFragmentDialog.newInstance(_webImages);
-                final FragmentManager fm = getFragmentManager();
-                Log.d(TAG, "fragment.show");
-                fragment.show(fm, "dialog");
-            } else {
-                unlockScreenOrientation();
-            }
-        }
     }
 
     public ArrayList<String> extractLinks(String text) {
@@ -895,20 +768,33 @@ public class EditItem extends Activity
         unlockScreenOrientation();
     }
 
-    public void onLoadMore() {
-        Log.d(TAG, "onLoadMore");
-        WebRequest request = new WebRequest();
-        request.url = mLink;
-        request.getAllImages = true;
-        new getImageAsync().execute(request);
-    }
-
     public void onWebImageCancelled() {
         Log.d(TAG, "onWebImageCancelled");
         unlockScreenOrientation();
     }
 
-    @Override
+    public void onLoadMore() {
+        Log.d(TAG, "onLoadMore");
+        lockScreenOrientation();
+        mProgressDialog.show();
+
+        WebRequest request = new WebRequest();
+        request.url = mLink;
+        request.getAllImages = true;
+        mGetWebItemTask = new GetWebItemTask(this, this);
+        mGetWebItemTask.execute(request);
+    }
+
+    public void onLoadImages(String html) {
+        Log.d(TAG, "onLoadImages");
+        WebRequest request = new WebRequest();
+        request.url = mLink;
+        request.getAllImages = false;
+        request.html = html;
+        mGetWebItemTask = new GetWebItemTask(this, this);
+        mGetWebItemTask.execute(request);
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case TAKE_PICTURE: {
@@ -1263,6 +1149,33 @@ public class EditItem extends Activity
             }
         } catch (IOException e) {
             Log.d(TAG, "IOException" + e.toString());
+        }
+    }
+
+    @Override
+    public void onWebResult(WebResult result)
+    {
+        Log.d(TAG, "onWebResult");
+        if (result._webImages.isEmpty() && !result._attemptedDynamicHtml) {
+            getGeneratedHtml();
+            return;
+        }
+        mProgressDialog.dismiss();
+        if (result._title != null && !result._title.trim().isEmpty()) {
+            _itemNameEditText.setText(result._title);
+        }
+        if (result._description != null && !result._description.trim().isEmpty()) {
+            _noteEditText.setText(result._description);
+        }
+        EditItem._webImages = result._webImages;
+        if (!result._webImages.isEmpty()) {
+            Log.d(TAG, "Got " + result._webImages.size() + " images to choose from");
+            DialogFragment fragment = WebImageFragmentDialog.newInstance(_webImages);
+            final FragmentManager fm = getFragmentManager();
+            Log.d(TAG, "fragment.show");
+            fragment.show(fm, "dialog");
+        } else {
+            unlockScreenOrientation();
         }
     }
 }

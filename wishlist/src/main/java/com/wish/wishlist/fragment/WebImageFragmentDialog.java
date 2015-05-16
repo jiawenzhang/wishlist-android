@@ -165,12 +165,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
         super.onCancel(dialog);
         Log.d(TAG, "onCancel");
         mWebImageCancelledListener.onWebImageCancelled();
-    }
-
-    public void onDismiss(DialogInterface dialog)
-    {
-        Log.d(TAG, "onDismiss");
-        getActivity().getFragmentManager().beginTransaction().remove(this).commit();
+        dismiss();
     }
 
     @Override
