@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Patterns;
+
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.activity.WebImage;
 
@@ -156,6 +158,25 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
 
                 String src = el.absUrl("src");
 
+                if (src.isEmpty()) {
+                    // mal-formatted Url, for example m.gamestop.com will give use img src like
+                    // "//www.gamestop.com/common/images/lbox/111111.jpg"
+                    // try to correct it
+                    src = el.attr("src").trim();
+                    Log.d(TAG, "mal-formatted img src " + src);
+
+                    // trim the leading '/' if there is any
+                    src = src.replaceAll("^/+", "");
+                    if (!src.startsWith("http://") || !src.startsWith("https://")) {
+                        src = "http://" + src;
+                    }
+
+                    // validate the url
+                    if (src.isEmpty() || !Patterns.WEB_URL.matcher(src).matches()) {
+                        continue;
+                    }
+                }
+
                 // there could be duplicate image urls from img_elements, make sure we don't process the same url more than once.
                 if (imageUrls.contains(src)) {
                     continue;
@@ -178,7 +199,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
                         continue;
                     }
-                    Log.d(TAG, "adding " + src);
+                    Log.d(TAG, "adding " + src + " " + image.getWidth() + " X " + image.getHeight());
                     result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), image));
                 } catch (IOException e) {
                     Log.e(TAG, "IOException " + e.toString());
