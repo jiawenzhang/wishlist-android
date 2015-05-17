@@ -157,6 +157,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             Elements img_elements = doc.getElementsByTag("img");
             Log.d(TAG, "Found " + img_elements.size() + " img elements");
 
+            Bitmap single_image = null;
             for (Element el : img_elements) {
                 //Log.d(TAG, "el tostring " + el.toString());
 
@@ -191,18 +192,21 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
                         continue;
                     }
+
+                    if (single_image == null) {
+                        single_image = image;
+                    }
                     Log.d(TAG, "adding " + src + " " + image.getWidth() + " X " + image.getHeight());
-                    result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), image));
+                    result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), null));
                 } catch (IOException e) {
                     Log.e(TAG, "IOException " + e.toString());
                 }
             }
 
-            // when there are more than one images, we use picasso to load image from url, so need to pass the bitmap
-            if (result._webImages.size() > 1) {
-                for (WebImage webImage : result._webImages) {
-                    webImage.mBitmap = null;
-                }
+            // when there is only one image, we need to pass the bitmap, because we set the bitmap on the ImageView
+            // instead of loading from url
+            if (result._webImages.size() == 1) {
+                result._webImages.get(0).mBitmap = single_image;
             }
         } catch (IOException e) {
             Log.e(TAG, e.toString());
