@@ -49,17 +49,26 @@ public class WebImageAdapter extends ArrayAdapter<WebImage> {
             vh = (ViewHolder) convertView.getTag();
         }
 
-        final float ratio = (float) img.mHeight / (float) img.mWidth;
         Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
 
         int width = size.x / 2;
+
+        final float ratio = (float) img.mHeight / (float) img.mWidth;
         int height = (int) (width * ratio);
 
-        Picasso.with(getContext()).load(img.mUrl).resize(width, height).into(vh.imageView);
-        vh.imageView.setHeightRatio(ratio);
-        vh.textView.setText(img.mWidth + " x " +img.mHeight);
+        if (img.mId.equals("button")) {
+            vh.imageView.setVisibility(View.GONE);
+            vh.textView.setText("Load more");
+            final float scale = getContext().getResources().getDisplayMetrics().density;
+            int button_height = (int) (40 /*dp*/ * scale + 0.5f);
+            vh.textView.setHeight(button_height);
+        } else {
+            Picasso.with(getContext()).load(img.mUrl).resize(width, height).into(vh.imageView);
+            vh.imageView.setHeightRatio(ratio);
+            vh.textView.setText(img.mWidth + " x " + img.mHeight);
+        }
         return convertView;
     }
 }

@@ -51,12 +51,16 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                 result._attemptedDynamicHtml = true;
                 doc = Jsoup.parse(request.html);
             } else {
+                long startTime = System.currentTimeMillis();
                 doc = Jsoup.connect(request.url)
                         .header("Accept-Encoding", "gzip, deflate")
                         .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
                         .maxBodySize(0)
                         .timeout(600000)
                         .get();
+
+                long time = System.currentTimeMillis() - startTime;
+                Log.d(TAG, "Jsoup connect took " + time + " ms");
             }
 
 
@@ -156,23 +160,11 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             for (Element el : img_elements) {
                 //Log.d(TAG, "el tostring " + el.toString());
 
-                String src = el.absUrl("src");
-
+                String src = getImageUrl(el, "src");
                 if (src.isEmpty()) {
-                    // mal-formatted Url, for example m.gamestop.com will give use img src like
-                    // "//www.gamestop.com/common/images/lbox/111111.jpg"
-                    // try to correct it
-                    src = el.attr("src").trim();
-                    Log.d(TAG, "mal-formatted img src " + src);
-
-                    // trim the leading '/' if there is any
-                    src = src.replaceAll("^/+", "");
-                    if (!src.startsWith("http://") || !src.startsWith("https://")) {
-                        src = "http://" + src;
-                    }
-
-                    // validate the url
-                    if (src.isEmpty() || !Patterns.WEB_URL.matcher(src).matches()) {
+                    // website like overstock.com put useful image in data-src attribute
+                    src = getImageUrl(el, "data-src");
+                    if (src.isEmpty()) {
                         continue;
                     }
                 }
@@ -229,6 +221,30 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
 
     protected void onPostExecute(WebResult result) {
         mListener.onWebResult(result);
+    }
+
+    private String getImageUrl(Element el, String attribute) {
+        String src = el.absUrl(attribute);
+
+        if (src.isEmpty()) {
+            // mal-formatted Url, for example m.gamestop.com will give use img src like
+            // "//www.gamestop.com/common/images/lbox/111111.jpg"
+            // try to correct it
+            src = el.attr("src").trim();
+            Log.d(TAG, "mal-formatted img src " + src);
+
+            // trim the leading '/' if there is any
+            src = src.replaceAll("^/+", "");
+            if (!src.startsWith("http://") || !src.startsWith("https://")) {
+                src = "http://" + src;
+            }
+
+            // validate the url
+            if (!Patterns.WEB_URL.matcher(src).matches()) {
+                return "";
+            }
+        }
+        return src;
     }
 }
 

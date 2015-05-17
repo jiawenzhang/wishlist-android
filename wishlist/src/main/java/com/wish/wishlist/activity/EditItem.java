@@ -532,6 +532,13 @@ public class EditItem extends Activity
                 Log.d(TAG, "onPageFinished");
                 webview.loadUrl("javascript:window.HtmlViewer.showHTML" +
                         "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
+
+            }
+            @Override
+            public void onReceivedError(WebView view, int errorCode,
+                                        String description, String failingUrl) {
+                Log.e(TAG, "onReceivedError " + description);
+                super.onReceivedError(view, errorCode, description, failingUrl);
             }
         });
 
@@ -548,6 +555,8 @@ public class EditItem extends Activity
         @JavascriptInterface
         public void showHTML(String html) {
             Log.d(TAG, "showHTML");
+            long time = System.currentTimeMillis() - startTime;
+            Log.d(TAG, "webview show HTML took " + time + " ms");
             ((EditItem) ctx).onLoadImages(html);
         }
     }
@@ -763,9 +772,17 @@ public class EditItem extends Activity
 
     public void onWebImageSelected(int position) {
         // After the dialog fragment completes, it calls this callback.
-        _webPicUrl = _webImages.get(position).mUrl;
-        setWebPic(_webPicUrl);
-        unlockScreenOrientation();
+        WebImage webImage = _webImages.get(position);
+        if (webImage.mId.equals("button")) {
+            Log.d(TAG, "LoadMore button tapped");
+            mProgressDialog.show();
+            getGeneratedHtml();
+            return;
+        } else {
+            _webPicUrl = webImage.mUrl;
+            setWebPic(_webPicUrl);
+            unlockScreenOrientation();
+        }
     }
 
     public void onWebImageCancelled() {
@@ -1152,11 +1169,13 @@ public class EditItem extends Activity
         }
     }
 
+    private long startTime;
     @Override
     public void onWebResult(WebResult result)
     {
         Log.d(TAG, "onWebResult");
         if (result._webImages.isEmpty() && !result._attemptedDynamicHtml) {
+            startTime = System.currentTimeMillis();
             getGeneratedHtml();
             return;
         }
@@ -1170,7 +1189,7 @@ public class EditItem extends Activity
         EditItem._webImages = result._webImages;
         if (!result._webImages.isEmpty()) {
             Log.d(TAG, "Got " + result._webImages.size() + " images to choose from");
-            DialogFragment fragment = WebImageFragmentDialog.newInstance(_webImages);
+            DialogFragment fragment = WebImageFragmentDialog.newInstance(_webImages, !result._attemptedDynamicHtml);
             final FragmentManager fm = getFragmentManager();
             Log.d(TAG, "fragment.show");
             fragment.show(fm, "dialog");

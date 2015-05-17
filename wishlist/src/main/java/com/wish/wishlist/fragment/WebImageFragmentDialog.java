@@ -31,10 +31,12 @@ public class WebImageFragmentDialog extends DialogFragment implements
     private OnWebImageSelectedListener mWebImageSelectedListener;
     private OnLoadMoreSelectedListener mLoadMoreSelectedListener;
     private OnWebImageCancelledListener mWebImageCancelledListener;
+    private static boolean mAllowLoadMore = true;
     final private static String TAG = "WebImageFragmentDialog";
 
-    public static WebImageFragmentDialog newInstance(ArrayList<WebImage> list) {
+    public static WebImageFragmentDialog newInstance(ArrayList<WebImage> list, boolean allowLoadMore) {
         mList = list;
+        mAllowLoadMore = allowLoadMore;
         return new WebImageFragmentDialog();
     }
 
@@ -50,6 +52,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateDialog");
         if (mList.size() > 1) {
             // We have multiple images, we show them in a grid view that is loaded in onCreateView
             return super.onCreateDialog(savedInstanceState);
@@ -107,6 +110,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
         if (mList.size() <= 1) {
            return super.onCreateView(inflater, container, savedInstanceState);
         }
@@ -122,6 +126,9 @@ public class WebImageFragmentDialog extends DialogFragment implements
             if (mList == null) {
                 Log.d(TAG, "mList is null");
             } else {
+                if (mAllowLoadMore) {
+                    mList.add(new WebImage(null, 0, 0, "button", null));
+                }
                 for (WebImage img : mList) {
                     Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
                 }
