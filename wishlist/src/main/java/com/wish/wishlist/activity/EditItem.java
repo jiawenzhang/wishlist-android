@@ -518,10 +518,6 @@ public class EditItem extends Activity
     }
 
     void getGeneratedHtml() {
-        final WebRequest request = new WebRequest();
-        request.url = mLink;
-        request.getAllImages = false;
-
         final WebView webview = new WebView(EditItem.this);
         webview.getSettings().setJavaScriptEnabled(true);
         webview.addJavascriptInterface(new MyJavaScriptInterface(this), "HtmlViewer");
@@ -530,7 +526,7 @@ public class EditItem extends Activity
             public void onPageFinished(WebView view, String url) {
                         /* This call inject JavaScript into the page which just finished loading. */
                 Log.d(TAG, "onPageFinished");
-                webview.loadUrl("javascript:window.HtmlViewer.showHTML" +
+                webview.loadUrl("javascript:window.HtmlViewer.gotHTML" +
                         "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
 
             }
@@ -542,7 +538,7 @@ public class EditItem extends Activity
             }
         });
 
-        webview.loadUrl(request.url);
+        webview.loadUrl(mLink);
     }
 
     class MyJavaScriptInterface {
@@ -553,11 +549,11 @@ public class EditItem extends Activity
         }
 
         @JavascriptInterface
-        public void showHTML(String html) {
-            Log.d(TAG, "showHTML");
+        public void gotHTML(String html) {
+            Log.d(TAG, "gotHTML");
             long time = System.currentTimeMillis() - startTime;
             Log.d(TAG, "webview show HTML took " + time + " ms");
-            ((EditItem) ctx).onLoadImages(html);
+            ((EditItem) ctx).loadImagesFromHtml(html);
         }
     }
 
@@ -802,11 +798,11 @@ public class EditItem extends Activity
         mGetWebItemTask.execute(request);
     }
 
-    public void onLoadImages(String html) {
-        Log.d(TAG, "onLoadImages");
+    public void loadImagesFromHtml(String html) {
+        Log.d(TAG, "loadImagesFromHtml");
         WebRequest request = new WebRequest();
         request.url = mLink;
-        request.getAllImages = false;
+        request.getAllImages = true;
         request.html = html;
         mGetWebItemTask = new GetWebItemTask(this, this);
         mGetWebItemTask.execute(request);
