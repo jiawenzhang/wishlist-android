@@ -1176,6 +1176,7 @@ public class EditItem extends Activity
             fragment.show(fm, "dialog");
         } else {
             unlockScreenOrientation();
+            Toast.makeText(this, "No image found", Toast.LENGTH_SHORT).show();
         }
     }
 }
