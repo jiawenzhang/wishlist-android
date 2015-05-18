@@ -149,7 +149,7 @@ public class EditItem extends Activity
     GetWebItemTask mGetWebItemTask = null;
     WebView mWebView = null;
 
-    private static ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
+    private static WebResult mWebResult = null;
 
     static final public String FULLSIZE_PHOTO_PATH = "FULLSIZE_PHOTO_PATH";
     static final public String NEW_FULLSIZE_PHOTO_PATH = "NEW_FULLSIZE_PHOTO_PATH";
@@ -517,7 +517,7 @@ public class EditItem extends Activity
                         mWebView.stopLoading();
                         mWebView.destroy();
                         Log.d(TAG, "stopped loading webview");
-                        if (!_webImages.isEmpty()) {
+                        if (!mWebResult._webImages.isEmpty()) {
                             showImageDialog(true);
                         }
                     }
@@ -781,7 +781,7 @@ public class EditItem extends Activity
 
     public void onWebImageSelected(int position) {
         // After the dialog fragment completes, it calls this callback.
-        WebImage webImage = _webImages.get(position);
+        WebImage webImage = mWebResult._webImages.get(position);
         _webPicUrl = webImage.mUrl;
         setWebPic(_webPicUrl);
         unlockScreenOrientation();
@@ -798,16 +798,19 @@ public class EditItem extends Activity
         unlockScreenOrientation();
     }
 
-    public void onLoadMore() {
-        Log.d(TAG, "onLoadMore");
+    public void onLoadMoreFromStaticHtml() {
+        Log.d(TAG, "onLoadMoreFromStaticHtml");
         lockScreenOrientation();
         mProgressDialog.show();
-
-        WebRequest request = new WebRequest();
-        request.url = mLink;
-        request.getAllImages = true;
-        mGetWebItemTask = new GetWebItemTask(this, this);
-        mGetWebItemTask.execute(request);
+        if (mWebResult._attemptedAllFromJsoup) {
+            getGeneratedHtml();
+        } else {
+            WebRequest request = new WebRequest();
+            request.url = mLink;
+            request.getAllImages = true;
+            mGetWebItemTask = new GetWebItemTask(this, this);
+            mGetWebItemTask.execute(request);
+        }
     }
 
     public void loadImagesFromHtml(String html) {
@@ -1194,8 +1197,9 @@ public class EditItem extends Activity
         if (result._description != null && !result._description.trim().isEmpty()) {
             _noteEditText.setText(result._description);
         }
-        _webImages = result._webImages;
-        if (!_webImages.isEmpty()) {
+        mWebResult = result;
+        Log.d(TAG, "result._attempted " + mWebResult._attemptedAllFromJsoup);
+        if (!mWebResult._webImages.isEmpty()) {
             Log.d(TAG, "Got " + result._webImages.size() + " images to choose from");
             showImageDialog(!result._attemptedDynamicHtml);
         } else {
@@ -1205,7 +1209,7 @@ public class EditItem extends Activity
     }
 
     private void showImageDialog(boolean allowLoadMore) {
-        DialogFragment fragment = WebImageFragmentDialog.newInstance(_webImages, allowLoadMore);
+        DialogFragment fragment = WebImageFragmentDialog.newInstance(mWebResult._webImages, allowLoadMore);
         final FragmentManager fm = getFragmentManager();
         Log.d(TAG, "fragment.show");
         fragment.show(fm, "dialog");

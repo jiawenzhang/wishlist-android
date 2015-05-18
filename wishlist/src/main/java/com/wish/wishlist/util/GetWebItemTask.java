@@ -213,6 +213,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             if (result._webImages.size() == 1) {
                 result._webImages.get(0).mBitmap = single_image;
             }
+            result._attemptedAllFromJsoup = true;
         } catch (IOException e) {
             Log.e(TAG, e.toString());
         }
@@ -258,12 +259,13 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
 
         // trim the leading '/' if there is any
         src = src.replaceAll("^/+", "");
-        if (!src.startsWith("http://") || !src.startsWith("https://")) {
+        if (!src.startsWith("http://") && !src.startsWith("https://")) {
             src = "http://" + src;
         }
 
         // validate the url
         if (!Patterns.WEB_URL.matcher(src).matches()) {
+            Log.e(TAG, "Invalid url " + src);
             src = "";
         }
         return src;

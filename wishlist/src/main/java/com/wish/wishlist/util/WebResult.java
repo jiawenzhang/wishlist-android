@@ -10,6 +10,7 @@ public class WebResult {
     public ArrayList<WebImage> _webImages = new ArrayList<>();
     public String _title;
     public String _description;
-    public Boolean _attemptedDynamicHtml = false;
+    public Boolean _attemptedAllFromJsoup = false; // we have tried all results from Jsoup
+    public Boolean _attemptedDynamicHtml = false; // we have tried results from webview
 }
 

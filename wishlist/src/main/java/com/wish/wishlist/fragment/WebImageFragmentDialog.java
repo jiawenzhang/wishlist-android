@@ -79,7 +79,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
                 .setPositiveButton("Load more",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                mLoadMoreSelectedListener.onLoadMore();
+                                mLoadMoreSelectedListener.onLoadMoreFromStaticHtml();
                             }
                         }
                 )
@@ -152,7 +152,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
     }
 
     public static interface OnLoadMoreSelectedListener {
-        public abstract void onLoadMore();
+        public abstract void onLoadMoreFromStaticHtml();
     }
 
     public static interface OnWebImageCancelledListener {
