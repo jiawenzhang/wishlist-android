@@ -65,6 +65,7 @@ public class WebImageAdapter extends ArrayAdapter<WebImage> {
             int button_height = (int) (40 /*dp*/ * scale + 0.5f);
             vh.textView.setHeight(button_height);
         } else {
+            vh.imageView.setVisibility(View.VISIBLE);
             Picasso.with(getContext()).load(img.mUrl).resize(width, height).into(vh.imageView);
             vh.imageView.setHeightRatio(ratio);
             vh.textView.setText(img.mWidth + " x " + img.mHeight);
