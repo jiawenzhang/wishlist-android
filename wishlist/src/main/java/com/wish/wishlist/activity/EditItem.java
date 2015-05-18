@@ -95,6 +95,7 @@ import com.wish.wishlist.util.GetWebItemTask;
 public class EditItem extends Activity
         implements Observer,
         WebImageFragmentDialog.OnWebImageSelectedListener,
+        WebImageFragmentDialog.OnLoadMoreFromWebViewListener,
         WebImageFragmentDialog.OnLoadMoreSelectedListener,
         WebImageFragmentDialog.OnWebImageCancelledListener,
         GetWebItemTask.OnWebResult {
@@ -146,6 +147,7 @@ public class EditItem extends Activity
     private String mLink = null;
     ProgressDialog mProgressDialog = null;
     GetWebItemTask mGetWebItemTask = null;
+    WebView mWebView = null;
 
     private static ArrayList<WebImage> _webImages = new ArrayList<WebImage>();
 
@@ -507,7 +509,18 @@ public class EditItem extends Activity
             mProgressDialog.setCanceledOnTouchOutside(false);
             mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 public void onCancel(DialogInterface dialog) {
-                    mGetWebItemTask.cancel(true);
+                    Log.d(TAG, "onCancel");
+                    if (mGetWebItemTask != null) {
+                        mGetWebItemTask.cancel(true);
+                    }
+                    if (mWebView != null) {
+                        mWebView.stopLoading();
+                        mWebView.destroy();
+                        Log.d(TAG, "stopped loading webview");
+                        if (!_webImages.isEmpty()) {
+                            showImageDialog(true);
+                        }
+                    }
                 }
             });
 
@@ -518,15 +531,15 @@ public class EditItem extends Activity
     }
 
     void getGeneratedHtml() {
-        final WebView webview = new WebView(EditItem.this);
-        webview.getSettings().setJavaScriptEnabled(true);
-        webview.addJavascriptInterface(new MyJavaScriptInterface(this), "HtmlViewer");
-        webview.setWebViewClient(new WebViewClient() {
+        mWebView = new WebView(EditItem.this);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.addJavascriptInterface(new MyJavaScriptInterface(this), "HtmlViewer");
+        mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                         /* This call inject JavaScript into the page which just finished loading. */
                 Log.d(TAG, "onPageFinished");
-                webview.loadUrl("javascript:window.HtmlViewer.gotHTML" +
+                mWebView.loadUrl("javascript:window.HtmlViewer.gotHTML" +
                         "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
 
             }
@@ -538,7 +551,7 @@ public class EditItem extends Activity
             }
         });
 
-        webview.loadUrl(mLink);
+        mWebView.loadUrl(mLink);
     }
 
     class MyJavaScriptInterface {
@@ -769,16 +782,15 @@ public class EditItem extends Activity
     public void onWebImageSelected(int position) {
         // After the dialog fragment completes, it calls this callback.
         WebImage webImage = _webImages.get(position);
-        if (webImage.mId.equals("button")) {
-            Log.d(TAG, "LoadMore button tapped");
-            mProgressDialog.show();
-            getGeneratedHtml();
-            return;
-        } else {
-            _webPicUrl = webImage.mUrl;
-            setWebPic(_webPicUrl);
-            unlockScreenOrientation();
-        }
+        _webPicUrl = webImage.mUrl;
+        setWebPic(_webPicUrl);
+        unlockScreenOrientation();
+    }
+
+    public void onLoadMoreFromWebView() {
+        Log.d(TAG, "onLoadMoreFromWebview");
+        mProgressDialog.show();
+        getGeneratedHtml();
     }
 
     public void onWebImageCancelled() {
@@ -1182,16 +1194,20 @@ public class EditItem extends Activity
         if (result._description != null && !result._description.trim().isEmpty()) {
             _noteEditText.setText(result._description);
         }
-        EditItem._webImages = result._webImages;
-        if (!result._webImages.isEmpty()) {
+        _webImages = result._webImages;
+        if (!_webImages.isEmpty()) {
             Log.d(TAG, "Got " + result._webImages.size() + " images to choose from");
-            DialogFragment fragment = WebImageFragmentDialog.newInstance(_webImages, !result._attemptedDynamicHtml);
-            final FragmentManager fm = getFragmentManager();
-            Log.d(TAG, "fragment.show");
-            fragment.show(fm, "dialog");
+            showImageDialog(!result._attemptedDynamicHtml);
         } else {
             unlockScreenOrientation();
             Toast.makeText(this, "No image found", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showImageDialog(boolean allowLoadMore) {
+        DialogFragment fragment = WebImageFragmentDialog.newInstance(_webImages, allowLoadMore);
+        final FragmentManager fm = getFragmentManager();
+        Log.d(TAG, "fragment.show");
+        fragment.show(fm, "dialog");
     }
 }

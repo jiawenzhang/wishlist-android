@@ -29,6 +29,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
     private WebImageAdapter mAdapter;
     private static ArrayList<WebImage> mList;
     private OnWebImageSelectedListener mWebImageSelectedListener;
+    private OnLoadMoreFromWebViewListener mLoadMoreFromWebView;
     private OnLoadMoreSelectedListener mLoadMoreSelectedListener;
     private OnWebImageCancelledListener mWebImageCancelledListener;
     private static boolean mAllowLoadMore = true;
@@ -146,6 +147,10 @@ public class WebImageFragmentDialog extends DialogFragment implements
         public abstract void onWebImageSelected(int position);
     }
 
+    public static interface OnLoadMoreFromWebViewListener {
+        public abstract void onLoadMoreFromWebView();
+    }
+
     public static interface OnLoadMoreSelectedListener {
         public abstract void onLoadMore();
     }
@@ -159,6 +164,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
         super.onAttach(activity);
         try {
             this.mWebImageSelectedListener = (OnWebImageSelectedListener) activity;
+            this.mLoadMoreFromWebView = (OnLoadMoreFromWebViewListener) activity;
             this.mLoadMoreSelectedListener = (OnLoadMoreSelectedListener) activity;
             this.mWebImageCancelledListener = (OnWebImageCancelledListener) activity;
         }
@@ -185,7 +191,12 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        this.mWebImageSelectedListener.onWebImageSelected(position);
+        if (mAllowLoadMore && position == mList.size() - 1) {
+            mList.remove(position);
+            this.mLoadMoreFromWebView.onLoadMoreFromWebView();
+        } else {
+            this.mWebImageSelectedListener.onWebImageSelected(position);
+        }
         dismiss();
     }
 }

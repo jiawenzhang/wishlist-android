@@ -228,6 +228,12 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
     protected void onProgressUpdate(Integer... progress) {
     }
 
+    @Override
+    protected void onCancelled() {
+        Log.d(TAG, "onCancelled");
+        super.onCancelled();
+    }
+
     protected void onPostExecute(WebResult result) {
         mListener.onWebResult(result);
     }
