@@ -111,27 +111,32 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             }
             if (!twitter_image_element.isEmpty()) {
                 String twitter_image_src = twitter_image_element.first().attr("content");
-                Bitmap image = null;
-                try {
-                    image = Picasso.with(mContext).load(twitter_image_src).get();
-                } catch (IOException e) {
-                    Log.e(TAG, e.toString());
-                }
-
-                if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
-                    Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "X" + image.getHeight());
-                    result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), "", image));
-                    if (!request.getAllImages) {
-                        return result;
+                twitter_image_src = getValidImageUrl(twitter_image_src);
+                if (!twitter_image_src.isEmpty()) {
+                    Bitmap image = null;
+                    try {
+                        Log.d(TAG, "twitter image src " + twitter_image_src);
+                        image = Picasso.with(mContext).load(twitter_image_src).get();
+                    } catch (IOException e) {
+                        Log.e(TAG, e.toString());
                     }
-                    imageUrls.add(twitter_image_src);
+
+                    if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
+                        Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "X" + image.getHeight());
+                        result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), "", image));
+                        if (!request.getAllImages) {
+                            return result;
+                        }
+                        imageUrls.add(twitter_image_src);
+                    }
                 }
             }
 
             Elements og_image = doc.head().select("meta[property=og:image]");
             if (!og_image.isEmpty()) {
                 String og_image_src = og_image.first().attr("content");
-                if (!imageUrls.contains(og_image_src)) {
+                og_image_src = getValidImageUrl(og_image_src);
+                if (!og_image_src.isEmpty() && !imageUrls.contains(og_image_src)) {
                     imageUrls.add(og_image_src);
                     Bitmap image = null;
                     try {
@@ -231,22 +236,29 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
         String src = el.absUrl(attribute);
 
         if (src.isEmpty()) {
-            // mal-formatted Url, for example m.gamestop.com will give use img src like
-            // "//www.gamestop.com/common/images/lbox/111111.jpg"
-            // try to correct it
             src = el.attr("src").trim();
             Log.d(TAG, "mal-formatted img src " + src);
+            src = getValidImageUrl(src);
+        }
+        return src;
+    }
 
-            // trim the leading '/' if there is any
-            src = src.replaceAll("^/+", "");
-            if (!src.startsWith("http://") || !src.startsWith("https://")) {
-                src = "http://" + src;
-            }
+    private String getValidImageUrl(String src) {
+        // mal-formatted Url, for example m.gamestop.com will give us img src like
+        // "//www.gamestop.com/common/images/lbox/111111.jpg"
 
-            // validate the url
-            if (!Patterns.WEB_URL.matcher(src).matches()) {
-                return "";
-            }
+        // urbanoutffters.com's og:img is also mal-formatted
+        // try to correct it
+
+        // trim the leading '/' if there is any
+        src = src.replaceAll("^/+", "");
+        if (!src.startsWith("http://") || !src.startsWith("https://")) {
+            src = "http://" + src;
+        }
+
+        // validate the url
+        if (!Patterns.WEB_URL.matcher(src).matches()) {
+            src = "";
         }
         return src;
     }
