@@ -100,6 +100,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
 
             // start loading images
             HashSet<String> imageUrls = new HashSet<>();
+            Bitmap single_image = null;
 
             // Prefer twitter image over facebook image, because facebook og:image requires dimension of
             // 1200 x 630 or 600 x 315, which will crop a tall image in an ugly way
@@ -127,6 +128,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                         if (!request.getAllImages) {
                             return result;
                         }
+                        single_image = image;
                         imageUrls.add(twitter_image_src);
                     }
                 }
@@ -153,6 +155,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                         if (!request.getAllImages) {
                             return result;
                         }
+                        single_image = image;
                     }
                 }
             }
@@ -162,7 +165,6 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             Elements img_elements = doc.getElementsByTag("img");
             Log.d(TAG, "Found " + img_elements.size() + " img elements");
 
-            Bitmap single_image = null;
             for (Element el : img_elements) {
                 //Log.d(TAG, "el tostring " + el.toString());
 

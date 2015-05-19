@@ -1198,7 +1198,6 @@ public class EditItem extends Activity
             _noteEditText.setText(result._description);
         }
         mWebResult = result;
-        Log.d(TAG, "result._attempted " + mWebResult._attemptedAllFromJsoup);
         if (!mWebResult._webImages.isEmpty()) {
             Log.d(TAG, "Got " + result._webImages.size() + " images to choose from");
             showImageDialog(!result._attemptedDynamicHtml);
