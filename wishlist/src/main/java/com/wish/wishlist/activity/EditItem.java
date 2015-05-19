@@ -145,6 +145,7 @@ public class EditItem extends Activity
     private static final int ADD_TAG = 3;
     private Boolean _selectedPic = false;
     private String mLink = null;
+    private String mHost = null;
     ProgressDialog mProgressDialog = null;
     GetWebItemTask mGetWebItemTask = null;
     WebView mWebView = null;
@@ -417,10 +418,10 @@ public class EditItem extends Activity
         setSelectedPic();
 
         if (_selectedPicUri != null) {
-            String host = _selectedPicUri.getHost();
-            Log.d(TAG, "host " + host);
+            mHost = _selectedPicUri.getHost();
+            Log.d(TAG, "host " + mHost);
 
-            if (host == null) {
+            if (mHost == null) {
                 return;
             }
 
@@ -428,7 +429,7 @@ public class EditItem extends Activity
             t.send(new HitBuilders.EventBuilder()
                     .setCategory("Wish")
                     .setAction("ShareFrom_All")
-                    .setLabel(host)
+                    .setLabel(mHost)
                     .build());
         }
     }
@@ -444,14 +445,14 @@ public class EditItem extends Activity
                 return;
             }
 
-            String host = null;
+            mHost = null;
             for (String link : links) {
                 try {
                     URL url = new URL(link);
                     mLink = link;
-                    host = url.getHost();
+                    mHost = url.getHost();
 
-                    String store = host.startsWith("www.") ? host.substring(4) : host;
+                    String store = mHost.startsWith("www.") ? mHost.substring(4) : mHost;
                     _storeEditText.setText(store);
                     break;
                 } catch (MalformedURLException e) {
@@ -468,30 +469,20 @@ public class EditItem extends Activity
             String name = sharedText.replace(mLink, "");
             _itemNameEditText.setText(name);
 
-            if (host != null && host.equals("pages.ebay.com")) {
+            if (mHost != null && mHost.equals("pages.ebay.com")) {
                 String redirected_link = getEbayLink(mLink);
                 if (redirected_link != null) {
                     mLink = redirected_link;
                 }
             }
+            Log.d(TAG, "extracted link: " + mLink);
 
             Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
-
-            if (host != null) {
+            if (mHost != null) {
                 t.send(new HitBuilders.EventBuilder()
                         .setCategory("Wish")
                         .setAction("ShareFrom_Text")
-                        .setLabel(host)
-                        .build());
-
-            }
-
-            if (mLink != null) {
-                Log.d(TAG, "extracted link: " + mLink);
-                t.send(new HitBuilders.EventBuilder()
-                        .setCategory("Wish")
-                        .setAction("Extracted_Link")
-                        .setLabel(mLink)
+                        .setLabel(mHost)
                         .build());
             }
 
@@ -510,6 +501,14 @@ public class EditItem extends Activity
             mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 public void onCancel(DialogInterface dialog) {
                     Log.d(TAG, "onCancel");
+
+                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    t.send(new HitBuilders.EventBuilder()
+                            .setCategory("Wish")
+                            .setAction("CancelLoadingImages")
+                            .setLabel(mLink)
+                            .build());
+
                     if (mGetWebItemTask != null) {
                         mGetWebItemTask.cancel(true);
                     }
@@ -575,8 +574,8 @@ public class EditItem extends Activity
         _selectedPicUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         setSelectedPic();
         if (_selectedPicUri != null) {
-            String host = _selectedPicUri.getHost();
-            if (host == null) {
+            mHost= _selectedPicUri.getHost();
+            if (mHost == null) {
                 return;
             }
 
@@ -586,7 +585,7 @@ public class EditItem extends Activity
             t.send(new HitBuilders.EventBuilder()
                     .setCategory("Wish")
                     .setAction("ShareFrom_Image")
-                    .setLabel(host)
+                    .setLabel(mHost)
                     .build());
         }
     }
@@ -785,10 +784,25 @@ public class EditItem extends Activity
         _webPicUrl = webImage.mUrl;
         setWebPic(_webPicUrl);
         unlockScreenOrientation();
+
+        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        t.send(new HitBuilders.EventBuilder()
+                .setCategory("Wish")
+                .setAction("SelectWebImage`")
+                .setLabel(mHost)
+                .build());
     }
 
     public void onLoadMoreFromWebView() {
         Log.d(TAG, "onLoadMoreFromWebview");
+
+        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        t.send(new HitBuilders.EventBuilder()
+                .setCategory("Wish")
+                .setAction("LoadMoreFromWebView")
+                .setLabel(mLink)
+                .build());
+
         mProgressDialog.show();
         getGeneratedHtml();
     }
@@ -796,12 +810,27 @@ public class EditItem extends Activity
     public void onWebImageCancelled() {
         Log.d(TAG, "onWebImageCancelled");
         unlockScreenOrientation();
+
+        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        t.send(new HitBuilders.EventBuilder()
+                .setCategory("Wish")
+                .setAction("CancelWebImage")
+                .setLabel(mLink)
+                .build());
     }
 
     public void onLoadMoreFromStaticHtml() {
         Log.d(TAG, "onLoadMoreFromStaticHtml");
         lockScreenOrientation();
         mProgressDialog.show();
+
+        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        t.send(new HitBuilders.EventBuilder()
+                .setCategory("Wish")
+                .setAction("LoadMoreFromStaticHtml")
+                .setLabel(mLink)
+                .build());
+
         if (mWebResult._attemptedAllFromJsoup) {
             getGeneratedHtml();
         } else {
@@ -1204,6 +1233,13 @@ public class EditItem extends Activity
         } else {
             unlockScreenOrientation();
             Toast.makeText(this, "No image found", Toast.LENGTH_SHORT).show();
+
+            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            t.send(new HitBuilders.EventBuilder()
+                    .setCategory("Wish")
+                    .setAction("NoImageFound")
+                    .setLabel(mLink)
+                    .build());
         }
     }
 
