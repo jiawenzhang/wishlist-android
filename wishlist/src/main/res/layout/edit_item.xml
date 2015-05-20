@@ -97,7 +97,7 @@
                         />
                 </FrameLayout>
 
-                <EditText
+                <com.wish.wishlist.widgets.ClearableEditText
                     android:id="@+id/itemname"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
                     android:imeOptions="flagNoExtractUi"
                     />
 
-                <EditText
+                <com.wish.wishlist.widgets.ClearableEditText
                     android:id="@+id/note"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
                     android:imeOptions="flagNoExtractUi"
                     />
 
-                <EditText
+                <com.wish.wishlist.widgets.ClearableEditText
                     android:id="@+id/price"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -140,7 +140,7 @@
                     android:imeOptions="flagNoExtractUi"
                     />
 
-                <EditText
+                <com.wish.wishlist.widgets.ClearableEditText
                     android:id="@+id/store"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -154,7 +154,7 @@
                     android:imeOptions="flagNoExtractUi"
                     />
 
-                <EditText
+                <com.wish.wishlist.widgets.ClearableEditText
                     android:id="@+id/location"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -168,7 +168,7 @@
                     android:imeOptions="flagNoExtractUi"
                     />
 
-                <EditText
+                <com.wish.wishlist.widgets.ClearableEditText
                     android:id="@+id/link"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
