@@ -36,6 +36,15 @@ public final class NewFeatureFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (mPosition == 0) {
             View v = inflater.inflate(R.layout.new_feature_start, container, false);
+
+            final Button button = (Button) v.findViewById(R.id.newFeatureStartButton);
+            button.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), WishList.class));
+                    getActivity().finish();
+                }
+            });
+
             return v;
         } else {
             View v = inflater.inflate(R.layout.new_feature, container, false);
