@@ -630,10 +630,12 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                 toast.show();
             }
             else {
-                Intent mapIntent = new Intent(this, WishListMap.class);
-                mapIntent.putExtra("type", "markOne");
-                mapIntent.putExtra("latitude", dLocation[0]);
-                mapIntent.putExtra("longitude", dLocation[1]);
+//                Intent mapIntent = new Intent(this, WishListMap.class);
+//                mapIntent.putExtra("type", "markOne");
+//                mapIntent.putExtra("latitude", dLocation[0]);
+//                mapIntent.putExtra("longitude", dLocation[1]);
+
+                Intent mapIntent = new Intent(this, MapTest.class);
                 startActivity(mapIntent);
             }
 //			}

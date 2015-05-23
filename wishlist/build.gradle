@@ -58,5 +58,6 @@ dependencies {
     // do not use dynamic updating.
     //compile 'com.android.support:support-v4:20.0.0'
     compile 'com.android.support:appcompat-v7:21.+'
-    compile 'com.google.android.gms:play-services-base:6.5.+'
+    compile 'com.google.android.gms:play-services-maps:7.3.0'
+    compile 'com.google.android.gms:play-services-analytics:7.3.0'
 }
