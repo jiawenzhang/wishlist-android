@@ -2,7 +2,6 @@ package com.wish.wishlist.activity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -89,7 +88,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
     private static final String PREF_SORT_OPTION = "sortOption";
 
     private ItemsCursor.SortBy SORT_BY = ItemsCursor.SortBy.item_name;
-    private Map<String,String> _where = new HashMap<String, String>();
+    private java.util.Map _where = new HashMap<String, String>();
     private String _nameQuery = null;
     public static final String LOG_TAG = "WishList";
 
@@ -347,7 +346,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
      * @param searchName
      *            : the item name to match, null for all items
      */
-    private void populateItems(String searchName, Map<String,String> where) {
+    private void populateItems(String searchName, java.util.Map where) {
         if (searchName == null) {
             // Get all of the rows from the Item table
             // Keep track of the TextViews added in list lstTable
@@ -635,7 +634,10 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 //                mapIntent.putExtra("latitude", dLocation[0]);
 //                mapIntent.putExtra("longitude", dLocation[1]);
 
-                Intent mapIntent = new Intent(this, MapTest.class);
+                Intent mapIntent = new Intent(this, Map.class);
+                mapIntent.putExtra("type", "markOne");
+                mapIntent.putExtra("latitude", dLocation[0]);
+                mapIntent.putExtra("longitude", dLocation[1]);
                 startActivity(mapIntent);
             }
 //			}
@@ -1206,7 +1208,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                     t.send(new HitBuilders.AppViewBuilder().build());
                 }
                 else if (item.equals("Map view")) {
-                    Intent mapIntent = new Intent(WishList.this, WishListMap.class);
+                    Intent mapIntent = new Intent(WishList.this, Map.class);
                     mapIntent.putExtra("type", "markAll");
                     startActivity(mapIntent);
                 }

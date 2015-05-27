@@ -496,19 +496,17 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
             return true;
         }
         else if (itemId == R.id.menu_item_detail_map) {
-            double[] dLocation = new double[2];
             // open the database for operations of Item table
             _itemDBManager = new ItemDBManager(this);
             _itemDBManager.open();
-            dLocation = _itemDBManager.getItemLocation(_itemId);
+            double[] dLocation  = _itemDBManager.getItemLocation(_itemId);
             _itemDBManager.close();
 
             if (dLocation[0] == Double.MIN_VALUE && dLocation[1] == Double.MIN_VALUE) {
                 Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
                 toast.show();
-            }
-            else {
-                Intent mapIntent = new Intent(this, WishListMap.class);
+            } else {
+                Intent mapIntent = new Intent(this, Map.class);
                 mapIntent.putExtra("type", "markOne");
                 mapIntent.putExtra("latitude", dLocation[0]);
                 mapIntent.putExtra("longitude", dLocation[1]);
