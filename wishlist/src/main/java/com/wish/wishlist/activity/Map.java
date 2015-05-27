@@ -42,7 +42,17 @@ public class Map extends Activity {
             mGoogleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                 @Override
                 public void onCameraChange(CameraPosition arg0) {
-                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150));
+                    double width = bounds.northeast.latitude - bounds.southwest.latitude;
+                    double height = bounds.northeast.longitude - bounds.southwest.longitude;
+                    double larger = Math.max(Math.abs(width), Math.abs(height));
+                    // 0.008 is about the size of an residential area in toronto
+                    if (larger > 0.008) {
+                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150));
+                    } else {
+                        // the map will be zoomed too much and won't show nicely, so let's hardcode the zoom level
+                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bounds.getCenter(), 15));
+                    }
+
                     // Remove listener to prevent position reset on camera move.
                     mGoogleMap.setOnCameraChangeListener(null);
                 }
@@ -82,6 +92,8 @@ public class Map extends Activity {
             toast.show();
             this.finish();
         }
+
+        //locationList.add(new double[] {locationList.get(0)[0] + 0.001, locationList.get(0)[1] + 10});
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (double[] location : locationList) {
