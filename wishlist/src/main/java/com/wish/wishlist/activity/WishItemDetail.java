@@ -508,8 +508,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
             } else {
                 Intent mapIntent = new Intent(this, Map.class);
                 mapIntent.putExtra("type", "markOne");
-                mapIntent.putExtra("latitude", dLocation[0]);
-                mapIntent.putExtra("longitude", dLocation[1]);
+                mapIntent.putExtra("id", _itemId);
                 startActivity(mapIntent);
             }
             return true;

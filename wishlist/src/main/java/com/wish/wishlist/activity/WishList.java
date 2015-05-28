@@ -621,26 +621,17 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 //			else{
 
             // get the latitude and longitude of the clicked item
-            double[] dLocation = new double[2];
-            dLocation = _itemDBManager.getItemLocation(_selectedItem_id);
-
+            double[] dLocation = _itemDBManager.getItemLocation(_selectedItem_id);
             if (dLocation[0] == Double.MIN_VALUE && dLocation[1] == Double.MIN_VALUE) {
                 Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
                 toast.show();
             }
             else {
-//                Intent mapIntent = new Intent(this, WishListMap.class);
-//                mapIntent.putExtra("type", "markOne");
-//                mapIntent.putExtra("latitude", dLocation[0]);
-//                mapIntent.putExtra("longitude", dLocation[1]);
-
                 Intent mapIntent = new Intent(this, Map.class);
                 mapIntent.putExtra("type", "markOne");
-                mapIntent.putExtra("latitude", dLocation[0]);
-                mapIntent.putExtra("longitude", dLocation[1]);
+                mapIntent.putExtra("id", _selectedItem_id);
                 startActivity(mapIntent);
             }
-//			}
             return true;
         }
 
