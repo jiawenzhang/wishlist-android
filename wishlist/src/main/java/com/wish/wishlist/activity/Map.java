@@ -1,14 +1,15 @@
 package com.wish.wishlist.activity;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import java.io.File;
 import java.util.ArrayList;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -22,8 +23,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.AnalyticsHelper;
 
@@ -33,8 +34,29 @@ import com.wish.wishlist.model.WishItemManager;
 
 public class Map extends Activity {
     private GoogleMap mGoogleMap;
-    private Target mTarget;
+    private MarkerCallback c;
     private static final String TAG = "Map";
+
+    private class MarkerCallback implements Callback {
+        private Marker marker = null;
+
+        MarkerCallback(Marker marker) {
+            this.marker = marker;
+        }
+
+        @Override
+        public void onError() {
+            Log.e(getClass().getSimpleName(), "Error loading thumbnail!");
+        }
+
+        @Override
+        public void onSuccess() {
+            if (marker != null && marker.isInfoWindowShown()) {
+                marker.hideInfoWindow();
+                marker.showInfoWindow();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,35 +102,40 @@ public class Map extends Activity {
         // parameters used to set up the map
         Intent i = getIntent();
         final long id = i.getLongExtra("id", -1);
-        WishItem item = WishItemManager.getInstance(this).retrieveItembyId(id);
+        final WishItem item = WishItemManager.getInstance(this).retrieveItembyId(id);
         final double lat = item.getLatitude();
         final double lng = item.getLongitude();
 
         final LatLng point = new LatLng(lat, lng);
-        mTarget = new Target() {
+        Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                .position(point));
+
+        c = new MarkerCallback(marker);
+        // Setting a custom info window adapter for the google map
+        mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
-            public void onPrepareLoad(Drawable d) {
-                Log.e(TAG, "onPrepareLoad");
+            public View getInfoWindow(Marker arg0) {
+                return null;
             }
 
+            // Defines the contents of the InfoWindow
             @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                Log.d(TAG, "onBitmapLoaded");
-                Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-                        .position(point)
-                                //.title("title")
-                                //.snippet("snippet")
-                        .icon(BitmapDescriptorFactory
-                                .fromBitmap(bitmap)));
-                                //.fromResource(R.drawable.map_pin)));
-            }
-            @Override
-            public void onBitmapFailed(Drawable d) {
-                Log.e(TAG, "onBitmapFailed");
-            }
-        };
+            public View getInfoContents(Marker arg0) {
+                View v = getLayoutInflater().inflate(R.layout.info_window_layout, null);
 
-        Picasso.with(this).load(new File(item.getFullsizePicPath())).resize(100, 100).into(mTarget);
+                ImageView thumb = (ImageView) v.findViewById(R.id.map_thumb);
+                thumb.setTag(c);
+
+                // we need to refresh the InfoWindow when loading image is complete. the callback object's onSuccess is called
+                // when Picasso finishes loading the image, and that's when we can refresh the InfoWindow.
+                Picasso.with(Map.this).load(new File(item.getFullsizePicPath())).resize(200, 200).centerCrop().into(thumb, c);
+
+                TextView name = (TextView) v.findViewById(R.id.map_name);
+                name.setText(item.getName());
+
+                return v;
+            }
+        });
 
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 15));
     }
