@@ -521,7 +521,30 @@ public class ItemDBManager extends DBManager {
 		}
 		return locationList;
 	}
-	
+
+	public ArrayList<Long> getItemsWithLocation(){
+		String sql = String.format("SELECT _id FROM Item");
+		SQLiteDatabase d = readableDB();
+		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
+				new ItemsCursor.Factory(), sql, null, null);
+
+		long id;
+		ArrayList<Long> ids = new ArrayList<>();
+		if (c != null) {
+			c.moveToFirst();
+			while(!c.isAfterLast()){
+				id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
+				//skip the items having unknown locations
+				double[] location = getItemLocation(id);
+				if (location[0] != Double.MIN_VALUE && location[1] != Double.MAX_VALUE) {
+					ids.add(id);
+				}
+				c.moveToNext();
+			}
+		}
+		return ids;
+	}
+
 	
 	/**
 	 * get the address string according to item id
