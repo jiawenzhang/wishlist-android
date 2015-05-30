@@ -90,13 +90,17 @@ public class Map extends Activity {
                 View v = getLayoutInflater().inflate(R.layout.info_window_layout, null);
 
                 ImageView thumb = (ImageView) v.findViewById(R.id.map_thumb);
-                MarkerCallback callback = new MarkerCallback(marker);
-                thumb.setTag(callback);
 
                 // we need to refresh the InfoWindow when loading image is complete. the callback object's onSuccess is called
                 // when Picasso finishes loading the image, and that's when we can refresh the InfoWindow.
                 WishItem item = mMarkerItemMap.get(marker);
-                Picasso.with(Map.this).load(new File(item.getFullsizePicPath())).resize(200, 200).centerCrop().into(thumb, callback);
+                if (item.getFullsizePicPath() == null) {
+                    thumb.setVisibility(View.GONE);
+                } else {
+                    MarkerCallback callback = new MarkerCallback(marker);
+                    thumb.setTag(callback);
+                    Picasso.with(Map.this).load(new File(item.getFullsizePicPath())).resize(200, 200).centerCrop().into(thumb, callback);
+                }
 
                 TextView name = (TextView) v.findViewById(R.id.map_name);
                 name.setText(item.getName());
