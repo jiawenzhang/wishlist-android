@@ -87,6 +87,12 @@ public class Map extends Activity {
             // Defines the contents of the InfoWindow
             @Override
             public View getInfoContents(Marker marker) {
+                Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                t.send(new HitBuilders.EventBuilder()
+                        .setCategory("Map")
+                        .setAction("TapPin")
+                        .build());
+
                 View v = getLayoutInflater().inflate(R.layout.info_window_layout, null);
 
                 ImageView thumb = (ImageView) v.findViewById(R.id.map_thumb);
