@@ -117,8 +117,21 @@ public class Map extends Activity {
 
     }
 
-    void markAllItems() {
-        final LatLngBounds bounds = getBounds();//map view is invoked from main menu->map
+    void markAllItems() {        // Read all item location from db
+        ItemDBManager mItemDBManager = new ItemDBManager(this);
+        mItemDBManager.open();
+        ArrayList<Long> ids = mItemDBManager.getItemsWithLocation();
+
+        mItemDBManager.close();
+        if (ids.isEmpty()) {
+            Log.d(TAG, "no wishes with location");
+            Toast toast = Toast.makeText(this, "No wish available on map", Toast.LENGTH_SHORT);
+            toast.show();
+            this.finish();
+            return;
+        }
+
+        final LatLngBounds bounds = addMarkers(ids);//map view is invoked from main menu->map
 
         setInfoWindowAdapter();
         mGoogleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
@@ -141,19 +154,7 @@ public class Map extends Activity {
         });
     }
 
-    private LatLngBounds getBounds() {
-        // Read all item location from db
-        ItemDBManager mItemDBManager = new ItemDBManager(this);
-        mItemDBManager.open();
-        ArrayList<Long> ids = mItemDBManager.getItemsWithLocation();
-
-        mItemDBManager.close();
-        if (ids.isEmpty()) {
-            Toast toast = Toast.makeText(this, "No wish available on map", Toast.LENGTH_SHORT);
-            toast.show();
-            this.finish();
-        }
-
+    private LatLngBounds addMarkers(ArrayList<Long> ids) {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (Long id : ids) {
             final WishItem item = WishItemManager.getInstance(this).retrieveItembyId(id);
