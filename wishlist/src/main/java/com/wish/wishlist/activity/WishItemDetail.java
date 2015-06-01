@@ -94,7 +94,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
         _itemId = i.getLongExtra("item_id", -1);
         _position = i.getIntExtra("position", 0);
 
-        WishItem item = WishItemManager.getInstance(this).retrieveItembyId(_itemId);
+        WishItem item = WishItemManager.getInstance(this).retrieveItemById(_itemId);
         double lat = item.getLatitude();
         double lng = item.getLongitude();
         String address = item.getAddress();
@@ -335,6 +335,9 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         WishItemManager.getInstance(WishItemDetail.this).deleteItembyId(_itemId);
+                        Intent intent = new Intent();
+                        intent.putExtra("id", _itemId);
+                        setResult(RESULT_OK, intent);
                         WishItemDetail.this.finish();
                         //return super.onKeyDown(keyCode, event);
                     }
@@ -367,7 +370,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
                     if (data != null) {
                         long id = data.getLongExtra("itemID", -1);
                         if (id != -1) {
-                            WishItem item = WishItemManager.getInstance(this).retrieveItembyId(id);
+                            WishItem item = WishItemManager.getInstance(this).retrieveItemById(id);
                             showItemInfo(item);
                             addTags();
                         }

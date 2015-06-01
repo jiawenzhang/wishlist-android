@@ -275,7 +275,7 @@ public class EditItem extends Activity
             _mapImageButton.setVisibility(View.GONE);
             _completeCheckBox.setVisibility(View.VISIBLE);
 
-            WishItem item = WishItemManager.getInstance(this).retrieveItembyId(mItem_id);
+            WishItem item = WishItemManager.getInstance(this).retrieveItemById(mItem_id);
             mLocation_id = item.getLocatonId();
             mStore_id = item.getStoreId();
             _complete = item.getComplete();

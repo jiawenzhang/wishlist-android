@@ -23,19 +23,10 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 
 //import org.apache.http.entity.mime.content.FileBody;
 //import org.apache.http.entity.mime.content.StringBody;
 //import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpEntity;
-import org.apache.http.util.EntityUtils;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import java.io.File;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
@@ -478,7 +469,7 @@ public class FacebookPost extends Activity {
 //                        HttpClient client = new DefaultHttpClient();
 //                        HttpPost post = new HttpPost(uri);
 //                        MultipartEntity postEntity = new MultipartEntity();
-//                        _wishItem = WishItemManager.getInstance(_ctx).retrieveItembyId(_itemId);
+//                        _wishItem = WishItemManager.getInstance(_ctx).retrieveItemById(_itemId);
 //                        String picUriStr = _wishItem.getPicStr();
 //                        Log.d(TAG, "doInBackground pic uri" + picUriStr);
 //                        String picPath = (Uri.parse(picUriStr)).getPath();
@@ -556,7 +547,7 @@ public class FacebookPost extends Activity {
         }
 
         _itemId = extras.getLong("itemId");
-        _wishItem = WishItemManager.getInstance(_ctx).retrieveItembyId(_itemId);
+        _wishItem = WishItemManager.getInstance(_ctx).retrieveItemById(_itemId);
 
         OpenGraphObject wish = OpenGraphObject.Factory.createForPost("beans_wishlist:wish");
 

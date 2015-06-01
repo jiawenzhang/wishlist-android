@@ -30,14 +30,19 @@ public class WishItemManager {
         return null;
     }
 
-    public WishItem retrieveItembyId(long itemId) {
+    public WishItem retrieveItemById(long itemId) {
 
-        ItemDBManager mItemDBManager;
+        ItemDBManager mItemDBManager = new ItemDBManager(_ctx);
+        mItemDBManager.open();
+
+        ItemsCursor wishItemCursor = mItemDBManager.getItem(itemId);
+        if (wishItemCursor.getCount() == 0) {
+            mItemDBManager.close();
+            return null;
+        }
+
         StoreDBManager mStoreDBManager;
         LocationDBManager mLocationDBManager;
-
-        mItemDBManager = new ItemDBManager(_ctx);
-        mItemDBManager.open();
 
         // Open the Store table in the database
         mStoreDBManager = new StoreDBManager(_ctx);
@@ -47,10 +52,8 @@ public class WishItemManager {
         mLocationDBManager = new LocationDBManager(_ctx);
         mLocationDBManager.open();
 
-        ItemsCursor wishItemCursor;
         Cursor mStoreCursor;
 
-        wishItemCursor = mItemDBManager.getItem(itemId);
         long storeID = wishItemCursor.getLong(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_STORE_ID));
 
@@ -106,7 +109,6 @@ public class WishItemManager {
         mLocationDBManager.close();
 
         return item;
-
     }
 
     public List<WishItem> retrieveAll() {

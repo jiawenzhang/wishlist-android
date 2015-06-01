@@ -36,6 +36,9 @@ import com.wish.wishlist.model.WishItemManager;
 public class Map extends Activity {
     private GoogleMap mGoogleMap;
     private HashMap<Marker, WishItem> mMarkerItemMap = new HashMap<>();
+    private boolean mMarkOne;
+    private static final int ITEM_DETAILS = 0;
+    LatLngBounds mBounds;
     private static final String TAG = "Map";
 
     private class MarkerCallback implements Callback {
@@ -71,9 +74,18 @@ public class Map extends Activity {
         mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         Intent i = getIntent();
         if (i.getStringExtra("type").equals("markOne")){
+            mMarkOne = true;
             markOneItem();
         } else if (i.getStringExtra("type").equals("markAll")) {
-            markAllItems();
+            mMarkOne = false;
+            if (markAllItems()) {
+                mGoogleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+                    @Override
+                    public void onCameraChange(CameraPosition arg0) {
+                        moveToBounds();
+                    }
+                });
+            }
         }
     }
 
@@ -115,9 +127,23 @@ public class Map extends Activity {
             }
         });
 
+        if (mMarkOne) {
+            // when we mark single wish on map, we disable tapping on pin to show detail view
+            return;
+        }
+        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Intent intent = new Intent(Map.this, WishItemDetail.class);
+                WishItem item = mMarkerItemMap.get(marker);
+                intent.putExtra("item_id", item.getId());
+                startActivityForResult(intent, ITEM_DETAILS);
+            }
+        });
     }
 
-    void markAllItems() {        // Read all item location from db
+    boolean markAllItems()
+    {        // Read all item location from db
         ItemDBManager mItemDBManager = new ItemDBManager(this);
         mItemDBManager.open();
         ArrayList<Long> ids = mItemDBManager.getItemsWithLocation();
@@ -128,36 +154,35 @@ public class Map extends Activity {
             Toast toast = Toast.makeText(this, "No wish available on map", Toast.LENGTH_SHORT);
             toast.show();
             this.finish();
-            return;
+            return false;
         }
 
-        final LatLngBounds bounds = addMarkers(ids);//map view is invoked from main menu->map
-
+        mBounds = addMarkers(ids);//map view is invoked from main menu->map
         setInfoWindowAdapter();
-        mGoogleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition arg0) {
-                double width = bounds.northeast.latitude - bounds.southwest.latitude;
-                double height = bounds.northeast.longitude - bounds.southwest.longitude;
-                double larger = Math.max(Math.abs(width), Math.abs(height));
-                // 0.008 is about the size of an residential area in toronto
-                if (larger > 0.008) {
-                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150));
-                } else {
-                    // the map will be zoomed too much and won't show nicely, so let's hardcode the zoom level
-                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bounds.getCenter(), 15));
-                }
+        return true;
+    }
 
-                // Remove listener to prevent position reset on camera move.
-                mGoogleMap.setOnCameraChangeListener(null);
-            }
-        });
+    void moveToBounds()
+    {
+        double width = mBounds.northeast.latitude - mBounds.southwest.latitude;
+        double height = mBounds.northeast.longitude - mBounds.southwest.longitude;
+        double larger = Math.max(Math.abs(width), Math.abs(height));
+        // 0.008 is about the size of an residential area in toronto
+        if (larger > 0.008) {
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mBounds, 150));
+        } else {
+            // the map will be zoomed too much and won't show nicely, so let's hardcode the zoom level
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mBounds.getCenter(), 15));
+        }
+
+        // Remove listener to prevent position reset on camera move.
+        mGoogleMap.setOnCameraChangeListener(null);
     }
 
     private LatLngBounds addMarkers(ArrayList<Long> ids) {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (Long id : ids) {
-            final WishItem item = WishItemManager.getInstance(this).retrieveItembyId(id);
+            final WishItem item = WishItemManager.getInstance(this).retrieveItemById(id);
             final double lat = item.getLatitude();
             final double lng = item.getLongitude();
             final LatLng point = new LatLng(lat, lng);
@@ -179,7 +204,11 @@ public class Map extends Activity {
         // parameters used to set up the map
         Intent i = getIntent();
         final long id = i.getLongExtra("id", -1);
-        final WishItem item = WishItemManager.getInstance(this).retrieveItembyId(id);
+        final WishItem item = WishItemManager.getInstance(this).retrieveItemById(id);
+        if (item == null) {
+            finish();
+            return;
+        }
         final double lat = item.getLatitude();
         final double lng = item.getLongitude();
 
@@ -188,6 +217,20 @@ public class Map extends Activity {
         mMarkerItemMap.put(marker, item);
         setInfoWindowAdapter();
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 15));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case ITEM_DETAILS: {
+                Log.d(TAG, "onActivityResult");
+                mGoogleMap.clear();
+                if (markAllItems()) {
+                    moveToBounds();
+                }
+                break;
+            }
+        }
     }
 }
 

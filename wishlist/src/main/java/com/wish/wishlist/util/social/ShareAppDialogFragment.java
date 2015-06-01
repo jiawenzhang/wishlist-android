@@ -21,7 +21,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.AnalyticsHelper;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.FacebookPost;
-import com.wish.wishlist.activity.WishItemPostToSNS;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 
@@ -93,7 +92,7 @@ public class ShareAppDialogFragment extends DialogFragment {
                     // ((Activity)_ctx).startActivityForResult(snsIntent, 1);
                     //new PostToFacebookDialog(_ctx, _message).show();
                 } else {
-                    WishItem item = WishItemManager.getInstance(_ctx).retrieveItembyId(_itemId);
+                    WishItem item = WishItemManager.getInstance(_ctx).retrieveItemById(_itemId);
                     String message = item.getShareMessage(false);
                     Intent intent = new Intent(android.content.Intent.ACTION_SEND);
                     intent.setClassName(info.activityInfo.packageName, info.activityInfo.name);

@@ -526,7 +526,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_item_context, menu);
 
-        WishItem wish_item = WishItemManager.getInstance(this).retrieveItembyId(_selectedItem_id);
+        WishItem wish_item = WishItemManager.getInstance(this).retrieveItemById(_selectedItem_id);
         int complete = wish_item.getComplete();
         MenuItem mi = menu.findItem(R.id.COMPLETE);
         if (complete == 1) {
@@ -661,7 +661,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         }
 
         else if (itemId == R.id.COMPLETE) {
-            WishItem wish_item = WishItemManager.getInstance(this).retrieveItembyId(_selectedItem_id);
+            WishItem wish_item = WishItemManager.getInstance(this).retrieveItemById(_selectedItem_id);
             if (wish_item.getComplete() == 1) {
                 wish_item.setComplete(0);
                 Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);

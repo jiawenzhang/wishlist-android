@@ -1,7 +1,6 @@
 package com.wish.wishlist.activity;
 
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 
@@ -10,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.util.Log;
-import android.graphics.Bitmap;
 import android.content.Context;
 import android.widget.Toast;
 
@@ -28,7 +26,6 @@ import org.json.JSONException;
 
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.util.ImageManager;
 
 
 public class WishItemPostToSNS extends Activity {
@@ -104,7 +101,7 @@ public class WishItemPostToSNS extends Activity {
 
     public void postWishToWall(String accessToken) {
         Log.d("JSON", "run try {");
-        WishItem wish_item = WishItemManager.getInstance(_ctx).retrieveItembyId(_itemId);
+        WishItem wish_item = WishItemManager.getInstance(_ctx).retrieveItemById(_itemId);
         _message = wish_item.getShareMessage(true);
         _photoData = wish_item.getPhotoData();
 
