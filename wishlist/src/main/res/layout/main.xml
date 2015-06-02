@@ -12,8 +12,6 @@
         android:layout_height="fill_parent"
         android:background="@color/bodyBackground_light_grey">
 
-        <include android:id="@+id/listView_header" layout="@layout/header" />
-
         <EditText
             android:id="@+id/mySearchText" android:layout_width="fill_parent"
             android:layout_height="wrap_content" android:text="" android:visibility="gone"

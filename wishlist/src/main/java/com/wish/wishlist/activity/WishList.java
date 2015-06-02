@@ -1077,41 +1077,8 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
     private void setUpActionBar() {
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            findViewById(R.id.listView_header).setVisibility(View.GONE);
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            updateActionBarTitle();
-        }
-        else {
-            // we use the header instead of action bar for GingerBread and lower
-            findViewById(R.id.listView_header).findViewById(R.id.imageButton_back_logo).setVisibility(View.VISIBLE);
-            findViewById(R.id.listView_header).findViewById(R.id.imageButton_viewType).setVisibility(View.VISIBLE);
-            findViewById(R.id.listView_header).findViewById(R.id.imageButton_search).setVisibility(View.VISIBLE);
-
-            _backImageButton = (ImageButton) findViewById(R.id.imageButton_back_logo);
-            _backImageButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    finish();
-                }
-            });
-
-            _searchImageButton = (ImageButton) findViewById(R.id.imageButton_search);
-            _searchImageButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onSearchRequested();
-                }
-
-            });
-
-            _viewImageButton = (ImageButton) findViewById(R.id.imageButton_viewType);
-            _viewImageButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                }
-            });
-        }
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        updateActionBarTitle();
     }
 
     private void updateDrawerList() {

@@ -6,8 +6,6 @@
     android:layout_height="fill_parent"
     android:background="@color/bodyBackground_light_grey">
 
-    <include android:id="@+id/detailView_header" layout="@layout/header" />
-
     <!--android:visibility = "invisible"-->
     <ScrollView android:layout_width="fill_parent"
         android:layout_height="wrap_content"

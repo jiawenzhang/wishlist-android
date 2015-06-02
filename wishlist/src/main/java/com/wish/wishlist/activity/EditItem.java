@@ -1138,32 +1138,8 @@ public class EditItem extends Activity
     @SuppressLint("NewApi")
     private void setUpActionBar() {
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            findViewById(R.id.addItemView_header).setVisibility(View.GONE);
             ActionBar actionBar = getActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        else {
-            // we use the header instead of action bar for GingerBread and lower
-            findViewById(R.id.addItemView_header).findViewById(R.id.imageButton_back_logo).setVisibility(View.VISIBLE);
-            findViewById(R.id.addItemView_header).findViewById(R.id.imageButton_save).setVisibility(View.VISIBLE);
-
-            _backImageButton = (ImageButton) findViewById(R.id.imageButton_back_logo);
-            _saveImageButton = (ImageButton) findViewById(R.id.imageButton_save);
-
-            _backImageButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    navigateBack();
-                }
-            });
-            _saveImageButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    saveWishItem();
-                }
-            });
-        }
     }
 
     private void lockScreenOrientation() {

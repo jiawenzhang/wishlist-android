@@ -6,8 +6,6 @@
     android:background="@color/bodyBackground_light_grey"
     >
 
-    <include android:id="@+id/addItemView_header" layout="@layout/header" />
-
     <!-- we must use a relativelayout here to correctly position the scrollview and the footer.
         the footer must be defined before the scrollview and the scrollview's aligment
         must be set to android:layout_above="@id/footer_bar. This will make sure that

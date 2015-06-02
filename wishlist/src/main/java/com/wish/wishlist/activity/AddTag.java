@@ -184,11 +184,8 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
 
     private void setUpActionBar() {
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            findViewById(R.id.addTagView_header).setVisibility(View.GONE);
-            ActionBar actionBar = getActionBar();
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     private class TagListAdapter extends ArrayAdapter<String> {

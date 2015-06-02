@@ -526,54 +526,8 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
     @SuppressLint("NewApi")
     private void setUpActionBar() {
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            findViewById(R.id.detailView_header).setVisibility(View.GONE);
-            ActionBar actionBar = getActionBar();
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        else {
-            // we use the header instead of action bar for GingerBread and lower
-            findViewById(R.id.detailView_header).findViewById(R.id.imageButton_back_logo).setVisibility(View.VISIBLE);
-            findViewById(R.id.detailView_header).findViewById(R.id.imageButton_delete).setVisibility(View.VISIBLE);
-            findViewById(R.id.detailView_header).findViewById(R.id.imageButton_edit).setVisibility(View.VISIBLE);
-            findViewById(R.id.detailView_header).findViewById(R.id.imageButton_share).setVisibility(View.VISIBLE);
-
-            _backImageButton = (ImageButton) findViewById(R.id.imageButton_back_logo);
-            _backImageButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    finish();
-                    //start the WishList activity and move the focus to the newly added item
-                    //				Intent home = new Intent(WishItemDetail.this, DashBoard.class);
-                    //				startActivity(home);
-                    //onSearchRequested();
-                }
-            });
-
-            _deleteImageButton = (ImageButton) findViewById(R.id.imageButton_delete);
-            _deleteImageButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    deleteItem();
-                }
-            });
-
-            _editImageButton = (ImageButton) findViewById(R.id.imageButton_edit);
-            _editImageButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    editItem();
-                }
-            });
-
-            _shareImageButton = (ImageButton) findViewById(R.id.imageButton_share);
-            _shareImageButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    shareItem();
-                }
-            });
-        }
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

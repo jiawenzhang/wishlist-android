@@ -4,8 +4,6 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <include android:id="@+id/preference_header" layout="@layout/header" />
-
     <!-- this ListView will be filled with the PreferenceScreen defined in wishlist_preference.xml -->
     <ListView android:id="@android:id/list"
         android:layout_width="fill_parent"

@@ -57,7 +57,6 @@ public class Login extends Activity {
         skipButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Login.this, DashBoard.class));
                 Login.this.finish();
             }
         });
@@ -67,7 +66,6 @@ public class Login extends Activity {
         Log.i(TAG, "onSessionStateChange");
         if (state.isOpened()) {
             Log.i(WishList.LOG_TAG, "Logged in...");
-            startActivity(new Intent(Login.this, DashBoard.class));
             Login.this.finish();
             //	Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
             //		@Override
