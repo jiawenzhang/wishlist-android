@@ -54,9 +54,27 @@ public final class NewFeatureFragment extends Fragment {
 
             switch (mPosition) {
                 case 1:
-                    ((ImageView) imageView).setImageResource(R.drawable.etsy_bag);
-                    ((TextView) tv).setText("Browse items in various apps and tap the share button");
+                {
+                    ImageView image_view = (ImageView) (imageView);
+                    image_view.setImageResource(R.drawable.chrome_share);
+                    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) image_view.getLayoutParams();
+                    //params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, /*bottomMargin*/ 30);
+                    image_view.setLayoutParams(params);
+
+                    tv_bottom.setVisibility(View.GONE);
+                    image_view.setImageResource(R.drawable.map);
+                    //((ImageView) imageView).setImageResource(R.drawable.map);
+                    ((TextView) tv).setText("Tap the pin on map to see wish's name and thumbnail picture");
+                    final Button button = (Button) v.findViewById(R.id.newFeatureButton);
+                    button.setVisibility(View.VISIBLE);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            startActivity(new Intent(getActivity(), WishList.class));
+                            getActivity().finish();
+                        }
+                    });
                     break;
+                }
                 case 2:
                     ((ImageView) imageView).setImageResource(R.drawable.etsy_share);
                     ((TextView) tv).setText("Choose Wishlist, and the items are saved directly to your wishlist");

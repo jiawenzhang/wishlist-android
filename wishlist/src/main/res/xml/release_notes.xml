@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <releaseNote>
+    <release versionName="1.2.2" versionCode="22">
+        <note>Improved map view:</note>
+        <note>Show wish's name and thumbnail picture when tapping the wish on map.</note>
+        <note>Support opening wish's detail view from map.</note>
+    </release>
     <release versionName="1.2.1" versionCode="21">
         <note>Improved experience of saving wishes from more apps and websites.</note>
     </release>
