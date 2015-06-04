@@ -1,5 +1,6 @@
 package com.wish.wishlist.model;
 
+import java.io.File;
 import java.util.List;
 
 import android.content.Context;
@@ -115,7 +116,14 @@ public class WishItemManager {
         return null;
     }
 
-    public void deleteItembyId(long itemId) {
+    public void deleteItemById(long itemId) {
+        WishItem item = retrieveItemById(itemId);
+        String photoPath = item.getFullsizePicPath();
+        if (photoPath != null) {
+            File file = new File(photoPath);
+            file.delete();
+        }
+
         ItemDBManager mItemDBManager = new ItemDBManager(_ctx);
         mItemDBManager.open();
         mItemDBManager.deleteItem(itemId);

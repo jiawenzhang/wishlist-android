@@ -463,7 +463,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                _itemDBManager.deleteItem(_selectedItem_id);
+                WishItemManager.getInstance(WishList.this).deleteItemById(_selectedItem_id);
                 updateView();
             }
         });

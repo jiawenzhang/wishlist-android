@@ -25,9 +25,11 @@ public class FullscreenPhoto extends Activity {
 
         ZoomPanImageView imageItem = (ZoomPanImageView) findViewById(R.id.fullscreen_photo);
 
-        if (_fullsizePhotoPath != null){
-            Bitmap bitmap = BitmapFactory.decodeFile(_fullsizePhotoPath, null);
+        final Bitmap bitmap = BitmapFactory.decodeFile(_fullsizePhotoPath, null);
+        if (bitmap != null) {
             imageItem.setImageBitmap(bitmap);
+        } else {
+            finish();
         }
         //Bitmap bitmap = null;
 //			

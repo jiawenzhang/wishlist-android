@@ -232,8 +232,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public void deleteItem(long _id) {
 		//delete from item table
-		String sql = String.format("DELETE FROM Item " + "WHERE _id = '%d' ",
-				_id);
+		String sql = String.format("DELETE FROM Item " + "WHERE _id = '%d' ", _id);
 		try {
             writableDB().execSQL(sql);
 		} catch (SQLException e) {
@@ -244,10 +243,10 @@ public class ItemDBManager extends DBManager {
         //delete tags associated with this item
 		
 		//delete from location table
-		
-		
-		
+
 		//delete from store table
+
+
 	}
 
 	/** Returns the number of Items */
