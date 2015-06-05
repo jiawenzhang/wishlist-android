@@ -64,7 +64,7 @@ public final class NewFeatureFragment extends Fragment {
                     tv_bottom.setVisibility(View.GONE);
                     image_view.setImageResource(R.drawable.map);
                     //((ImageView) imageView).setImageResource(R.drawable.map);
-                    ((TextView) tv).setText("Tap the pin on map to see wish's name and thumbnail picture");
+                    ((TextView) tv).setText("Tap the pin on map to see the wish name and thumbnail picture");
                     final Button button = (Button) v.findViewById(R.id.newFeatureButton);
                     button.setVisibility(View.VISIBLE);
                     button.setOnClickListener(new View.OnClickListener() {
