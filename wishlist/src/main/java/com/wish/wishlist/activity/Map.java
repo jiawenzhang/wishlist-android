@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -65,6 +67,17 @@ public class Map extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+        if (ConnectionResult.SUCCESS == resultCode) {
+            Log.d(TAG, "Google Play Services available");
+        } else {
+            Log.e(TAG, "Google Play Services not available");
+            Toast.makeText(this, "Google Play Services v7.3 are required ", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         setContentView(R.layout.map);
 
         Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
