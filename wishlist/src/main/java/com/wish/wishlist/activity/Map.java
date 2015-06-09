@@ -1,6 +1,7 @@
 package com.wish.wishlist.activity;
 
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import java.io.File;
@@ -74,6 +75,21 @@ public class Map extends Activity {
         } else {
             Log.e(TAG, "Google Play Services not available");
             Toast.makeText(this, "Google Play Services v7.3 are required ", Toast.LENGTH_LONG).show();
+
+            int v = 0;
+            try {
+                v = getPackageManager().getPackageInfo("com.google.android.gms", 0).versionCode;
+                Log.d(TAG, "com.google.android.gms " + v);
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e(TAG, e.toString());
+            }
+
+            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            t.send(new HitBuilders.EventBuilder()
+                    .setCategory("Debug")
+                    .setAction("com.google.android.gms: " + Integer.toString(v))
+                    .build());
+
             finish();
             return;
         }
