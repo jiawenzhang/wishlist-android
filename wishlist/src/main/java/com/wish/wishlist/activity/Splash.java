@@ -53,7 +53,8 @@ public class Splash extends Activity{
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putInt(VERSION_KEY, currentVersionNumber);
                 editor.commit();
-                startActivity(new Intent(getApplication(), NewFeatureFragmentActivity.class));
+                //startActivity(new Intent(getApplication(), NewFeatureFragmentActivity.class));
+                startActivity(new Intent(getApplication(), WishList.class));
             }
             else {
                 startActivity(new Intent(getApplication(), WishList.class));
