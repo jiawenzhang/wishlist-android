@@ -10,7 +10,7 @@
         android:id="@+id/map_name"
         android:layout_width="200px"
         android:layout_height="wrap_content"
-        android:ellipsize="marquee"
+        android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/medium_grey"
         android:layout_marginBottom="3dp"/>

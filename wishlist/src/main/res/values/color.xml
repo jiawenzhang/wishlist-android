@@ -14,6 +14,8 @@
     <color name="grey">#545454</color>
     <color name="grey_transparent">#80545454</color>
     <color name="dark_grey">#4F4F4F</color>
+    <color name="less_dark_grey">#7E7E7E</color>
+    <color name="medium_grey">#939393</color>
     <color name="white">#FFFFFFFF</color>
     <color name="logo_color">#FFFF0F</color>
     <color name="version_color">#f0f0f0</color>
@@ -44,7 +46,6 @@
     <color name="bodyBackground_light_grey">#F1F1F1</color>
     <color name="semitransparent_white">#77ffffff</color>
     <color name="bodyText_dark_grey">#424242</color>
-    <color name="medium_grey">#939393</color>
 
     <color name="dark_purple">#790980</color>
 

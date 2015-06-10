@@ -394,12 +394,14 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         String[] from = new String[]{
                 ItemDBManager.KEY_FULLSIZE_PHOTO_PATH,
                 ItemDBManager.KEY_NAME,
+                ItemDBManager.KEY_DESCRIPTION,
                 ItemDBManager.KEY_PRICE,
                 ItemDBManager.KEY_COMPLETE};
 
         int[] to = new int[]{
                 R.id.staggered_image,
                 R.id.staggered_name,
+                R.id.staggered_description,
                 R.id.staggered_price,
                 R.id.staggered_checkmark_complete};
 

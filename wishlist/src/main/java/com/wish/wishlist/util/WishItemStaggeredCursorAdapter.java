@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -36,6 +38,7 @@ public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             int nNameIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_NAME);
             int nImageIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_FULLSIZE_PHOTO_PATH);
+            int nDescriptionIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_DESCRIPTION);
             int nPriceIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_PRICE);
             int nStoreNameIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_STORENAME);
             int nAddIndex = cursor.getColumnIndexOrThrow(ItemDBManager.KEY_ADDRESS);
@@ -88,6 +91,20 @@ public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
                 }
                 else {
                     viewPrice.setVisibility(View.GONE);
+                }
+            }
+            else if (columnIndex == nDescriptionIndex ) {
+                String photo_path = cursor.getString(nImageIndex);
+                String description = cursor.getString(columnIndex);
+                // show description up to 3 lines if we don't have a photo to show
+                if (photo_path == null && !description.isEmpty()) {
+                    DynamicHeightTextView textView = (DynamicHeightTextView) view;
+                    textView.setText(description);
+                    textView.setEllipsize(TextUtils.TruncateAt.END);
+                    textView.setVisibility(View.VISIBLE);
+                } else {
+                    DynamicHeightTextView textView = (DynamicHeightTextView) view;
+                    textView.setVisibility(View.GONE);
                 }
             }
             else if (columnIndex == nCompleteIndex) {
