@@ -9,6 +9,11 @@ import com.wish.wishlist.R;
 
 import java.util.HashMap;
 
+import com.parse.Parse;
+import com.parse.ParseACL;
+import com.parse.ParseCrashReporting;
+import com.parse.ParseUser;
+
 /**
  * Created by jiawen on 14-12-23.
  */
@@ -23,6 +28,29 @@ public class AnalyticsHelper extends Application {
     }
 
     HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        // Initialize Crash Reporting.
+        ParseCrashReporting.enable(this);
+
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+
+        // Add your initialization code here
+        Parse.initialize(this,
+                getResources().getString(R.string.parse_application_id),
+                getResources().getString(R.string.parse_client_id));
+
+        ParseUser.enableAutomaticUser();
+        ParseACL defaultACL = new ParseACL();
+        // Optionally enable public read access.
+        // defaultACL.setPublicReadAccess(true);
+        ParseACL.setDefaultACL(defaultACL, true);
+    }
+
 
     public AnalyticsHelper()
     {

@@ -1,4 +1,15 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.parse'
+
+buildscript {
+    repositories {
+        mavenCentral()
+            maven { url 'https://maven.parse.com/repo' }
+    }
+    dependencies {
+        classpath 'com.parse.tools:gradle:1.+'
+    }
+}
 
 android {
     compileSdkVersion "Google Inc.:Google APIs:21"
@@ -9,7 +20,6 @@ android {
         minSdkVersion 14
         targetSdkVersion 21
     }
-
 
     signingConfigs {
         release {
@@ -53,6 +63,11 @@ dependencies {
     compile files('libs/picasso-2.5.2.jar')
     compile files('libs/jsoup-1.8.1.jar')
     compile 'com.viewpagerindicator:library:2.4.1@aar'
+
+    compile 'com.parse.bolts:bolts-android:1.2.0'
+    compile fileTree(dir: '../third-party/Parse', include: 'Parse-*.jar')
+    compile fileTree(dir: '../third-party/Parse', include: 'ParseCrashReporting-*.jar')
+
     //compile 'com.github.castorflex.smoothprogressbar:library-circular:1.1.0'
     // compile 'com.android.support:support-v4:20.+'
     // do not use dynamic updating.
