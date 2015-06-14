@@ -13,11 +13,12 @@ import android.content.ContentValues;
 import android.util.Log;
 import android.database.Cursor;
 
+import com.parse.ParseObject;
+import com.parse.SaveCallback;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.util.DateTimeFormatter;
 import com.wish.wishlist.util.ImageManager;
 import android.preference.PreferenceManager;
-
 
 public class WishItem {
     private static final String TAG = "WishList";
@@ -357,5 +358,35 @@ public class WishItem {
         }
         mItemDBManager.close();
         return _id;
+    }
+
+    public void saveToParse()
+    {
+        Log.e(TAG, "saveToParse");
+        ParseObject wishObject = new ParseObject(ItemDBManager.DB_TABLE);
+        // Fixme how to save id?
+        // Parse Keys must start with a letter, and can contain alphanumeric characters and underscores
+        wishObject.put("id", _id);
+
+        wishObject.put(ItemDBManager.KEY_STORE_ID, _storeId);
+        wishObject.put(ItemDBManager.KEY_STORENAME, _storeName);
+        wishObject.put(ItemDBManager.KEY_NAME, _name);
+        wishObject.put(ItemDBManager.KEY_DESCRIPTION, _desc);
+        wishObject.put(ItemDBManager.KEY_DATE_TIME, _date);
+        wishObject.put(ItemDBManager.KEY_PRICE, _price);
+        wishObject.put(ItemDBManager.KEY_ADDRESS, _address);
+        wishObject.put(ItemDBManager.KEY_COMPLETE, _complete);
+        wishObject.put(ItemDBManager.KEY_LINK, _link);
+
+        wishObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(com.parse.ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "save wish success");
+                } else {
+                    Log.e(TAG, "save failed " + e.toString());
+                }
+            }
+        });
     }
 }

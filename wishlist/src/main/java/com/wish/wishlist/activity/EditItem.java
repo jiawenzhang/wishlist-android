@@ -108,8 +108,6 @@ public class EditItem extends Activity
     private EditText _linkEditText;
     private CheckBox _completeCheckBox;
 
-    private ImageButton _backImageButton;
-    private ImageButton _saveImageButton;
     private ImageButton _mapImageButton;
     private ImageButton _cameraImageButton;
     private ImageButton _galleryImageButton;

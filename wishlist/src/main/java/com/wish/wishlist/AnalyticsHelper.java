@@ -3,9 +3,7 @@ package com.wish.wishlist;
 import android.app.Application;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
-import com.wish.wishlist.R;
 
 import java.util.HashMap;
 
@@ -50,7 +48,6 @@ public class AnalyticsHelper extends Application {
         // defaultACL.setPublicReadAccess(true);
         ParseACL.setDefaultACL(defaultACL, true);
     }
-
 
     public AnalyticsHelper()
     {
