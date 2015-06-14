@@ -16,12 +16,11 @@ import android.database.Cursor;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
 import com.wish.wishlist.db.ItemDBManager;
-import com.wish.wishlist.util.DateTimeFormatter;
 import com.wish.wishlist.util.ImageManager;
 import android.preference.PreferenceManager;
 
 public class WishItem {
-    private static final String TAG = "WishList";
+    private static final String TAG = "WishItem";
     private final Context _ctx;
     private long _id = -1;
     private long _storeId;
@@ -35,10 +34,7 @@ public class WishItem {
     private int _priority;
     private int _complete;
     private String _link;
-    //private Bitmap _fullsizePhoto;
-    //public static final String KEY_PHOTO_URL = "picture";
     private double _price;
-    //	private long _locationId;
     private double _latitude;
     private double _longitude;
     private String _address;
@@ -70,7 +66,6 @@ public class WishItem {
         _id = itemId;
         _fullsizePicPath = fullsizePicPath;
         _price = price;
-//		_locationId = locationId;
         _latitude = latitude;
         _longitude = longitude;
         _address = address;
@@ -115,7 +110,6 @@ public class WishItem {
             return null;
         }
         else {
-//			String priceStr = String.format("%20.2f", _price);
             DecimalFormat Dec = new DecimalFormat("#.##");
             String priceStr = (Dec.format(_price));
 
@@ -262,7 +256,6 @@ public class WishItem {
         );
 
         if (c != null) {
-            //Log.d("count", String.valueOf(c.getCount()));
             c.moveToFirst();
             String id = c.getString(0);
             Log.d("id", id);
@@ -274,7 +267,6 @@ public class WishItem {
         }
 
         return uri;
-        //return Uri.fromFile(new File(getFullsizePicPath()));
     }
 
     public String getPicStr() {
@@ -298,9 +290,6 @@ public class WishItem {
             message = "Shared via Beans Wishlist\n\n";
         }
         String dateTimeStr = getDate();
-        String dateTimeStrNew = DateTimeFormatter.getInstance().getDateTimeString(dateTimeStr);
-
-        //message = getName() + "\n" + dateTimeStrNew + "\n";
         message += getName() + "\n";
 
         // format the price
@@ -334,7 +323,7 @@ public class WishItem {
     public byte[] getPhotoData() {
         int width = 1024;
         int height = 1024;
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         byte[] data = null;
         if (getFullsizePicPath() != null) {
             bitmap = ImageManager.getInstance().decodeSampledBitmapFromFile(_fullsizePicPath, width, height, true);

@@ -1,7 +1,5 @@
 package com.wish.wishlist.db;
 
-//import com.android.wishlist.WishListDataBase.ItemsCursor;
-
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -12,7 +10,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 import android.util.Log;
 
@@ -20,7 +17,6 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_ID = "_id";
 	public static final String KEY_STORE_ID = "store_id";
 	public static final String KEY_STORENAME = "store_name";
-	//public static final String KEY_LOCATION_ID = "location_id";
 	public static final String KEY_NAME = "item_name";
 	public static final String KEY_DESCRIPTION = "description";
 	public static final String KEY_DATE_TIME = "date_time";
@@ -59,61 +55,6 @@ public class ItemDBManager extends DBManager {
 		return this.mDb.insert(DB_TABLE, null, initialValues);
 	}
 
-	// /**
-	// * Delete the car with the given rowId
-	// *
-	// * @param rowId
-	// * @return true if deleted, false otherwise
-	// */
-	// public boolean deleteItem(long rowId) {
-	//
-	//	        return this.mDb.delete(DB_TABLE, KEY_ID + "=" + rowId, null) > 0; //$NON-NLS-1$
-	// }
-
-	// /**
-	// * Return a Cursor over the list of all items in the database
-	// *
-	// * @return Cursor over all cars
-	// */
-	// public Cursor getAllItems() {
-	//
-	// return this.mDb.query(DB_TABLE, new String[] { KEY_ID,
-	// KEY_NAME}, null, null, null, null, null);
-	// }
-
-	// /**
-	// * Return a Cursor positioned at the car that matches the given rowId
-	// * @param rowId
-	// * @return Cursor positioned to matching car, if found
-	// * @throws SQLException if car could not be found/retrieved
-	// */
-	// public Cursor getItem(long rowId) throws SQLException {
-	//
-	// Cursor mCursor =
-	//
-	// this.mDb.query(true, DB_TABLE, new String[] { KEY_ID, KEY_NAME
-	// }, KEY_ID + "=" + rowId, null, null, null, null, null);
-	// if (mCursor != null) {
-	// mCursor.moveToFirst();
-	// }
-	// return mCursor;
-	// }
-
-	// /**
-	// * Update the item.
-	// *
-	// * @param rowId
-	// * @param name
-	// * @return true if the note was successfully updated, false otherwise
-	// */
-	// public boolean updateItem(long rowId, String name, String model,
-	// String year){
-	// ContentValues args = new ContentValues();
-	// args.put(KEY_NAME, name);
-	//
-	// return this.mDb.update(DB_TABLE, args, KEY_ID + "=" + rowId, null) >0;
-	// }
-
 	/**
 	 * Add a new item to the database. The item will have a status of open.
 	 * 
@@ -137,7 +78,6 @@ public class ItemDBManager extends DBManager {
 
 		initialValues.put(KEY_STORE_ID, store_id);
 		initialValues.put(KEY_STORENAME, store_name);
-		//initialValues.put(KEY_LOCATION_ID, locationID);	
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
 		initialValues.put(KEY_DATE_TIME, date_time);
@@ -209,11 +149,9 @@ public class ItemDBManager extends DBManager {
 		ContentValues initialValues = new ContentValues();
 
 		initialValues.put(KEY_STORE_ID, store_id);
-		//initialValues.put(KEY_LOCATION_ID, locationID);	
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
 		initialValues.put(KEY_DATE_TIME, date_time);
-		// initialValues.put(KEY_STORENAME, name);
 		initialValues.put(KEY_PHOTO_URL, picture_uri);
 		initialValues.put(KEY_FULLSIZE_PHOTO_PATH, fullsize_picture_path);
 		initialValues.put(KEY_PRICE, price);
@@ -245,8 +183,6 @@ public class ItemDBManager extends DBManager {
 		//delete from location table
 
 		//delete from store table
-
-
 	}
 
 	/** Returns the number of Items */
@@ -274,7 +210,6 @@ public class ItemDBManager extends DBManager {
 	public static class ItemsCursor extends SQLiteCursor {
 		public static enum SortBy {
 			item_name, date_time, price, priority, _id,
-
 		}
 
 		private static final String QUERY = "SELECT _id, item_name, store_name, description, date_time, store_id, picture, fullsize_picture, price, location, priority "
@@ -295,51 +230,6 @@ public class ItemDBManager extends DBManager {
 					SQLiteQuery query) {
 				return new ItemsCursor(db, driver, editTable, query);
 			}
-		}
-
-		public long getColItemsId() {
-			return getLong(getColumnIndexOrThrow("_id"));
-		}
-
-		public String getColName() {
-			return getString(getColumnIndexOrThrow("item_name"));
-		}
-
-		public String getColStoreName() {
-			return getString(getColumnIndexOrThrow("store_name"));
-		}
-		
-		public int getColStoreId() {
-			return Integer
-					.parseInt(getString(getColumnIndexOrThrow("store_id")));
-		}
-
-		public String getColPicture() {
-			return getString(getColumnIndexOrThrow("picture"));
-		}
-		
-		public String getColFullsizePicture() {
-			return getString(getColumnIndexOrThrow("fullsize_picture"));
-		}
-
-		public String getColDescription() {
-			return getString(getColumnIndexOrThrow("description"));
-		}
-
-		public String getColCreateDate() {
-			return getString(getColumnIndexOrThrow("date_time"));
-		}
-
-		public String getColPrice() {
-			return getString(getColumnIndexOrThrow("price"));
-		}
-
-		public String getColLocation() {
-			return getString(getColumnIndexOrThrow("location"));
-		}
-
-		public String getColPriority() {
-			return getString(getColumnIndexOrThrow("priority"));
 		}
 	}
 
@@ -413,7 +303,6 @@ public class ItemDBManager extends DBManager {
 	 * @param _id
 	 * @return
 	 */
-	//public Cursor getItem(long _id) {
 	public ItemsCursor getItem(long _id) {
 		String sql = String.format("SELECT * FROM Item " + "WHERE _id = '%d' ",
 				_id);
@@ -617,7 +506,7 @@ public class ItemDBManager extends DBManager {
 			long locationID = storeC.getLong(storeC
 					.getColumnIndexOrThrow(StoreDBManager.KEY_LOCATION_ID));
 			
-			// get the latitude and longitude from table location
+			//get the latitude and longitude from table location
 			locationC = locationDBA.getLocation(locationID);
 			
 			//close location table

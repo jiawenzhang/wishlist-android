@@ -2,11 +2,8 @@ package com.wish.wishlist.db;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.util.Log;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 /***
  * LocationDBManager provides access to operations on data in location table
@@ -17,8 +14,6 @@ public class LocationDBManager extends DBManager {
     public static final String KEY_LATITUDE = "latitude";
     public static final String KEY_LONGITUDE= "longitude";
     public static final String KEY_ADDSTR = "addStr";
-    //	public static final String KEY_ADDLINE2 = "AddLine2";
-//	public static final String KEY_ADDLINE3 = "AddLine3";
     public static final String KEY_STREET_NO = "street_no";
     public static final String KEY_STREET = "street";
     public static final String KEY_CITY = "city";
@@ -53,8 +48,6 @@ public class LocationDBManager extends DBManager {
         initialValues.put(KEY_LATITUDE, lat);
         initialValues.put(KEY_LONGITUDE, lng);
         initialValues.put(KEY_ADDSTR, addStr);
-//		initialValues.put(KEY_ADDLINE2, addLine2);
-//		initialValues.put(KEY_ADDLINE3, addLine3);
         initialValues.put(KEY_STREET_NO, streetNO);
         initialValues.put(KEY_STREET, street);
         initialValues.put(KEY_CITY, city);
@@ -71,8 +64,6 @@ public class LocationDBManager extends DBManager {
         initialValues.put(KEY_LATITUDE, lat);
         initialValues.put(KEY_LONGITUDE, lng);
         initialValues.put(KEY_ADDSTR, addStr);
-//		initialValues.put(KEY_ADDLINE2, addLine2);
-//		initialValues.put(KEY_ADDLINE3, addLine3);
         initialValues.put(KEY_STREET_NO, streetNO);
         initialValues.put(KEY_STREET, street);
         initialValues.put(KEY_CITY, city);
