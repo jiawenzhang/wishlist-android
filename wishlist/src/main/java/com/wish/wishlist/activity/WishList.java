@@ -21,7 +21,6 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
-import android.view.View.OnClickListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -47,7 +46,7 @@ import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.AnalyticsHelper;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.util.DrawerItemCustomAdapter;
 import com.wish.wishlist.util.WishItemStaggeredCursorAdapter;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
@@ -139,7 +138,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
         SharedPreferences pref = this.getPreferences(MODE_PRIVATE);
         _viewOption = pref.getString(PREF_VIEW_OPTION, "list");
-        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         if (_viewOption.equals("list")) {
             t.setScreenName("ListView");
         }
@@ -666,7 +665,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
             WishItem wish_item = WishItemManager.getInstance(this).retrieveItemById(_selectedItem_id);
             if (wish_item.getComplete() == 1) {
                 wish_item.setComplete(0);
-                Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                 t.send(new HitBuilders.EventBuilder()
                         .setCategory("Wish")
                         .setAction("ChangeStatus")
@@ -675,7 +674,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
             }
             else {
                 wish_item.setComplete(1);
-                Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                 t.send(new HitBuilders.EventBuilder()
                         .setCategory("Wish")
                         .setAction("ChangeStatus")
@@ -955,7 +954,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                     else {
                         Log.v("photo path", "null");
                     }
-                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
                             .setCategory("Wish")
                             .setAction("TakenPicture")
@@ -1151,7 +1150,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                     editor.putString(PREF_VIEW_OPTION, _viewOption);
                     editor.commit();
 
-                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.setScreenName("ListView");
                     t.send(new HitBuilders.AppViewBuilder().build());
                 }
@@ -1163,7 +1162,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                     editor.putString(PREF_VIEW_OPTION, _viewOption);
                     editor.commit();
 
-                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.setScreenName("GridView");
                     t.send(new HitBuilders.AppViewBuilder().build());
                 }

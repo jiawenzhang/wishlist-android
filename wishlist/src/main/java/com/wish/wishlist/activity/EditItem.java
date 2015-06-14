@@ -31,7 +31,7 @@ import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.AnalyticsHelper;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.PositionManager;
 import com.wish.wishlist.util.WebRequest;
@@ -56,7 +56,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -423,7 +422,7 @@ public class EditItem extends Activity
                 return;
             }
 
-            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
             t.send(new HitBuilders.EventBuilder()
                     .setCategory("Wish")
                     .setAction("ShareFrom_All")
@@ -475,7 +474,7 @@ public class EditItem extends Activity
             }
             Log.d(TAG, "extracted link: " + mLink);
 
-            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
             if (mHost != null) {
                 t.send(new HitBuilders.EventBuilder()
                         .setCategory("Wish")
@@ -500,7 +499,7 @@ public class EditItem extends Activity
                 public void onCancel(DialogInterface dialog) {
                     Log.d(TAG, "onCancel");
 
-                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
                             .setCategory("Wish")
                             .setAction("CancelLoadingImages")
@@ -579,7 +578,7 @@ public class EditItem extends Activity
 
             Log.d(TAG, "host " + _selectedPicUri.getHost());
 
-            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
             t.send(new HitBuilders.EventBuilder()
                     .setCategory("Wish")
                     .setAction("ShareFrom_Image")
@@ -595,7 +594,7 @@ public class EditItem extends Activity
             // Update UI to reflect multiple images being shared
         }
 
-        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         t.send(new HitBuilders.EventBuilder()
                 .setCategory("Wish")
                 .setAction("ShareFrom_MultipleImage")
@@ -676,7 +675,7 @@ public class EditItem extends Activity
             return;
         }
 
-        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         t.send(new HitBuilders.EventBuilder()
                 .setCategory("Wish")
                 .setAction("Save")
@@ -783,7 +782,7 @@ public class EditItem extends Activity
         setWebPic(_webPicUrl);
         unlockScreenOrientation();
 
-        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         t.send(new HitBuilders.EventBuilder()
                 .setCategory("Wish")
                 .setAction("SelectWebImage`")
@@ -794,7 +793,7 @@ public class EditItem extends Activity
     public void onLoadMoreFromWebView() {
         Log.d(TAG, "onLoadMoreFromWebview");
 
-        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         t.send(new HitBuilders.EventBuilder()
                 .setCategory("Wish")
                 .setAction("LoadMoreFromWebView")
@@ -809,7 +808,7 @@ public class EditItem extends Activity
         Log.d(TAG, "onWebImageCancelled");
         unlockScreenOrientation();
 
-        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         t.send(new HitBuilders.EventBuilder()
                 .setCategory("Wish")
                 .setAction("CancelWebImage")
@@ -822,7 +821,7 @@ public class EditItem extends Activity
         lockScreenOrientation();
         mProgressDialog.show();
 
-        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         t.send(new HitBuilders.EventBuilder()
                 .setCategory("Wish")
                 .setAction("LoadMoreFromStaticHtml")
@@ -856,7 +855,7 @@ public class EditItem extends Activity
                 if (resultCode == RESULT_OK) {
                     _fullsizePhotoPath = String.valueOf(_newfullsizePhotoPath);
                     _newfullsizePhotoPath = null;
-                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
                             .setCategory("Wish")
                             .setAction("TakenPicture")
@@ -869,7 +868,7 @@ public class EditItem extends Activity
             case SELECT_PICTURE: {
                 if (resultCode == RESULT_OK) {
                     _selectedPicUri = data.getData();
-                    Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
                             .setCategory("Wish")
                             .setAction("SelectedPicture")
@@ -1208,7 +1207,7 @@ public class EditItem extends Activity
             unlockScreenOrientation();
             Toast.makeText(this, "No image found", Toast.LENGTH_SHORT).show();
 
-            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
             t.send(new HitBuilders.EventBuilder()
                     .setCategory("Wish")
                     .setAction("NoImageFound")

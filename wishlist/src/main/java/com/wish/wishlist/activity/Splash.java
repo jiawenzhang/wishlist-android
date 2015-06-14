@@ -14,7 +14,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.DBAdapter;
-import com.wish.wishlist.AnalyticsHelper;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.util.DialogOnShowListener;
 
 public class Splash extends Activity{
@@ -24,7 +24,7 @@ public class Splash extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         t.send(new HitBuilders.EventBuilder()
                 .setCategory("App")
                 .setAction("Start")

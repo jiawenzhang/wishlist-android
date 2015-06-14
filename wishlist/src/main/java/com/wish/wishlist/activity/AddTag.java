@@ -12,7 +12,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,7 +34,7 @@ import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
-import com.wish.wishlist.AnalyticsHelper;
+import com.wish.wishlist.WishlistApplication;
 
 public class AddTag extends Activity implements TokenCompleteTextView.TokenListener {
     protected final static String PREFIX = "Tags: ";
@@ -155,7 +154,7 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
         }
         else if (id == R.id.menu_save) {
             onSave();
-            Tracker t = ((AnalyticsHelper) getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
             t.send(new HitBuilders.EventBuilder()
                     .setCategory("Tag")
                     .setAction("ClickSave")

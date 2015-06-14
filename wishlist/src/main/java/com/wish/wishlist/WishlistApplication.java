@@ -16,11 +16,7 @@ import com.parse.ParseUser;
  * Created by jiawen on 14-12-23.
  */
 
-public class AnalyticsHelper extends Application {
-
-    // The following line should be changed to include the correct property id.
-    private static final String PROPERTY_ID = "UA-57925142-1"; // My Property id.
-
+public class WishlistApplication extends Application {
     public enum TrackerName {
         APP_TRACKER, // Tracker used only in this app.
     }
@@ -49,7 +45,7 @@ public class AnalyticsHelper extends Application {
         ParseACL.setDefaultACL(defaultACL, true);
     }
 
-    public AnalyticsHelper()
+    public WishlistApplication()
     {
         super();
     }
@@ -65,7 +61,7 @@ public class AnalyticsHelper extends Application {
 
             //analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
 
-            Tracker t = analytics.newTracker(PROPERTY_ID);
+            Tracker t = analytics.newTracker(R.string.analytics_property_id);
             t.setSessionTimeout(300);
             t.enableExceptionReporting(true);
 

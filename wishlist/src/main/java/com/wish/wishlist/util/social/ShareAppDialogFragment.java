@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.wish.wishlist.AnalyticsHelper;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.FacebookPost;
 import com.wish.wishlist.model.WishItem;
@@ -102,7 +102,7 @@ public class ShareAppDialogFragment extends DialogFragment {
                     intent.putExtra(Intent.EXTRA_STREAM, item.getFullsizePicUri());
                     ((Activity) _ctx).startActivity(intent);
                 }
-                Tracker t = ((AnalyticsHelper) ((Activity) _ctx).getApplication()).getTracker(AnalyticsHelper.TrackerName.APP_TRACKER);
+                Tracker t = ((WishlistApplication) ((Activity) _ctx).getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                 t.send(new HitBuilders.EventBuilder()
                         .setCategory("Social")
                         .setAction("ShareWish")
