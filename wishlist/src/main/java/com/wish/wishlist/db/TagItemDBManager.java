@@ -40,12 +40,10 @@ public class TagItemDBManager extends DBManager {
     }
 
     public long Tag_item(long tagId, long itemId) {
-        open();
         ContentValues initialValues = new ContentValues();
         initialValues.put(TAG_ID, tagId);
         initialValues.put(ITEM_ID, itemId);
-        long rowId = mDb.replace(DB_TABLE, null, initialValues);
-        close();
+        long rowId = DBAdapter.getInstance(mCtx).db().replace(DB_TABLE, null, initialValues);
         return rowId;
     }
 
@@ -55,10 +53,8 @@ public class TagItemDBManager extends DBManager {
     }
 
     public void Untag_item(long tagId, long itemId) {
-        open();
         String where = TAG_ID + "=" + tagId + " AND " + ITEM_ID + "=" + itemId;
-        mDb.delete(DB_TABLE, where, null);
-        close();
+        DBAdapter.getInstance(mCtx).db().delete(DB_TABLE, where, null);
 
         //Delete the tag in the tag table if no item is referencing it
         if (!tagExists(tagId)) {
@@ -72,10 +68,8 @@ public class TagItemDBManager extends DBManager {
         ArrayList<Long> tagIds = tagIds_by_item(itemId);
 
         //delete all the entries referencing this item in the TagItem table
-        open();
         String where = ITEM_ID + "=" + itemId;
-        mDb.delete(DB_TABLE, where, null);
-        close();
+        DBAdapter.getInstance(mCtx).db().delete(DB_TABLE, where, null);
 
         //Delete the tags in the tag table if no other items are referencing it
         for (long tagId : tagIds) {
@@ -86,21 +80,17 @@ public class TagItemDBManager extends DBManager {
     }
 
     Boolean tagExists(long tagId) {
-        open();
-        Cursor cursor = mDb.query(true, DB_TABLE, new String[] { TAG_ID }, TAG_ID + "=" + tagId, null, null, null, null, null);
+        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, new String[]{TAG_ID}, TAG_ID + "=" + tagId, null, null, null, null, null);
         Boolean exists = cursor.getCount() >= 1;
-        close();
         return exists;
     }
 
     public ArrayList<String> tags_of_item(long itemId) {
-        open();
-        Cursor cursor = mDb.query(true, DB_TABLE, new String[] { TAG_ID }, ITEM_ID + "=" + itemId, null, null, null, null, null);
+        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, new String[]{TAG_ID}, ITEM_ID + "=" + itemId, null, null, null, null, null);
         ArrayList<String> ids = new ArrayList<String>();
         while (cursor.moveToNext()) {
             ids.add(cursor.getString(cursor.getColumnIndexOrThrow(TAG_ID)));
         }
-        close();
         if (ids.isEmpty()) {
             //We don't have any tags for this item, return an empty tag list
             return new ArrayList<String>();
@@ -110,27 +100,23 @@ public class TagItemDBManager extends DBManager {
     }
 
     public ArrayList<Long> tagIds_by_item(long itemId) {
-        open();
-        Cursor cursor = mDb.query(true, DB_TABLE, new String[] { TAG_ID }, ITEM_ID + "=" + itemId, null, null, null, null, null);
+        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, new String[]{TAG_ID}, ITEM_ID + "=" + itemId, null, null, null, null, null);
         ArrayList<Long> tagIds = new ArrayList<Long>();
         while (cursor.moveToNext()) {
             long tagId = cursor.getLong(cursor.getColumnIndexOrThrow(TAG_ID));
             tagIds.add(new Long(tagId));
         }
-        close();
         return tagIds;
     }
 
     public ArrayList<Long> ItemIds_by_tag(String tagName) {
         long tagId = TagDBManager.instance(mCtx).getIdByName(tagName);
-        open();
-        Cursor cursor = mDb.query(true, DB_TABLE, new String[] { ITEM_ID }, TAG_ID + "=" + tagId, null, null, null, null, null);
+        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, new String[] { ITEM_ID }, TAG_ID + "=" + tagId, null, null, null, null, null);
         ArrayList<Long> ItemIds = new ArrayList<Long>();
         while (cursor.moveToNext()) {
             long item_id = cursor.getLong(cursor.getColumnIndexOrThrow(ITEM_ID));
             ItemIds.add(new Long(item_id));
         }
-        close();
         return ItemIds;
     }
 

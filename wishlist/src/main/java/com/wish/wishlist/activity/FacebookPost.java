@@ -24,10 +24,6 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
-//import org.apache.http.entity.mime.content.FileBody;
-//import org.apache.http.entity.mime.content.StringBody;
-//import org.apache.http.entity.mime.MultipartEntity;
-
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;

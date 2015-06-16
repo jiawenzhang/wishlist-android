@@ -119,8 +119,6 @@ public class EditItem extends Activity
     private String _webPicUrl = null;
     private String _fullsizePhotoPath = null;
     private String _newfullsizePhotoPath = null;
-    private StoreDBManager _storeDBManager;
-    private LocationDBManager _locationDBManager;
     PositionManager _pManager;
     private int mYear = -1;
     private int mMonth = -1;
@@ -129,8 +127,6 @@ public class EditItem extends Activity
     private int mMin = 0;
     private int mSec = 0;
     private long mItem_id = -1;
-    private long mLocation_id = -1;
-    private long mStore_id = -1;
     private int _complete = -1;
     private boolean _editNew = true;
     private boolean _isGettingLocation = false;
@@ -176,14 +172,6 @@ public class EditItem extends Activity
                 }
             }
         });
-
-        // Open the Store table in the database
-        _storeDBManager = new StoreDBManager(this);
-        _storeDBManager.open();
-
-        // Open the Location table in the database
-        _locationDBManager = new LocationDBManager(this);
-        _locationDBManager.open();
 
         _pManager = new PositionManager(EditItem.this);
         _pManager.addObserver(this);
@@ -273,8 +261,6 @@ public class EditItem extends Activity
             _completeCheckBox.setVisibility(View.VISIBLE);
 
             WishItem item = WishItemManager.getInstance(this).retrieveItemById(mItem_id);
-            mLocation_id = item.getLocatonId();
-            mStore_id = item.getStoreId();
             _complete = item.getComplete();
             if (_complete == 1) {
                 _completeCheckBox.setChecked(true);
@@ -688,7 +674,7 @@ public class EditItem extends Activity
         double itemPrice;
         int itemPriority = 0;
         int itemComplete = 0;
-        String itemLink = "";
+        String itemLink;
         itemLink = _linkEditText.getText().toString().trim();
         if (!itemLink.isEmpty() && !Patterns.WEB_URL.matcher(itemLink).matches()) {
             Toast toast = Toast.makeText(this, "Link invalid", Toast.LENGTH_SHORT);
@@ -743,23 +729,12 @@ public class EditItem extends Activity
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date = sdf.format(mDate);
 
-        if (_editNew) {//we are creating a new item
-            // insert the location to the Location table in database
-            mLocation_id = _locationDBManager.addLocation(_lat, _lng, _ddStr, -1, "N/A", "N/A", "N/A", "N/A", "N/A");
-
-            // insert the store to the Store table in database, linked to the location
-            mStore_id = _storeDBManager.addStore(itemStoreName, mLocation_id);
-        }
-        else {//we are editing an existing item
-            _storeDBManager.updateStore(mStore_id, itemStoreName, mLocation_id);
-        }
-
         if (_webBitmap != null) {
             _fullsizePhotoPath = saveBitmapToAlbum(_webBitmap);
         } else if (_selectedPic && _selectedPicUri != null) {
             _fullsizePhotoPath = copyPhotoToAlbum(_selectedPicUri);
         }
-        WishItem item = new WishItem(this, mItem_id, mStore_id, itemStoreName, itemName, itemDesc,
+        WishItem item = new WishItem(this, mItem_id, itemStoreName, itemName, itemDesc,
                 date, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
                 _ddStr, itemPriority, itemComplete, itemLink);
 

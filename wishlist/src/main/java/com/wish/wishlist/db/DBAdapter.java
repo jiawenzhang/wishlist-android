@@ -1,7 +1,5 @@
 package com.wish.wishlist.db;
 
-import com.wish.wishlist.R;
-
 import android.content.Context;
 import android.util.Log;
 import android.database.SQLException;
@@ -19,9 +17,9 @@ public class DBAdapter {
     private static final boolean demo = false;
     private static DBAdapter instance = null;
 
-    public static DBAdapter getInstance(Context contenxt) {
+    public static DBAdapter getInstance(Context context) {
         if (instance == null) {
-            instance = new DBAdapter(contenxt);
+            instance = new DBAdapter(context);
         }
         return instance;
     }
@@ -29,16 +27,16 @@ public class DBAdapter {
     public static final String DB_NAME = "WishList";
 
     //Database version
-    public static final int DB_VERSION = 5;
-    private static final String TAG="DBAdapter";
+    public static final int DB_VERSION = 6;
+    private static final String TAG = "DBAdapter";
 
     public static final Patch[] PATCHES = new Patch[] {
             new Patch() {//db version 1 already done in onCreate
                 public void apply(SQLiteDatabase db) {
-                    //db.execSQL("create table ...");
+                    //mDb.execSQL("create table ...");
                 }
                 public void revert(SQLiteDatabase db) {
-                    //db.execSQL("drop table ...");
+                    //mDb.execSQL("drop table ...");
                 }
             }
             , new Patch() {//db version 2
@@ -91,6 +89,22 @@ public class DBAdapter {
             db.execSQL(sql);
         }
     }
+
+        , new Patch() {//db version 6, 23->24
+            public void apply(SQLiteDatabase db) {
+                //add wish latitude and longitude column in the Item table
+                String sql1 = "ALTER TABLE "
+                        + ItemDBManager.DB_TABLE
+                        + " ADD COLUMN latitude REAL ";
+
+                String sql2 = "ALTER TABLE "
+                        + ItemDBManager.DB_TABLE
+                        + " ADD COLUMN longitude REAL ";
+
+                db.execSQL(sql1);
+                db.execSQL(sql2);
+            }
+    }
     };
 
     //Query string to create table "Item"
@@ -106,11 +120,12 @@ public class DBAdapter {
             + ItemDBManager.KEY_FULLSIZE_PHOTO_PATH 	+ " TEXT, "
             + ItemDBManager.KEY_PRICE 		+ " REAL, "
             + ItemDBManager.KEY_ADDRESS 	+ " TEXT, "
+            + ItemDBManager.KEY_LATITUDE 	+ " REAL, "
+            + ItemDBManager.KEY_LONGITUDE 	+ " REAL, "
             + ItemDBManager.KEY_PRIORITY 	+ " INTEGER, "
             + ItemDBManager.KEY_COMPLETE 	+ " INTEGER, "
             + ItemDBManager.KEY_LINK 	    + " TEXT"
             + ");";
-
 
     //Query string to create table "Tag"
     private static final String CREATE_TABLE_TAG = "create table "
@@ -130,39 +145,6 @@ public class DBAdapter {
             + "PRIMARY KEY(" + TagItemDBManager.TAG_ID + ", " + TagItemDBManager.ITEM_ID + ")"
             + ");";
 
-    //Query string to create table "store"
-    private static final String CREATE_TABLE_STORE = "create table "
-            + StoreDBManager.DB_TABLE
-            + " ("
-            + StoreDBManager.KEY_ID				+ " INTEGER PRIMARY KEY, "
-            + StoreDBManager.KEY_LOCATION_ID	+ " INTEGER, "
-            + StoreDBManager.KEY_NAME 			+ " TEXT"
-            + ");";
-
-    //Query string to create table "location"
-    private static final String CREATE_TABLE_LOCATION = "create table "
-            + LocationDBManager.DB_TABLE + " ("
-            + LocationDBManager.KEY_ID
-            + " integer primary key autoincrement, "
-            + LocationDBManager.KEY_LATITUDE
-            + " REAL,"
-            + LocationDBManager.KEY_LONGITUDE
-            + " REAL,"
-            + LocationDBManager.KEY_ADDSTR
-            + " TEXT,"
-//			+ LocationDBManager.KEY_ADDLINE2
-//			+ " TEXT,"
-//			+ LocationDBManager.KEY_ADDLINE3
-//			+ " TEXT,"
-            + LocationDBManager.KEY_STREET_NO
-            + " INTEGER,"
-            + LocationDBManager.KEY_STREET
-            + " TEXT,"
-            + LocationDBManager.KEY_CITY + " TEXT,"
-            + LocationDBManager.KEY_STATE + " TEXT,"
-            + LocationDBManager.KEY_COUNTRY + " TEXT,"
-            + LocationDBManager.KEY_POSTCODE + " TEXT" + ");";
-
     //Query string to create table "user"
     private static final String CREATE_TABLE_USER = "create table "
             + UserDBManager.DB_TABLE + " ("
@@ -174,31 +156,29 @@ public class DBAdapter {
             + ");";
 
     private static Context context;
-    private DatabaseHelper DBHelper;
-    private SQLiteDatabase db;
+    private DatabaseHelper mDBHelper;
+    private SQLiteDatabase mDb = null;
 
     /** * Constructor
      *
-     * @param contenxt
+     * @param context
      */
-    private DBAdapter(Context contenxt) {
-        context = contenxt;
+    private DBAdapter(Context context) {
+        DBAdapter.context = context;
     }
 
     public void createDB() {
-        this.DBHelper = new DatabaseHelper(context);
+        this.mDBHelper = new DatabaseHelper(context);
 
-        //according android sdk document,
+        //according to android sdk document,
         //we must call open() getWritableDatabase() or getReadableDatabase() to actually create the tables;
         open();
-        close();
     }
 
     //private static class DatabaseHelper extends SQLiteOpenHelper {
     // not sure why DatabaseHelper needs to be static
     private class DatabaseHelper extends SQLiteOpenHelper {
         DatabaseHelper(Context context) {
-            //super(context, DB_NAME, null, DB_VERSION);
             super(context, DB_NAME, null, PATCHES.length); //
             Log.d(TAG, "PATCHES.length" + String.valueOf(PATCHES.length));
         }
@@ -213,8 +193,7 @@ public class DBAdapter {
             db.execSQL(CREATE_TABLE_ITEM);
             if (demo) {
                 ItemDBManager mItemDBManager = new ItemDBManager(context);
-                mItemDBManager.open(db);
-                mItemDBManager.addItem(	1,
+                mItemDBManager.addItem(
                         "Apple Store",
                         "iPad mini",
                         "It is the new iPad with retina display",
@@ -223,11 +202,13 @@ public class DBAdapter {
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/ipad_mini.jpg",
                         529f,
                         "220 Yonge Street, Toronto, ON, M5B 2H1",
+                        43.653929,
+                        -79.3802132,
                         0,
                         0,
                         "");
 
-                mItemDBManager.addItem(	2,
+                mItemDBManager.addItem(
                         "Coach store",
                         "Leather bag",
                         "What a beautiful bag! Cannot help noticing it.",
@@ -236,11 +217,13 @@ public class DBAdapter {
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/bag.jpg",
                         299.00f,
                         "2243 Bloor ST W\nToronto, ON M6S 1N7\nCanada",
+                        43.6509499,
+                        -79.477205,
                         3,
                         1,
                         "");
 
-                mItemDBManager.addItem(	3,
+                mItemDBManager.addItem(
                         "Tiffany",
                         "Starfish necklace",
                         "Gorgeous",
@@ -249,11 +232,13 @@ public class DBAdapter {
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/tiffany.jpg",
                         389f,
                         "85 Bloor Street West, Toronto, Ontario\nM5S 1M1 Canada",
+                        43.6694098,
+                        -79.3904,
                         2,
                         0,
                         "");
 
-                mItemDBManager.addItem(	4,
+                mItemDBManager.addItem(
                         "Bay Company",
                         "High hel",
                         "lala",
@@ -262,11 +247,13 @@ public class DBAdapter {
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/shoe.jpg",
                         289.0f,
                         "65 Dundas Street West\nToronto, ON, M5G 2C3",
+                        43.6555876,
+                        -79.3835228,
                         1,
                         0,
                         "");
 
-                mItemDBManager.addItem(	5,
+                mItemDBManager.addItem(
                         "Bay Inc.",
                         "Earring",
                         "I like its color",
@@ -275,73 +262,28 @@ public class DBAdapter {
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/ear_ring.jpg",
                         99.0f,
                         "11 Sunlight Park Rd\nToronto, ON, M4M 1B5",
+                        43.6561902,
+                        -79.3489359,
                         1,
                         1,
                         "");
 
-                mItemDBManager.addItem(	6,
+                mItemDBManager.addItem(
                         "Indigo",
-                        "Wooden lanton",
+                        "Wooden lantern",
                         "nice",
                         "2012-06-22 19:08:20",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/wooden_lanton.jpg",
                         59.0f,
                         "259 Richmond Street West Toronto ON M5V 3M6",
+                        43.6489324,
+                        -79.3913844,
                         1,
                         0,
                         "");
-
-                mItemDBManager.close();
             }
 
-            //create table "store"
-            db.execSQL(CREATE_TABLE_STORE);
-            if (demo) {
-                StoreDBManager mStoreDBManager = new StoreDBManager(context);
-                mStoreDBManager.open(db);
-                mStoreDBManager.addStore("Apple Store", 		1);
-                mStoreDBManager.addStore("dessert store",   		2);
-                mStoreDBManager.addStore("tiffany",	3);
-                mStoreDBManager.addStore("Best buy",		4);
-                mStoreDBManager.addStore("BMW store",		5);
-                mStoreDBManager.addStore("Indigo",		6);
-                mStoreDBManager.close();
-            }
-            //create table "location"
-            db.execSQL(CREATE_TABLE_LOCATION);
-            if (demo) {
-                LocationDBManager mLocationDBManager = new LocationDBManager(context);
-                mLocationDBManager.open(db);
-                mLocationDBManager.addLocation(43.653929,
-                        -79.3802132,
-                        "220 Yonge Street, Toronto, ON, M5B 2H1",
-                        0, null, null, null, null, null);
-                mLocationDBManager.addLocation(43.6509499,
-                        -79.477205,
-                        "2243 Bloor ST W\nToronto, ON M6S 1N7\nCanada",
-                        0, null, null, null, null, null);
-                mLocationDBManager.addLocation(43.6694098,
-                        -79.3904,
-                        "85 Bloor Street West, Toronto, Ontario\nM5S 1M1 Canadas",
-                        0, null, null, null, null, null);
-                mLocationDBManager.addLocation(43.6555876,
-                        -79.3835228,
-                        "65 Dundas Street West\nToronto, ON, M5G 2C3",
-                        0, null, null, null, null, null);
-
-                mLocationDBManager.addLocation(43.6561902,
-                        -79.3489359,
-                        "11 Sunlight Park Rd\nToronto, ON, M4M 1B5",
-                        0, null, null, null, null, null);
-
-                mLocationDBManager.addLocation(43.6489324,
-                        -79.3913844,
-                        "259 Richmond Street West Toronto ON M5V 3M6 ",
-                        0, null, null, null, null, null);
-
-                mLocationDBManager.close();
-            }
             //create table "user", added on version 3
             db.execSQL(CREATE_TABLE_USER);
 
@@ -359,9 +301,11 @@ public class DBAdapter {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             // Adding any table mods to this guy here
-            for (int i=oldVersion; i<newVersion; i++) {
+            for (int i = oldVersion; i < newVersion; i++) {
                 PATCHES[i].apply(db);
             }
+            Log.d(TAG, "version " + newVersion);
+
         }
 
         //API LEVEL 11 starts to support onDowngrade
@@ -386,7 +330,9 @@ public class DBAdapter {
      *             return type: DBAdapter
      */
     public DBAdapter open() throws SQLException {
-        this.db = this.DBHelper.getWritableDatabase();
+        if (mDb == null || !mDb.isOpen()) {
+            mDb = mDBHelper.getWritableDatabase();
+        }
         return this;
     }
 
@@ -394,8 +340,13 @@ public class DBAdapter {
      * close the db return type: void
      */
     public void close() {
-        this.DBHelper.close();
-        this.db.close();
+        mDBHelper.close();
+        mDb.close();
+    }
+
+    public SQLiteDatabase db()
+    {
+        return mDb;
     }
 
 }

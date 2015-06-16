@@ -24,12 +24,14 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_FULLSIZE_PHOTO_PATH = "fullsize_picture";
 	public static final String KEY_PRICE = "price";
 	public static final String KEY_ADDRESS = "location";
+	public static final String KEY_LATITUDE = "latitude";
+	public static final String KEY_LONGITUDE = "longitude";
 	public static final String KEY_PRIORITY = "priority";
 	public static final String KEY_COMPLETE = "complete";
     public static final String KEY_LINK = "link";
 
 	public static final String DB_TABLE = "Item";
-	private static final String TAG="ItemDBManager";
+	private static final String TAG = "ItemDBManager";
 
 	/**
 	 * Constructor - takes the context to allow the database to be
@@ -43,19 +45,6 @@ public class ItemDBManager extends DBManager {
 	}
 
 	/**
-	 * Create a new item. If the item is successfully created return the new
-	 * rowId for that item, otherwise return a -1 to indicate failure.
-	 * 
-	 * @param name
-	 * @return rowId or -1 if failed
-	 */
-	public long createItem(String name) {
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(KEY_NAME, name);
-		return this.mDb.insert(DB_TABLE, null, initialValues);
-	}
-
-	/**
 	 * Add a new item to the database. The item will have a status of open.
 	 * 
 	 * @param item_id
@@ -65,8 +54,8 @@ public class ItemDBManager extends DBManager {
 	 * @param description
 	 *            The name description
 	 */
-	public long addItem(long store_id, String store_name, String name, String description, String date_time,
-			String picture_uri, String fullsize_picture_path, double price, String location,
+	public long addItem(String store_name, String name, String description, String date_time,
+			String picture_uri, String fullsize_picture_path, double price, String address, double latitude, double longitude,
 			int priority, int complete, String link) {
 		// String sql = String.format(
 		// "INSERT INTO ITEM (_id, name, description, create_date, store_id,  picture, price, location, priority) "
@@ -76,7 +65,6 @@ public class ItemDBManager extends DBManager {
 		// priority);
 		ContentValues initialValues = new ContentValues();
 
-		initialValues.put(KEY_STORE_ID, store_id);
 		initialValues.put(KEY_STORENAME, store_name);
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
@@ -84,12 +72,14 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_PHOTO_URL, picture_uri);
 		initialValues.put(KEY_FULLSIZE_PHOTO_PATH, fullsize_picture_path);
 		initialValues.put(KEY_PRICE, price);
-		initialValues.put(KEY_ADDRESS, location);
+		initialValues.put(KEY_ADDRESS, address);
+		initialValues.put(KEY_LATITUDE, latitude);
+		initialValues.put(KEY_LONGITUDE, longitude);
 		initialValues.put(KEY_PRIORITY, priority);
 		initialValues.put(KEY_COMPLETE, complete);
         initialValues.put(KEY_LINK, link);
 
-		long id = this.mDb.insert(DB_TABLE, null, initialValues);
+		long id = DBAdapter.getInstance(mCtx).db().insert(DB_TABLE, null, initialValues);
 		return id;
 	}
 
@@ -103,8 +93,8 @@ public class ItemDBManager extends DBManager {
 	 * @param description
 	 *            The item description
 	 */
-	public void updateItem(long _id, long store_id, String store_name, String name, String description, String date_time,
-			String picture_uri, String fullsize_picture_path, double price, String address,
+	public void updateItem(long _id, String store_name, String name, String description, String date_time,
+			String picture_uri, String fullsize_picture_path, double price, String address, double latitude, double longitude,
 			int priority, int complete, String link) {
 
 //		String sql = String.format("UPDATE Item " + "SET item_name = '%s',  "
@@ -119,10 +109,7 @@ public class ItemDBManager extends DBManager {
 		
 		ContentValues initialValues = new ContentValues();
 
-		//initialValues.put(KEY_ID, _id);
-		initialValues.put(KEY_STORE_ID, store_id);
 		initialValues.put(KEY_STORENAME, store_name);
-		//initialValues.put(KEY_LOCATION_ID, locationID);	
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
 		initialValues.put(KEY_DATE_TIME, date_time);
@@ -130,37 +117,15 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_FULLSIZE_PHOTO_PATH, fullsize_picture_path);
 		initialValues.put(KEY_PRICE, price);
 		initialValues.put(KEY_ADDRESS, address);
+		initialValues.put(KEY_LATITUDE, latitude);
+		initialValues.put(KEY_LONGITUDE, longitude);
 		initialValues.put(KEY_PRIORITY, priority);
 		initialValues.put(KEY_COMPLETE, complete);
         initialValues.put(KEY_LINK, link);
 
 		String where = String.format("_id = '%d'", _id);
-		this.mDb.update(DB_TABLE, initialValues, where, null);
+		DBAdapter.getInstance(mCtx).db().update(DB_TABLE, initialValues, where, null);
 	}
-
-	 /** Replace or Update an item in the database. 
-	  *  if the _id (primary key) already exists in db, a row will be updated
-	  *  if not, a new row will be inserted
-	  */ 
-
-	public void updateOrReplaceItem(long _id, long store_id, String name, String description, String date_time,
-			String picture_uri, String fullsize_picture_path, double price, String address,
-			int priority) {
-		ContentValues initialValues = new ContentValues();
-
-		initialValues.put(KEY_STORE_ID, store_id);
-		initialValues.put(KEY_NAME, name);
-		initialValues.put(KEY_DESCRIPTION, description);
-		initialValues.put(KEY_DATE_TIME, date_time);
-		initialValues.put(KEY_PHOTO_URL, picture_uri);
-		initialValues.put(KEY_FULLSIZE_PHOTO_PATH, fullsize_picture_path);
-		initialValues.put(KEY_PRICE, price);
-		initialValues.put(KEY_ADDRESS, address);
-		initialValues.put(KEY_PRIORITY, priority);
-
-		this.mDb.replace(DB_TABLE, null, initialValues);
-	}
-
 
 	/**
 	 * Delete a item from the database.
@@ -172,7 +137,7 @@ public class ItemDBManager extends DBManager {
 		//delete from item table
 		String sql = String.format("DELETE FROM Item " + "WHERE _id = '%d' ", _id);
 		try {
-            writableDB().execSQL(sql);
+			DBAdapter.getInstance(mCtx).db().execSQL(sql);
 		} catch (SQLException e) {
 			Log.e("Error deleting item", e.toString());
 		}
@@ -190,7 +155,7 @@ public class ItemDBManager extends DBManager {
 
 		Cursor c = null;
 		try {
-            c = readableDB().rawQuery(
+			c = DBAdapter.getInstance(mCtx).db().rawQuery(
 					"SELECT count(*) FROM Item", null);
 			if (0 >= c.getCount()) {
 				return 0;
@@ -275,7 +240,7 @@ public class ItemDBManager extends DBManager {
 		}
         sql = "SELECT * FROM Item " + WHERE + " ORDER BY " + sortOption;
 
-        SQLiteDatabase d = readableDB();
+		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 		c.moveToFirst();
@@ -304,10 +269,8 @@ public class ItemDBManager extends DBManager {
 	 * @return
 	 */
 	public ItemsCursor getItem(long _id) {
-		String sql = String.format("SELECT * FROM Item " + "WHERE _id = '%d' ",
-				_id);
-        SQLiteDatabase d = readableDB();
-		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
+		String sql = String.format("SELECT * FROM Item " + "WHERE _id = '%d' ", _id);
+		ItemsCursor c = (ItemsCursor) DBAdapter.getInstance(mCtx).db().rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 
 		if (c != null) {
@@ -324,7 +287,7 @@ public class ItemDBManager extends DBManager {
 		String sql = String.format("SELECT * FROM Item "
 				+ "WHERE item_name LIKE '%%%s%%' ", query);
 
-        SQLiteDatabase d = readableDB();
+		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 		if (c != null) {
@@ -342,7 +305,7 @@ public class ItemDBManager extends DBManager {
 		String sql = String.format("SELECT * FROM Item "
 				+ "WHERE item_name LIKE '%%%s%%' " + "ORDER BY " + sortOption, query);
 		
-        SQLiteDatabase d = readableDB();
+		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 		if (c != null) {
@@ -356,28 +319,7 @@ public class ItemDBManager extends DBManager {
 	 * @param _id the _id of the item in table Item
 	 * @return double[2] with [0] the latitude, [1] the longitude
 	 */
-	
-	public double[] getItemLocation(long _id){
-		double[] location = new double[2];
-		// get the latitude and longitude from table location
-		Cursor locationC = getItemLocationCursor(_id);
-		if(locationC != null){
-			double latitude = locationC.getDouble(locationC.
-					getColumnIndexOrThrow(LocationDBManager.KEY_LATITUDE));
-			
-			double longitude = locationC.getDouble(locationC.
-					getColumnIndexOrThrow(LocationDBManager.KEY_LONGITUDE));
-			
-			//storeDBA.close();
-			//locationDBA.close();
-			
-			location[0] = latitude;
-			location[1] = longitude;
-		}
-		
-		return location;
-	}
-	
+
 	public long getlocationIdbyItemId(long _itemId){
 		Cursor locationC = getItemLocationCursor(_itemId);
 		if(locationC != null){
@@ -386,33 +328,28 @@ public class ItemDBManager extends DBManager {
 		}
 		else return -1;
 	}
-	
-	public ArrayList<double[]> getAllItemLocation(){
+
+	public ArrayList<Long> getAllItemIds(){
 		String sql = String.format("SELECT _id FROM Item");
-        SQLiteDatabase d = readableDB();
+		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 
-		long id;
-		ArrayList<double[]> locationList = new ArrayList<double[]>();
+		ArrayList<Long> ids = new ArrayList<>();
 		if (c != null) {
 			c.moveToFirst();
-			while(!c.isAfterLast()){
-				id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
-				//skip the items having unknown locations
-				double[] location = getItemLocation(id);
-				if (location[0] != Double.MIN_VALUE && location[1] != Double.MAX_VALUE) {
-					locationList.add(location);
-				}
+			while (!c.isAfterLast()){
+				long id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
+				ids.add(id);
 				c.moveToNext();
 			}
 		}
-		return locationList;
+		return ids;
 	}
 
 	public ArrayList<Long> getItemsWithLocation(){
-		String sql = String.format("SELECT _id FROM Item");
-		SQLiteDatabase d = readableDB();
+		String sql = String.format("SELECT _id, latitude, longitude FROM Item");
+		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 
@@ -420,11 +357,12 @@ public class ItemDBManager extends DBManager {
 		ArrayList<Long> ids = new ArrayList<>();
 		if (c != null) {
 			c.moveToFirst();
-			while(!c.isAfterLast()){
+			while (!c.isAfterLast()){
 				id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
 				//skip the items having unknown locations
-				double[] location = getItemLocation(id);
-				if (location[0] != Double.MIN_VALUE && location[1] != Double.MAX_VALUE) {
+				double latitude = c.getDouble(c.getColumnIndexOrThrow(KEY_LATITUDE));
+				double longitude = c.getDouble(c.getColumnIndexOrThrow(KEY_LONGITUDE));
+				if (latitude != Double.MIN_VALUE && longitude != Double.MAX_VALUE) {
 					ids.add(id);
 				}
 				c.moveToNext();
@@ -433,34 +371,16 @@ public class ItemDBManager extends DBManager {
 		return ids;
 	}
 
-	
-	/**
-	 * get the address string according to item id
-	 * @param _id the _id of the item in table Item
-	 * @return the address string of the item
-	 */
-	
-	public String getItemAddress(long _id){
-		String AddStr = null;
-		Cursor locationC = getItemLocationCursor(_id);
-		if(locationC != null){
-			AddStr = locationC.getString(locationC.
-					getColumnIndexOrThrow(LocationDBManager.KEY_ADDSTR));
-		}
-	
-		return AddStr;
-	}
-	
 	/**
 	 * get the Cursor of table store according to item id
 	 * @param long _id: the _id of the item in table Item
 	 * @return the Cursor of store where the Item belongs to
 	 */
-	
+	//
 	public Cursor getItemStoreCursor(long _id){
 		String sql = String.format("SELECT store_id FROM Item " + "WHERE _id = '%d' ",
 				_id);
-        SQLiteDatabase d = readableDB();
+		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
 		ItemsCursor itemC = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 
@@ -470,20 +390,14 @@ public class ItemDBManager extends DBManager {
 			itemC.moveToFirst();
 			long storeID = itemC.getLong(itemC
 					.getColumnIndexOrThrow(ItemDBManager.KEY_STORE_ID));
-			
-			//open the store table
+
 			StoreDBManager storeDBA;
 			storeDBA = new StoreDBManager(mCtx);
-			storeDBA.open();
-			
+
 			// get store cursor
 			storeC = storeDBA.getStore(storeID);
-						
-			//close store table
-			storeDBA.close();
-			
 		}
-		
+
 		return storeC;
 	}
 	
@@ -492,28 +406,21 @@ public class ItemDBManager extends DBManager {
 	 * @param long _id: the _id of the item in table Item
 	 * @return the Cursor of location where the Item is located
 	 */
-	
 	public Cursor getItemLocationCursor(long _id){
 		Cursor storeC = getItemStoreCursor(_id);
 		Cursor locationC = null;
 		if (storeC != null) {
-			//open the location table
 			LocationDBManager locationDBA;
 			locationDBA = new LocationDBManager(mCtx);
-			locationDBA.open();
-			
+
 			//get the location id
 			long locationID = storeC.getLong(storeC
 					.getColumnIndexOrThrow(StoreDBManager.KEY_LOCATION_ID));
-			
+
 			//get the latitude and longitude from table location
 			locationC = locationDBA.getLocation(locationID);
-			
-			//close location table
-			locationDBA.close();
-			
 		}
-		
+
 		return locationC;
 	}
 

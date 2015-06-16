@@ -172,12 +172,11 @@ public class Map extends Activity {
     }
 
     boolean markAllItems()
-    {        // Read all item location from db
+    {
+        // Read all item location from db
         ItemDBManager mItemDBManager = new ItemDBManager(this);
-        mItemDBManager.open();
         ArrayList<Long> ids = mItemDBManager.getItemsWithLocation();
 
-        mItemDBManager.close();
         if (ids.isEmpty()) {
             Log.d(TAG, "no wishes with location");
             Toast toast = Toast.makeText(this, "No wish available on map", Toast.LENGTH_SHORT);

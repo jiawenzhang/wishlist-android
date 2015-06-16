@@ -23,7 +23,6 @@ public class WishItem {
     private static final String TAG = "WishItem";
     private final Context _ctx;
     private long _id = -1;
-    private long _storeId;
     private String _storeName;
     private String _name;
     private String _comments;
@@ -60,7 +59,7 @@ public class WishItem {
         _desc = addr;
     }
 
-    public WishItem(Context ctx, long itemId, long storeId, String storeName, String name, String desc,
+    public WishItem(Context ctx, long itemId, String storeName, String name, String desc,
                     String date, String picStr, String fullsizePicPath, double price, double latitude, double longitude,
                     String address, int priority, int complete, String link) {
         _id = itemId;
@@ -70,7 +69,6 @@ public class WishItem {
         _longitude = longitude;
         _address = address;
         _picStr = picStr;
-        _storeId = storeId;
         _storeName = storeName;
         _ctx = ctx;
         _name = name;
@@ -91,10 +89,6 @@ public class WishItem {
 
     public String getStoreName(){
         return _storeName;
-    }
-
-    public long getStoreId(){
-        return _storeId;
     }
 
     public void setPrice(double p){
@@ -125,14 +119,6 @@ public class WishItem {
         return currencySymbol + " " + price;
     }
 
-    public long getLocatonId() {
-        ItemDBManager mItemDBManager = new ItemDBManager(_ctx);
-        mItemDBManager.open();
-        long locationId = mItemDBManager.getlocationIdbyItemId(_id);
-        mItemDBManager.close();
-        return locationId;
-    }
-
     public double getLatitude() {
         return _latitude;
     }
@@ -147,6 +133,16 @@ public class WishItem {
 
     public String getAddress(){
         return _address;
+    }
+
+    public void setLatitude(double lat)
+    {
+        _latitude = lat;
+    }
+
+    public void setLongitude(double lng)
+    {
+        _longitude = lng;
     }
 
     public String getPriorityStr() {
@@ -336,16 +332,14 @@ public class WishItem {
 
     public long save() {
         ItemDBManager mItemDBManager = new ItemDBManager(_ctx);
-        mItemDBManager.open();
         if(_id == -1) {
-            _id = mItemDBManager.addItem(_storeId, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
-                    _price, _address, _priority, _complete, _link);
+            _id = mItemDBManager.addItem(_storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
+                    _price, _address, _latitude, _longitude, _priority, _complete, _link);
         }
         else {
-            mItemDBManager.updateItem(_id, _storeId, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
-                    _price, _address, _priority, _complete, _link);
+            mItemDBManager.updateItem(_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
+                    _price, _address, _latitude, _longitude, _priority, _complete, _link);
         }
-        mItemDBManager.close();
         return _id;
     }
 
@@ -357,7 +351,6 @@ public class WishItem {
         // Parse Keys must start with a letter, and can contain alphanumeric characters and underscores
         wishObject.put("id", _id);
 
-        wishObject.put(ItemDBManager.KEY_STORE_ID, _storeId);
         wishObject.put(ItemDBManager.KEY_STORENAME, _storeName);
         wishObject.put(ItemDBManager.KEY_NAME, _name);
         wishObject.put(ItemDBManager.KEY_DESCRIPTION, _desc);

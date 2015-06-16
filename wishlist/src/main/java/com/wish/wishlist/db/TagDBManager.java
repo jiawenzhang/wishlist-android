@@ -45,26 +45,21 @@ public class TagDBManager extends DBManager {
      * @return rowId or -1 if failed
      */
     public long createTag(String name) {
-        open();
         String where = KEY_NAME + " = ?";
-        Cursor cursor = mDb.query(DB_TABLE, new String[] { KEY_ID }, where, new String[]{name}, null, null, null);
+        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(DB_TABLE, new String[]{KEY_ID}, where, new String[]{name}, null, null, null);
         while (cursor.moveToNext()) {
             long tagId = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ID));
-            close();
             return tagId;
         }
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_NAME, name);
-        long tagId = mDb.insert(DB_TABLE, null, initialValues);
-        close();
+        long tagId = DBAdapter.getInstance(mCtx).db().insert(DB_TABLE, null, initialValues);
         return tagId;
     }
 
     public void deleteTag(String name) {
-        open();
         String where = KEY_NAME + "=" + name;
-        mDb.delete(DB_TABLE, where, null);
-        close();
+        DBAdapter.getInstance(mCtx).db().delete(DB_TABLE, where, null);
     }
 
     /**
@@ -74,9 +69,7 @@ public class TagDBManager extends DBManager {
      * @return true if deleted, false otherwise
      */
     public boolean deleteTag(long tagId) {
-        open();
-        boolean success = mDb.delete(DB_TABLE, KEY_ID + "=" + tagId, null) > 0; //$NON-NLS-1$
-        close();
+        boolean success = DBAdapter.getInstance(mCtx).db().delete(DB_TABLE, KEY_ID + "=" + tagId, null) > 0; //$NON-NLS-1$
         return success;
     }
 
@@ -86,41 +79,35 @@ public class TagDBManager extends DBManager {
      * @return Cursor over all cars
      */
     public ArrayList<String> getAllTags() {
-        open();
         ArrayList<String> tagList = new ArrayList<String>();
-        Cursor cursor = mDb.query(DB_TABLE, new String[] { KEY_ID, KEY_NAME }, null, null, null, null, null);
+        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(DB_TABLE, new String[]{KEY_ID, KEY_NAME}, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
                 String tagName = cursor.getString(cursor.getColumnIndexOrThrow(TagDBManager.KEY_NAME));
                 tagList.add(tagName);
             } while (cursor.moveToNext());
         }
-        close();
         return tagList;
     }
 
     public ArrayList<String> getTagsByIds(String[] ids) {
         ArrayList<String> tags = new ArrayList<String>();
-        open();
         String query = "SELECT * FROM Tag"
                 + " WHERE rowId IN (" + makePlaceholders(ids.length) + ")";
-        Cursor cursor = mDb.rawQuery(query, ids);
+        Cursor cursor = DBAdapter.getInstance(mCtx).db().rawQuery(query, ids);
         while (cursor.moveToNext()) {
             tags.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
         }
-        close();
         return tags;
     }
 
     public long getIdByName(String name) {
         long tagId = -1;
         String where = KEY_NAME + " = ?";
-        open();
-        Cursor cursor = mDb.query(DB_TABLE, new String[] { KEY_ID }, where, new String[]{name}, null, null, null);
+        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(DB_TABLE, new String[]{KEY_ID}, where, new String[]{name}, null, null, null);
         while (cursor.moveToNext()) {
             tagId = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ID));
         }
-        close();
         return tagId;
     }
 
@@ -134,9 +121,7 @@ public class TagDBManager extends DBManager {
      */
     public Cursor getTag(long rowId) throws SQLException {
 
-        Cursor mCursor =
-
-                this.mDb.query(true, DB_TABLE, new String[] { KEY_ID, KEY_NAME },
+        Cursor mCursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, new String[]{KEY_ID, KEY_NAME},
                         KEY_ID + "=" + rowId, null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -154,7 +139,6 @@ public class TagDBManager extends DBManager {
     public boolean updateTag(long rowId, String name) {
         ContentValues args = new ContentValues();
         args.put(KEY_NAME, name);
-
-        return this.mDb.update(DB_TABLE, args, KEY_ID + "=" + rowId, null) > 0;
+        return DBAdapter.getInstance(mCtx).db().update(DB_TABLE, args, KEY_ID + "=" + rowId, null) > 0;
     }
 }

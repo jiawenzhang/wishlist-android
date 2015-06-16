@@ -7,15 +7,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.DBAdapter;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.db.ItemDBManager;
+import com.wish.wishlist.db.LocationDBManager;
+import com.wish.wishlist.db.StoreDBManager;
+import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.DialogOnShowListener;
+
+import java.util.ArrayList;
 
 public class Splash extends Activity{
     private static final String VERSION_KEY = "version_number";
@@ -49,7 +58,40 @@ public class Splash extends Activity{
             } catch (Exception e) {
             }
 
+
             if (currentVersionNumber > savedVersionNumber) {
+                if (savedVersionNumber == 23) {
+                    // do db migration, starting from v24, wish latitude and longitude are saved in the item table
+                    // instead of the location table, we should drop store and location table in db schema upgrade
+                    // from v24->v25
+                    // copy the latitude and longitude from location table to item table and save them
+                    ItemDBManager itemDBManager = new ItemDBManager(Splash.this);
+                    ArrayList<Long> ids = itemDBManager.getAllItemIds();
+
+                    for (Long id : ids) {
+                        ItemDBManager.ItemsCursor wishItemCursor = itemDBManager.getItem(id);
+                        long storeID = wishItemCursor.getLong(wishItemCursor.getColumnIndexOrThrow(ItemDBManager.KEY_STORE_ID));
+                        if (storeID == -1) {
+                            continue;
+                        }
+
+                        // Open the Store table in the database
+                        StoreDBManager storeDBManager = new StoreDBManager(Splash.this);
+                        Cursor storeCursor = storeDBManager.getStore(storeID);
+
+                        long locationID = storeCursor.getLong(storeCursor.getColumnIndexOrThrow(StoreDBManager.KEY_LOCATION_ID));
+
+                        LocationDBManager locationDBManager = new LocationDBManager(Splash.this);
+                        double latitude = locationDBManager.getLatitude(locationID);
+                        double longitude =  locationDBManager.getLongitude(locationID);
+
+                        WishItem item = WishItemManager.getInstance(Splash.this).retrieveItemById(id);
+                        item.setLatitude(latitude);
+                        item.setLongitude(longitude);
+                        item.save();
+                    }
+                }
+
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putInt(VERSION_KEY, currentVersionNumber);
                 editor.commit();

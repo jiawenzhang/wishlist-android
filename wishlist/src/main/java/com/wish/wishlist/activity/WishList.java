@@ -111,9 +111,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
     private GridView _gridView;
     private StaggeredGridView _staggeredView;
     private Button _addNew;
-    private ImageButton _backImageButton;
-    private ImageButton _viewImageButton;
-    private ImageButton _searchImageButton;
     private MenuItem _menuSearch;
 
     private Menu _menu;
@@ -205,10 +202,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         registerForContextMenu(_gridView);
         registerForContextMenu(_staggeredView);
 
-
-        // open the database for operations of Item table
         _itemDBManager = new ItemDBManager(this);
-        _itemDBManager.open();
 
         handleIntent(getIntent());
 
@@ -614,16 +608,9 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         //		return true;
         //	}
         else if (itemId == R.id.MARK) {
-//			String address = _itemDBManager.getItemAddress(_selectedItem_id);
-//			if (address.equals("unknown")||address.equals("")){
-//				Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
-//				toast.show();
-//			}
-//			else{
 
-            // get the latitude and longitude of the clicked item
-            double[] dLocation = _itemDBManager.getItemLocation(_selectedItem_id);
-            if (dLocation[0] == Double.MIN_VALUE && dLocation[1] == Double.MIN_VALUE) {
+            WishItem wishItem = WishItemManager.getInstance(this).retrieveItemById(_selectedItem_id);
+            if (wishItem.getLatitude() == Double.MIN_VALUE && wishItem.getLongitude() == Double.MIN_VALUE) {
                 Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
                 toast.show();
             }
@@ -865,7 +852,6 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        _itemDBManager.close();
     }
 
     @Override

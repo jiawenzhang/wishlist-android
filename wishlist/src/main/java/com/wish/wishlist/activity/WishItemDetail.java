@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,10 +66,6 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
     private TextView _storeView;
     private TextView _locationView;
     private TextView _linkView;
-    private ImageButton _backImageButton;
-    private ImageButton _deleteImageButton;
-    private ImageButton _editImageButton;
-    private ImageButton _shareImageButton;
     private TagsCompletionView _tagsView;
 
     private long _itemId = -1;
@@ -268,11 +263,8 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
         // Get all of the rows from the database in sorted order as in the
         long[] next_pos_id = new long[2];
         // ItemsCursor c = wishListDB.getItems(ItemsCursor.SortBy.name);
-        // open the database for operations of Item table
         _itemDBManager = new ItemDBManager(this);
-        _itemDBManager.open();
         ItemsCursor c = _itemDBManager.getItems(ItemsCursor.SortBy.item_name.toString(), null, new ArrayList<Long>());
-        _itemDBManager.close();
         long nextItemID;
         if (_position < c.getCount())
             _nextPosition = _position + 1;
@@ -281,11 +273,8 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
             _nextPosition = _position;
 
         c.move(_nextPosition);
-        // nextItemID = c.getLong(
-        // c.getColumnIndexOrThrow(WishListDataBase.KEY_ITEMID));
         nextItemID = c.getLong(c.getColumnIndexOrThrow(ItemDBManager.KEY_ID));
 
-        // long item_id = Long.parseLong(itemIdTextView.getText().toString());
         next_pos_id[0] = _nextPosition;
         next_pos_id[1] = nextItemID;
         return next_pos_id;
@@ -303,12 +292,9 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 
         long[] prev_pos_id = new long[2];
 
-        // ItemsCursor c = wishListDB.getItems(ItemsCursor.SortBy.name);
         // open the database for operations of Item table
         _itemDBManager = new ItemDBManager(this);
-        _itemDBManager.open();
         ItemsCursor c = _itemDBManager.getItems(ItemsCursor.SortBy.item_name.toString(), null, new ArrayList<Long>());
-        _itemDBManager.close();
         long prevItemID;
         if (_position > 0)
             _prevPosition = _position - 1;
@@ -497,13 +483,10 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
             return true;
         }
         else if (itemId == R.id.menu_item_detail_map) {
-            // open the database for operations of Item table
             _itemDBManager = new ItemDBManager(this);
-            _itemDBManager.open();
-            double[] dLocation  = _itemDBManager.getItemLocation(_itemId);
-            _itemDBManager.close();
+            WishItem wishItem = WishItemManager.getInstance(this).retrieveItemById(_itemId);
 
-            if (dLocation[0] == Double.MIN_VALUE && dLocation[1] == Double.MIN_VALUE) {
+            if (wishItem.getLatitude() == Double.MIN_VALUE && wishItem.getLongitude() == Double.MIN_VALUE) {
                 Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
                 toast.show();
             } else {
