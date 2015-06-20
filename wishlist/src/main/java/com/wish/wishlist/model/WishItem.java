@@ -106,8 +106,7 @@ public class WishItem {
     public String getPriceAsString() {
         if (_price == Double.MIN_VALUE) {
             return null;
-        }
-        else {
+        } else {
             DecimalFormat Dec = new DecimalFormat("#.##");
             String priceStr = (Dec.format(_price));
 
@@ -212,14 +211,12 @@ public class WishItem {
     public String getFullsizePicPath() {
         if (_fullsizePicPath == null) {
             return null;
-        }
-
-        //need a db migration to remove this stupid check
+        } //need a db migration to remove this stupid check
         else if (_fullsizePicPath.equals(" ")) {
             return null;
+        } else {
+            return _fullsizePicPath;
         }
-
-        else return _fullsizePicPath;
     }
 
     public void setFullsizePicPath(String path) {
@@ -265,8 +262,7 @@ public class WishItem {
             Log.d("id", id);
             //construct the uri of the photo
             uri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-        }
-        else {
+        } else {
             Log.d(TAG, "cursor is null");
         }
 
@@ -289,8 +285,7 @@ public class WishItem {
         if (facebook) {
             //facebook will generate "via Beans Wishlist" automatically
             message = "Shared a wish\n\n";
-        }
-        else {
+        } else {
             message = "Shared via Beans Wishlist\n\n";
         }
         String dateTimeStr = getDate();
@@ -339,9 +334,9 @@ public class WishItem {
     }
 
     public long save() {
-        ItemDBManager mItemDBManager = new ItemDBManager(_ctx);
+        ItemDBManager manager = new ItemDBManager(_ctx);
         if (_id == -1) { // new item
-            _id = mItemDBManager.addItem(_object_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
+            _id = manager.addItem(_object_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
                     _price, _address, _latitude, _longitude, _priority, _complete, _link);
             addToParse();
         } else { // existing item
@@ -353,8 +348,8 @@ public class WishItem {
 
     private void updateDB()
     {
-        ItemDBManager mItemDBManager = new ItemDBManager(_ctx);
-        mItemDBManager.updateItem(_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
+        ItemDBManager manager = new ItemDBManager(_ctx);
+        manager.updateItem(_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
                 _price, _address, _latitude, _longitude, _priority, _complete, _link);
     }
 
