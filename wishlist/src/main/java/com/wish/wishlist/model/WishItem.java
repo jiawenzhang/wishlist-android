@@ -13,7 +13,9 @@ import android.content.ContentValues;
 import android.util.Log;
 import android.database.Cursor;
 
+import com.parse.GetCallback;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.util.ImageManager;
@@ -37,6 +39,7 @@ public class WishItem {
     private double _latitude;
     private double _longitude;
     private String _address;
+    private String _object_id;
 
     public WishItem(Context ctx ,String name) {
         this(ctx, name, null, null);
@@ -59,10 +62,11 @@ public class WishItem {
         _desc = addr;
     }
 
-    public WishItem(Context ctx, long itemId, String storeName, String name, String desc,
+    public WishItem(Context ctx, long itemId, String object_id, String storeName, String name, String desc,
                     String date, String picStr, String fullsizePicPath, double price, double latitude, double longitude,
                     String address, int priority, int complete, String link) {
         _id = itemId;
+        _object_id = object_id;
         _fullsizePicPath = fullsizePicPath;
         _price = price;
         _latitude = latitude;
@@ -218,6 +222,10 @@ public class WishItem {
         else return _fullsizePicPath;
     }
 
+    public void setFullsizePicPath(String path) {
+        _fullsizePicPath = path;
+    }
+
     public Uri getFullsizePicUri() {
         //google+ bug, cannot share image/video with Uri starts with file://
         //workaround is to save the image to mediastore
@@ -332,24 +340,31 @@ public class WishItem {
 
     public long save() {
         ItemDBManager mItemDBManager = new ItemDBManager(_ctx);
-        if(_id == -1) {
-            _id = mItemDBManager.addItem(_storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
+        if (_id == -1) { // new item
+            _id = mItemDBManager.addItem(_object_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
                     _price, _address, _latitude, _longitude, _priority, _complete, _link);
-        }
-        else {
-            mItemDBManager.updateItem(_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
-                    _price, _address, _latitude, _longitude, _priority, _complete, _link);
+            addToParse();
+        } else { // existing item
+            updateDB();
+            updateParse();
         }
         return _id;
     }
 
-    public void saveToParse()
+    private void updateDB()
     {
-        Log.e(TAG, "saveToParse");
-        ParseObject wishObject = new ParseObject(ItemDBManager.DB_TABLE);
+        ItemDBManager mItemDBManager = new ItemDBManager(_ctx);
+        mItemDBManager.updateItem(_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
+                _price, _address, _latitude, _longitude, _priority, _complete, _link);
+    }
+
+    private void addToParse()
+    {
+        Log.e(TAG, "addToParse");
+        final ParseObject wishObject = new ParseObject(ItemDBManager.DB_TABLE);
         // Fixme how to save id?
         // Parse Keys must start with a letter, and can contain alphanumeric characters and underscores
-        wishObject.put("id", _id);
+        //wishObject.put("id", _id);
 
         wishObject.put(ItemDBManager.KEY_STORENAME, _storeName);
         wishObject.put(ItemDBManager.KEY_NAME, _name);
@@ -364,9 +379,38 @@ public class WishItem {
             @Override
             public void done(com.parse.ParseException e) {
                 if (e == null) {
-                    Log.d(TAG, "save wish success");
+                    Log.d(TAG, "save wish success, object id: " + wishObject.getObjectId());
+                    _object_id = wishObject.getObjectId();
+                    updateDB();
                 } else {
                     Log.e(TAG, "save failed " + e.toString());
+                }
+            }
+        });
+    }
+
+    private void updateParse()
+    {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
+
+        // Retrieve the object by id
+        query.getInBackground(_object_id, new GetCallback<ParseObject>() {
+            public void done(ParseObject wishObject, com.parse.ParseException e) {
+                if (e == null) {
+                    // Now let's update it with some new data. In this case, only cheatMode and score
+                    // will get sent to the Parse Cloud. playerName hasn't changed.
+                    wishObject.put(ItemDBManager.KEY_STORENAME, _storeName);
+                    wishObject.put(ItemDBManager.KEY_NAME, _name);
+                    wishObject.put(ItemDBManager.KEY_DESCRIPTION, _desc);
+                    wishObject.put(ItemDBManager.KEY_DATE_TIME, _date);
+                    wishObject.put(ItemDBManager.KEY_PRICE, _price);
+                    wishObject.put(ItemDBManager.KEY_ADDRESS, _address);
+                    wishObject.put(ItemDBManager.KEY_COMPLETE, _complete);
+                    wishObject.put(ItemDBManager.KEY_LINK, _link);
+
+                    wishObject.saveInBackground();
+                } else {
+                    Log.e(TAG, "update failed " + e.toString() + " object_id " + _object_id);
                 }
             }
         });

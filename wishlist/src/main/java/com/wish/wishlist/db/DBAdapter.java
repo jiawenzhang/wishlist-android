@@ -95,14 +95,19 @@ public class DBAdapter {
                 //add wish latitude and longitude column in the Item table
                 String sql1 = "ALTER TABLE "
                         + ItemDBManager.DB_TABLE
-                        + " ADD COLUMN latitude REAL ";
+                        + " ADD COLUMN object_id TEXT "; // parse object id
 
                 String sql2 = "ALTER TABLE "
+                        + ItemDBManager.DB_TABLE
+                        + " ADD COLUMN latitude REAL ";
+
+                String sql3 = "ALTER TABLE "
                         + ItemDBManager.DB_TABLE
                         + " ADD COLUMN longitude REAL ";
 
                 db.execSQL(sql1);
                 db.execSQL(sql2);
+                db.execSQL(sql3);
             }
     }
     };
@@ -111,6 +116,7 @@ public class DBAdapter {
     private static final String CREATE_TABLE_ITEM = "create table "
             + ItemDBManager.DB_TABLE + " ("
             + ItemDBManager.KEY_ID			+ " INTEGER PRIMARY KEY, "
+            + ItemDBManager.KEY_OBJECT_ID	+ " TEXT, "
             + ItemDBManager.KEY_STORE_ID 	+ " INTEGER, "
             + ItemDBManager.KEY_STORENAME	+ " TEXT, "
             + ItemDBManager.KEY_NAME 		+ " TEXT, "
@@ -194,6 +200,7 @@ public class DBAdapter {
             if (demo) {
                 ItemDBManager mItemDBManager = new ItemDBManager(context);
                 mItemDBManager.addItem(
+                        "",
                         "Apple Store",
                         "iPad mini",
                         "It is the new iPad with retina display",
@@ -209,6 +216,7 @@ public class DBAdapter {
                         "");
 
                 mItemDBManager.addItem(
+                        "",
                         "Coach store",
                         "Leather bag",
                         "What a beautiful bag! Cannot help noticing it.",
@@ -224,6 +232,7 @@ public class DBAdapter {
                         "");
 
                 mItemDBManager.addItem(
+                        "",
                         "Tiffany",
                         "Starfish necklace",
                         "Gorgeous",
@@ -239,6 +248,7 @@ public class DBAdapter {
                         "");
 
                 mItemDBManager.addItem(
+                        "",
                         "Bay Company",
                         "High hel",
                         "lala",
@@ -254,6 +264,7 @@ public class DBAdapter {
                         "");
 
                 mItemDBManager.addItem(
+                        "",
                         "Bay Inc.",
                         "Earring",
                         "I like its color",
@@ -269,6 +280,7 @@ public class DBAdapter {
                         "");
 
                 mItemDBManager.addItem(
+                        "",
                         "Indigo",
                         "Wooden lantern",
                         "nice",

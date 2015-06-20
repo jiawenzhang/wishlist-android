@@ -15,6 +15,7 @@ import android.util.Log;
 
 public class ItemDBManager extends DBManager {
 	public static final String KEY_ID = "_id";
+	public static final String KEY_OBJECT_ID = "object_id";
 	public static final String KEY_STORE_ID = "store_id";
 	public static final String KEY_STORENAME = "store_name";
 	public static final String KEY_NAME = "item_name";
@@ -54,7 +55,7 @@ public class ItemDBManager extends DBManager {
 	 * @param description
 	 *            The name description
 	 */
-	public long addItem(String store_name, String name, String description, String date_time,
+	public long addItem(String object_id, String store_name, String name, String description, String date_time,
 			String picture_uri, String fullsize_picture_path, double price, String address, double latitude, double longitude,
 			int priority, int complete, String link) {
 		// String sql = String.format(
@@ -65,6 +66,7 @@ public class ItemDBManager extends DBManager {
 		// priority);
 		ContentValues initialValues = new ContentValues();
 
+		initialValues.put(KEY_OBJECT_ID, object_id);
 		initialValues.put(KEY_STORENAME, store_name);
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);

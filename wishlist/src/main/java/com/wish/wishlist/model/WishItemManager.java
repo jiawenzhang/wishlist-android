@@ -40,6 +40,9 @@ public class WishItemManager {
         String itemLocation = wishItemCursor.getString(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_ADDRESS));
 
+        String objectId = wishItemCursor.getString(wishItemCursor
+                .getColumnIndexOrThrow(ItemDBManager.KEY_OBJECT_ID));
+
         String storeName = wishItemCursor.getString(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_STORENAME));
 
@@ -70,7 +73,7 @@ public class WishItemManager {
         String itemLink = wishItemCursor.getString(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_LINK));
 
-        WishItem item = new WishItem(_ctx, itemId, storeName, itemName, itemDesc,
+        WishItem item = new WishItem(_ctx, itemId, objectId, storeName, itemName, itemDesc,
                 date, picture_str, fullsize_pic_path, itemPrice, latitude, longitude,
                 itemLocation, itemPriority, itemComplete, itemLink);
 

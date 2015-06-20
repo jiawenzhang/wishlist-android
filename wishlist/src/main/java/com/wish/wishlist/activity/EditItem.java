@@ -734,11 +734,30 @@ public class EditItem extends Activity
         } else if (_selectedPic && _selectedPicUri != null) {
             _fullsizePhotoPath = copyPhotoToAlbum(_selectedPicUri);
         }
-        WishItem item = new WishItem(this, mItem_id, itemStoreName, itemName, itemDesc,
-                date, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
-                _ddStr, itemPriority, itemComplete, itemLink);
 
-        mItem_id = item.save();
+        if (mItem_id == -1) {
+            // create a new item
+            WishItem item = new WishItem(this, mItem_id, "", itemStoreName, itemName, itemDesc,
+                    date, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
+                    _ddStr, itemPriority, itemComplete, itemLink);
+
+            mItem_id = item.save();
+        } else {
+            // updating an existing item
+            WishItem item = WishItemManager.getInstance(this).retrieveItemById(mItem_id);
+            item.setStoreName(itemStoreName);
+            item.setName(itemName);
+            item.setDesc(itemDesc);
+            item.setDate(date);
+            item.setFullsizePicPath(_fullsizePhotoPath);
+            item.setPrice(itemPrice);
+            item.setLatitude(_lat);
+            item.setLongitude(_lng);
+            item.setAddress(_ddStr);
+            item.setComplete(itemComplete);
+            item.setLink(itemLink);
+            item.save();
+        }
 
         //save the tags of this item
         TagItemDBManager.instance(EditItem.this).Update_item_tags(mItem_id, _tags);
