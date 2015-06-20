@@ -38,6 +38,13 @@ public class WishlistApplication extends Application {
                 getResources().getString(R.string.parse_application_id),
                 getResources().getString(R.string.parse_client_id));
 
+        Parse.setLogLevel(Parse.LOG_LEVEL_VERBOSE);
+
+        // Optional - If you don't want to allow Twitter login, you can
+        // remove this line (and other related ParseTwitterUtils calls)
+        //ParseTwitterUtils.initialize(getString(R.string.twitter_consumer_key),
+                //getString(R.string.twitter_consumer_secret));
+
         ParseUser.enableAutomaticUser();
         ParseACL defaultACL = new ParseACL();
         // Optionally enable public read access.

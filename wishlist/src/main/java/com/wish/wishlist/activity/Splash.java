@@ -10,7 +10,6 @@ import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -97,9 +96,11 @@ public class Splash extends Activity{
                 editor.commit();
                 //startActivity(new Intent(getApplication(), NewFeatureFragmentActivity.class));
                 startActivity(new Intent(getApplication(), WishList.class));
+                //startActivity(new Intent(getApplication(), UserProfileActivity.class));
             }
             else {
                 startActivity(new Intent(getApplication(), WishList.class));
+                //startActivity(new Intent(getApplication(), UserProfileActivity.class));
             }
             Splash.this.finish();
         }

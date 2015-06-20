@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="ParseLogin" parent="android:Theme.Holo.NoActionBar"/>
+
     <!-- Generated with http://android-holo-colors.com -->
     <style name="Wishlist_Yellow" parent="@style/_Wishlist_Yellow"/>
 

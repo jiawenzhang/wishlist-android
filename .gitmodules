@@ -7,3 +7,6 @@
 [submodule "third-party/Parse"]
 	path = third-party/Parse
 	url = https://github.com/jiawenzhang/Parse.git
+[submodule "third-party/ParseUI-Android"]
+	path = third-party/ParseUI-Android
+	url = https://github.com/jiawenzhang/ParseUI-Android.git
