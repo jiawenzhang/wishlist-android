@@ -23,6 +23,11 @@ public class WishlistApplication extends Application {
 
     HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
 
+    public WishlistApplication()
+    {
+        super();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -45,17 +50,13 @@ public class WishlistApplication extends Application {
         //ParseTwitterUtils.initialize(getString(R.string.twitter_consumer_key),
                 //getString(R.string.twitter_consumer_secret));
 
-        ParseUser.enableAutomaticUser();
+//        ParseUser.enableAutomaticUser();
         ParseACL defaultACL = new ParseACL();
         // Optionally enable public read access.
         // defaultACL.setPublicReadAccess(true);
         ParseACL.setDefaultACL(defaultACL, true);
     }
 
-    public WishlistApplication()
-    {
-        super();
-    }
 
     public synchronized Tracker getTracker(TrackerName trackerId) {
         if (!mTrackers.containsKey(trackerId)) {

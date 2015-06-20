@@ -25,6 +25,7 @@ import com.wish.wishlist.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -46,8 +47,11 @@ public class UserProfileActivity extends Activity {
   private TextView emailTextView;
   private TextView nameTextView;
   private Button loginOrLogoutButton;
+    private boolean fromSplash;
 
   private ParseUser currentUser;
+
+  final static String TAG = "UserProfileActivity";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,9 @@ public class UserProfileActivity extends Activity {
     nameTextView = (TextView) findViewById(R.id.profile_name);
     loginOrLogoutButton = (Button) findViewById(R.id.login_or_logout_button);
     titleTextView.setText(R.string.profile_title_logged_in);
+
+      Intent intent = getIntent();
+      fromSplash = intent.getBooleanExtra("fromSplash", false);
 
     loginOrLogoutButton.setOnClickListener(new OnClickListener() {
       @Override
@@ -98,7 +105,13 @@ public class UserProfileActivity extends Activity {
 
     currentUser = ParseUser.getCurrentUser();
     if (currentUser != null) {
-      showProfileLoggedIn();
+      Log.d(TAG, "You are logged in as " + currentUser.getEmail() + " " + currentUser.getString("name"));
+        if (fromSplash) {
+            startActivity(new Intent(getApplication(), WishList.class));
+            finish();
+        } else {
+            showProfileLoggedIn();
+        }
     } else {
       showProfileLoggedOut();
     }

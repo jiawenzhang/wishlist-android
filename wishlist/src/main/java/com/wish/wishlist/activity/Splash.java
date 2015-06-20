@@ -95,12 +95,16 @@ public class Splash extends Activity{
                 editor.putInt(VERSION_KEY, currentVersionNumber);
                 editor.commit();
                 //startActivity(new Intent(getApplication(), NewFeatureFragmentActivity.class));
-                startActivity(new Intent(getApplication(), WishList.class));
-                //startActivity(new Intent(getApplication(), UserProfileActivity.class));
+                //startActivity(new Intent(getApplication(), WishList.class));
+                Intent intent = new Intent(getApplication(), UserProfileActivity.class);
+                intent.putExtra("fromSplash", true);
+                startActivity(intent);
             }
             else {
-                startActivity(new Intent(getApplication(), WishList.class));
-                //startActivity(new Intent(getApplication(), UserProfileActivity.class));
+                //startActivity(new Intent(getApplication(), WishList.class));
+                Intent intent = new Intent(getApplication(), UserProfileActivity.class);
+                intent.putExtra("fromSplash", true);
+                startActivity(intent);
             }
             Splash.this.finish();
         }
