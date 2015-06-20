@@ -41,102 +41,102 @@ import java.util.Arrays;
  * is currently logged in.
  */
 public class UserProfileActivity extends Activity {
-  private static final int LOGIN_REQUEST = 0;
+    private static final int LOGIN_REQUEST = 0;
 
-  private TextView titleTextView;
-  private TextView emailTextView;
-  private TextView nameTextView;
-  private Button loginOrLogoutButton;
+    private TextView titleTextView;
+    private TextView emailTextView;
+    private TextView nameTextView;
+    private Button loginOrLogoutButton;
     private boolean fromSplash;
 
-  private ParseUser currentUser;
+    private ParseUser currentUser;
 
-  final static String TAG = "UserProfileActivity";
+    final static String TAG = "UserProfileActivity";
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.activity_profile);
-    titleTextView = (TextView) findViewById(R.id.profile_title);
-    emailTextView = (TextView) findViewById(R.id.profile_email);
-    nameTextView = (TextView) findViewById(R.id.profile_name);
-    loginOrLogoutButton = (Button) findViewById(R.id.login_or_logout_button);
-    titleTextView.setText(R.string.profile_title_logged_in);
+        setContentView(R.layout.activity_profile);
+        titleTextView = (TextView) findViewById(R.id.profile_title);
+        emailTextView = (TextView) findViewById(R.id.profile_email);
+        nameTextView = (TextView) findViewById(R.id.profile_name);
+        loginOrLogoutButton = (Button) findViewById(R.id.login_or_logout_button);
+        titleTextView.setText(R.string.profile_title_logged_in);
 
-      Intent intent = getIntent();
-      fromSplash = intent.getBooleanExtra("fromSplash", false);
+        Intent intent = getIntent();
+        fromSplash = intent.getBooleanExtra("fromSplash", false);
 
-    loginOrLogoutButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
+        loginOrLogoutButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentUser != null) {
+                    // User clicked to log out.
+                    ParseUser.logOut();
+                    currentUser = null;
+                    showProfileLoggedOut();
+                } else {
+                    // User clicked to log in.
+                    // This example customizes ParseLoginActivity in code.
+                    ParseLoginBuilder builder = new ParseLoginBuilder(
+                            UserProfileActivity.this);
+                    Intent parseLoginIntent = builder.setParseLoginEnabled(true)
+                            .setParseLoginButtonText("Go")
+                            .setParseSignupButtonText("Register")
+                            .setParseLoginHelpText("Forgot password?")
+                            .setParseLoginInvalidCredentialsToastText("You email and/or password is not correct")
+                            .setParseLoginEmailAsUsername(true)
+                            .setParseSignupSubmitButtonText("Submit registration")
+                            .setFacebookLoginEnabled(true)
+                            .setFacebookLoginButtonText("Facebook")
+                            .setFacebookLoginPermissions(Arrays.asList("user_status", "read_stream"))
+                            .setTwitterLoginEnabled(true)
+                            .setTwitterLoginButtontext("Twitter")
+                            .build();
+                    startActivityForResult(parseLoginIntent, LOGIN_REQUEST);
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-          // User clicked to log out.
-          ParseUser.logOut();
-          currentUser = null;
-          showProfileLoggedOut();
+            Log.d(TAG, "You are logged in as " + currentUser.getEmail() + " " + currentUser.getString("name"));
+            if (fromSplash) {
+                startActivity(new Intent(getApplication(), WishList.class));
+                finish();
+            } else {
+                showProfileLoggedIn();
+            }
         } else {
-          // User clicked to log in.
-          // This example customizes ParseLoginActivity in code.
-          ParseLoginBuilder builder = new ParseLoginBuilder(
-              UserProfileActivity.this);
-          Intent parseLoginIntent = builder.setParseLoginEnabled(true)
-              .setParseLoginButtonText("Go")
-              .setParseSignupButtonText("Register")
-              .setParseLoginHelpText("Forgot password?")
-              .setParseLoginInvalidCredentialsToastText("You email and/or password is not correct")
-              .setParseLoginEmailAsUsername(true)
-              .setParseSignupSubmitButtonText("Submit registration")
-              .setFacebookLoginEnabled(true)
-              .setFacebookLoginButtonText("Facebook")
-              .setFacebookLoginPermissions(Arrays.asList("user_status", "read_stream"))
-              .setTwitterLoginEnabled(true)
-              .setTwitterLoginButtontext("Twitter")
-              .build();
-          startActivityForResult(parseLoginIntent, LOGIN_REQUEST);
+            showProfileLoggedOut();
         }
-      }
-    });
-  }
+    }
 
-  @Override
-  protected void onStart() {
-    super.onStart();
-
-    currentUser = ParseUser.getCurrentUser();
-    if (currentUser != null) {
-      Log.d(TAG, "You are logged in as " + currentUser.getEmail() + " " + currentUser.getString("name"));
-        if (fromSplash) {
-            startActivity(new Intent(getApplication(), WishList.class));
-            finish();
-        } else {
-            showProfileLoggedIn();
+    /**
+     * Shows the profile of the given user.
+     */
+    private void showProfileLoggedIn() {
+        titleTextView.setText(R.string.profile_title_logged_in);
+        emailTextView.setText(currentUser.getEmail());
+        String fullName = currentUser.getString("name");
+        if (fullName != null) {
+            nameTextView.setText(fullName);
         }
-    } else {
-      showProfileLoggedOut();
+        loginOrLogoutButton.setText(R.string.profile_logout_button_label);
     }
-  }
 
-  /**
-   * Shows the profile of the given user.
-   */
-  private void showProfileLoggedIn() {
-    titleTextView.setText(R.string.profile_title_logged_in);
-    emailTextView.setText(currentUser.getEmail());
-    String fullName = currentUser.getString("name");
-    if (fullName != null) {
-      nameTextView.setText(fullName);
+    /**
+     * Show a message asking the user to log in, toggle login/logout button text.
+     */
+    private void showProfileLoggedOut() {
+        titleTextView.setText(R.string.profile_title_logged_out);
+        emailTextView.setText("");
+        nameTextView.setText("");
+        loginOrLogoutButton.setText(R.string.profile_login_button_label);
     }
-    loginOrLogoutButton.setText(R.string.profile_logout_button_label);
-  }
-
-  /**
-   * Show a message asking the user to log in, toggle login/logout button text.
-   */
-  private void showProfileLoggedOut() {
-    titleTextView.setText(R.string.profile_title_logged_out);
-    emailTextView.setText("");
-    nameTextView.setText("");
-    loginOrLogoutButton.setText(R.string.profile_login_button_label);
-  }
 }
