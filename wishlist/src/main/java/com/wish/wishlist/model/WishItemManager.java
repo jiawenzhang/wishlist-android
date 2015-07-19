@@ -1,6 +1,7 @@
 package com.wish.wishlist.model;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import android.content.Context;
 
@@ -12,10 +13,9 @@ public class WishItemManager {
     private static WishItemManager instance = null;
 
     public static WishItemManager getInstance(Context ctx) {
-        if (instance == null){
+        if (instance == null) {
             instance = new WishItemManager(ctx);
         }
-
         return instance;
     }
 
@@ -23,13 +23,49 @@ public class WishItemManager {
         _ctx = ctx;
     }
 
-    public WishItem retrieveItemById(long itemId) {
-        ItemDBManager mItemDBManager = new ItemDBManager(_ctx);
+    public ArrayList<WishItem> getItemsSinceLastSynced()
+    {
+        ItemDBManager itemDBManager = new ItemDBManager(_ctx);
 
-        ItemsCursor wishItemCursor = mItemDBManager.getItem(itemId);
+        ArrayList<Long> ids = itemDBManager.getItemsSinceLastSynced();
+        ArrayList<WishItem> items = new ArrayList<>();
+        // Fixme: optimize this by using one SQL to get all items into on cursor
+        for (Long id : ids) {
+            ItemsCursor wishItemCursor = itemDBManager.getItem(id);
+            if (wishItemCursor.getCount() == 0) {
+                continue;
+            }
+            items.add(itemFromCursor(wishItemCursor));
+        }
+        return items;
+    }
+
+    public WishItem getItemByObjectId(String object_id)
+    {
+        ItemDBManager itemDBManager = new ItemDBManager(_ctx);
+
+        ItemsCursor wishItemCursor = itemDBManager.getItemByObjectId(object_id);
         if (wishItemCursor.getCount() == 0) {
             return null;
         }
+        return itemFromCursor(wishItemCursor);
+    }
+
+    public WishItem getItemById(long itemId)
+    {
+        ItemDBManager itemDBManager = new ItemDBManager(_ctx);
+
+        ItemsCursor wishItemCursor = itemDBManager.getItem(itemId);
+        if (wishItemCursor.getCount() == 0) {
+            return null;
+        }
+
+        return itemFromCursor(wishItemCursor);
+    }
+
+    private WishItem itemFromCursor(ItemsCursor wishItemCursor)
+    {
+        long itemId = wishItemCursor.getLong(wishItemCursor.getColumnIndexOrThrow(ItemDBManager.KEY_ID));
 
         double latitude = wishItemCursor.getDouble(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_LATITUDE));
@@ -81,7 +117,7 @@ public class WishItemManager {
     }
 
     public void deleteItemById(long itemId) {
-        WishItem item = retrieveItemById(itemId);
+        WishItem item = getItemById(itemId);
         String photoPath = item.getFullsizePicPath();
         if (photoPath != null) {
             File file = new File(photoPath);

@@ -84,7 +84,7 @@ public class Splash extends Activity{
                         double latitude = locationDBManager.getLatitude(locationID);
                         double longitude =  locationDBManager.getLongitude(locationID);
 
-                        WishItem item = WishItemManager.getInstance(Splash.this).retrieveItemById(id);
+                        WishItem item = WishItemManager.getInstance(Splash.this).getItemById(id);
                         item.setLatitude(latitude);
                         item.setLongitude(longitude);
                         item.save();
@@ -96,6 +96,7 @@ public class Splash extends Activity{
                 editor.commit();
                 //startActivity(new Intent(getApplication(), NewFeatureFragmentActivity.class));
                 //startActivity(new Intent(getApplication(), WishList.class));
+
                 Intent intent = new Intent(getApplication(), UserProfileActivity.class);
                 intent.putExtra("fromSplash", true);
                 startActivity(intent);

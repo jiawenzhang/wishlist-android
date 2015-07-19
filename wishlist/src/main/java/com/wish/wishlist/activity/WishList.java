@@ -30,7 +30,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -521,7 +520,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_item_context, menu);
 
-        WishItem wish_item = WishItemManager.getInstance(this).retrieveItemById(_selectedItem_id);
+        WishItem wish_item = WishItemManager.getInstance(this).getItemById(_selectedItem_id);
         int complete = wish_item.getComplete();
         MenuItem mi = menu.findItem(R.id.COMPLETE);
         if (complete == 1) {
@@ -609,7 +608,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         //	}
         else if (itemId == R.id.MARK) {
 
-            WishItem wishItem = WishItemManager.getInstance(this).retrieveItemById(_selectedItem_id);
+            WishItem wishItem = WishItemManager.getInstance(this).getItemById(_selectedItem_id);
             if (wishItem.getLatitude() == Double.MIN_VALUE && wishItem.getLongitude() == Double.MIN_VALUE) {
                 Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
                 toast.show();
@@ -649,7 +648,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         }
 
         else if (itemId == R.id.COMPLETE) {
-            WishItem wish_item = WishItemManager.getInstance(this).retrieveItemById(_selectedItem_id);
+            WishItem wish_item = WishItemManager.getInstance(this).getItemById(_selectedItem_id);
             if (wish_item.getComplete() == 1) {
                 wish_item.setComplete(0);
                 Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);

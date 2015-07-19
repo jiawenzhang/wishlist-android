@@ -25,8 +25,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wish.wishlist.R;
-import com.wish.wishlist.db.LocationDBManager;
-import com.wish.wishlist.db.StoreDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.model.WishItem;
@@ -260,7 +258,7 @@ public class EditItem extends Activity
             _mapImageButton.setVisibility(View.GONE);
             _completeCheckBox.setVisibility(View.VISIBLE);
 
-            WishItem item = WishItemManager.getInstance(this).retrieveItemById(mItem_id);
+            WishItem item = WishItemManager.getInstance(this).getItemById(mItem_id);
             _complete = item.getComplete();
             if (_complete == 1) {
                 _completeCheckBox.setChecked(true);
@@ -744,7 +742,7 @@ public class EditItem extends Activity
             mItem_id = item.save();
         } else {
             // updating an existing item
-            WishItem item = WishItemManager.getInstance(this).retrieveItemById(mItem_id);
+            WishItem item = WishItemManager.getInstance(this).getItemById(mItem_id);
             item.setStoreName(itemStoreName);
             item.setName(itemName);
             item.setDesc(itemDesc);

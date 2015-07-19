@@ -101,7 +101,7 @@ public class WishItemPostToSNS extends Activity {
 
     public void postWishToWall(String accessToken) {
         Log.d("JSON", "run try {");
-        WishItem wish_item = WishItemManager.getInstance(_ctx).retrieveItemById(_itemId);
+        WishItem wish_item = WishItemManager.getInstance(_ctx).getItemById(_itemId);
         _message = wish_item.getShareMessage(true);
         _photoData = wish_item.getPhotoData();
 

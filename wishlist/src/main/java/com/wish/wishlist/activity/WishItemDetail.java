@@ -87,7 +87,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
         _itemId = i.getLongExtra("item_id", -1);
         _position = i.getIntExtra("position", 0);
 
-        WishItem item = WishItemManager.getInstance(this).retrieveItemById(_itemId);
+        WishItem item = WishItemManager.getInstance(this).getItemById(_itemId);
         double lat = item.getLatitude();
         double lng = item.getLongitude();
         String address = item.getAddress();
@@ -354,7 +354,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
                     if (data != null) {
                         long id = data.getLongExtra("itemID", -1);
                         if (id != -1) {
-                            WishItem item = WishItemManager.getInstance(this).retrieveItemById(id);
+                            WishItem item = WishItemManager.getInstance(this).getItemById(id);
                             showItemInfo(item);
                             addTags();
                         }
@@ -484,7 +484,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
         }
         else if (itemId == R.id.menu_item_detail_map) {
             _itemDBManager = new ItemDBManager(this);
-            WishItem wishItem = WishItemManager.getInstance(this).retrieveItemById(_itemId);
+            WishItem wishItem = WishItemManager.getInstance(this).getItemById(_itemId);
 
             if (wishItem.getLatitude() == Double.MIN_VALUE && wishItem.getLongitude() == Double.MIN_VALUE) {
                 Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);

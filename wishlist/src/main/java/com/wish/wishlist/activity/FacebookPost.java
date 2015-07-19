@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.facebook.*;
 import com.facebook.model.*;
 import com.facebook.widget.*;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -465,7 +466,7 @@ public class FacebookPost extends Activity {
 //                        HttpClient client = new DefaultHttpClient();
 //                        HttpPost post = new HttpPost(uri);
 //                        MultipartEntity postEntity = new MultipartEntity();
-//                        _wishItem = WishItemManager.getInstance(_ctx).retrieveItemById(_itemId);
+//                        _wishItem = WishItemManager.getInstance(_ctx).getItemById(_itemId);
 //                        String picUriStr = _wishItem.getPicStr();
 //                        Log.d(TAG, "doInBackground pic uri" + picUriStr);
 //                        String picPath = (Uri.parse(picUriStr)).getPath();
@@ -543,7 +544,7 @@ public class FacebookPost extends Activity {
         }
 
         _itemId = extras.getLong("itemId");
-        _wishItem = WishItemManager.getInstance(_ctx).retrieveItemById(_itemId);
+        _wishItem = WishItemManager.getInstance(_ctx).getItemById(_itemId);
 
         OpenGraphObject wish = OpenGraphObject.Factory.createForPost("beans_wishlist:wish");
 

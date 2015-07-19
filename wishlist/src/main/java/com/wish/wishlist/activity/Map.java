@@ -210,7 +210,7 @@ public class Map extends Activity {
     private LatLngBounds addMarkers(ArrayList<Long> ids) {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (Long id : ids) {
-            final WishItem item = WishItemManager.getInstance(this).retrieveItemById(id);
+            final WishItem item = WishItemManager.getInstance(this).getItemById(id);
             final double lat = item.getLatitude();
             final double lng = item.getLongitude();
             final LatLng point = new LatLng(lat, lng);
@@ -232,7 +232,7 @@ public class Map extends Activity {
         // parameters used to set up the map
         Intent i = getIntent();
         final long id = i.getLongExtra("id", -1);
-        final WishItem item = WishItemManager.getInstance(this).retrieveItemById(id);
+        final WishItem item = WishItemManager.getInstance(this).getItemById(id);
         if (item == null) {
             finish();
             return;

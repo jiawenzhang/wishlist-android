@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.sync.SyncAgent;
 import com.wish.wishlist.view.ReleaseNotesView;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.SharedPreferences;
@@ -66,6 +67,10 @@ public class WishListPreference extends PreferenceActivity implements
                 //editor.putString("myCustomPref",
                 //	"The preference has been clicked");
                 //editor.commit();
+
+                //for testing
+                //SyncAgent.getInstance(WishListPreference.this).sync();
+
                 ReleaseNotesView view = new ReleaseNotesView(WishListPreference.this);
                 view.show();
                 return true;

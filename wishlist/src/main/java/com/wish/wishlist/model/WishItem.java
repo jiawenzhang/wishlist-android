@@ -1,11 +1,13 @@
 package com.wish.wishlist.model;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.ByteArrayOutputStream;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -17,8 +19,11 @@ import com.parse.GetCallback;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
+import com.wish.wishlist.R;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.util.ImageManager;
+import com.wish.wishlist.util.sync.SyncAgent;
+
 import android.preference.PreferenceManager;
 
 public class WishItem {
@@ -85,6 +90,10 @@ public class WishItem {
 
     public long getId() {
         return _id;
+    }
+
+    public String getObjectId() {
+        return _object_id;
     }
 
     public void setStoreName(String storeName){
@@ -333,15 +342,21 @@ public class WishItem {
         return data;
     }
 
-    public long save() {
+    public long save()
+    {
+        long id = saveToLocal();
+        SyncAgent.getInstance(_ctx).sync();
+        return id;
+    }
+
+    public long saveToLocal()
+    {
         ItemDBManager manager = new ItemDBManager(_ctx);
         if (_id == -1) { // new item
             _id = manager.addItem(_object_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
                     _price, _address, _latitude, _longitude, _priority, _complete, _link);
-            addToParse();
         } else { // existing item
             updateDB();
-            updateParse();
         }
         return _id;
     }
@@ -349,13 +364,12 @@ public class WishItem {
     private void updateDB()
     {
         ItemDBManager manager = new ItemDBManager(_ctx);
-        manager.updateItem(_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
+        manager.updateItem(_id, _object_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
                 _price, _address, _latitude, _longitude, _priority, _complete, _link);
     }
 
-    private void addToParse()
+    public ParseObject toParseObject()
     {
-        Log.e(TAG, "addToParse");
         final ParseObject wishObject = new ParseObject(ItemDBManager.DB_TABLE);
         // Fixme how to save id?
         // Parse Keys must start with a letter, and can contain alphanumeric characters and underscores
@@ -364,12 +378,30 @@ public class WishItem {
         wishObject.put(ItemDBManager.KEY_STORENAME, _storeName);
         wishObject.put(ItemDBManager.KEY_NAME, _name);
         wishObject.put(ItemDBManager.KEY_DESCRIPTION, _desc);
-        wishObject.put(ItemDBManager.KEY_DATE_TIME, _date);
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long time_ms = 0;
+        try {
+            Date d = f.parse(_date);
+            time_ms = d.getTime();
+        } catch (ParseException e1) {
+            Log.e(TAG, e1.toString());
+        }
+        wishObject.put(ItemDBManager.KEY_DATE_TIME, time_ms);
         wishObject.put(ItemDBManager.KEY_PRICE, _price);
+        wishObject.put(ItemDBManager.KEY_LATITUDE, _latitude);
+        wishObject.put(ItemDBManager.KEY_LONGITUDE, _longitude);
         wishObject.put(ItemDBManager.KEY_ADDRESS, _address);
         wishObject.put(ItemDBManager.KEY_COMPLETE, _complete);
         wishObject.put(ItemDBManager.KEY_LINK, _link);
 
+        return wishObject;
+    }
+
+    public void addToParse()
+    {
+        Log.d(TAG, "addToParse");
+
+        final ParseObject wishObject = toParseObject();
         wishObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(com.parse.ParseException e) {
@@ -377,6 +409,12 @@ public class WishItem {
                     Log.d(TAG, "save wish success, object id: " + wishObject.getObjectId());
                     _object_id = wishObject.getObjectId();
                     updateDB();
+
+                    // save now to last synced time
+                    final SharedPreferences sharedPref = _ctx.getSharedPreferences(_ctx.getString(R.string.app_name), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putLong("last_synced_time", System.currentTimeMillis());
+                    editor.commit();
                 } else {
                     Log.e(TAG, "save failed " + e.toString());
                 }
@@ -384,7 +422,7 @@ public class WishItem {
         });
     }
 
-    private void updateParse()
+    public void updateParse()
     {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
 
@@ -392,13 +430,21 @@ public class WishItem {
         query.getInBackground(_object_id, new GetCallback<ParseObject>() {
             public void done(ParseObject wishObject, com.parse.ParseException e) {
                 if (e == null) {
-                    // Now let's update it with some new data. In this case, only cheatMode and score
-                    // will get sent to the Parse Cloud. playerName hasn't changed.
                     wishObject.put(ItemDBManager.KEY_STORENAME, _storeName);
                     wishObject.put(ItemDBManager.KEY_NAME, _name);
                     wishObject.put(ItemDBManager.KEY_DESCRIPTION, _desc);
-                    wishObject.put(ItemDBManager.KEY_DATE_TIME, _date);
+                    SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    long time_ms = 0;
+                    try {
+                        Date d = f.parse(_date);
+                        time_ms = d.getTime();
+                    } catch (ParseException e1) {
+                        Log.e(TAG, e1.toString());
+                    }
+                    wishObject.put(ItemDBManager.KEY_DATE_TIME, time_ms);
                     wishObject.put(ItemDBManager.KEY_PRICE, _price);
+                    wishObject.put(ItemDBManager.KEY_LATITUDE, _latitude);
+                    wishObject.put(ItemDBManager.KEY_LONGITUDE, _longitude);
                     wishObject.put(ItemDBManager.KEY_ADDRESS, _address);
                     wishObject.put(ItemDBManager.KEY_COMPLETE, _complete);
                     wishObject.put(ItemDBManager.KEY_LINK, _link);
