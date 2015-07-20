@@ -96,6 +96,10 @@ public class WishItem {
         return _object_id;
     }
 
+    public void setObjectId(String object_id) {
+        _object_id = object_id;
+    }
+
     public void setStoreName(String storeName){
         _storeName = storeName;
     }
@@ -395,65 +399,5 @@ public class WishItem {
         wishObject.put(ItemDBManager.KEY_LINK, _link);
 
         return wishObject;
-    }
-
-    public void addToParse()
-    {
-        Log.d(TAG, "addToParse");
-
-        final ParseObject wishObject = toParseObject();
-        wishObject.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(com.parse.ParseException e) {
-                if (e == null) {
-                    Log.d(TAG, "save wish success, object id: " + wishObject.getObjectId());
-                    _object_id = wishObject.getObjectId();
-                    updateDB();
-
-                    // save now to last synced time
-                    final SharedPreferences sharedPref = _ctx.getSharedPreferences(_ctx.getString(R.string.app_name), Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putLong("last_synced_time", System.currentTimeMillis());
-                    editor.commit();
-                } else {
-                    Log.e(TAG, "save failed " + e.toString());
-                }
-            }
-        });
-    }
-
-    public void updateParse()
-    {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
-
-        // Retrieve the object by id
-        query.getInBackground(_object_id, new GetCallback<ParseObject>() {
-            public void done(ParseObject wishObject, com.parse.ParseException e) {
-                if (e == null) {
-                    wishObject.put(ItemDBManager.KEY_STORENAME, _storeName);
-                    wishObject.put(ItemDBManager.KEY_NAME, _name);
-                    wishObject.put(ItemDBManager.KEY_DESCRIPTION, _desc);
-                    SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    long time_ms = 0;
-                    try {
-                        Date d = f.parse(_date);
-                        time_ms = d.getTime();
-                    } catch (ParseException e1) {
-                        Log.e(TAG, e1.toString());
-                    }
-                    wishObject.put(ItemDBManager.KEY_DATE_TIME, time_ms);
-                    wishObject.put(ItemDBManager.KEY_PRICE, _price);
-                    wishObject.put(ItemDBManager.KEY_LATITUDE, _latitude);
-                    wishObject.put(ItemDBManager.KEY_LONGITUDE, _longitude);
-                    wishObject.put(ItemDBManager.KEY_ADDRESS, _address);
-                    wishObject.put(ItemDBManager.KEY_COMPLETE, _complete);
-                    wishObject.put(ItemDBManager.KEY_LINK, _link);
-
-                    wishObject.saveInBackground();
-                } else {
-                    Log.e(TAG, "update failed " + e.toString() + " object_id " + _object_id);
-                }
-            }
-        });
     }
 }

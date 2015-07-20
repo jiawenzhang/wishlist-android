@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.model.WishItem;
@@ -25,6 +27,7 @@ import java.util.List;
 public class SyncAgent {
     private Context m_context;
     private static SyncAgent instance = null;
+    private long m_items_to_upload;
     private static String TAG = "SyncAgent";
 
     public static SyncAgent getInstance(Context context) {
@@ -93,31 +96,26 @@ public class SyncAgent {
                     // sync to parse
                     // get from local the items with updated time > last synced time and push them to parse
                     ArrayList<WishItem> items = WishItemManager.getInstance(m_context).getItemsSinceLastSynced();
+                    m_items_to_upload = items.size();
+                    if (m_items_to_upload == 0) {
+                        syncDone();
+                        return;
+                    }
                     for (WishItem item : items) {
                         if (parseItems.contains(item.getId())) {
                             // skip the items we just saved from parse
+                            itemDone();
                             continue;
                         }
                         if (item.getObjectId().isEmpty()) { // parse does not have this item
                             Log.d(TAG, item.getName() + " does not exist on Parse, add to parse");
-                            item.addToParse();
+                            addToParse(item);
                         } else { // parse already has this item, update it
                             Log.d(TAG, item.getName() + " already exists on Parse, update parse");
-                            item.updateParse();
+                            updateParse(item);
                         }
                     }
 
-                    // save now to last synced time
-                    final SharedPreferences sharedPref = m_context.getSharedPreferences(m_context.getString(R.string.app_name), Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putLong("last_synced_time", System.currentTimeMillis());
-                    editor.commit();
-
-                    // for each item in parseItemList
-                    // if (local does not have item), add item
-                    // if (local has item)
-                    //    if (local updated time > parse updated time), keep local
-                    //    else update local
                     // (parseItem could be marked as deleted, update local item to be deleted will just hide the item)
                 } else {
                     Log.e(TAG, "Error: " + e.getMessage());
@@ -125,6 +123,93 @@ public class SyncAgent {
             }
         });
 
+    }
+
+    private void addToParse(WishItem item)
+    {
+        Log.d(TAG, "addToParse");
+
+        final ParseObject wishObject = item.toParseObject();
+        final long item_id = item.getId();
+        wishObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(com.parse.ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "save wish success, object id: " + wishObject.getObjectId());
+                    String object_id = wishObject.getObjectId();
+                    WishItem item = WishItemManager.getInstance(m_context).getItemById(item_id);
+                    item.setObjectId(object_id);
+                    item.saveToLocal();
+                } else {
+                    Log.e(TAG, "save failed " + e.toString());
+                }
+                itemDone();
+            }
+        });
+    }
+
+    private void updateParse(final WishItem item)
+    {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
+
+        // Retrieve the object by id
+        query.getInBackground(item.getObjectId(), new GetCallback<ParseObject>() {
+            public void done(ParseObject wishObject, com.parse.ParseException e) {
+                if (e == null) {
+                    wishObject.put(ItemDBManager.KEY_STORENAME, item.getStoreName());
+                    wishObject.put(ItemDBManager.KEY_NAME, item.getName());
+                    wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc());
+                    SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    long time_ms = 0;
+                    try {
+                        Date d = f.parse(item.getDate());
+                        time_ms = d.getTime();
+                    } catch (ParseException e1) {
+                        Log.e(TAG, e1.toString());
+                    }
+                    wishObject.put(ItemDBManager.KEY_DATE_TIME, time_ms);
+                    wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice());
+                    wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude());
+                    wishObject.put(ItemDBManager.KEY_LONGITUDE, item.getLongitude());
+                    wishObject.put(ItemDBManager.KEY_ADDRESS, item.getAddress());
+                    wishObject.put(ItemDBManager.KEY_COMPLETE, item.getComplete());
+                    wishObject.put(ItemDBManager.KEY_LINK, item.getLink());
+
+                    wishObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(com.parse.ParseException e) {
+                            if (e == null) {
+                                Log.d(TAG, "save wish success, object id: ");
+                            } else {
+                                Log.e(TAG, "save failed " + e.toString());
+                            }
+                            itemDone();
+                        }
+                    });
+                } else {
+                    Log.e(TAG, "update failed " + e.toString() + " object_id " + item.getObjectId());
+                }
+            }
+        });
+    }
+
+    private void itemDone()
+    {
+        m_items_to_upload--;
+        if (m_items_to_upload == 0) {
+            syncDone();
+        }
+    }
+
+    private void syncDone()
+    {
+        Log.d(TAG, "sync finished at " + System.currentTimeMillis());
+        // all items are processed, sync is done
+        // save current time as last synced time
+        final SharedPreferences sharedPref = m_context.getSharedPreferences(m_context.getString(R.string.app_name), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putLong("last_synced_time", System.currentTimeMillis());
+        editor.commit();
     }
 
     private WishItem fromParseObject(ParseObject item, long item_id)
