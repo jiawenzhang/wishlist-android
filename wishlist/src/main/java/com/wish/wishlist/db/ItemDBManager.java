@@ -8,7 +8,6 @@ import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteCursor;
@@ -27,6 +26,7 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_NAME = "item_name";
 	public static final String KEY_DESCRIPTION = "description";
 	public static final String KEY_DATE_TIME = "date_time";
+    public static final String KEY_UPDATED_TIME = "updated_time"; // ms, migrated from date_time:String
 	public static final String KEY_PHOTO_URL = "picture";
 	public static final String KEY_FULLSIZE_PHOTO_PATH = "fullsize_picture";
 	public static final String KEY_PRICE = "price";

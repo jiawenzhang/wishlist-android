@@ -49,10 +49,9 @@ public class SyncAgent {
         final SharedPreferences sharedPref = m_context.getSharedPreferences(m_context.getString(R.string.app_name), Context.MODE_PRIVATE);
         final Date last_synced_time = new Date(sharedPref.getLong("last_synced_time", 0));
         //final long last_synced_time = sharedPref.getLong("last_synced_time", 0);
-        Log.d(TAG, "last_synced_time " + last_synced_time);
+        Log.d(TAG, "last_synced_time " + last_synced_time.getTime());
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
-        //query.whereGreaterThan(ItemDBManager.KEY_DATE_TIME, last_synced_time);
         query.whereGreaterThan("updatedAt", last_synced_time);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> itemList, com.parse.ParseException e) {
@@ -61,15 +60,15 @@ public class SyncAgent {
                     // add/update/remove local wish
                     HashSet<Long> parseItems = new HashSet<>();
                     for (ParseObject item : itemList) {
-                        Log.d(TAG, "item updateAt  " + item.getUpdatedAt().getTime());
-                        Log.d(TAG, "last sync time " + last_synced_time.getTime());
+                        Log.d(TAG, item.getUpdatedAt().getTime() + " item " + item.getString(ItemDBManager.KEY_NAME) + " updateAt");
+                        Log.d(TAG, last_synced_time.getTime() + " last sync time ");
                         WishItem localItem = WishItemManager.getInstance(m_context).getItemByObjectId(item.getObjectId());
                         if (localItem == null) {
                             // local item does not exist
-                            localItem = fromParseObject(item);
+                            localItem = fromParseObject(item, -1);
                             long item_id = localItem.saveToLocal();
                             parseItems.add(item_id);
-                            Log.d(TAG, localItem.getName() + " item is new, save from Parse");
+                            Log.d(TAG, "item " + localItem.getName() + " is new, save from Parse");
                         } else {
                             SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             long local_time = 0;
@@ -80,11 +79,11 @@ public class SyncAgent {
                                 Log.e(TAG, e1.toString());
                             }
 
-                            if (local_time < item.getUpdatedAt().getTime()) {
+                            if (local_time < item.getLong(ItemDBManager.KEY_DATE_TIME)) {
                                 // local item exists, but parse item is newer
                                 // need to handle delete
-                                Log.d(TAG, localItem.getName() + " item exists locally, but parse item is newer, overwrite local one");
-                                localItem = fromParseObject(item);
+                                Log.d(TAG, "item " + localItem.getName() + " exists locally, but parse item is newer, overwrite local one");
+                                localItem = fromParseObject(item, localItem.getId());
                                 localItem.saveToLocal();
                                 parseItems.add(localItem.getId());
                             }
@@ -108,6 +107,12 @@ public class SyncAgent {
                         }
                     }
 
+                    // save now to last synced time
+                    final SharedPreferences sharedPref = m_context.getSharedPreferences(m_context.getString(R.string.app_name), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putLong("last_synced_time", System.currentTimeMillis());
+                    editor.commit();
+
                     // for each item in parseItemList
                     // if (local does not have item), add item
                     // if (local has item)
@@ -122,14 +127,14 @@ public class SyncAgent {
 
     }
 
-    private WishItem fromParseObject(ParseObject item)
+    private WishItem fromParseObject(ParseObject item, long item_id)
     {
         Long time_ms = item.getLong(ItemDBManager.KEY_DATE_TIME);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date_str = sdf.format(new Date(time_ms));
         WishItem wishItem = new WishItem(
                 m_context,
-                -1,
+                item_id,
                 item.getObjectId(),
                 item.getString(ItemDBManager.KEY_STORENAME),
                 item.getString(ItemDBManager.KEY_NAME),
