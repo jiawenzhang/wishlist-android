@@ -1,10 +1,16 @@
 package com.wish.wishlist.db;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /***
  * The DBAdapter class only gets called when the app first starts 
@@ -90,25 +96,59 @@ public class DBAdapter {
         }
     }
 
-        , new Patch() {//db version 6, 23->24
-            public void apply(SQLiteDatabase db) {
-                //add wish latitude and longitude column in the Item table
-                String sql1 = "ALTER TABLE "
-                        + ItemDBManager.DB_TABLE
-                        + " ADD COLUMN object_id TEXT "; // parse object id
+            , new Patch() {//db version 6, 23->24
+        public void apply(SQLiteDatabase db) {
+            //add wish latitude and longitude column in the Item table
+            String sql1 = "ALTER TABLE "
+                    + ItemDBManager.DB_TABLE
+                    + " ADD COLUMN latitude REAL ";
 
-                String sql2 = "ALTER TABLE "
-                        + ItemDBManager.DB_TABLE
-                        + " ADD COLUMN latitude REAL ";
+            String sql2 = "ALTER TABLE "
+                    + ItemDBManager.DB_TABLE
+                    + " ADD COLUMN longitude REAL ";
 
-                String sql3 = "ALTER TABLE "
-                        + ItemDBManager.DB_TABLE
-                        + " ADD COLUMN longitude REAL ";
+            db.execSQL(sql1);
+            db.execSQL(sql2);
 
-                db.execSQL(sql1);
-                db.execSQL(sql2);
-                db.execSQL(sql3);
+            String sql3 = "ALTER TABLE "
+                    + ItemDBManager.DB_TABLE
+                    + " ADD COLUMN object_id TEXT "; // parse object id
+
+            //number of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
+            String sql4 = "ALTER TABLE "
+                    + ItemDBManager.DB_TABLE
+                    + " ADD COLUMN updated_time INTEGER ";
+
+            db.execSQL(sql3);
+            db.execSQL(sql4);
+
+            //convert date_time in String to updated_time in long(ms)
+            String sql = String.format("SELECT _id, date_time FROM Item");
+            Cursor c = db.rawQuery(sql, null);
+            if (c != null) {
+                SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                c.moveToFirst();
+                while (!c.isAfterLast()){
+                    long id = c.getLong(c.getColumnIndexOrThrow("_id"));
+                    String updated_time_str = c.getString(c.getColumnIndexOrThrow("date_time"));
+                    long updated_time = 0;
+                    try {
+                        Date date = f.parse(updated_time_str);
+                        updated_time = date.getTime();
+                        Log.d(TAG, "updated_time " + updated_time);
+                    } catch (ParseException e1) {
+                        Log.e(TAG, e1.toString());
+                    }
+
+                    ContentValues cv = new ContentValues();
+                    cv.put(ItemDBManager.KEY_UPDATED_TIME, updated_time);
+                    String where = String.format("_id = '%d'", id);
+                    db.update(ItemDBManager.DB_TABLE, cv, where, null);
+
+                    c.moveToNext();
+                }
             }
+        }
     }
     };
 
@@ -121,7 +161,7 @@ public class DBAdapter {
             + ItemDBManager.KEY_STORENAME	+ " TEXT, "
             + ItemDBManager.KEY_NAME 		+ " TEXT, "
             + ItemDBManager.KEY_DESCRIPTION + " TEXT, "
-            + ItemDBManager.KEY_DATE_TIME 	+ " TEXT, "
+            + ItemDBManager.KEY_UPDATED_TIME+ " INTEGER, "
             + ItemDBManager.KEY_PHOTO_URL 	+ " TEXT, "
             + ItemDBManager.KEY_FULLSIZE_PHOTO_PATH 	+ " TEXT, "
             + ItemDBManager.KEY_PRICE 		+ " REAL, "
@@ -204,7 +244,8 @@ public class DBAdapter {
                         "Apple Store",
                         "iPad mini",
                         "It is the new iPad with retina display",
-                        "2012-03-11 11:30:00",
+                        1340211922000L,
+                        //"2012-03-11 11:30:00",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/ipad_mini.jpg",
                         529f,
@@ -220,7 +261,8 @@ public class DBAdapter {
                         "Coach store",
                         "Leather bag",
                         "What a beautiful bag! Cannot help noticing it.",
-                        "2012-03-17 18:22:35",
+                        1340406500000L,
+                        //"2012-03-17 18:22:35",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/bag.jpg",
                         299.00f,
@@ -236,7 +278,8 @@ public class DBAdapter {
                         "Tiffany",
                         "Starfish necklace",
                         "Gorgeous",
-                        "2012-06-03 03:40:50",
+                        1331479800000L,
+                        //"2012-06-03 03:40:50",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/tiffany.jpg",
                         389f,
@@ -252,7 +295,8 @@ public class DBAdapter {
                         "Bay Company",
                         "High hel",
                         "lala",
-                        "2012-05-15 08:17:38",
+                        1332022955000L,
+                        //"2012-05-15 08:17:38",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/shoe.jpg",
                         289.0f,
@@ -268,7 +312,8 @@ public class DBAdapter {
                         "Bay Inc.",
                         "Earring",
                         "I like its color",
-                        "2012-06-20 13:05:22",
+                        1338709250000L,
+                        //"2012-06-20 13:05:22",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/ear_ring.jpg",
                         99.0f,
@@ -284,7 +329,8 @@ public class DBAdapter {
                         "Indigo",
                         "Wooden lantern",
                         "nice",
-                        "2012-06-22 19:08:20",
+                        1337084258000L,
+                        //"2012-06-22 19:08:20",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/wooden_lanton.jpg",
                         59.0f,

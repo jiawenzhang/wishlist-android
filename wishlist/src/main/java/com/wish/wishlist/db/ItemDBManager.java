@@ -1,9 +1,6 @@
 package com.wish.wishlist.db;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
 
 import android.content.ContentValues;
@@ -25,7 +22,6 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_STORENAME = "store_name";
 	public static final String KEY_NAME = "item_name";
 	public static final String KEY_DESCRIPTION = "description";
-	public static final String KEY_DATE_TIME = "date_time";
     public static final String KEY_UPDATED_TIME = "updated_time"; // ms, migrated from date_time:String
 	public static final String KEY_PHOTO_URL = "picture";
 	public static final String KEY_FULLSIZE_PHOTO_PATH = "fullsize_picture";
@@ -61,7 +57,7 @@ public class ItemDBManager extends DBManager {
 	 * @param description
 	 *            The name description
 	 */
-	public long addItem(String object_id, String store_name, String name, String description, String date_time,
+	public long addItem(String object_id, String store_name, String name, String description, long updated_time,
 			String picture_uri, String fullsize_picture_path, double price, String address, double latitude, double longitude,
 			int priority, int complete, String link) {
 		// String sql = String.format(
@@ -76,7 +72,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_STORENAME, store_name);
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
-		initialValues.put(KEY_DATE_TIME, date_time);
+		initialValues.put(KEY_UPDATED_TIME, updated_time);
 		initialValues.put(KEY_PHOTO_URL, picture_uri);
 		initialValues.put(KEY_FULLSIZE_PHOTO_PATH, fullsize_picture_path);
 		initialValues.put(KEY_PRICE, price);
@@ -101,7 +97,7 @@ public class ItemDBManager extends DBManager {
 	 * @param description
 	 *            The item description
 	 */
-	public void updateItem(long _id, String object_id, String store_name, String name, String description, String date_time,
+	public void updateItem(long _id, String object_id, String store_name, String name, String description, long updated_time,
 			String picture_uri, String fullsize_picture_path, double price, String address, double latitude, double longitude,
 			int priority, int complete, String link) {
 
@@ -121,7 +117,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_STORENAME, store_name);
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
-		initialValues.put(KEY_DATE_TIME, date_time);
+		initialValues.put(KEY_UPDATED_TIME, updated_time);
 		initialValues.put(KEY_PHOTO_URL, picture_uri);
 		initialValues.put(KEY_FULLSIZE_PHOTO_PATH, fullsize_picture_path);
 		initialValues.put(KEY_PRICE, price);
@@ -393,35 +389,26 @@ public class ItemDBManager extends DBManager {
 
     public ArrayList<Long> getItemsSinceLastSynced()
     {
-        String sql = String.format("SELECT _id, date_time FROM Item");
+        String sql = String.format("SELECT _id, updated_time FROM Item");
         SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
         ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
                 new ItemsCursor.Factory(), sql, null, null);
 
-        long id;
-        long last_synced_time = mCtx.getSharedPreferences(mCtx.getString(R.string.app_name), Context.MODE_PRIVATE).getLong("last_synced_time", 0);
-        ArrayList<Long> ids = new ArrayList<>();
-        if (c != null) {
-            c.moveToFirst();
-            while (!c.isAfterLast()){
-                String dateStr = c.getString(c.getColumnIndexOrThrow(KEY_DATE_TIME));
-                SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                long local_time = 0;
-                try {
-                    Date date = f.parse(dateStr);
-                    local_time = date.getTime();
-                } catch (ParseException e1) {
-                    Log.e(TAG, e1.toString());
-                }
-
-                if (local_time > last_synced_time) {
-                    id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
-                    ids.add(id);
-                }
-                c.moveToNext();
-            }
-        }
-        return ids;
+		long id;
+		long last_synced_time = mCtx.getSharedPreferences(mCtx.getString(R.string.app_name), Context.MODE_PRIVATE).getLong("last_synced_time", 0);
+		ArrayList<Long> ids = new ArrayList<>();
+		if (c != null) {
+			c.moveToFirst();
+			while (!c.isAfterLast()){
+				long updated_time = c.getLong(c.getColumnIndexOrThrow(KEY_UPDATED_TIME));
+				if (updated_time > last_synced_time) {
+					id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
+					ids.add(id);
+				}
+				c.moveToNext();
+			}
+		}
+		return ids;
     }
 
 	/**

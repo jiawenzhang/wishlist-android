@@ -109,7 +109,6 @@ public class EditItem extends Activity
     private ImageButton _cameraImageButton;
     private ImageButton _galleryImageButton;
     private ImageView _imageItem;
-    private Date mDate;
     private double _lat = Double.MIN_VALUE;
     private double _lng = Double.MIN_VALUE;
     private String _ddStr = "unknown";
@@ -118,12 +117,6 @@ public class EditItem extends Activity
     private String _fullsizePhotoPath = null;
     private String _newfullsizePhotoPath = null;
     PositionManager _pManager;
-    private int mYear = -1;
-    private int mMonth = -1;
-    private int mDay = -1;
-    private int mHour = 0;
-    private int mMin = 0;
-    private int mSec = 0;
     private long mItem_id = -1;
     private int _complete = -1;
     private boolean _editNew = true;
@@ -710,23 +703,6 @@ public class EditItem extends Activity
             itemPrice = Double.MIN_VALUE;
         }
 
-        // user did not specify date_time, use dddd"now" as default date_time
-        if (mYear == -1) {
-            // get the current date_time
-            final Calendar c = Calendar.getInstance();
-            mYear = c.get(Calendar.YEAR);
-            mMonth = c.get(Calendar.MONTH);
-            mDay = c.get(Calendar.DAY_OF_MONTH);
-            mHour = c.get(Calendar.HOUR_OF_DAY);//24 hour format
-            mMin = c.get(Calendar.MINUTE);
-            mSec = c.get(Calendar.SECOND);
-        }
-
-        // Format the date_time and save it as a string
-        mDate = new Date(mYear - 1900, mMonth, mDay, mHour, mMin, mSec);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date = sdf.format(mDate);
-
         if (_webBitmap != null) {
             _fullsizePhotoPath = saveBitmapToAlbum(_webBitmap);
         } else if (_selectedPic && _selectedPicUri != null) {
@@ -736,7 +712,7 @@ public class EditItem extends Activity
         if (mItem_id == -1) {
             // create a new item
             WishItem item = new WishItem(this, mItem_id, "", itemStoreName, itemName, itemDesc,
-                    date, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
+                    System.currentTimeMillis(), null, _fullsizePhotoPath, itemPrice, _lat, _lng,
                     _ddStr, itemPriority, itemComplete, itemLink);
 
             mItem_id = item.save();
@@ -746,7 +722,7 @@ public class EditItem extends Activity
             item.setStoreName(itemStoreName);
             item.setName(itemName);
             item.setDesc(itemDesc);
-            item.setDate(date);
+            item.setUpdatedTime(System.currentTimeMillis());
             item.setFullsizePicPath(_fullsizePhotoPath);
             item.setPrice(itemPrice);
             item.setLatitude(_lat);

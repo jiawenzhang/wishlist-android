@@ -180,7 +180,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
             _photoView.setVisibility(View.GONE);
         }
 
-        String dateTimeStr = item.getDate();
+        String dateTimeStr = item.getUpdatedTimeStr();
         String dateTimeStrNew = DateTimeFormatter.getInstance().getDateTimeString(dateTimeStr);
 
         _nameView.setText(item.getName());

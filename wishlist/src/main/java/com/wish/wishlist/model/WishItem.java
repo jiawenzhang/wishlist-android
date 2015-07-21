@@ -1,13 +1,11 @@
 package com.wish.wishlist.model;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.ByteArrayOutputStream;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -15,11 +13,7 @@ import android.content.ContentValues;
 import android.util.Log;
 import android.database.Cursor;
 
-import com.parse.GetCallback;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.SaveCallback;
-import com.wish.wishlist.R;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.util.ImageManager;
 import com.wish.wishlist.util.sync.SyncAgent;
@@ -34,7 +28,7 @@ public class WishItem {
     private String _name;
     private String _comments;
     private String _desc;
-    private String _date;
+    private long _updated_time;
     private String _picStr; //this is a uri
     private String _fullsizePicPath;
     private int _priority;
@@ -46,29 +40,8 @@ public class WishItem {
     private String _address;
     private String _object_id;
 
-    public WishItem(Context ctx ,String name) {
-        this(ctx, name, null, null);
-        Date now = new Date(java.lang.System.currentTimeMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
-        _date = sdf.format(now);
-    }
-
-    public WishItem(Context ctx, String name, String addr) {
-        this(ctx, name, null, addr);
-        Date now = new Date(java.lang.System.currentTimeMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
-        _date = sdf.format(now);
-    }
-
-    public WishItem(Context ctx, String name, String created, String addr) {
-        _ctx = ctx;
-        _name = name;
-        _date = created;
-        _desc = addr;
-    }
-
     public WishItem(Context ctx, long itemId, String object_id, String storeName, String name, String desc,
-                    String date, String picStr, String fullsizePicPath, double price, double latitude, double longitude,
+                    long updated_time, String picStr, String fullsizePicPath, double price, double latitude, double longitude,
                     String address, int priority, int complete, String link) {
         _id = itemId;
         _object_id = object_id;
@@ -82,7 +55,7 @@ public class WishItem {
         _ctx = ctx;
         _name = name;
         _desc = desc;
-        _date = date;
+        _updated_time = updated_time;
         _priority = priority;
         _complete = complete;
         _link = link;
@@ -197,12 +170,17 @@ public class WishItem {
         this._name = name;
     }
 
-    public String getDate() {
-        return _date;
+    public long getUpdatedTime() {
+        return _updated_time;
     }
 
-    public void setDate(String date) {
-        _date = date;
+    public void setUpdatedTime(long time) {
+        _updated_time = time;
+    }
+
+    public String getUpdatedTimeStr() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(new Date(_updated_time));
     }
 
     public String getDesc() {
@@ -289,7 +267,8 @@ public class WishItem {
     @Override
     public String toString() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
-        String dateString = sdf.format(_date);
+        Date date = new Date(_updated_time);
+        String dateString = sdf.format(date);
         return "(" + dateString + ") " + _name + " " + _desc;
     }
 
@@ -301,7 +280,6 @@ public class WishItem {
         } else {
             message = "Shared via Beans Wishlist\n\n";
         }
-        String dateTimeStr = getDate();
         message += getName() + "\n";
 
         // format the price
@@ -357,7 +335,7 @@ public class WishItem {
     {
         ItemDBManager manager = new ItemDBManager(_ctx);
         if (_id == -1) { // new item
-            _id = manager.addItem(_object_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
+            _id = manager.addItem(_object_id, _storeName, _name, _desc, _updated_time, _picStr, _fullsizePicPath,
                     _price, _address, _latitude, _longitude, _priority, _complete, _link);
         } else { // existing item
             updateDB();
@@ -368,7 +346,7 @@ public class WishItem {
     private void updateDB()
     {
         ItemDBManager manager = new ItemDBManager(_ctx);
-        manager.updateItem(_id, _object_id, _storeName, _name, _desc, _date, _picStr, _fullsizePicPath,
+        manager.updateItem(_id, _object_id, _storeName, _name, _desc, _updated_time, _picStr, _fullsizePicPath,
                 _price, _address, _latitude, _longitude, _priority, _complete, _link);
     }
 
@@ -382,15 +360,7 @@ public class WishItem {
         wishObject.put(ItemDBManager.KEY_STORENAME, _storeName);
         wishObject.put(ItemDBManager.KEY_NAME, _name);
         wishObject.put(ItemDBManager.KEY_DESCRIPTION, _desc);
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        long time_ms = 0;
-        try {
-            Date d = f.parse(_date);
-            time_ms = d.getTime();
-        } catch (ParseException e1) {
-            Log.e(TAG, e1.toString());
-        }
-        wishObject.put(ItemDBManager.KEY_DATE_TIME, time_ms);
+        wishObject.put(ItemDBManager.KEY_UPDATED_TIME, _updated_time);
         wishObject.put(ItemDBManager.KEY_PRICE, _price);
         wishObject.put(ItemDBManager.KEY_LATITUDE, _latitude);
         wishObject.put(ItemDBManager.KEY_LONGITUDE, _longitude);

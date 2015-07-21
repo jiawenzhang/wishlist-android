@@ -87,7 +87,7 @@ public class Splash extends Activity{
                         WishItem item = WishItemManager.getInstance(Splash.this).getItemById(id);
                         item.setLatitude(latitude);
                         item.setLongitude(longitude);
-                        item.save();
+                        item.saveToLocal();
                     }
                 }
 

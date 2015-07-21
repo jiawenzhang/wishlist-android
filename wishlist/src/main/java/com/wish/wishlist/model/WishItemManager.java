@@ -94,8 +94,8 @@ public class WishItemManager {
         String itemDesc = wishItemCursor.getString(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_DESCRIPTION));
 
-        String date = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_DATE_TIME));
+        long updated_time = wishItemCursor.getLong(wishItemCursor
+                .getColumnIndexOrThrow(ItemDBManager.KEY_UPDATED_TIME));
 
         double itemPrice = wishItemCursor.getDouble(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_PRICE));
@@ -110,7 +110,7 @@ public class WishItemManager {
                 .getColumnIndexOrThrow(ItemDBManager.KEY_LINK));
 
         WishItem item = new WishItem(_ctx, itemId, objectId, storeName, itemName, itemDesc,
-                date, picture_str, fullsize_pic_path, itemPrice, latitude, longitude,
+                updated_time, picture_str, fullsize_pic_path, itemPrice, latitude, longitude,
                 itemLocation, itemPriority, itemComplete, itemLink);
 
         return item;

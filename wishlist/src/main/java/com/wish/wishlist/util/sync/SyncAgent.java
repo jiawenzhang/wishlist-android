@@ -73,16 +73,7 @@ public class SyncAgent {
                             parseItems.add(item_id);
                             Log.d(TAG, "item " + localItem.getName() + " is new, save from Parse");
                         } else {
-                            SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            long local_time = 0;
-                            try {
-                                Date d = f.parse(localItem.getDate());
-                                local_time = d.getTime();
-                            } catch (ParseException e1) {
-                                Log.e(TAG, e1.toString());
-                            }
-
-                            if (local_time < item.getLong(ItemDBManager.KEY_DATE_TIME)) {
+                            if (localItem.getUpdatedTime() < item.getLong(ItemDBManager.KEY_UPDATED_TIME)) {
                                 // local item exists, but parse item is newer
                                 // need to handle delete
                                 Log.d(TAG, "item " + localItem.getName() + " exists locally, but parse item is newer, overwrite local one");
@@ -159,15 +150,7 @@ public class SyncAgent {
                     wishObject.put(ItemDBManager.KEY_STORENAME, item.getStoreName());
                     wishObject.put(ItemDBManager.KEY_NAME, item.getName());
                     wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc());
-                    SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    long time_ms = 0;
-                    try {
-                        Date d = f.parse(item.getDate());
-                        time_ms = d.getTime();
-                    } catch (ParseException e1) {
-                        Log.e(TAG, e1.toString());
-                    }
-                    wishObject.put(ItemDBManager.KEY_DATE_TIME, time_ms);
+                    wishObject.put(ItemDBManager.KEY_UPDATED_TIME, item.getUpdatedTime());
                     wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice());
                     wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude());
                     wishObject.put(ItemDBManager.KEY_LONGITUDE, item.getLongitude());
@@ -214,9 +197,6 @@ public class SyncAgent {
 
     private WishItem fromParseObject(ParseObject item, long item_id)
     {
-        Long time_ms = item.getLong(ItemDBManager.KEY_DATE_TIME);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date_str = sdf.format(new Date(time_ms));
         WishItem wishItem = new WishItem(
                 m_context,
                 item_id,
@@ -224,7 +204,7 @@ public class SyncAgent {
                 item.getString(ItemDBManager.KEY_STORENAME),
                 item.getString(ItemDBManager.KEY_NAME),
                 item.getString(ItemDBManager.KEY_DESCRIPTION),
-                date_str,
+                item.getLong(ItemDBManager.KEY_UPDATED_TIME),
                 null, // pic_str
                 null, // _fullsizePhotoPath,
                 item.getDouble(ItemDBManager.KEY_PRICE),
