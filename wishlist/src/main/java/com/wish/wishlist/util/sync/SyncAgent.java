@@ -14,8 +14,6 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -69,9 +67,9 @@ public class SyncAgent {
                         if (localItem == null) {
                             // local item does not exist
                             localItem = fromParseObject(item, -1);
+                            Log.d(TAG, "item " + localItem.getName() + " is new, save from Parse");
                             long item_id = localItem.saveToLocal();
                             parseItems.add(item_id);
-                            Log.d(TAG, "item " + localItem.getName() + " is new, save from Parse");
                         } else {
                             if (localItem.getUpdatedTime() < item.getLong(ItemDBManager.KEY_UPDATED_TIME)) {
                                 // local item exists, but parse item is newer
@@ -99,10 +97,10 @@ public class SyncAgent {
                             continue;
                         }
                         if (item.getObjectId().isEmpty()) { // parse does not have this item
-                            Log.d(TAG, item.getName() + " does not exist on Parse, add to parse");
+                            Log.d(TAG, "item " + item.getName() + " does not exist on Parse, add to parse");
                             addToParse(item);
                         } else { // parse already has this item, update it
-                            Log.d(TAG, item.getName() + " already exists on Parse, update parse");
+                            Log.d(TAG, "item " + item.getName() + " already exists on Parse, update parse");
                             updateParse(item);
                         }
                     }
@@ -157,14 +155,15 @@ public class SyncAgent {
                     wishObject.put(ItemDBManager.KEY_ADDRESS, item.getAddress());
                     wishObject.put(ItemDBManager.KEY_COMPLETE, item.getComplete());
                     wishObject.put(ItemDBManager.KEY_LINK, item.getLink());
+                    wishObject.put(ItemDBManager.KEY_DELETED, item.getDeleted());
 
                     wishObject.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(com.parse.ParseException e) {
                             if (e == null) {
-                                Log.d(TAG, "save wish success, object id: ");
+                                Log.d(TAG, "update wish in Parse success");
                             } else {
-                                Log.e(TAG, "save failed " + e.toString());
+                                Log.e(TAG, "update wish in Parse failed " + e.toString());
                             }
                             itemDone();
                         }
@@ -213,7 +212,8 @@ public class SyncAgent {
                 item.getString(ItemDBManager.KEY_ADDRESS),
                 0, // priority
                 item.getInt(ItemDBManager.KEY_COMPLETE),
-                item.getString(ItemDBManager.KEY_LINK));
+                item.getString(ItemDBManager.KEY_LINK),
+                item.getBoolean(ItemDBManager.KEY_DELETED));
 
         return wishItem;
     }

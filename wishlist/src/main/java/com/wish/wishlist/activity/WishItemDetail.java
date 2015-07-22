@@ -108,6 +108,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
                 address = "unknown";
             }
             item.setAddress(address);
+            item.setUpdatedTime(System.currentTimeMillis());
             item.save();
         }
 

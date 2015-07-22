@@ -114,13 +114,18 @@ public class DBAdapter {
                     + ItemDBManager.DB_TABLE
                     + " ADD COLUMN object_id TEXT "; // parse object id
 
-            //number of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
             String sql4 = "ALTER TABLE "
+                    + ItemDBManager.DB_TABLE
+                    + " ADD COLUMN deleted INTEGER NOT NULL DEFAULT(0)";
+
+            //number of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
+            String sql5 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
                     + " ADD COLUMN updated_time INTEGER ";
 
             db.execSQL(sql3);
             db.execSQL(sql4);
+            db.execSQL(sql5);
 
             //convert date_time in String to updated_time in long(ms)
             String sql = String.format("SELECT _id, date_time FROM Item");
@@ -170,7 +175,8 @@ public class DBAdapter {
             + ItemDBManager.KEY_LONGITUDE 	+ " REAL, "
             + ItemDBManager.KEY_PRIORITY 	+ " INTEGER, "
             + ItemDBManager.KEY_COMPLETE 	+ " INTEGER, "
-            + ItemDBManager.KEY_LINK 	    + " TEXT"
+            + ItemDBManager.KEY_LINK 	    + " TEXT, "
+            + ItemDBManager.KEY_DELETED 	+ " INTEGER"
             + ");";
 
     //Query string to create table "Tag"
@@ -254,7 +260,8 @@ public class DBAdapter {
                         -79.3802132,
                         0,
                         0,
-                        "");
+                        "",
+                        false);
 
                 mItemDBManager.addItem(
                         "",
@@ -271,7 +278,8 @@ public class DBAdapter {
                         -79.477205,
                         3,
                         1,
-                        "");
+                        "",
+                        false);
 
                 mItemDBManager.addItem(
                         "",
@@ -288,7 +296,8 @@ public class DBAdapter {
                         -79.3904,
                         2,
                         0,
-                        "");
+                        "",
+                        false);
 
                 mItemDBManager.addItem(
                         "",
@@ -305,7 +314,8 @@ public class DBAdapter {
                         -79.3835228,
                         1,
                         0,
-                        "");
+                        "",
+                        false);
 
                 mItemDBManager.addItem(
                         "",
@@ -322,7 +332,8 @@ public class DBAdapter {
                         -79.3489359,
                         1,
                         1,
-                        "");
+                        "",
+                        false);
 
                 mItemDBManager.addItem(
                         "",
@@ -339,7 +350,8 @@ public class DBAdapter {
                         -79.3913844,
                         1,
                         0,
-                        "");
+                        "",
+                        false);
             }
 
             //create table "user", added on version 3

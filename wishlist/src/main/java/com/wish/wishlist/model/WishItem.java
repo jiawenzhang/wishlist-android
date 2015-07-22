@@ -39,10 +39,11 @@ public class WishItem {
     private double _longitude;
     private String _address;
     private String _object_id;
+    private boolean _deleted;
 
     public WishItem(Context ctx, long itemId, String object_id, String storeName, String name, String desc,
                     long updated_time, String picStr, String fullsizePicPath, double price, double latitude, double longitude,
-                    String address, int priority, int complete, String link) {
+                    String address, int priority, int complete, String link, boolean deleted) {
         _id = itemId;
         _object_id = object_id;
         _fullsizePicPath = fullsizePicPath;
@@ -59,10 +60,19 @@ public class WishItem {
         _priority = priority;
         _complete = complete;
         _link = link;
+        _deleted = deleted;
     }
 
     public long getId() {
         return _id;
+    }
+
+    public boolean getDeleted() {
+        return _deleted;
+    }
+
+    public void setDeleted(boolean value) {
+        _deleted = value;
     }
 
     public String getObjectId() {
@@ -336,7 +346,7 @@ public class WishItem {
         ItemDBManager manager = new ItemDBManager(_ctx);
         if (_id == -1) { // new item
             _id = manager.addItem(_object_id, _storeName, _name, _desc, _updated_time, _picStr, _fullsizePicPath,
-                    _price, _address, _latitude, _longitude, _priority, _complete, _link);
+                    _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted);
         } else { // existing item
             updateDB();
         }
@@ -347,7 +357,7 @@ public class WishItem {
     {
         ItemDBManager manager = new ItemDBManager(_ctx);
         manager.updateItem(_id, _object_id, _storeName, _name, _desc, _updated_time, _picStr, _fullsizePicPath,
-                _price, _address, _latitude, _longitude, _priority, _complete, _link);
+                _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted);
     }
 
     public ParseObject toParseObject()
@@ -367,6 +377,7 @@ public class WishItem {
         wishObject.put(ItemDBManager.KEY_ADDRESS, _address);
         wishObject.put(ItemDBManager.KEY_COMPLETE, _complete);
         wishObject.put(ItemDBManager.KEY_LINK, _link);
+        wishObject.put(ItemDBManager.KEY_DELETED, _deleted);
 
         return wishObject;
     }

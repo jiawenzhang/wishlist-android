@@ -32,6 +32,7 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_PRIORITY = "priority";
 	public static final String KEY_COMPLETE = "complete";
     public static final String KEY_LINK = "link";
+	public static final String KEY_DELETED = "deleted";
 
 	public static final String DB_TABLE = "Item";
 	private static final String TAG = "ItemDBManager";
@@ -59,7 +60,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public long addItem(String object_id, String store_name, String name, String description, long updated_time,
 			String picture_uri, String fullsize_picture_path, double price, String address, double latitude, double longitude,
-			int priority, int complete, String link) {
+			int priority, int complete, String link, boolean deleted) {
 		// String sql = String.format(
 		// "INSERT INTO ITEM (_id, name, description, create_date, store_id,  picture, price, location, priority) "
 		// +
@@ -82,6 +83,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_PRIORITY, priority);
 		initialValues.put(KEY_COMPLETE, complete);
         initialValues.put(KEY_LINK, link);
+		initialValues.put(KEY_DELETED, deleted);
 
 		long id = DBAdapter.getInstance(mCtx).db().insert(DB_TABLE, null, initialValues);
 		return id;
@@ -99,7 +101,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public void updateItem(long _id, String object_id, String store_name, String name, String description, long updated_time,
 			String picture_uri, String fullsize_picture_path, double price, String address, double latitude, double longitude,
-			int priority, int complete, String link) {
+			int priority, int complete, String link, boolean deleted) {
 
 //		String sql = String.format("UPDATE Item " + "SET item_name = '%s',  "
 //				+ " description = '%s', " + " date_time = '%s', "
@@ -127,6 +129,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_PRIORITY, priority);
 		initialValues.put(KEY_COMPLETE, complete);
         initialValues.put(KEY_LINK, link);
+		initialValues.put(KEY_DELETED, deleted);
 
 		String where = String.format("_id = '%d'", _id);
 		DBAdapter.getInstance(mCtx).db().update(DB_TABLE, initialValues, where, null);
@@ -212,7 +215,7 @@ public class ItemDBManager extends DBManager {
 
 	public ItemsCursor getItems(String sortOption, Map<String,String> where, ArrayList<Long> itemIds) {
 		String sql;
-        String WHERE = "";
+        String WHERE = "WHERE deleted = 0 ";
 		if (where == null || where.isEmpty()) {
 		}
 		else {
@@ -223,19 +226,14 @@ public class ItemDBManager extends DBManager {
 				field = key;
 				value = where.get(key);
 			}
-            WHERE = "WHERE " + field + "=" + value;
+            WHERE += ("AND " + field + "=" + value);
 		}
         if (!itemIds.isEmpty()) {
-            if (WHERE.isEmpty()) {
-                WHERE = "WHERE _id IN (";
-            }
-            else {
-                WHERE += " AND _id IN (";
-            }
+			WHERE += " AND _id IN (";
             for (Long id : itemIds) {
                 WHERE += id + ", ";
             }
-            //remote the last ', '
+            //remove the last ', '
             WHERE = WHERE.substring(0, WHERE.length()-2);
             WHERE += ")";
         }
@@ -301,7 +299,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public ItemsCursor searchItems(String query) {
 		String sql = String.format("SELECT * FROM Item "
-				+ "WHERE item_name LIKE '%%%s%%' ", query);
+				+ "WHERE item_name LIKE '%%%s%%' AND deleted = 0", query);
 
 		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
@@ -319,7 +317,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public ItemsCursor searchItems(String query, String sortOption) {
 		String sql = String.format("SELECT * FROM Item "
-				+ "WHERE item_name LIKE '%%%s%%' " + "ORDER BY " + sortOption, query);
+				+ "WHERE item_name LIKE '%%%s%%' AND deleted = 0 " + "ORDER BY " + sortOption, query);
 		
 		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
@@ -364,7 +362,7 @@ public class ItemDBManager extends DBManager {
 	}
 
 	public ArrayList<Long> getItemsWithLocation(){
-		String sql = String.format("SELECT _id, latitude, longitude FROM Item");
+		String sql = String.format("SELECT _id, latitude, longitude FROM Item where deleted = 0");
 		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
@@ -389,22 +387,17 @@ public class ItemDBManager extends DBManager {
 
     public ArrayList<Long> getItemsSinceLastSynced()
     {
-        String sql = String.format("SELECT _id, updated_time FROM Item");
-        SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
-        ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
-                new ItemsCursor.Factory(), sql, null, null);
-
-		long id;
 		long last_synced_time = mCtx.getSharedPreferences(mCtx.getString(R.string.app_name), Context.MODE_PRIVATE).getLong("last_synced_time", 0);
+        String sql = String.format("SELECT _id FROM Item WHERE updated_time > '%d'", last_synced_time);
+        SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
+        ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(new ItemsCursor.Factory(), sql, null, null);
+
 		ArrayList<Long> ids = new ArrayList<>();
 		if (c != null) {
 			c.moveToFirst();
 			while (!c.isAfterLast()){
-				long updated_time = c.getLong(c.getColumnIndexOrThrow(KEY_UPDATED_TIME));
-				if (updated_time > last_synced_time) {
-					id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
-					ids.add(id);
-				}
+				long id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
+				ids.add(id);
 				c.moveToNext();
 			}
 		}

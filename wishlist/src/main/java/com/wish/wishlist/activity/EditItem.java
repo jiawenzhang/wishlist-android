@@ -713,7 +713,7 @@ public class EditItem extends Activity
             // create a new item
             WishItem item = new WishItem(this, mItem_id, "", itemStoreName, itemName, itemDesc,
                     System.currentTimeMillis(), null, _fullsizePhotoPath, itemPrice, _lat, _lng,
-                    _ddStr, itemPriority, itemComplete, itemLink);
+                    _ddStr, itemPriority, itemComplete, itemLink, false);
 
             mItem_id = item.save();
         } else {

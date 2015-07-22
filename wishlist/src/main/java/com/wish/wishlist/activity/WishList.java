@@ -667,6 +667,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                         .setLabel("Complete")
                         .build());
             }
+            wish_item.setUpdatedTime(System.currentTimeMillis());
             wish_item.save();
             updateView();
         }

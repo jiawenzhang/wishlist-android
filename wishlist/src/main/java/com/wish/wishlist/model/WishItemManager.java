@@ -7,6 +7,7 @@ import android.content.Context;
 
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
+import com.wish.wishlist.db.TagItemDBManager;
 
 public class WishItemManager {
     static private Context _ctx;
@@ -109,9 +110,12 @@ public class WishItemManager {
         String itemLink = wishItemCursor.getString(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_LINK));
 
+        boolean deleted = wishItemCursor.getInt(wishItemCursor
+                .getColumnIndexOrThrow(ItemDBManager.KEY_DELETED)) == 1;
+
         WishItem item = new WishItem(_ctx, itemId, objectId, storeName, itemName, itemDesc,
                 updated_time, picture_str, fullsize_pic_path, itemPrice, latitude, longitude,
-                itemLocation, itemPriority, itemComplete, itemLink);
+                itemLocation, itemPriority, itemComplete, itemLink, deleted);
 
         return item;
     }
@@ -124,7 +128,9 @@ public class WishItemManager {
             file.delete();
         }
 
-        ItemDBManager mItemDBManager = new ItemDBManager(_ctx);
-        mItemDBManager.deleteItem(itemId);
+        TagItemDBManager.instance(_ctx).Remove_tags_by_item(itemId);
+        item.setDeleted(true);
+        item.setUpdatedTime(System.currentTimeMillis());
+        item.save();
     }
 }
