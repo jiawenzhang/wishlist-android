@@ -34,12 +34,12 @@ public class TagItemDBManager extends DBManager {
         super(ctx);
 	}
 
-    public long Tag_item(String tagName, long itemId) {
+    private long Tag_item(String tagName, long itemId) {
         long tagId = TagDBManager.instance(mCtx).createTag(tagName);
         return Tag_item(tagId, itemId);
     }
 
-    public long Tag_item(long tagId, long itemId) {
+    private long Tag_item(long tagId, long itemId) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(TAG_ID, tagId);
         initialValues.put(ITEM_ID, itemId);
@@ -47,12 +47,12 @@ public class TagItemDBManager extends DBManager {
         return rowId;
     }
 
-    public void Untag_item(String tagName, long itemId) {
+    private void Untag_item(String tagName, long itemId) {
         long tagId = TagDBManager.instance(mCtx).getIdByName(tagName);
         Untag_item(tagId, itemId);
     }
 
-    public void Untag_item(long tagId, long itemId) {
+    private void Untag_item(long tagId, long itemId) {
         String where = TAG_ID + "=" + tagId + " AND " + ITEM_ID + "=" + itemId;
         DBAdapter.getInstance(mCtx).db().delete(DB_TABLE, where, null);
 

@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.database.Cursor;
 
 import com.parse.ParseObject;
 import com.wish.wishlist.db.ItemDBManager;
+import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.util.ImageManager;
 import com.wish.wishlist.util.sync.SyncAgent;
 
@@ -378,6 +380,8 @@ public class WishItem {
         wishObject.put(ItemDBManager.KEY_COMPLETE, _complete);
         wishObject.put(ItemDBManager.KEY_LINK, _link);
         wishObject.put(ItemDBManager.KEY_DELETED, _deleted);
+        List<String> tags = TagItemDBManager.instance(_ctx).tags_of_item(_id);
+        wishObject.put("tags", tags);
 
         return wishObject;
     }

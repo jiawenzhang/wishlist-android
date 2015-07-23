@@ -83,6 +83,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 import com.wish.wishlist.util.GetWebItemTask;
+import com.wish.wishlist.util.sync.SyncAgent;
 
 /*** EditItemInfo.java is responsible for reading in the info. of a newly added item 
  * including its name, description, time, price, location and photo, and saving them
@@ -715,7 +716,7 @@ public class EditItem extends Activity
                     System.currentTimeMillis(), null, _fullsizePhotoPath, itemPrice, _lat, _lng,
                     _ddStr, itemPriority, itemComplete, itemLink, false);
 
-            mItem_id = item.save();
+            mItem_id = item.saveToLocal();
         } else {
             // updating an existing item
             WishItem item = WishItemManager.getInstance(this).getItemById(mItem_id);
@@ -730,11 +731,12 @@ public class EditItem extends Activity
             item.setAddress(_ddStr);
             item.setComplete(itemComplete);
             item.setLink(itemLink);
-            item.save();
+            item.saveToLocal();
         }
 
         //save the tags of this item
         TagItemDBManager.instance(EditItem.this).Update_item_tags(mItem_id, _tags);
+        SyncAgent.getInstance(this).sync();
 
         //close this activity
         Intent resultIntent = new Intent();

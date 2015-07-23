@@ -35,6 +35,8 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.model.WishItemManager;
 
 public class AddTag extends Activity implements TokenCompleteTextView.TokenListener {
     protected final static String PREFIX = "Tags: ";
@@ -57,7 +59,7 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
                     LayoutInflater l = (LayoutInflater)getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-                    convertView = (View)l.inflate(R.layout.tag_layout, parent, false);
+                    convertView = l.inflate(R.layout.tag_layout, parent, false);
                 }
 
                 String tag = getItem(position);
@@ -97,7 +99,7 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
     }
 
     private void showTags() {
-        ArrayList<String> tagList = new ArrayList<String>();
+        ArrayList<String> tagList = new ArrayList<>();
         for (String tag : TagDBManager.instance(this).getAllTags()) {
             if (!currentTags.contains(tag)) {
                 tagList.add(tag);
@@ -172,9 +174,13 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
         if (!lastTag.isEmpty()) {
             currentTags.add(lastTag);
         }
-        ArrayList<String> tags = new ArrayList<String>();
+        ArrayList<String> tags = new ArrayList<>();
         tags.addAll(currentTags);
         TagItemDBManager.instance(AddTag.this).Update_item_tags(mItem_id, tags);
+
+        WishItem wish = WishItemManager.getInstance(this).getItemById(mItem_id);
+        wish.setUpdatedTime(System.currentTimeMillis());
+        wish.save();
 
         Intent resultIntent = new Intent();
         setResult(RESULT_OK, resultIntent);
@@ -194,9 +200,9 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
 
         public TagListAdapter(Context context, int textViewResourceId, ArrayList<String> tagList) {
             super(context, textViewResourceId, tagList);
-            this.tagList = new ArrayList<String>();
+            this.tagList = new ArrayList<>();
             this.tagList.addAll(tagList);
-            this.originalList = new ArrayList<String>();
+            this.originalList = new ArrayList<>();
             this.originalList.addAll(tagList);
         }
 
@@ -214,7 +220,7 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
+            ViewHolder holder;
             if (convertView == null) {
                 LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = vi.inflate(R.layout.tag_list, null);
@@ -279,7 +285,7 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
 
     @Override
     public void onTokenRemoved(Object token) {
-        currentTags.remove((String) token);
+        currentTags.remove(token);
         showTags();
     }
 }

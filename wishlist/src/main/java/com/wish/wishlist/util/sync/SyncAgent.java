@@ -11,6 +11,7 @@ import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.ItemDBManager;
+import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 
@@ -69,6 +70,10 @@ public class SyncAgent {
                             localItem = fromParseObject(item, -1);
                             Log.d(TAG, "item " + localItem.getName() + " is new, save from Parse");
                             long item_id = localItem.saveToLocal();
+
+                            // save the item tags
+                            List<String> tags = item.getList("tags");
+                            TagItemDBManager.instance(m_context).Update_item_tags(item_id, new ArrayList<>(tags));
                             parseItems.add(item_id);
                         } else {
                             if (localItem.getUpdatedTime() < item.getLong(ItemDBManager.KEY_UPDATED_TIME)) {
@@ -77,6 +82,10 @@ public class SyncAgent {
                                 Log.d(TAG, "item " + localItem.getName() + " exists locally, but parse item is newer, overwrite local one");
                                 localItem = fromParseObject(item, localItem.getId());
                                 localItem.saveToLocal();
+
+                                // save the item tags
+                                List<String> tags = item.getList("tags");
+                                TagItemDBManager.instance(m_context).Update_item_tags(localItem.getId(), new ArrayList<>(tags));
                                 parseItems.add(localItem.getId());
                             }
                         }
@@ -156,6 +165,8 @@ public class SyncAgent {
                     wishObject.put(ItemDBManager.KEY_COMPLETE, item.getComplete());
                     wishObject.put(ItemDBManager.KEY_LINK, item.getLink());
                     wishObject.put(ItemDBManager.KEY_DELETED, item.getDeleted());
+                    List<String> tags = TagItemDBManager.instance(m_context).tags_of_item(item.getId());
+                    wishObject.put("tags", tags);
 
                     wishObject.saveInBackground(new SaveCallback() {
                         @Override
