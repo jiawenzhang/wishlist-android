@@ -8,12 +8,14 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.content.ContentValues;
 import android.util.Log;
 import android.database.Cursor;
 
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
@@ -21,6 +23,7 @@ import com.wish.wishlist.util.ImageManager;
 import com.wish.wishlist.util.sync.SyncAgent;
 
 import android.preference.PreferenceManager;
+
 
 public class WishItem {
     private static final String TAG = "WishItem";
@@ -42,6 +45,9 @@ public class WishItem {
     private String _address;
     private String _object_id;
     private boolean _deleted;
+
+    public final static String PARSE_KEY_TAGS = "tags";
+    public final static String PARSE_KEY_IMAGE = "image";
 
     public WishItem(Context ctx, long itemId, String object_id, String storeName, String name, String desc,
                     long updated_time, String picStr, String fullsizePicPath, double price, double latitude, double longitude,
@@ -85,19 +91,19 @@ public class WishItem {
         _object_id = object_id;
     }
 
-    public void setStoreName(String storeName){
+    public void setStoreName(String storeName) {
         _storeName = storeName;
     }
 
-    public String getStoreName(){
+    public String getStoreName() {
         return _storeName;
     }
 
-    public void setPrice(double p){
+    public void setPrice(double p) {
         _price = p;
     }
 
-    public double getPrice(){
+    public double getPrice() {
         return _price;
     }
 
@@ -128,21 +134,19 @@ public class WishItem {
         return _longitude;
     }
 
-    public void setAddress(String add){
+    public void setAddress(String add) {
         _address = add;
     }
 
-    public String getAddress(){
+    public String getAddress() {
         return _address;
     }
 
-    public void setLatitude(double lat)
-    {
+    public void setLatitude(double lat) {
         _latitude = lat;
     }
 
-    public void setLongitude(double lng)
-    {
+    public void setLongitude(double lng) {
         _longitude = lng;
     }
 
@@ -220,6 +224,13 @@ public class WishItem {
         } else {
             return _fullsizePicPath;
         }
+    }
+
+    public String getPicName() {
+        if (getFullsizePicPath() == null) {
+            return null;
+        }
+        return _fullsizePicPath.substring(_fullsizePicPath.lastIndexOf("/") + 1);
     }
 
     public void setFullsizePicPath(String path) {
@@ -362,6 +373,35 @@ public class WishItem {
                 _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted);
     }
 
+    public static void toParseObject(final WishItem item, ParseObject wishObject, final Context ctx)
+    {
+        wishObject.put(ItemDBManager.KEY_STORENAME, item.getStoreName());
+        wishObject.put(ItemDBManager.KEY_NAME, item.getName());
+        wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc());
+        wishObject.put(ItemDBManager.KEY_UPDATED_TIME, item.getUpdatedTime());
+        wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice());
+        wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude());
+        wishObject.put(ItemDBManager.KEY_LONGITUDE, item.getLongitude());
+        wishObject.put(ItemDBManager.KEY_ADDRESS, item.getAddress());
+        wishObject.put(ItemDBManager.KEY_COMPLETE, item.getComplete());
+        wishObject.put(ItemDBManager.KEY_LINK, item.getLink());
+        wishObject.put(ItemDBManager.KEY_DELETED, item.getDeleted());
+        List<String> tags = TagItemDBManager.instance(ctx).tags_of_item(item.getId());
+        wishObject.put(WishItem.PARSE_KEY_TAGS, tags);
+
+        if (item.getFullsizePicPath() != null) {
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            Log.e(TAG, "toParseObject fullsizePicPath " + item.getFullsizePicPath());
+            final Bitmap bitmap = BitmapFactory.decodeFile(item.getFullsizePicPath(), options);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            final byte[] byteArray = stream.toByteArray();
+            ParseFile parseImage = new ParseFile(item.getPicName(), byteArray);
+
+            wishObject.put(PARSE_KEY_IMAGE, parseImage);
+        }
+    }
+
     public ParseObject toParseObject()
     {
         final ParseObject wishObject = new ParseObject(ItemDBManager.DB_TABLE);
@@ -369,20 +409,7 @@ public class WishItem {
         // Parse Keys must start with a letter, and can contain alphanumeric characters and underscores
         //wishObject.put("id", _id);
 
-        wishObject.put(ItemDBManager.KEY_STORENAME, _storeName);
-        wishObject.put(ItemDBManager.KEY_NAME, _name);
-        wishObject.put(ItemDBManager.KEY_DESCRIPTION, _desc);
-        wishObject.put(ItemDBManager.KEY_UPDATED_TIME, _updated_time);
-        wishObject.put(ItemDBManager.KEY_PRICE, _price);
-        wishObject.put(ItemDBManager.KEY_LATITUDE, _latitude);
-        wishObject.put(ItemDBManager.KEY_LONGITUDE, _longitude);
-        wishObject.put(ItemDBManager.KEY_ADDRESS, _address);
-        wishObject.put(ItemDBManager.KEY_COMPLETE, _complete);
-        wishObject.put(ItemDBManager.KEY_LINK, _link);
-        wishObject.put(ItemDBManager.KEY_DELETED, _deleted);
-        List<String> tags = TagItemDBManager.instance(_ctx).tags_of_item(_id);
-        wishObject.put("tags", tags);
-
+        toParseObject(this, wishObject, _ctx);
         return wishObject;
     }
 }

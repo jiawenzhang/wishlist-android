@@ -4,6 +4,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.content.res.Resources;
 
+import com.wish.wishlist.util.camera.PhotoFileCreater;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 public class ImageManager
 {
     private static ImageManager _instance = null;
@@ -76,6 +84,26 @@ public class ImageManager
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(file, options);
+    }
+
+    public static String saveBitmapToAlbum(Bitmap bitmap) {
+        try {
+            //save the image to a file we created in wishlist album
+            File f = PhotoFileCreater.getInstance().setUpPhotoFile(false);
+            String path = f.getAbsolutePath();
+            OutputStream stream = new FileOutputStream(path);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+            stream.flush();
+            stream.close();
+            return path;
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 

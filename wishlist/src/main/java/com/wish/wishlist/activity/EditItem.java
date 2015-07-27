@@ -31,6 +31,7 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.util.DialogOnShowListener;
+import com.wish.wishlist.util.ImageManager;
 import com.wish.wishlist.util.PositionManager;
 import com.wish.wishlist.util.WebRequest;
 import com.wish.wishlist.util.WebResult;
@@ -705,7 +706,7 @@ public class EditItem extends Activity
         }
 
         if (_webBitmap != null) {
-            _fullsizePhotoPath = saveBitmapToAlbum(_webBitmap);
+            _fullsizePhotoPath = ImageManager.saveBitmapToAlbum(_webBitmap);
         } else if (_selectedPic && _selectedPicUri != null) {
             _fullsizePhotoPath = copyPhotoToAlbum(_selectedPicUri);
         }
@@ -888,33 +889,12 @@ public class EditItem extends Activity
             return path;
         }
         catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
         catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
         return null;
-    }
-
-    private String saveBitmapToAlbum(Bitmap bitmap) {
-        try {
-            //save the image to a file we created in wishlist album
-            File f = PhotoFileCreater.getInstance().setUpPhotoFile(false);
-            String path = f.getAbsolutePath();
-            OutputStream stream = new FileOutputStream(path);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-            stream.flush();
-            stream.close();
-            return path;
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-
     }
 
     private boolean navigateBack(){

@@ -2,10 +2,15 @@ package com.wish.wishlist.util.sync;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
@@ -14,6 +19,7 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.ImageManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,7 +78,7 @@ public class SyncAgent {
                             long item_id = localItem.saveToLocal();
 
                             // save the item tags
-                            List<String> tags = item.getList("tags");
+                            List<String> tags = item.getList(WishItem.PARSE_KEY_TAGS);
                             TagItemDBManager.instance(m_context).Update_item_tags(item_id, new ArrayList<>(tags));
                             parseItems.add(item_id);
                         } else {
@@ -84,7 +90,7 @@ public class SyncAgent {
                                 localItem.saveToLocal();
 
                                 // save the item tags
-                                List<String> tags = item.getList("tags");
+                                List<String> tags = item.getList(WishItem.PARSE_KEY_TAGS);
                                 TagItemDBManager.instance(m_context).Update_item_tags(localItem.getId(), new ArrayList<>(tags));
                                 parseItems.add(localItem.getId());
                             }
@@ -123,21 +129,40 @@ public class SyncAgent {
 
     }
 
-    private void addToParse(WishItem item)
-    {
-        Log.d(TAG, "addToParse");
 
-        final ParseObject wishObject = item.toParseObject();
-        final long item_id = item.getId();
+    private void saveToParse(final ParseObject wishObject, final long item_id, final boolean saveImage, final boolean isNew)
+    {
+        // save the wish meta and image data to parse
+        final ParseFile parseImage = wishObject.getParseFile(WishItem.PARSE_KEY_IMAGE);
+        if (saveImage && parseImage != null) {
+            parseImage.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        saveParseObject(wishObject, item_id, isNew);
+                    } else {
+                        Log.e(TAG, "save ParseFile failed " + e.toString());
+                    }
+                }
+            });
+        } else {
+            saveParseObject(wishObject, item_id, isNew);
+        }
+    }
+
+    private void saveParseObject(final ParseObject wishObject, final long item_id, final boolean isNew)
+    {
         wishObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(com.parse.ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "save wish success, object id: " + wishObject.getObjectId());
-                    String object_id = wishObject.getObjectId();
-                    WishItem item = WishItemManager.getInstance(m_context).getItemById(item_id);
-                    item.setObjectId(object_id);
-                    item.saveToLocal();
+                    if (isNew) {
+                        String object_id = wishObject.getObjectId();
+                        WishItem item = WishItemManager.getInstance(m_context).getItemById(item_id);
+                        item.setObjectId(object_id);
+                        item.saveToLocal();
+                    }
                 } else {
                     Log.e(TAG, "save failed " + e.toString());
                 }
@@ -146,39 +171,33 @@ public class SyncAgent {
         });
     }
 
+    private void addToParse(WishItem item)
+    {
+        Log.d(TAG, "addToParse");
+
+        final ParseObject wishObject = item.toParseObject();
+        saveToParse(wishObject, item.getId(), true, true);
+    }
+
     private void updateParse(final WishItem item)
     {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(ItemDBManager.DB_TABLE);
 
         // Retrieve the object by id
         query.getInBackground(item.getObjectId(), new GetCallback<ParseObject>() {
             public void done(ParseObject wishObject, com.parse.ParseException e) {
                 if (e == null) {
-                    wishObject.put(ItemDBManager.KEY_STORENAME, item.getStoreName());
-                    wishObject.put(ItemDBManager.KEY_NAME, item.getName());
-                    wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc());
-                    wishObject.put(ItemDBManager.KEY_UPDATED_TIME, item.getUpdatedTime());
-                    wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice());
-                    wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude());
-                    wishObject.put(ItemDBManager.KEY_LONGITUDE, item.getLongitude());
-                    wishObject.put(ItemDBManager.KEY_ADDRESS, item.getAddress());
-                    wishObject.put(ItemDBManager.KEY_COMPLETE, item.getComplete());
-                    wishObject.put(ItemDBManager.KEY_LINK, item.getLink());
-                    wishObject.put(ItemDBManager.KEY_DELETED, item.getDeleted());
-                    List<String> tags = TagItemDBManager.instance(m_context).tags_of_item(item.getId());
-                    wishObject.put("tags", tags);
-
-                    wishObject.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(com.parse.ParseException e) {
-                            if (e == null) {
-                                Log.d(TAG, "update wish in Parse success");
-                            } else {
-                                Log.e(TAG, "update wish in Parse failed " + e.toString());
-                            }
-                            itemDone();
-                        }
-                    });
+                    String oldImageName = null;
+                    ParseFile pf = wishObject.getParseFile(WishItem.PARSE_KEY_IMAGE);
+                    boolean saveImage = false;
+                    if (pf != null) {
+                        oldImageName = pf.getName();
+                    }
+                    if (!oldImageName.equals(item.getName())) {
+                        saveImage = true;
+                    }
+                    WishItem.toParseObject(item, wishObject, m_context);
+                    saveToParse(wishObject, item.getId(), false, saveImage);
                 } else {
                     Log.e(TAG, "update failed " + e.toString() + " object_id " + item.getObjectId());
                 }
@@ -225,6 +244,19 @@ public class SyncAgent {
                 item.getInt(ItemDBManager.KEY_COMPLETE),
                 item.getString(ItemDBManager.KEY_LINK),
                 item.getBoolean(ItemDBManager.KEY_DELETED));
+
+        final ParseFile parseImage = item.getParseFile("image");
+        if (parseImage != null) {
+            try {
+                final byte[] imageBytes = parseImage.getData();
+                final Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                String imagePath = ImageManager.saveBitmapToAlbum(bitmap);
+                Log.e(TAG, "fromParseObject imagePath " + imagePath);
+                wishItem.setFullsizePicPath(imagePath);
+            } catch (com.parse.ParseException e) {
+                Log.e(TAG, e.toString());
+            }
+        }
 
         return wishItem;
     }
