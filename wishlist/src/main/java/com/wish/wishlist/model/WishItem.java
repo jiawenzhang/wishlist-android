@@ -8,7 +8,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.content.ContentValues;
@@ -390,14 +389,9 @@ public class WishItem {
         wishObject.put(WishItem.PARSE_KEY_TAGS, tags);
 
         if (item.getFullsizePicPath() != null) {
-            final BitmapFactory.Options options = new BitmapFactory.Options();
             Log.e(TAG, "toParseObject fullsizePicPath " + item.getFullsizePicPath());
-            final Bitmap bitmap = BitmapFactory.decodeFile(item.getFullsizePicPath(), options);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            final byte[] byteArray = stream.toByteArray();
-            ParseFile parseImage = new ParseFile(item.getPicName(), byteArray);
-
+            final byte[] data = ImageManager.readFile(item.getFullsizePicPath());
+            ParseFile parseImage = new ParseFile(item.getPicName(), data);
             wishObject.put(PARSE_KEY_IMAGE, parseImage);
         }
     }

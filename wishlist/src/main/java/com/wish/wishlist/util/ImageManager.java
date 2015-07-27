@@ -6,7 +6,10 @@ import android.content.res.Resources;
 
 import com.wish.wishlist.util.camera.PhotoFileCreater;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -96,14 +99,48 @@ public class ImageManager
             stream.flush();
             stream.close();
             return path;
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String saveByteToAlbum(byte[] data)
+    {
+        BufferedOutputStream bos;
+        try {
+            File f = PhotoFileCreater.getInstance().setUpPhotoFile(false);
+            String path = f.getAbsolutePath();
+            FileOutputStream fos = new FileOutputStream(path);
+            bos = new BufferedOutputStream(fos);
+            bos.write(data);
+            bos.close();
+            return path;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static byte[] readFile(String path)
+    {
+        File file = new File(path);
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 }
 

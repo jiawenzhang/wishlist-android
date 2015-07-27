@@ -2,13 +2,10 @@ package com.wish.wishlist.util.sync;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -249,9 +246,7 @@ public class SyncAgent {
         if (parseImage != null) {
             try {
                 final byte[] imageBytes = parseImage.getData();
-                final Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                String imagePath = ImageManager.saveBitmapToAlbum(bitmap);
-                Log.e(TAG, "fromParseObject imagePath " + imagePath);
+                String imagePath = ImageManager.saveByteToAlbum(imageBytes);
                 wishItem.setFullsizePicPath(imagePath);
             } catch (com.parse.ParseException e) {
                 Log.e(TAG, e.toString());
