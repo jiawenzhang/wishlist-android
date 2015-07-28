@@ -12,10 +12,7 @@ import java.io.BufferedOutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Observer;
 import java.util.Observable;
 import java.util.regex.Matcher;
@@ -272,7 +269,8 @@ public class EditItem extends Activity
             _storeEditText.setText(item.getStoreName());
             _fullsizePhotoPath = item.getFullsizePicPath();
             if (_fullsizePhotoPath != null) {
-                Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
+                String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(_fullsizePhotoPath);
+                Picasso.with(this).load(new File(thumb_path)).fit().centerCrop().into(_imageItem);
                 _imageItem.setVisibility(View.VISIBLE);
             }
             _tags = TagItemDBManager.instance(this).tags_of_item(mItem_id);
@@ -377,7 +375,8 @@ public class EditItem extends Activity
                 _webPicUrl = intent.getStringExtra(WEB_PIC_URL);
             }
             if (_fullsizePhotoPath != null) {
-                Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
+                String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(_fullsizePhotoPath);
+                Picasso.with(this).load(new File(thumb_path)).fit().centerCrop().into(_imageItem);
             } else {
                 Picasso.with(this).load(_selectedPicUri).fit().centerCrop().into(_imageItem);
             }
@@ -707,8 +706,10 @@ public class EditItem extends Activity
 
         if (_webBitmap != null) {
             _fullsizePhotoPath = ImageManager.saveBitmapToAlbum(_webBitmap);
+            ImageManager.saveBitmapToThumb(_webBitmap, _fullsizePhotoPath);
         } else if (_selectedPic && _selectedPicUri != null) {
             _fullsizePhotoPath = copyPhotoToAlbum(_selectedPicUri);
+            ImageManager.saveBitmapToThumb(_selectedPicUri, _fullsizePhotoPath, this);
         }
 
         if (mItem_id == -1) {
@@ -956,7 +957,8 @@ public class EditItem extends Activity
         }
         Log.d(TAG, "setTakePhoto " + _fullsizePhotoPath);
         _imageItem.setVisibility(View.VISIBLE);
-        Picasso.with(this).load(new File(_fullsizePhotoPath)).fit().centerCrop().into(_imageItem);
+        String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(_fullsizePhotoPath);
+        Picasso.with(this).load(new File(thumb_path)).fit().centerCrop().into(_imageItem);
         _selectedPicUri = null;
         _webPicUrl = null;
         _selectedPic = false;

@@ -14,6 +14,8 @@ public class PhotoFileCreater {
     private static final String JPEG_FILE_SUFFIX = ".jpg";
     private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
 
+    private static final String TAG = "PhotoFileCreater";
+
     private static PhotoFileCreater instance = null;
 
     public static PhotoFileCreater getInstance() {
@@ -31,24 +33,32 @@ public class PhotoFileCreater {
         }
     }
 
-    private File createImageFile(boolean thumnail) throws IOException {
+    public String thumbFilePath(String fullsizeFilePath)
+    {
+        // thumb file has the same file name as fullsize file, but in the .WishlistThumbnail folder
+        String fileName = fullsizeFilePath.substring(fullsizeFilePath.lastIndexOf("/") + 1);
+        File f = new File(getAlbumDir(true), fileName);
+        return f.getAbsolutePath();
+    }
+
+    private File createImageFile(boolean thumb) throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = JPEG_FILE_PREFIX + timeStamp + "_";
-        File albumF = getAlbumDir(thumnail);
+        File albumF = getAlbumDir(thumb);
         File imageF = File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, albumF);
         return imageF;
     }
 
     public File setUpPhotoFile(boolean thumnail) throws IOException {
-        hideAlbumFromGallery(); //should not be called here, it shold be less frequent
+        hideAlbumFromGallery(); //should not be called here, it should be less frequent
         File f = createImageFile(thumnail);
         return f;
     }
 
-    private String getAlbumName(boolean thumnail) {
+    private String getAlbumName(boolean thumb) {
         //return getString(R.string.album_name);
-        if (thumnail) {
+        if (thumb) {
             return ".WishListThumnail";
         }
         else {
@@ -56,50 +66,48 @@ public class PhotoFileCreater {
         }
     }
 
-    private File getAlbumDir(boolean thumnail) {
+    private File getAlbumDir(boolean thumb) {
         File storageDir = null;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            storageDir = mAlbumStorageDirFactory.getAlbumStorageDir(getAlbumName(thumnail));
+            storageDir = mAlbumStorageDirFactory.getAlbumStorageDir(getAlbumName(thumb));
             if (storageDir != null) {
                 if (! storageDir.mkdirs()) {
                     if (! storageDir.exists()){
-                        Log.d("wishlist", "failed to create directory");
+                        Log.d(TAG, "failed to create directory");
                         return null;
                     }
                 }
             }
 
         } else {
-            Log.v("wishlist", "External storage is not mounted READ/WRITE.");
+            Log.d(TAG, "External storage is not mounted READ/WRITE.");
         }
 
         return storageDir;
     }
 
     private void hideAlbumFromGallery() {
-        File thumnailDir = getAlbumDir(true);
-        String thumnailPath = thumnailDir.getAbsolutePath() + "/.nomedia";
-        //Log.d("wishlist", thumnailPath);
-        File f = new File(thumnailPath);
+        File thumbDir = getAlbumDir(true);
+        String thumbPath = thumbDir.getAbsolutePath() + "/.nomedia";
+        File f = new File(thumbPath);
         if (!f.exists()) {
             try {
                 f.createNewFile();
             }
-            catch (IOException e)
-            {
+            catch (IOException e) {
+                Log.e(TAG, e.toString());
             }
         }
 
         File photoDir = getAlbumDir(false);
         String photoPath = photoDir.getAbsolutePath() + "/.nomedia";
-        Log.d("wishlist", photoPath);
+        Log.d(TAG, photoPath);
         f = new File(photoPath);
         if (!f.exists()) {
             try {
                 f.createNewFile();
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
+                Log.e(TAG, e.toString());
             }
         }
     }

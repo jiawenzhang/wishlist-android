@@ -110,10 +110,12 @@ public class DBAdapter {
             db.execSQL(sql1);
             db.execSQL(sql2);
 
+            //add parse object id column in the Item table
             String sql3 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
                     + " ADD COLUMN object_id TEXT "; // parse object id
 
+            //add deleted column in the Item table
             String sql4 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
                     + " ADD COLUMN deleted INTEGER NOT NULL DEFAULT(0)";

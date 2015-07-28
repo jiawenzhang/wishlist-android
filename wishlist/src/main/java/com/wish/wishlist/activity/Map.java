@@ -35,6 +35,7 @@ import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.camera.PhotoFileCreater;
 
 public class Map extends Activity {
     private GoogleMap mGoogleMap;
@@ -146,7 +147,8 @@ public class Map extends Activity {
                 } else {
                     MarkerCallback callback = new MarkerCallback(marker);
                     thumb.setTag(callback);
-                    Picasso.with(Map.this).load(new File(item.getFullsizePicPath())).resize(200, 200).centerCrop().into(thumb, callback);
+                    String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(item.getFullsizePicPath());
+                    Picasso.with(Map.this).load(new File(thumb_path)).resize(200, 200).centerCrop().into(thumb, callback);
                 }
 
                 TextView name = (TextView) v.findViewById(R.id.map_name);

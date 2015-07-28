@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.camera.PhotoFileCreater;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -66,7 +67,8 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
                     return true;
                 }
                 imageView.setVisibility(View.VISIBLE);
-                Picasso.with(view.getContext()).load(new File(photo_path)).fit().centerCrop().into(imageView);
+                String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(photo_path);
+                Picasso.with(view.getContext()).load(new File(thumb_path)).fit().centerCrop().into(imageView);
                 return true;
             }
 

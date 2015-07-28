@@ -17,6 +17,7 @@ import com.etsy.android.grid.util.DynamicHeightTextView;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.camera.PhotoFileCreater;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -70,7 +71,8 @@ public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
                 int width = size.x / 2;
                 int height = (int) (width * ratio);
 
-                Picasso.with(view.getContext()).load(new File(photo_path)).resize(width, height).into(imageView);
+                String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(photo_path);
+                Picasso.with(view.getContext()).load(new File(thumb_path)).resize(width, height).into(imageView);
                 imageView.setHeightRatio(ratio);
             }
             else if (columnIndex == nNameIndex) {

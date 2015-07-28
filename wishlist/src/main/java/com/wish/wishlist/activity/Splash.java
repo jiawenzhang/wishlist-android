@@ -22,6 +22,7 @@ import com.wish.wishlist.db.StoreDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.DialogOnShowListener;
+import com.wish.wishlist.util.ImageManager;
 
 import java.util.ArrayList;
 
@@ -88,6 +89,16 @@ public class Splash extends Activity{
                         item.setLatitude(latitude);
                         item.setLongitude(longitude);
                         item.saveToLocal();
+                    }
+
+                    // generate thumbnail image for all wishes. starting from v24, we save a scaled down image as thumbnail
+                    // for each wish. we display the thumbnail image in list/grid view, we also sync the thumbnail image using Parse
+                    for (Long id : ids) {
+                        WishItem item = WishItemManager.getInstance(Splash.this).getItemById(id);
+                        String fullsizeImagePath = item.getFullsizePicPath();
+                        if (fullsizeImagePath != null) {
+                            ImageManager.saveBitmapToThumb(fullsizeImagePath);
+                        }
                     }
                 }
 

@@ -1,8 +1,12 @@
 package com.wish.wishlist.util;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.content.res.Resources;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import com.wish.wishlist.util.camera.PhotoFileCreater;
 
@@ -18,9 +22,10 @@ import java.io.OutputStream;
 public class ImageManager
 {
     private static ImageManager _instance = null;
+    public static final int THUMB_WIDTH = 350;
+    private static final String TAG = "ImageManager";
 
-    private ImageManager() {
-    }
+    private ImageManager() {}
 
     public static ImageManager getInstance() {
         if (_instance == null) {
@@ -107,6 +112,45 @@ public class ImageManager
         return null;
     }
 
+    public static void saveBitmapToThumb(Uri imageUri, String fullsizePath, Context ctx)
+    {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver(), imageUri);
+            saveBitmapToThumb(bitmap, fullsizePath);
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.toString());
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+        }
+
+    }
+
+    public static void saveBitmapToThumb(String fullsizePath)
+    {
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        Bitmap bitmap = BitmapFactory.decodeFile(fullsizePath, bmOptions);
+        if (bitmap != null) {
+            saveBitmapToThumb(bitmap, fullsizePath);
+        }
+    }
+
+    public static void saveBitmapToThumb(Bitmap bitmap, String fullsizePath)
+    {
+        try {
+            String thumbPath = PhotoFileCreater.getInstance().thumbFilePath(fullsizePath);
+            Bitmap thumbBitmap = getThumb(bitmap);
+            OutputStream stream = new FileOutputStream(thumbPath);
+            thumbBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            stream.flush();
+            stream.close();
+            Log.d(TAG, "Save thumb as " + thumbPath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String saveByteToAlbum(byte[] data)
     {
         BufferedOutputStream bos;
@@ -141,6 +185,14 @@ public class ImageManager
             e.printStackTrace();
         }
         return bytes;
+    }
+
+    public static Bitmap getThumb(Bitmap bitmap) {
+        Float width = new Float(bitmap.getWidth());
+        Float height = new Float(bitmap.getHeight());
+        Float ratio = height / width;
+        bitmap = Bitmap.createScaledBitmap(bitmap, THUMB_WIDTH, (int) (THUMB_WIDTH * ratio), false);
+        return bitmap;
     }
 }
 
