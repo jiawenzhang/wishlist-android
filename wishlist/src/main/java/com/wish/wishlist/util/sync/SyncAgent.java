@@ -68,6 +68,11 @@ public class SyncAgent {
                         if (localItem == null) {
                             // local item does not exist
                             localItem = fromParseObject(item, -1);
+                            final ParseFile parseImage = item.getParseFile("image");
+                            if (parseImage != null) {
+                                saveParseImage(localItem, parseImage);
+                            }
+
                             Log.d(TAG, "item " + localItem.getName() + " is new, save from Parse");
                             long item_id = localItem.saveToLocal();
 
@@ -81,6 +86,10 @@ public class SyncAgent {
                                 // need to handle delete
                                 Log.d(TAG, "item " + localItem.getName() + " exists locally, but parse item is newer, overwrite local one");
                                 localItem = fromParseObject(item, localItem.getId());
+                                final ParseFile parseImage = item.getParseFile("image");
+                                if (parseImage != null && !parseImage.getName().equals(localItem.getPicName())) {
+                                    saveParseImage(localItem, parseImage);
+                                }
                                 localItem.saveToLocal();
 
                                 // save the item tags
@@ -120,9 +129,20 @@ public class SyncAgent {
                 }
             }
         });
-
     }
 
+    private void saveParseImage(WishItem localItem, ParseFile parseImage)
+    {
+        try {
+            // Fixme, need to delete the old images
+            final byte[] imageBytes = parseImage.getData();
+            ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), true);
+            String imagePath = ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), false);
+            localItem.setFullsizePicPath(imagePath);
+        } catch (com.parse.ParseException e) {
+            Log.e(TAG, e.toString());
+        }
+    }
 
     private void saveToParse(final ParseObject wishObject, final long item_id, final boolean saveImage, final boolean isNew)
     {
@@ -241,17 +261,6 @@ public class SyncAgent {
                 item.getInt(ItemDBManager.KEY_COMPLETE),
                 item.getString(ItemDBManager.KEY_LINK),
                 item.getBoolean(ItemDBManager.KEY_DELETED));
-
-        final ParseFile parseImage = item.getParseFile("image");
-        if (parseImage != null) {
-            try {
-                final byte[] imageBytes = parseImage.getData();
-                String imagePath = ImageManager.saveByteToAlbum(imageBytes);
-                wishItem.setFullsizePicPath(imagePath);
-            } catch (com.parse.ParseException e) {
-                Log.e(TAG, e.toString());
-            }
-        }
 
         return wishItem;
     }

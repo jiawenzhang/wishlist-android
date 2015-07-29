@@ -827,6 +827,7 @@ public class EditItem extends Activity
                 if (resultCode == RESULT_OK) {
                     _fullsizePhotoPath = String.valueOf(_newfullsizePhotoPath);
                     _newfullsizePhotoPath = null;
+                    ImageManager.saveBitmapToThumb(_fullsizePhotoPath);
                     Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
                             .setCategory("Wish")

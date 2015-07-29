@@ -19,6 +19,7 @@ import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.util.ImageManager;
+import com.wish.wishlist.util.camera.PhotoFileCreater;
 import com.wish.wishlist.util.sync.SyncAgent;
 
 import android.preference.PreferenceManager;
@@ -223,6 +224,13 @@ public class WishItem {
         }
     }
 
+    public String getThumbPicPath() {
+        if (getFullsizePicPath() == null) {
+            return null;
+        }
+        return PhotoFileCreater.getInstance().thumbFilePath(getFullsizePicPath());
+    }
+
     public String getPicName() {
         if (getFullsizePicPath() == null) {
             return null;
@@ -386,9 +394,10 @@ public class WishItem {
         List<String> tags = TagItemDBManager.instance().tags_of_item(item.getId());
         wishObject.put(WishItem.PARSE_KEY_TAGS, tags);
 
-        if (item.getFullsizePicPath() != null) {
-            Log.e(TAG, "toParseObject fullsizePicPath " + item.getFullsizePicPath());
-            final byte[] data = ImageManager.readFile(item.getFullsizePicPath());
+        if (item.getThumbPicPath() != null) {
+            // we save a scale-down thumbnail image to parse to save space
+            Log.d(TAG, "toParseObject thumbPicPath " + item.getThumbPicPath());
+            final byte[] data = ImageManager.readFile(item.getThumbPicPath());
             ParseFile parseImage = new ParseFile(item.getPicName(), data);
             wishObject.put(PARSE_KEY_IMAGE, parseImage);
         }

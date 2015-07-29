@@ -66,7 +66,7 @@ public class PhotoFileCreater {
         }
     }
 
-    private File getAlbumDir(boolean thumb) {
+    public File getAlbumDir(boolean thumb) {
         File storageDir = null;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             storageDir = mAlbumStorageDirFactory.getAlbumStorageDir(getAlbumName(thumb));

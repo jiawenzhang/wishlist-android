@@ -131,6 +131,8 @@ public class ImageManager
         Bitmap bitmap = BitmapFactory.decodeFile(fullsizePath, bmOptions);
         if (bitmap != null) {
             saveBitmapToThumb(bitmap, fullsizePath);
+        } else {
+            Log.e(TAG, "saveBitmapToThumb bitmap null");
         }
     }
 
@@ -151,11 +153,11 @@ public class ImageManager
         }
     }
 
-    public static String saveByteToAlbum(byte[] data)
+    public static String saveByteToAlbum(byte[] data, String fileName, boolean thumb)
     {
         BufferedOutputStream bos;
         try {
-            File f = PhotoFileCreater.getInstance().setUpPhotoFile(false);
+            File f = new File(PhotoFileCreater.getInstance().getAlbumDir(thumb), fileName);
             String path = f.getAbsolutePath();
             FileOutputStream fos = new FileOutputStream(path);
             bos = new BufferedOutputStream(fos);
