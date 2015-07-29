@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteQuery;
 import android.util.Log;
 
 import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
 
 public class ItemDBManager extends DBManager {
 	public static final String KEY_ID = "_id";
@@ -40,13 +41,8 @@ public class ItemDBManager extends DBManager {
 	/**
 	 * Constructor - takes the context to allow the database to be
 	 * opened/created
-	 * 
-	 * @param ctx
-	 *            the Context within which to work
 	 */
-	public ItemDBManager(Context ctx) {
-        super(ctx);
-	}
+	public ItemDBManager() {}
 
 	/**
 	 * Add a new item to the database. The item will have a status of open.
@@ -85,7 +81,7 @@ public class ItemDBManager extends DBManager {
         initialValues.put(KEY_LINK, link);
 		initialValues.put(KEY_DELETED, deleted);
 
-		long id = DBAdapter.getInstance(mCtx).db().insert(DB_TABLE, null, initialValues);
+		long id = DBAdapter.getInstance().db().insert(DB_TABLE, null, initialValues);
 		return id;
 	}
 
@@ -132,7 +128,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_DELETED, deleted);
 
 		String where = String.format("_id = '%d'", _id);
-		DBAdapter.getInstance(mCtx).db().update(DB_TABLE, initialValues, where, null);
+		DBAdapter.getInstance().db().update(DB_TABLE, initialValues, where, null);
 	}
 
 	/**
@@ -145,11 +141,11 @@ public class ItemDBManager extends DBManager {
 		//delete from item table
 		String sql = String.format("DELETE FROM Item " + "WHERE _id = '%d' ", _id);
 		try {
-			DBAdapter.getInstance(mCtx).db().execSQL(sql);
+			DBAdapter.getInstance().db().execSQL(sql);
 		} catch (SQLException e) {
 			Log.e("Error deleting item", e.toString());
 		}
-        TagItemDBManager.instance(mCtx).Remove_tags_by_item(_id);
+        TagItemDBManager.instance().Remove_tags_by_item(_id);
 
         //delete tags associated with this item
 		
@@ -163,7 +159,7 @@ public class ItemDBManager extends DBManager {
 
 		Cursor c = null;
 		try {
-			c = DBAdapter.getInstance(mCtx).db().rawQuery(
+			c = DBAdapter.getInstance().db().rawQuery(
 					"SELECT count(*) FROM Item", null);
 			if (0 >= c.getCount()) {
 				return 0;
@@ -243,7 +239,7 @@ public class ItemDBManager extends DBManager {
 		}
         sql = "SELECT * FROM Item " + WHERE + " ORDER BY " + sortOption;
 
-		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
+		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 		c.moveToFirst();
@@ -273,7 +269,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public ItemsCursor getItem(long _id) {
 		String sql = String.format("SELECT * FROM Item " + "WHERE _id = '%d' ", _id);
-		ItemsCursor c = (ItemsCursor) DBAdapter.getInstance(mCtx).db().rawQueryWithFactory(
+		ItemsCursor c = (ItemsCursor) DBAdapter.getInstance().db().rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 
 		if (c != null) {
@@ -284,7 +280,7 @@ public class ItemDBManager extends DBManager {
 
     public ItemsCursor getItemByObjectId(String object_id) {
         String sql = String.format("SELECT * FROM Item " + "WHERE object_id = '%s' ", object_id);
-        ItemsCursor c = (ItemsCursor) DBAdapter.getInstance(mCtx).db().rawQueryWithFactory(
+        ItemsCursor c = (ItemsCursor) DBAdapter.getInstance().db().rawQueryWithFactory(
                 new ItemsCursor.Factory(), sql, null, null);
 
         if (c != null) {
@@ -301,7 +297,7 @@ public class ItemDBManager extends DBManager {
 		String sql = String.format("SELECT * FROM Item "
 				+ "WHERE item_name LIKE '%%%s%%' AND deleted = 0", query);
 
-		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
+		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 		if (c != null) {
@@ -319,7 +315,7 @@ public class ItemDBManager extends DBManager {
 		String sql = String.format("SELECT * FROM Item "
 				+ "WHERE item_name LIKE '%%%s%%' AND deleted = 0 " + "ORDER BY " + sortOption, query);
 		
-		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
+		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 		if (c != null) {
@@ -345,7 +341,7 @@ public class ItemDBManager extends DBManager {
 
 	public ArrayList<Long> getAllItemIds(){
 		String sql = String.format("SELECT _id FROM Item");
-		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
+		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 
@@ -363,7 +359,7 @@ public class ItemDBManager extends DBManager {
 
 	public ArrayList<Long> getItemsWithLocation(){
 		String sql = String.format("SELECT _id, latitude, longitude FROM Item where deleted = 0");
-		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
+		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 
@@ -387,9 +383,9 @@ public class ItemDBManager extends DBManager {
 
     public ArrayList<Long> getItemsSinceLastSynced()
     {
-		long last_synced_time = mCtx.getSharedPreferences(mCtx.getString(R.string.app_name), Context.MODE_PRIVATE).getLong("last_synced_time", 0);
+		long last_synced_time = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE).getLong("last_synced_time", 0);
         String sql = String.format("SELECT _id FROM Item WHERE updated_time > '%d'", last_synced_time);
-        SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
+        SQLiteDatabase d = DBAdapter.getInstance().db();
         ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(new ItemsCursor.Factory(), sql, null, null);
 
 		ArrayList<Long> ids = new ArrayList<>();
@@ -413,7 +409,7 @@ public class ItemDBManager extends DBManager {
 	public Cursor getItemStoreCursor(long _id){
 		String sql = String.format("SELECT store_id FROM Item " + "WHERE _id = '%d' ",
 				_id);
-		SQLiteDatabase d = DBAdapter.getInstance(mCtx).db();
+		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor itemC = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 
@@ -425,7 +421,7 @@ public class ItemDBManager extends DBManager {
 					.getColumnIndexOrThrow(ItemDBManager.KEY_STORE_ID));
 
 			StoreDBManager storeDBA;
-			storeDBA = new StoreDBManager(mCtx);
+			storeDBA = new StoreDBManager();
 
 			// get store cursor
 			storeC = storeDBA.getStore(storeID);
@@ -444,7 +440,7 @@ public class ItemDBManager extends DBManager {
 		Cursor locationC = null;
 		if (storeC != null) {
 			LocationDBManager locationDBA;
-			locationDBA = new LocationDBManager(mCtx);
+			locationDBA = new LocationDBManager();
 
 			//get the location id
 			long locationID = storeC.getLong(storeC

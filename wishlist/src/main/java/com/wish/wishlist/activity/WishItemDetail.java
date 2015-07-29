@@ -87,7 +87,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
         _itemId = i.getLongExtra("item_id", -1);
         _position = i.getIntExtra("position", 0);
 
-        WishItem item = WishItemManager.getInstance(this).getItemById(_itemId);
+        WishItem item = WishItemManager.getInstance().getItemById(_itemId);
         double lat = item.getLatitude();
         double lng = item.getLongitude();
         String address = item.getAddress();
@@ -194,7 +194,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
         // format the price
         String priceStr = item.getPriceAsString();
         if (priceStr != null) {
-            _priceView.setText(WishItem.priceStringWithCurrency(priceStr, this));
+            _priceView.setText(WishItem.priceStringWithCurrency(priceStr));
             _priceView.setVisibility(View.VISIBLE);
         }
         else {
@@ -245,7 +245,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
     }
 
     void addTags() {
-        ArrayList<String> tags = TagItemDBManager.instance(this).tags_of_item(_itemId);
+        ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(_itemId);
         _tagsView.removeAllObject();
         for (String tag : tags) {
             _tagsView.addObject(tag);
@@ -264,7 +264,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
         // Get all of the rows from the database in sorted order as in the
         long[] next_pos_id = new long[2];
         // ItemsCursor c = wishListDB.getItems(ItemsCursor.SortBy.name);
-        _itemDBManager = new ItemDBManager(this);
+        _itemDBManager = new ItemDBManager();
         ItemsCursor c = _itemDBManager.getItems(ItemsCursor.SortBy.item_name.toString(), null, new ArrayList<Long>());
         long nextItemID;
         if (_position < c.getCount())
@@ -294,7 +294,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
         long[] prev_pos_id = new long[2];
 
         // open the database for operations of Item table
-        _itemDBManager = new ItemDBManager(this);
+        _itemDBManager = new ItemDBManager();
         ItemsCursor c = _itemDBManager.getItems(ItemsCursor.SortBy.item_name.toString(), null, new ArrayList<Long>());
         long prevItemID;
         if (_position > 0)
@@ -319,7 +319,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
                 false).setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        WishItemManager.getInstance(WishItemDetail.this).deleteItemById(_itemId);
+                        WishItemManager.getInstance().deleteItemById(_itemId);
                         Intent intent = new Intent();
                         intent.putExtra("id", _itemId);
                         setResult(RESULT_OK, intent);
@@ -355,7 +355,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
                     if (data != null) {
                         long id = data.getLongExtra("itemID", -1);
                         if (id != -1) {
-                            WishItem item = WishItemManager.getInstance(this).getItemById(id);
+                            WishItem item = WishItemManager.getInstance().getItemById(id);
                             showItemInfo(item);
                             addTags();
                         }
@@ -484,8 +484,8 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
             return true;
         }
         else if (itemId == R.id.menu_item_detail_map) {
-            _itemDBManager = new ItemDBManager(this);
-            WishItem wishItem = WishItemManager.getInstance(this).getItemById(_itemId);
+            _itemDBManager = new ItemDBManager();
+            WishItem wishItem = WishItemManager.getInstance().getItemById(_itemId);
 
             if (wishItem.getLatitude() == Double.MIN_VALUE && wishItem.getLongitude() == Double.MIN_VALUE) {
                 Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);

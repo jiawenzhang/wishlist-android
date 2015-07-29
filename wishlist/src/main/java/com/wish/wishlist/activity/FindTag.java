@@ -15,14 +15,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ListView;
@@ -30,7 +27,6 @@ import android.widget.TextView;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagDBManager;
-import com.wish.wishlist.db.TagItemDBManager;
 
 public class FindTag extends Activity {
     TagListAdapter tagsAdapter = null;
@@ -48,7 +44,7 @@ public class FindTag extends Activity {
 
     private void showTags() {
         ArrayList<String> tagList;
-        tagList = TagDBManager.instance(this).getAllTags();
+        tagList = TagDBManager.instance().getAllTags();
 
         tagsAdapter = new TagListAdapter(this, R.layout.tag_list, tagList);
         ListView listView = (ListView) findViewById(R.id.taglist);

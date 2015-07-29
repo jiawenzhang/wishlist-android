@@ -250,7 +250,7 @@ public class EditItem extends Activity
             _mapImageButton.setVisibility(View.GONE);
             _completeCheckBox.setVisibility(View.VISIBLE);
 
-            WishItem item = WishItemManager.getInstance(this).getItemById(mItem_id);
+            WishItem item = WishItemManager.getInstance().getItemById(mItem_id);
             _complete = item.getComplete();
             if (_complete == 1) {
                 _completeCheckBox.setChecked(true);
@@ -273,7 +273,7 @@ public class EditItem extends Activity
                 Picasso.with(this).load(new File(thumb_path)).fit().centerCrop().into(_imageItem);
                 _imageItem.setVisibility(View.VISIBLE);
             }
-            _tags = TagItemDBManager.instance(this).tags_of_item(mItem_id);
+            _tags = TagItemDBManager.instance().tags_of_item(mItem_id);
         } else { //we are editing a new wish, get the location in background
             boolean action_send = (Intent.ACTION_SEND.equals(action) && type != null);
             boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true) && !action_send;
@@ -714,14 +714,14 @@ public class EditItem extends Activity
 
         if (mItem_id == -1) {
             // create a new item
-            WishItem item = new WishItem(this, mItem_id, "", itemStoreName, itemName, itemDesc,
+            WishItem item = new WishItem(mItem_id, "", itemStoreName, itemName, itemDesc,
                     System.currentTimeMillis(), null, _fullsizePhotoPath, itemPrice, _lat, _lng,
                     _ddStr, itemPriority, itemComplete, itemLink, false);
 
             mItem_id = item.saveToLocal();
         } else {
             // updating an existing item
-            WishItem item = WishItemManager.getInstance(this).getItemById(mItem_id);
+            WishItem item = WishItemManager.getInstance().getItemById(mItem_id);
             item.setStoreName(itemStoreName);
             item.setName(itemName);
             item.setDesc(itemDesc);
@@ -737,8 +737,8 @@ public class EditItem extends Activity
         }
 
         //save the tags of this item
-        TagItemDBManager.instance(EditItem.this).Update_item_tags(mItem_id, _tags);
-        SyncAgent.getInstance(this).sync();
+        TagItemDBManager.instance().Update_item_tags(mItem_id, _tags);
+        SyncAgent.getInstance().sync();
 
         //close this activity
         Intent resultIntent = new Intent();

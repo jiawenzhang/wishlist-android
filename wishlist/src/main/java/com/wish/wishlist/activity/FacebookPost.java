@@ -58,7 +58,6 @@ public class FacebookPost extends Activity {
     private boolean _pendingAnnounce;
     private long _itemId;
     private WishItem _wishItem;
-    private Context _ctx;
 
     private UiLifecycleHelper _uiHelper;
     private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -466,7 +465,7 @@ public class FacebookPost extends Activity {
 //                        HttpClient client = new DefaultHttpClient();
 //                        HttpPost post = new HttpPost(uri);
 //                        MultipartEntity postEntity = new MultipartEntity();
-//                        _wishItem = WishItemManager.getInstance(_ctx).getItemById(_itemId);
+//                        _wishItem = WishItemManager.getInstance().getItemById(_itemId);
 //                        String picUriStr = _wishItem.getPicStr();
 //                        Log.d(TAG, "doInBackground pic uri" + picUriStr);
 //                        String picPath = (Uri.parse(picUriStr)).getPath();
@@ -535,7 +534,6 @@ public class FacebookPost extends Activity {
 
         //setContentView(R.layout.login);
 
-        _ctx = this;
         Bundle extras = getIntent().getExtras();
 
         if (!FacebookDialog.canPresentOpenGraphActionDialog(getApplicationContext(),
@@ -544,7 +542,7 @@ public class FacebookPost extends Activity {
         }
 
         _itemId = extras.getLong("itemId");
-        _wishItem = WishItemManager.getInstance(_ctx).getItemById(_itemId);
+        _wishItem = WishItemManager.getInstance().getItemById(_itemId);
 
         OpenGraphObject wish = OpenGraphObject.Factory.createForPost("beans_wishlist:wish");
 
@@ -557,7 +555,7 @@ public class FacebookPost extends Activity {
         String priceStr = _wishItem.getPriceAsString();
         String priceWithCurrency = null;
         if (priceStr != null) {
-            priceWithCurrency = _wishItem.priceStringWithCurrency(priceStr, this);
+            priceWithCurrency = _wishItem.priceStringWithCurrency(priceStr);
         }
 
         String description = "";

@@ -10,23 +10,20 @@ import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
 
 public class WishItemManager {
-    static private Context _ctx;
     private static WishItemManager instance = null;
 
-    public static WishItemManager getInstance(Context ctx) {
+    public static WishItemManager getInstance() {
         if (instance == null) {
-            instance = new WishItemManager(ctx);
+            instance = new WishItemManager();
         }
         return instance;
     }
 
-    private WishItemManager(Context ctx) {
-        _ctx = ctx;
-    }
+    private WishItemManager() {}
 
     public ArrayList<WishItem> getItemsSinceLastSynced()
     {
-        ItemDBManager itemDBManager = new ItemDBManager(_ctx);
+        ItemDBManager itemDBManager = new ItemDBManager();
 
         ArrayList<Long> ids = itemDBManager.getItemsSinceLastSynced();
         ArrayList<WishItem> items = new ArrayList<>();
@@ -43,7 +40,7 @@ public class WishItemManager {
 
     public WishItem getItemByObjectId(String object_id)
     {
-        ItemDBManager itemDBManager = new ItemDBManager(_ctx);
+        ItemDBManager itemDBManager = new ItemDBManager();
 
         ItemsCursor wishItemCursor = itemDBManager.getItemByObjectId(object_id);
         if (wishItemCursor.getCount() == 0) {
@@ -54,7 +51,7 @@ public class WishItemManager {
 
     public WishItem getItemById(long itemId)
     {
-        ItemDBManager itemDBManager = new ItemDBManager(_ctx);
+        ItemDBManager itemDBManager = new ItemDBManager();
 
         ItemsCursor wishItemCursor = itemDBManager.getItem(itemId);
         if (wishItemCursor.getCount() == 0) {
@@ -113,7 +110,7 @@ public class WishItemManager {
         boolean deleted = wishItemCursor.getInt(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_DELETED)) == 1;
 
-        WishItem item = new WishItem(_ctx, itemId, objectId, storeName, itemName, itemDesc,
+        WishItem item = new WishItem(itemId, objectId, storeName, itemName, itemDesc,
                 updated_time, picture_str, fullsize_pic_path, itemPrice, latitude, longitude,
                 itemLocation, itemPriority, itemComplete, itemLink, deleted);
 
@@ -128,7 +125,7 @@ public class WishItemManager {
             file.delete();
         }
 
-        TagItemDBManager.instance(_ctx).Remove_tags_by_item(itemId);
+        TagItemDBManager.instance().Remove_tags_by_item(itemId);
         item.setDeleted(true);
         item.setUpdatedTime(System.currentTimeMillis());
         item.save();

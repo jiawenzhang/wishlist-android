@@ -8,6 +8,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.wish.wishlist.WishlistApplication;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,9 +25,9 @@ public class DBAdapter {
     private static final boolean demo = false;
     private static DBAdapter instance = null;
 
-    public static DBAdapter getInstance(Context context) {
+    public static DBAdapter getInstance() {
         if (instance == null) {
-            instance = new DBAdapter(context);
+            instance = new DBAdapter();
         }
         return instance;
     }
@@ -209,20 +211,15 @@ public class DBAdapter {
             + UserDBManager.USER_EMAIL + " TEXT"
             + ");";
 
-    private static Context context;
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb = null;
 
     /** * Constructor
-     *
-     * @param context
      */
-    private DBAdapter(Context context) {
-        DBAdapter.context = context;
-    }
+    private DBAdapter() {}
 
     public void createDB() {
-        this.mDBHelper = new DatabaseHelper(context);
+        this.mDBHelper = new DatabaseHelper(WishlistApplication.getAppContext());
 
         //according to android sdk document,
         //we must call open() getWritableDatabase() or getReadableDatabase() to actually create the tables;
@@ -246,7 +243,7 @@ public class DBAdapter {
             // create table "item" and insert into the table
             db.execSQL(CREATE_TABLE_ITEM);
             if (demo) {
-                ItemDBManager mItemDBManager = new ItemDBManager(context);
+                ItemDBManager mItemDBManager = new ItemDBManager();
                 mItemDBManager.addItem(
                         "",
                         "Apple Store",

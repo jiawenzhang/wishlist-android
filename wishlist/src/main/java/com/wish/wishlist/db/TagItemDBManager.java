@@ -16,9 +16,9 @@ public class TagItemDBManager extends DBManager {
 
     private static TagItemDBManager _instance = null;
 
-    public static TagItemDBManager instance(Context ctx) {
+    public static TagItemDBManager instance() {
         if (_instance == null) {
-            _instance = new TagItemDBManager(ctx.getApplicationContext());
+            _instance = new TagItemDBManager();
         }
         return _instance;
     }
@@ -26,16 +26,11 @@ public class TagItemDBManager extends DBManager {
 	/**
 	 * Constructor - takes the context to allow the database to be
 	 * opened/created
-	 *
-	 * @param ctx
-	 *            the Context within which to work
 	 */
-	private TagItemDBManager(Context ctx) {
-        super(ctx);
-	}
+	private TagItemDBManager() {}
 
     private long Tag_item(String tagName, long itemId) {
-        long tagId = TagDBManager.instance(mCtx).createTag(tagName);
+        long tagId = TagDBManager.instance().createTag(tagName);
         return Tag_item(tagId, itemId);
     }
 
@@ -43,22 +38,22 @@ public class TagItemDBManager extends DBManager {
         ContentValues initialValues = new ContentValues();
         initialValues.put(TAG_ID, tagId);
         initialValues.put(ITEM_ID, itemId);
-        long rowId = DBAdapter.getInstance(mCtx).db().replace(DB_TABLE, null, initialValues);
+        long rowId = DBAdapter.getInstance().db().replace(DB_TABLE, null, initialValues);
         return rowId;
     }
 
     private void Untag_item(String tagName, long itemId) {
-        long tagId = TagDBManager.instance(mCtx).getIdByName(tagName);
+        long tagId = TagDBManager.instance().getIdByName(tagName);
         Untag_item(tagId, itemId);
     }
 
     private void Untag_item(long tagId, long itemId) {
         String where = TAG_ID + "=" + tagId + " AND " + ITEM_ID + "=" + itemId;
-        DBAdapter.getInstance(mCtx).db().delete(DB_TABLE, where, null);
+        DBAdapter.getInstance().db().delete(DB_TABLE, where, null);
 
         //Delete the tag in the tag table if no item is referencing it
         if (!tagExists(tagId)) {
-            TagDBManager.instance(mCtx).deleteTag(tagId);
+            TagDBManager.instance().deleteTag(tagId);
         }
     }
 
@@ -69,24 +64,24 @@ public class TagItemDBManager extends DBManager {
 
         //delete all the entries referencing this item in the TagItem table
         String where = ITEM_ID + "=" + itemId;
-        DBAdapter.getInstance(mCtx).db().delete(DB_TABLE, where, null);
+        DBAdapter.getInstance().db().delete(DB_TABLE, where, null);
 
         //Delete the tags in the tag table if no other items are referencing it
         for (long tagId : tagIds) {
             if (!tagExists(tagId)) {
-                TagDBManager.instance(mCtx).deleteTag(tagId);
+                TagDBManager.instance().deleteTag(tagId);
             }
         }
     }
 
     Boolean tagExists(long tagId) {
-        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, new String[]{TAG_ID}, TAG_ID + "=" + tagId, null, null, null, null, null);
+        Cursor cursor = DBAdapter.getInstance().db().query(true, DB_TABLE, new String[]{TAG_ID}, TAG_ID + "=" + tagId, null, null, null, null, null);
         Boolean exists = cursor.getCount() >= 1;
         return exists;
     }
 
     public ArrayList<String> tags_of_item(long itemId) {
-        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, new String[]{TAG_ID}, ITEM_ID + "=" + itemId, null, null, null, null, null);
+        Cursor cursor = DBAdapter.getInstance().db().query(true, DB_TABLE, new String[]{TAG_ID}, ITEM_ID + "=" + itemId, null, null, null, null, null);
         ArrayList<String> ids = new ArrayList<String>();
         while (cursor.moveToNext()) {
             ids.add(cursor.getString(cursor.getColumnIndexOrThrow(TAG_ID)));
@@ -95,12 +90,12 @@ public class TagItemDBManager extends DBManager {
             //We don't have any tags for this item, return an empty tag list
             return new ArrayList<String>();
         }
-        ArrayList<String> tags = TagDBManager.instance(mCtx).getTagsByIds(ids.toArray(new String[ids.size()]));
+        ArrayList<String> tags = TagDBManager.instance().getTagsByIds(ids.toArray(new String[ids.size()]));
         return tags;
     }
 
     public ArrayList<Long> tagIds_by_item(long itemId) {
-        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, new String[]{TAG_ID}, ITEM_ID + "=" + itemId, null, null, null, null, null);
+        Cursor cursor = DBAdapter.getInstance().db().query(true, DB_TABLE, new String[]{TAG_ID}, ITEM_ID + "=" + itemId, null, null, null, null, null);
         ArrayList<Long> tagIds = new ArrayList<Long>();
         while (cursor.moveToNext()) {
             long tagId = cursor.getLong(cursor.getColumnIndexOrThrow(TAG_ID));
@@ -110,8 +105,8 @@ public class TagItemDBManager extends DBManager {
     }
 
     public ArrayList<Long> ItemIds_by_tag(String tagName) {
-        long tagId = TagDBManager.instance(mCtx).getIdByName(tagName);
-        Cursor cursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, new String[] { ITEM_ID }, TAG_ID + "=" + tagId, null, null, null, null, null);
+        long tagId = TagDBManager.instance().getIdByName(tagName);
+        Cursor cursor = DBAdapter.getInstance().db().query(true, DB_TABLE, new String[] { ITEM_ID }, TAG_ID + "=" + tagId, null, null, null, null, null);
         ArrayList<Long> ItemIds = new ArrayList<Long>();
         while (cursor.moveToNext()) {
             long item_id = cursor.getLong(cursor.getColumnIndexOrThrow(ITEM_ID));
@@ -123,12 +118,12 @@ public class TagItemDBManager extends DBManager {
     //tag the item with the given tags
     public void Update_item_tags(long itemId, ArrayList<String> tags) {
         // app icon save in action bar clicked;
-        ArrayList<String> oldTags = TagItemDBManager.instance(mCtx).tags_of_item(itemId);
+        ArrayList<String> oldTags = TagItemDBManager.instance().tags_of_item(itemId);
 
         //Remove the deleted tags
         for (String tag : oldTags) {
             if (!tags.contains(tag)) {
-                TagItemDBManager.instance(mCtx).Untag_item(tag, itemId);
+                TagItemDBManager.instance().Untag_item(tag, itemId);
             }
             else {
                 //Remove the tags we already have so the following for loop will not tag them again
@@ -138,7 +133,7 @@ public class TagItemDBManager extends DBManager {
 
         //Add the new tags
         for (String tag : tags) {
-            TagItemDBManager.instance(mCtx).Tag_item(tag, itemId);
+            TagItemDBManager.instance().Tag_item(tag, itemId);
         }
     }
 }

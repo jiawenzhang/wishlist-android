@@ -18,17 +18,12 @@ public class StoreDBManager extends DBManager {
     /**
      * Constructor - takes the context to allow the database to be
      * opened/created
-     *
-     * @param ctx
-     *            the Context within which to work
      */
-    public StoreDBManager(Context ctx) {
-        super(ctx);
-    }
+    public StoreDBManager() {}
 
     public Cursor getStore(long _id) throws SQLException {
 
-        Cursor mCursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, new String[]{KEY_ID, KEY_NAME, KEY_LOCATION_ID},
+        Cursor mCursor = DBAdapter.getInstance().db().query(true, DB_TABLE, new String[]{KEY_ID, KEY_NAME, KEY_LOCATION_ID},
                         KEY_ID + "=" + _id, null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();

@@ -92,7 +92,7 @@ public class ShareAppDialogFragment extends DialogFragment {
                     // ((Activity)_ctx).startActivityForResult(snsIntent, 1);
                     //new PostToFacebookDialog(_ctx, _message).show();
                 } else {
-                    WishItem item = WishItemManager.getInstance(_ctx).getItemById(_itemId);
+                    WishItem item = WishItemManager.getInstance().getItemById(_itemId);
                     String message = item.getShareMessage(false);
                     Intent intent = new Intent(android.content.Intent.ACTION_SEND);
                     intent.setClassName(info.activityInfo.packageName, info.activityInfo.name);

@@ -1,6 +1,7 @@
 package com.wish.wishlist;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -22,6 +23,7 @@ public class WishlistApplication extends Application {
     }
 
     HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+    private static Context m_context;
 
     public WishlistApplication()
     {
@@ -31,6 +33,8 @@ public class WishlistApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        m_context = getApplicationContext();
 
         // Initialize Crash Reporting.
         ParseCrashReporting.enable(this);
@@ -57,6 +61,9 @@ public class WishlistApplication extends Application {
         ParseACL.setDefaultACL(defaultACL, true);
     }
 
+    public static Context getAppContext() {
+        return m_context;
+    }
 
     public synchronized Tracker getTracker(TrackerName trackerId) {
         if (!mTrackers.containsKey(trackerId)) {

@@ -159,7 +159,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
 
         _tagOption = pref.getString(PREF_TAG_OPTION, null);
         if (_tagOption != null) {
-            _itemIds = TagItemDBManager.instance(this).ItemIds_by_tag(_tagOption);
+            _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tagOption);
         }
 
         // Get the intent, verify the action and get the query
@@ -201,7 +201,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         registerForContextMenu(_gridView);
         registerForContextMenu(_staggeredView);
 
-        _itemDBManager = new ItemDBManager(this);
+        _itemDBManager = new ItemDBManager();
 
         handleIntent(getIntent());
 
@@ -457,7 +457,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                WishItemManager.getInstance(WishList.this).deleteItemById(_selectedItem_id);
+                WishItemManager.getInstance().deleteItemById(_selectedItem_id);
                 updateView();
             }
         });
@@ -520,7 +520,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_item_context, menu);
 
-        WishItem wish_item = WishItemManager.getInstance(this).getItemById(_selectedItem_id);
+        WishItem wish_item = WishItemManager.getInstance().getItemById(_selectedItem_id);
         int complete = wish_item.getComplete();
         MenuItem mi = menu.findItem(R.id.COMPLETE);
         if (complete == 1) {
@@ -608,7 +608,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         //	}
         else if (itemId == R.id.MARK) {
 
-            WishItem wishItem = WishItemManager.getInstance(this).getItemById(_selectedItem_id);
+            WishItem wishItem = WishItemManager.getInstance().getItemById(_selectedItem_id);
             if (wishItem.getLatitude() == Double.MIN_VALUE && wishItem.getLongitude() == Double.MIN_VALUE) {
                 Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
                 toast.show();
@@ -648,7 +648,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         }
 
         else if (itemId == R.id.COMPLETE) {
-            WishItem wish_item = WishItemManager.getInstance(this).getItemById(_selectedItem_id);
+            WishItem wish_item = WishItemManager.getInstance().getItemById(_selectedItem_id);
             if (wish_item.getComplete() == 1) {
                 wish_item.setComplete(0);
                 Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
@@ -842,7 +842,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         // we then enter the AddTag view for item "A" and delete the tag "T" from A. When we come back to
         // this list, we need to update _itemIds to exclude "A" so "A" will not show up in this list.
         if (_tagOption != null) {
-            _itemIds = TagItemDBManager.instance(this).ItemIds_by_tag(_tagOption);
+            _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tagOption);
             if (_itemIds.isEmpty()) {
                 _tagOption = null;
             }
@@ -909,7 +909,7 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
                     editor.commit();
 
                     if (_tagOption != null) {
-                        _itemIds = TagItemDBManager.instance(this).ItemIds_by_tag(_tagOption);
+                        _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tagOption);
 
                         // This is a HACK to fix the bug:
                         // If we have scrolled to the middle of the staggered view, and then filter wish by tag,

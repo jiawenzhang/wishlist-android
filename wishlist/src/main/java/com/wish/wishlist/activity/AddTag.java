@@ -88,7 +88,7 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
 
         mItem_id = getIntent().getLongExtra(ITEM_ID, -1);
         if (savedInstanceState == null) { // make sure on screen orientation, we don't add the same tags again to the view
-            ArrayList<String> tags = TagItemDBManager.instance(AddTag.this).tags_of_item(mItem_id);
+            ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItem_id);
             for (String tag : tags) {
                 completionView.addObject(tag);
                 currentTags.add(tag);
@@ -100,7 +100,7 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
 
     private void showTags() {
         ArrayList<String> tagList = new ArrayList<>();
-        for (String tag : TagDBManager.instance(this).getAllTags()) {
+        for (String tag : TagDBManager.instance().getAllTags()) {
             if (!currentTags.contains(tag)) {
                 tagList.add(tag);
             }
@@ -176,9 +176,9 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
         }
         ArrayList<String> tags = new ArrayList<>();
         tags.addAll(currentTags);
-        TagItemDBManager.instance(AddTag.this).Update_item_tags(mItem_id, tags);
+        TagItemDBManager.instance().Update_item_tags(mItem_id, tags);
 
-        WishItem wish = WishItemManager.getInstance(this).getItemById(mItem_id);
+        WishItem wish = WishItemManager.getInstance().getItemById(mItem_id);
         wish.setUpdatedTime(System.currentTimeMillis());
         wish.save();
 

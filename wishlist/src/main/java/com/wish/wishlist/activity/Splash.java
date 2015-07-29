@@ -43,7 +43,7 @@ public class Splash extends Activity{
 
         Handler x = new Handler();
         x.postDelayed(new splashhandler(), 2000);
-        DBAdapter.getInstance(this).createDB();
+        DBAdapter.getInstance().createDB();
     }
 
     class splashhandler implements Runnable {
@@ -65,7 +65,7 @@ public class Splash extends Activity{
                     // instead of the location table, we should drop store and location table in db schema upgrade
                     // from v24->v25
                     // copy the latitude and longitude from location table to item table and save them
-                    ItemDBManager itemDBManager = new ItemDBManager(Splash.this);
+                    ItemDBManager itemDBManager = new ItemDBManager();
                     ArrayList<Long> ids = itemDBManager.getAllItemIds();
 
                     for (Long id : ids) {
@@ -76,16 +76,16 @@ public class Splash extends Activity{
                         }
 
                         // Open the Store table in the database
-                        StoreDBManager storeDBManager = new StoreDBManager(Splash.this);
+                        StoreDBManager storeDBManager = new StoreDBManager();
                         Cursor storeCursor = storeDBManager.getStore(storeID);
 
                         long locationID = storeCursor.getLong(storeCursor.getColumnIndexOrThrow(StoreDBManager.KEY_LOCATION_ID));
 
-                        LocationDBManager locationDBManager = new LocationDBManager(Splash.this);
+                        LocationDBManager locationDBManager = new LocationDBManager();
                         double latitude = locationDBManager.getLatitude(locationID);
                         double longitude =  locationDBManager.getLongitude(locationID);
 
-                        WishItem item = WishItemManager.getInstance(Splash.this).getItemById(id);
+                        WishItem item = WishItemManager.getInstance().getItemById(id);
                         item.setLatitude(latitude);
                         item.setLongitude(longitude);
                         item.saveToLocal();
@@ -94,7 +94,7 @@ public class Splash extends Activity{
                     // generate thumbnail image for all wishes. starting from v24, we save a scaled down image as thumbnail
                     // for each wish. we display the thumbnail image in list/grid view, we also sync the thumbnail image using Parse
                     for (Long id : ids) {
-                        WishItem item = WishItemManager.getInstance(Splash.this).getItemById(id);
+                        WishItem item = WishItemManager.getInstance().getItemById(id);
                         String fullsizeImagePath = item.getFullsizePicPath();
                         if (fullsizeImagePath != null) {
                             ImageManager.saveBitmapToThumb(fullsizeImagePath);

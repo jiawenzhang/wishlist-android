@@ -88,7 +88,7 @@ public class WishItemStaggeredCursorAdapter extends SimpleCursorAdapter {
                 if (price != Double.MIN_VALUE) {
                     DecimalFormat Dec = new DecimalFormat("0.00");
                     String priceStr = (Dec.format(price));
-                    viewPrice.setText(WishItem.priceStringWithCurrency(priceStr, view.getContext()));
+                    viewPrice.setText(WishItem.priceStringWithCurrency(priceStr));
                     viewPrice.setVisibility(View.VISIBLE);
                 }
                 else {

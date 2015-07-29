@@ -6,7 +6,6 @@ import java.util.Date;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -16,6 +15,7 @@ import android.database.Cursor;
 
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.util.ImageManager;
@@ -26,7 +26,6 @@ import android.preference.PreferenceManager;
 
 public class WishItem {
     private static final String TAG = "WishItem";
-    private final Context _ctx;
     private long _id = -1;
     private String _storeName;
     private String _name;
@@ -48,7 +47,7 @@ public class WishItem {
     public final static String PARSE_KEY_TAGS = "tags";
     public final static String PARSE_KEY_IMAGE = "image";
 
-    public WishItem(Context ctx, long itemId, String object_id, String storeName, String name, String desc,
+    public WishItem(long itemId, String object_id, String storeName, String name, String desc,
                     long updated_time, String picStr, String fullsizePicPath, double price, double latitude, double longitude,
                     String address, int priority, int complete, String link, boolean deleted) {
         _id = itemId;
@@ -60,7 +59,6 @@ public class WishItem {
         _address = address;
         _picStr = picStr;
         _storeName = storeName;
-        _ctx = ctx;
         _name = name;
         _desc = desc;
         _updated_time = updated_time;
@@ -117,8 +115,8 @@ public class WishItem {
         }
     }
 
-    public static String priceStringWithCurrency(String price, Context ctx) {
-        String currencySymbol = PreferenceManager.getDefaultSharedPreferences(ctx).getString("currency", "");
+    public static String priceStringWithCurrency(String price) {
+        String currencySymbol = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).getString("currency", "");
         if (currencySymbol.isEmpty()) {
             return price;
         }
@@ -245,7 +243,7 @@ public class WishItem {
         if (getFullsizePicPath() != null) {
             Log.d("fullsizepicpath", getFullsizePicPath());
         }
-        Uri uri = _ctx.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Uri uri = WishlistApplication.getAppContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
         if (uri != null) {
             return uri;
@@ -261,7 +259,7 @@ public class WishItem {
                 };
         String selectionClause = MediaStore.Images.Media.DATA + " = ?";
         String[] selectionArgs = {getFullsizePicPath()};
-        Cursor c = _ctx.getContentResolver().query (
+        Cursor c = WishlistApplication.getAppContext().getContentResolver().query (
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection,
                 selectionClause,
@@ -307,7 +305,7 @@ public class WishItem {
         // format the price
         String priceStr = getPriceAsString();
         if (priceStr != null) {
-            message += priceStringWithCurrency(priceStr, _ctx) + "\n";
+            message += priceStringWithCurrency(priceStr) + "\n";
         }
 
         //used as a note
@@ -349,13 +347,13 @@ public class WishItem {
     public long save()
     {
         long id = saveToLocal();
-        SyncAgent.getInstance(_ctx).sync();
+        SyncAgent.getInstance().sync();
         return id;
     }
 
     public long saveToLocal()
     {
-        ItemDBManager manager = new ItemDBManager(_ctx);
+        ItemDBManager manager = new ItemDBManager();
         if (_id == -1) { // new item
             _id = manager.addItem(_object_id, _storeName, _name, _desc, _updated_time, _picStr, _fullsizePicPath,
                     _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted);
@@ -367,12 +365,12 @@ public class WishItem {
 
     private void updateDB()
     {
-        ItemDBManager manager = new ItemDBManager(_ctx);
+        ItemDBManager manager = new ItemDBManager();
         manager.updateItem(_id, _object_id, _storeName, _name, _desc, _updated_time, _picStr, _fullsizePicPath,
                 _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted);
     }
 
-    public static void toParseObject(final WishItem item, ParseObject wishObject, final Context ctx)
+    public static void toParseObject(final WishItem item, ParseObject wishObject)
     {
         wishObject.put(ItemDBManager.KEY_STORENAME, item.getStoreName());
         wishObject.put(ItemDBManager.KEY_NAME, item.getName());
@@ -385,7 +383,7 @@ public class WishItem {
         wishObject.put(ItemDBManager.KEY_COMPLETE, item.getComplete());
         wishObject.put(ItemDBManager.KEY_LINK, item.getLink());
         wishObject.put(ItemDBManager.KEY_DELETED, item.getDeleted());
-        List<String> tags = TagItemDBManager.instance(ctx).tags_of_item(item.getId());
+        List<String> tags = TagItemDBManager.instance().tags_of_item(item.getId());
         wishObject.put(WishItem.PARSE_KEY_TAGS, tags);
 
         if (item.getFullsizePicPath() != null) {
@@ -403,7 +401,7 @@ public class WishItem {
         // Parse Keys must start with a letter, and can contain alphanumeric characters and underscores
         //wishObject.put("id", _id);
 
-        toParseObject(this, wishObject, _ctx);
+        toParseObject(this, wishObject);
         return wishObject;
     }
 }

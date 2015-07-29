@@ -1,7 +1,5 @@
 package com.wish.wishlist.db;
 
-import android.content.Context;
-
 /***
  * StoreDBManager provides access to opexarations on data in store table
  */
@@ -18,11 +16,6 @@ public class UserDBManager extends DBManager {
     /**
      * Constructor - takes the context to allow the database to be
      * opened/created
-     *
-     * @param ctx
-     *            the Context within which to work
      */
-    public UserDBManager(Context ctx) {
-        super(ctx);
-    }
+    public UserDBManager() {}
 }

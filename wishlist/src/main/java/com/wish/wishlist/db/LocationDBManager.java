@@ -19,13 +19,8 @@ public class LocationDBManager extends DBManager {
     /**
      * Constructor - takes the context to allow the database to be
      * opened/created
-     *
-     * @param ctx
-     *            the Context within which to work
      */
-    public LocationDBManager(Context ctx) {
-        super(ctx);
-    }
+    public LocationDBManager() {}
 
     /**
      * Return a Cursor positioned at the location that matches the given rowId
@@ -36,7 +31,7 @@ public class LocationDBManager extends DBManager {
      *             if location could not be found/retrieved
      */
     public Cursor getLocation(long rowId) throws SQLException {
-        Cursor mCursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, null, KEY_ID + "=" + rowId, null, null,
+        Cursor mCursor = DBAdapter.getInstance().db().query(true, DB_TABLE, null, KEY_ID + "=" + rowId, null, null,
                 null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -45,7 +40,7 @@ public class LocationDBManager extends DBManager {
     }
 
     public double getLatitude(long rowId) throws SQLException {
-        Cursor mCursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, null, KEY_ID + "=" + rowId, null, null,
+        Cursor mCursor = DBAdapter.getInstance().db().query(true, DB_TABLE, null, KEY_ID + "=" + rowId, null, null,
                 null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -56,7 +51,7 @@ public class LocationDBManager extends DBManager {
     }
 
     public double getLongitude(long rowId) throws SQLException {
-        Cursor mCursor = DBAdapter.getInstance(mCtx).db().query(true, DB_TABLE, null, KEY_ID + "=" + rowId, null, null,
+        Cursor mCursor = DBAdapter.getInstance().db().query(true, DB_TABLE, null, KEY_ID + "=" + rowId, null, null,
                         null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();

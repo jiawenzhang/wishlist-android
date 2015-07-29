@@ -1,23 +1,16 @@
 package com.wish.wishlist.db;
 
-import android.content.Context;
-
 /***
  * DBManager is the base class of various subclasses to access data in db table
  */
 public class DBManager {
-    protected final Context mCtx;
     private static final String TAG = "DBManager";
 
     /**
      * Constructor - takes the context to allow the database to be
      * opened/created
-     *
-     * @param ctx
-     *            the Context within which to work
      */
-    public DBManager(Context ctx) {
-        this.mCtx = ctx;
+    public DBManager() {
     }
 
     protected String makePlaceholders(int len) {
