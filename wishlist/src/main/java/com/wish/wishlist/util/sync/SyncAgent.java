@@ -2,6 +2,8 @@ package com.wish.wishlist.util.sync;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.parse.FindCallback;
@@ -11,6 +13,8 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.ItemDBManager;
@@ -30,6 +34,7 @@ import java.util.List;
 public class SyncAgent {
     private static SyncAgent instance = null;
     private long m_items_to_upload;
+    private Target m_target;
     private static String TAG = "SyncAgent";
 
     public static SyncAgent getInstance() {
@@ -68,13 +73,18 @@ public class SyncAgent {
                         if (localItem == null) {
                             // local item does not exist
                             localItem = fromParseObject(item, -1);
-                            final ParseFile parseImage = item.getParseFile("image");
-                            if (parseImage != null) {
-                                saveParseImage(localItem, parseImage);
-                            }
-
-                            Log.d(TAG, "item " + localItem.getName() + " is new, save from Parse");
                             long item_id = localItem.saveToLocal();
+                            String parsePicURL = item.getString(ItemDBManager.KEY_PHOTO_URL);
+                            if (parsePicURL != null) {
+                                saveWebImage(parsePicURL, localItem.getId());
+                            } else {
+                                final ParseFile parseImage = item.getParseFile("image");
+                                if (parseImage != null) {
+                                    saveParseImage(localItem, parseImage);
+                                    localItem.saveToLocal();
+                                }
+                            }
+                            Log.d(TAG, "item " + localItem.getName() + " is new, save from Parse");
 
                             // save the item tags
                             List<String> tags = item.getList(WishItem.PARSE_KEY_TAGS);
@@ -86,11 +96,20 @@ public class SyncAgent {
                                 // need to handle delete
                                 Log.d(TAG, "item " + localItem.getName() + " exists locally, but parse item is newer, overwrite local one");
                                 localItem = fromParseObject(item, localItem.getId());
-                                final ParseFile parseImage = item.getParseFile("image");
-                                if (parseImage != null && !parseImage.getName().equals(localItem.getPicName())) {
-                                    saveParseImage(localItem, parseImage);
-                                }
                                 localItem.saveToLocal();
+                                String parsePicURL = item.getString(ItemDBManager.KEY_PHOTO_URL);
+                                if (parsePicURL != null) {
+                                    if (!parsePicURL.equals(localItem.getPicURL())) {
+                                        // Fixme need to delete the old image
+                                        saveWebImage(parsePicURL, localItem.getId());
+                                    }
+                                } else {
+                                    final ParseFile parseImage = item.getParseFile("image");
+                                    if (parseImage != null && !parseImage.getName().equals(localItem.getPicName())) {
+                                        saveParseImage(localItem, parseImage);
+                                        localItem.saveToLocal();
+                                    }
+                                }
 
                                 // save the item tags
                                 List<String> tags = item.getList(WishItem.PARSE_KEY_TAGS);
@@ -129,6 +148,38 @@ public class SyncAgent {
                 }
             }
         });
+    }
+
+    private void saveWebImage(final String url, final long item_id)
+    {
+        Log.d(TAG, "saveWebImage " + url);
+        m_target = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                if (bitmap != null) {
+                    bitmapLoaded(bitmap, item_id, url);
+                } else {
+                    Log.e(TAG, "saveWebImage->onBitmapLoaded null bitmap");
+                }
+            }
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {}
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {}
+        };
+
+        Picasso.with(WishlistApplication.getAppContext()).load(url).into(m_target);
+    }
+
+    private void bitmapLoaded(final Bitmap bitmap, long item_id, String url)
+    {
+        String fullsizePath = ImageManager.saveBitmapToAlbum(bitmap);
+        ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
+        WishItem item = WishItemManager.getInstance().getItemById(item_id);
+        item.setFullsizePicPath(fullsizePath);
+        item.setPicURL(url);
+        item.saveToLocal();
     }
 
     private void saveParseImage(WishItem localItem, ParseFile parseImage)
@@ -251,7 +302,7 @@ public class SyncAgent {
                 item.getString(ItemDBManager.KEY_NAME),
                 item.getString(ItemDBManager.KEY_DESCRIPTION),
                 item.getLong(ItemDBManager.KEY_UPDATED_TIME),
-                null, // pic_str
+                null, // photoURL
                 null, // _fullsizePhotoPath,
                 item.getDouble(ItemDBManager.KEY_PRICE),
                 item.getDouble(ItemDBManager.KEY_LATITUDE),

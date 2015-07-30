@@ -33,7 +33,7 @@ public class WishItem {
     private String _comments;
     private String _desc;
     private long _updated_time;
-    private String _picStr; //this is a uri
+    private String _picURL;
     private String _fullsizePicPath;
     private int _priority;
     private int _complete;
@@ -49,7 +49,7 @@ public class WishItem {
     public final static String PARSE_KEY_IMAGE = "image";
 
     public WishItem(long itemId, String object_id, String storeName, String name, String desc,
-                    long updated_time, String picStr, String fullsizePicPath, double price, double latitude, double longitude,
+                    long updated_time, String picURL, String fullsizePicPath, double price, double latitude, double longitude,
                     String address, int priority, int complete, String link, boolean deleted) {
         _id = itemId;
         _object_id = object_id;
@@ -58,7 +58,7 @@ public class WishItem {
         _latitude = latitude;
         _longitude = longitude;
         _address = address;
-        _picStr = picStr;
+        _picURL = picURL;
         _storeName = storeName;
         _name = name;
         _desc = desc;
@@ -288,8 +288,12 @@ public class WishItem {
         return uri;
     }
 
-    public String getPicStr() {
-        return _picStr;
+    public String getPicURL() {
+        return _picURL;
+    }
+
+    public void setPicURL(String picURL) {
+        _picURL = picURL;
     }
 
     @Override
@@ -363,7 +367,7 @@ public class WishItem {
     {
         ItemDBManager manager = new ItemDBManager();
         if (_id == -1) { // new item
-            _id = manager.addItem(_object_id, _storeName, _name, _desc, _updated_time, _picStr, _fullsizePicPath,
+            _id = manager.addItem(_object_id, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,
                     _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted);
         } else { // existing item
             updateDB();
@@ -374,7 +378,7 @@ public class WishItem {
     private void updateDB()
     {
         ItemDBManager manager = new ItemDBManager();
-        manager.updateItem(_id, _object_id, _storeName, _name, _desc, _updated_time, _picStr, _fullsizePicPath,
+        manager.updateItem(_id, _object_id, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,
                 _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted);
     }
 
@@ -384,6 +388,9 @@ public class WishItem {
         wishObject.put(ItemDBManager.KEY_NAME, item.getName());
         wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc());
         wishObject.put(ItemDBManager.KEY_UPDATED_TIME, item.getUpdatedTime());
+        if (item.getPicURL() != null) {
+            wishObject.put(ItemDBManager.KEY_PHOTO_URL, item.getPicURL());
+        }
         wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice());
         wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude());
         wishObject.put(ItemDBManager.KEY_LONGITUDE, item.getLongitude());
@@ -394,8 +401,13 @@ public class WishItem {
         List<String> tags = TagItemDBManager.instance().tags_of_item(item.getId());
         wishObject.put(WishItem.PARSE_KEY_TAGS, tags);
 
+        if (item.getPicURL() != null) {
+            // if we have an url for the photo, we don't upload the photo to Parse so that we can save space
+            // when the other device sync down the wish, it will download the photo from the url
+            return;
+        }
         if (item.getThumbPicPath() != null) {
-            // we save a scale-down thumbnail image to parse to save space
+            // we save a scale-down thumbnail image to Parse to save space
             Log.d(TAG, "toParseObject thumbPicPath " + item.getThumbPicPath());
             final byte[] data = ImageManager.readFile(item.getThumbPicPath());
             ParseFile parseImage = new ParseFile(item.getPicName(), data);
