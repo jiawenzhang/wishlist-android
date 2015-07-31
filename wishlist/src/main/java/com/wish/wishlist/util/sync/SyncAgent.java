@@ -25,6 +25,7 @@ import com.wish.wishlist.util.ImageManager;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -34,7 +35,7 @@ import java.util.List;
 public class SyncAgent {
     private static SyncAgent instance = null;
     private long m_items_to_upload;
-    private Target m_target;
+    private HashMap<String, Target> m_targets = new HashMap<>();
     private static String TAG = "SyncAgent";
 
     public static SyncAgent getInstance() {
@@ -55,7 +56,6 @@ public class SyncAgent {
         // save them in parseItemList
         final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
         final Date last_synced_time = new Date(sharedPref.getLong("last_synced_time", 0));
-        //final long last_synced_time = sharedPref.getLong("last_synced_time", 0);
         Log.d(TAG, "last_synced_time " + last_synced_time.getTime());
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
@@ -63,12 +63,9 @@ public class SyncAgent {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> itemList, com.parse.ParseException e) {
                 if (e == null) {
-                    Log.d(TAG, itemList.size() + " items updated since last synced time on Parse");
                     // add/update/remove local wish
                     HashSet<Long> parseItems = new HashSet<>();
                     for (ParseObject item : itemList) {
-                        Log.d(TAG, item.getUpdatedAt().getTime() + " item " + item.getString(ItemDBManager.KEY_NAME) + " updateAt");
-                        Log.d(TAG, last_synced_time.getTime() + " last sync time ");
                         WishItem localItem = WishItemManager.getInstance().getItemByObjectId(item.getObjectId());
                         if (localItem == null) {
                             // local item does not exist
@@ -153,7 +150,7 @@ public class SyncAgent {
     private void saveWebImage(final String url, final long item_id)
     {
         Log.d(TAG, "saveWebImage " + url);
-        m_target = new Target() {
+        Target target = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 if (bitmap != null) {
@@ -168,8 +165,9 @@ public class SyncAgent {
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {}
         };
+        m_targets.put(url, target);
 
-        Picasso.with(WishlistApplication.getAppContext()).load(url).into(m_target);
+        Picasso.with(WishlistApplication.getAppContext()).load(url).into(target);
     }
 
     private void bitmapLoaded(final Bitmap bitmap, long item_id, String url)
@@ -180,10 +178,12 @@ public class SyncAgent {
         item.setFullsizePicPath(fullsizePath);
         item.setPicURL(url);
         item.saveToLocal();
+        m_targets.remove(url);
     }
 
     private void saveParseImage(WishItem localItem, ParseFile parseImage)
     {
+        Log.d(TAG, "saveParseImage for item " + localItem.getName());
         try {
             // Fixme, need to delete the old images
             final byte[] imageBytes = parseImage.getData();
