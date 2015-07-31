@@ -69,6 +69,11 @@ public class SyncAgent {
                         WishItem localItem = WishItemManager.getInstance().getItemByObjectId(item.getObjectId());
                         if (localItem == null) {
                             // local item does not exist
+                            if (item.getBoolean(ItemDBManager.KEY_DELETED)) {
+                                // item on parse is deleted, and we don't have the item locally either,
+                                // so just ignore this item.
+                                continue;
+                            }
                             localItem = fromParseObject(item, -1);
                             long item_id = localItem.saveToLocal();
                             String parsePicURL = item.getString(ItemDBManager.KEY_PHOTO_URL);
@@ -84,16 +89,21 @@ public class SyncAgent {
                             Log.d(TAG, "item " + localItem.getName() + " is new, save from Parse");
 
                             // save the item tags
-                            List<String> tags = item.getList(WishItem.PARSE_KEY_TAGS);
-                            TagItemDBManager.instance().Update_item_tags(item_id, new ArrayList<>(tags));
+                            updateTags(item, item_id);
                             parseItems.add(item_id);
                         } else {
                             if (localItem.getUpdatedTime() < item.getLong(ItemDBManager.KEY_UPDATED_TIME)) {
-                                // local item exists, but parse item is newer
-                                // need to handle delete
+                                // local item exists, but parse item is newer, so update the local item
                                 Log.d(TAG, "item " + localItem.getName() + " exists locally, but parse item is newer, overwrite local one");
                                 localItem = fromParseObject(item, localItem.getId());
                                 localItem.saveToLocal();
+                                if (localItem.getDeleted()) {
+                                    // the item is deleted on parse, market it deleted locally as well
+                                    updateTags(item, localItem.getId()); // this will remove the tags in db
+                                    // Fixme remove the images
+                                    parseItems.add(localItem.getId());
+                                    continue;
+                                }
                                 String parsePicURL = item.getString(ItemDBManager.KEY_PHOTO_URL);
                                 if (parsePicURL != null) {
                                     if (!parsePicURL.equals(localItem.getPicURL())) {
@@ -108,9 +118,7 @@ public class SyncAgent {
                                     }
                                 }
 
-                                // save the item tags
-                                List<String> tags = item.getList(WishItem.PARSE_KEY_TAGS);
-                                TagItemDBManager.instance().Update_item_tags(localItem.getId(), new ArrayList<>(tags));
+                                updateTags(item, localItem.getId());
                                 parseItems.add(localItem.getId());
                             }
                         }
@@ -145,6 +153,11 @@ public class SyncAgent {
                 }
             }
         });
+    }
+
+    private void updateTags(ParseObject item, long item_id) {
+        List<String> tags = item.getList(WishItem.PARSE_KEY_TAGS);
+        TagItemDBManager.instance().Update_item_tags(item_id, new ArrayList<>(tags));
     }
 
     private void saveWebImage(final String url, final long item_id)
