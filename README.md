@@ -50,5 +50,9 @@ Go to wishlist folder and <br/>
   RELEASE_KEY_ALIAS="your key alias"<br/>
   RELEASE_KEY_PASSWORD="your release key password"<br/>
   
-  Install the apk to your Android devices or emulator (you will need adb installed and in your $PATH) 
+Go to wishlist folder and run<br/>
+  ./gradlew<br/>
+  ./gradlew assembleDebug<br/>
+
+  Install the apk to your Android devices or emulator (you will need adb installed and in your $PATH)<br/> 
   adb install ./wishlist/build/outputs/apk/wishlist-debug.apk<br/>
