@@ -11,6 +11,8 @@ import java.util.HashMap;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseCrashReporting;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
 import com.parse.ParseUser;
 
 /**
@@ -46,6 +48,9 @@ public class WishlistApplication extends Application {
         Parse.initialize(this,
                 getResources().getString(R.string.parse_application_id),
                 getResources().getString(R.string.parse_client_id));
+
+        ParseInstallation.getCurrentInstallation().saveInBackground();
+        //ParsePush.subscribeInBackground();
 
         Parse.setLogLevel(Parse.LOG_LEVEL_VERBOSE);
 
