@@ -21,6 +21,7 @@
 
 package com.wish.wishlist.activity;
 
+import com.parse.ParseInstallation;
 import com.wish.wishlist.R;
 import android.app.Activity;
 import android.content.Intent;
@@ -106,6 +107,11 @@ public class UserProfileActivity extends Activity {
         currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
             Log.d(TAG, "You are logged in as " + currentUser.getEmail() + " " + currentUser.getString("name"));
+            ParseInstallation i = ParseInstallation.getCurrentInstallation();
+            i.put("user", ParseUser.getCurrentUser());
+            i.saveInBackground();
+            Log.d(TAG, "installation saved");
+            Log.d(TAG, "installation id: " + i.getInstallationId());
             if (fromSplash) {
                 startActivity(new Intent(getApplication(), WishList.class));
                 finish();

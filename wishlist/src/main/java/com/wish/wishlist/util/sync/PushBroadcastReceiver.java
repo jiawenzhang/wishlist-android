@@ -15,12 +15,14 @@ public class PushBroadcastReceiver extends ParsePushBroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "onReceive");
         super.onReceive(context, intent);
     }
 
     @Override
     protected void onPushReceive(Context context, Intent intent) {
-        Log.d(TAG, "onPushReceive");
+        Log.e(TAG, "onPushReceive");
+        SyncAgent.getInstance().sync();
     }
 
     @Override
