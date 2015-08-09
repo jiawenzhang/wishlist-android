@@ -1,5 +1,6 @@
 package com.wish.wishlist.util.sync;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -36,6 +37,7 @@ public class SyncAgent {
     private static SyncAgent instance = null;
     private long m_items_to_upload;
     private HashMap<String, Target> m_targets = new HashMap<>();
+    private OnSyncWishChangedListener mSyncWishChangedListener;
     private static String TAG = "SyncAgent";
 
     public static SyncAgent getInstance() {
@@ -64,6 +66,7 @@ public class SyncAgent {
             public void done(List<ParseObject> itemList, com.parse.ParseException e) {
                 if (e == null) {
                     // add/update/remove local wish
+                    boolean wishChanged = false;
                     HashSet<Long> parseItems = new HashSet<>();
                     for (ParseObject item : itemList) {
                         WishItem localItem = WishItemManager.getInstance().getItemByObjectId(item.getObjectId());
@@ -74,6 +77,7 @@ public class SyncAgent {
                                 // so just ignore this item.
                                 continue;
                             }
+                            wishChanged = true;
                             localItem = fromParseObject(item, -1);
                             long item_id = localItem.saveToLocal();
                             String parsePicURL = item.getString(ItemDBManager.KEY_PHOTO_URL);
@@ -93,6 +97,7 @@ public class SyncAgent {
                             parseItems.add(item_id);
                         } else {
                             if (localItem.getUpdatedTime() < item.getLong(ItemDBManager.KEY_UPDATED_TIME)) {
+                                wishChanged = true;
                                 // local item exists, but parse item is newer, so update the local item
                                 Log.d(TAG, "item " + localItem.getName() + " exists locally, but parse item is newer, overwrite local one");
                                 localItem = fromParseObject(item, localItem.getId());
@@ -122,6 +127,11 @@ public class SyncAgent {
                                 parseItems.add(localItem.getId());
                             }
                         }
+                    }
+
+                    // notify list/grid view to refresh
+                    if (wishChanged) {
+                        SyncAgent.this.mSyncWishChangedListener.onSyncWishChanged();
                     }
 
                     // sync to parse
@@ -327,6 +337,20 @@ public class SyncAgent {
                 item.getBoolean(ItemDBManager.KEY_DELETED));
 
         return wishItem;
+    }
+
+    public void register(Activity activity) {
+        try {
+            this.mSyncWishChangedListener = (OnSyncWishChangedListener) activity;
+        }
+        catch (final ClassCastException e) {
+            Log.e(TAG, "fail to register");
+            throw new ClassCastException(activity.toString() + " must implement OnSyncWishChanged");
+        }
+    }
+
+    public interface OnSyncWishChangedListener {
+        void onSyncWishChanged();
     }
 }
 

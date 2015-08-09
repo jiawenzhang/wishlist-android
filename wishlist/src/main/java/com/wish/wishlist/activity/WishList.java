@@ -52,6 +52,7 @@ import com.wish.wishlist.util.WishListItemCursorAdapter;
 import com.wish.wishlist.util.camera.CameraManager;
 import com.wish.wishlist.util.social.ShareHelper;
 import com.wish.wishlist.util.DialogOnShowListener;
+import com.wish.wishlist.util.sync.SyncAgent;
 import com.wish.wishlist.view.ObjectDrawerItem;
 
 import com.etsy.android.grid.StaggeredGridView;
@@ -71,8 +72,11 @@ import com.etsy.android.grid.StaggeredGridView;
  *
  */
 @SuppressLint("NewApi")
-//public class WishList extends Activity {
-public class WishList extends Activity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class WishList extends Activity implements
+        AbsListView.OnScrollListener,
+        AbsListView.OnItemClickListener,
+        AdapterView.OnItemLongClickListener,
+        SyncAgent.OnSyncWishChangedListener {
     static final private int DIALOG_MAIN = 0;
     static final private int DIALOG_FILTER = 1;
     static final private int DIALOG_SORT = 2;
@@ -96,6 +100,8 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
     private static final int ADD_TAG = 3;
     private static final int ITEM_DETAILS = 4;
     private static final int TAKE_PICTURE = 5;
+
+    private static final String TAG = "wishlist";
 
     private String _viewOption = "list";
     private String _statusOption = "all";
@@ -262,6 +268,8 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         else{
             Log.d(WishList.LOG_TAG, "savedInstanceState == null");
         }
+
+        SyncAgent.getInstance().register(this);
     }
 
     @Override
@@ -1215,4 +1223,8 @@ public class WishList extends Activity implements AbsListView.OnScrollListener, 
         return true;
     }
 
+    public void onSyncWishChanged() {
+        Log.d(TAG, "onSyncWishChanged");
+        populateItems(_nameQuery, _where);
+    }
 }
