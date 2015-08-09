@@ -1,5 +1,6 @@
 package com.wish.wishlist.model;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -424,5 +425,24 @@ public class WishItem {
 
         toParseObject(this, wishObject);
         return wishObject;
+    }
+
+    public void removeImage()
+    {
+        Log.e(TAG, "removeImage");
+        String fullsizePicPath= getFullsizePicPath();
+        if (fullsizePicPath != null) {
+            File file = new File(fullsizePicPath);
+            file.delete();
+            Log.e(TAG, "delete " + fullsizePicPath);
+        }
+        String thumbPath = getThumbPicPath();
+        if (thumbPath != null) {
+            File file = new File(thumbPath);
+            file.delete();
+            Log.e(TAG, "delete " + thumbPath);
+        }
+        setFullsizePicPath(null);
+        saveToLocal();
     }
 }

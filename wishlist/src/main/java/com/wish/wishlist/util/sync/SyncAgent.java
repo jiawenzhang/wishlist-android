@@ -103,16 +103,16 @@ public class SyncAgent {
                                 localItem = fromParseObject(item, localItem.getId());
                                 localItem.saveToLocal();
                                 if (localItem.getDeleted()) {
-                                    // the item is deleted on parse, market it deleted locally as well
+                                    // the item is deleted on parse, mark it deleted locally as well
+                                    localItem.removeImage();
                                     updateTags(item, localItem.getId()); // this will remove the tags in db
-                                    // Fixme remove the images
                                     parseItems.add(localItem.getId());
                                     continue;
                                 }
                                 String parsePicURL = item.getString(ItemDBManager.KEY_PHOTO_URL);
                                 if (parsePicURL != null) {
                                     if (!parsePicURL.equals(localItem.getPicURL())) {
-                                        // Fixme need to delete the old image
+                                        // we have a new image, update it locally
                                         saveWebImage(parsePicURL, localItem.getId());
                                     }
                                 } else {
@@ -195,9 +195,12 @@ public class SyncAgent {
 
     private void bitmapLoaded(final Bitmap bitmap, long item_id, String url)
     {
+        // remove the old image
+        WishItem item = WishItemManager.getInstance().getItemById(item_id);
+        item.removeImage();
+
         String fullsizePath = ImageManager.saveBitmapToAlbum(bitmap);
         ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
-        WishItem item = WishItemManager.getInstance().getItemById(item_id);
         item.setFullsizePicPath(fullsizePath);
         item.setPicURL(url);
         item.saveToLocal();
@@ -208,11 +211,11 @@ public class SyncAgent {
     {
         Log.d(TAG, "saveParseImage for item " + localItem.getName());
         try {
-            // Fixme, need to delete the old images
+            localItem.removeImage();
             final byte[] imageBytes = parseImage.getData();
             ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), true);
-            String imagePath = ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), false);
-            localItem.setFullsizePicPath(imagePath);
+            String fullsizePicPath = ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), false);
+            localItem.setFullsizePicPath(fullsizePicPath);
         } catch (com.parse.ParseException e) {
             Log.e(TAG, e.toString());
         }
@@ -353,5 +356,4 @@ public class SyncAgent {
         void onSyncWishChanged();
     }
 }
-
 

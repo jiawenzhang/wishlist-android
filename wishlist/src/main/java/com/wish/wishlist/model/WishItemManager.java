@@ -119,12 +119,7 @@ public class WishItemManager {
 
     public void deleteItemById(long itemId) {
         WishItem item = getItemById(itemId);
-        String photoPath = item.getFullsizePicPath();
-        if (photoPath != null) {
-            File file = new File(photoPath);
-            file.delete();
-        }
-
+        item.removeImage();
         TagItemDBManager.instance().Remove_tags_by_item(itemId);
         item.setDeleted(true);
         item.setUpdatedTime(System.currentTimeMillis());
