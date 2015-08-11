@@ -1,9 +1,6 @@
 package com.wish.wishlist.model;
 
-import java.io.File;
 import java.util.ArrayList;
-
-import android.content.Context;
 
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
@@ -120,6 +117,8 @@ public class WishItemManager {
     public void deleteItemById(long itemId) {
         WishItem item = getItemById(itemId);
         item.removeImage();
+        item.setFullsizePicPath(null);
+        item.setPicURL(null);
         TagItemDBManager.instance().Remove_tags_by_item(itemId);
         item.setDeleted(true);
         item.setUpdatedTime(System.currentTimeMillis());

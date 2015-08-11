@@ -36,6 +36,8 @@ import java.util.List;
 public class SyncAgent {
     private static SyncAgent instance = null;
     private long m_items_to_upload;
+    private long m_items_to_download;
+    private HashSet<Long> m_downloaded_items = new HashSet<>();
     private HashMap<String, Target> m_targets = new HashMap<>();
     private OnSyncWishChangedListener mSyncWishChangedListener;
     private static String TAG = "SyncAgent";
@@ -65,99 +67,35 @@ public class SyncAgent {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> itemList, com.parse.ParseException e) {
                 if (e == null) {
-                    // add/update/remove local wish
-                    boolean wishChanged = false;
-                    HashSet<Long> parseItems = new HashSet<>();
-                    for (ParseObject item : itemList) {
-                        WishItem localItem = WishItemManager.getInstance().getItemByObjectId(item.getObjectId());
-                        if (localItem == null) {
-                            // local item does not exist
-                            if (item.getBoolean(ItemDBManager.KEY_DELETED)) {
-                                // item on parse is deleted, and we don't have the item locally either,
-                                // so just ignore this item.
-                                continue;
-                            }
-                            wishChanged = true;
-                            localItem = fromParseObject(item, -1);
-                            long item_id = localItem.saveToLocal();
-                            String parsePicURL = item.getString(ItemDBManager.KEY_PHOTO_URL);
-                            if (parsePicURL != null) {
-                                saveWebImage(parsePicURL, localItem.getId());
-                            } else {
-                                final ParseFile parseImage = item.getParseFile("image");
-                                if (parseImage != null) {
-                                    saveParseImage(localItem, parseImage);
-                                    localItem.saveToLocal();
-                                }
-                            }
-                            Log.d(TAG, "item " + localItem.getName() + " is new, save from Parse");
-
-                            // save the item tags
-                            updateTags(item, item_id);
-                            parseItems.add(item_id);
-                        } else {
-                            if (localItem.getUpdatedTime() < item.getLong(ItemDBManager.KEY_UPDATED_TIME)) {
-                                wishChanged = true;
-                                // local item exists, but parse item is newer, so update the local item
-                                Log.d(TAG, "item " + localItem.getName() + " exists locally, but parse item is newer, overwrite local one");
-                                localItem = fromParseObject(item, localItem.getId());
-                                localItem.saveToLocal();
-                                if (localItem.getDeleted()) {
-                                    // the item is deleted on parse, mark it deleted locally as well
-                                    localItem.removeImage();
-                                    updateTags(item, localItem.getId()); // this will remove the tags in db
-                                    parseItems.add(localItem.getId());
-                                    continue;
-                                }
-                                String parsePicURL = item.getString(ItemDBManager.KEY_PHOTO_URL);
-                                if (parsePicURL != null) {
-                                    if (!parsePicURL.equals(localItem.getPicURL())) {
-                                        // we have a new image, update it locally
-                                        saveWebImage(parsePicURL, localItem.getId());
-                                    }
-                                } else {
-                                    final ParseFile parseImage = item.getParseFile("image");
-                                    if (parseImage != null && !parseImage.getName().equals(localItem.getPicName())) {
-                                        saveParseImage(localItem, parseImage);
-                                        localItem.saveToLocal();
-                                    }
-                                }
-
-                                updateTags(item, localItem.getId());
-                                parseItems.add(localItem.getId());
-                            }
-                        }
-                    }
-
-                    // notify list/grid view to refresh
-                    if (wishChanged) {
-                        SyncAgent.this.mSyncWishChangedListener.onSyncWishChanged();
-                    }
-
-                    // sync to parse
-                    // get from local the items with updated time > last synced time and push them to parse
-                    ArrayList<WishItem> items = WishItemManager.getInstance().getItemsSinceLastSynced();
-                    m_items_to_upload = items.size();
-                    if (m_items_to_upload == 0) {
-                        syncDone();
+                    m_downloaded_items.clear();
+                    m_items_to_download = itemList.size();
+                    if (m_items_to_download == 0) {
+                        uploadToParse();
                         return;
                     }
-                    for (WishItem item : items) {
-                        if (parseItems.contains(item.getId())) {
-                            // skip the items we just saved from parse
-                            itemDone();
-                            continue;
-                        }
-                        if (item.getObjectId().isEmpty()) { // parse does not have this item
-                            Log.d(TAG, "item " + item.getName() + " does not exist on Parse, add to parse");
-                            addToParse(item);
-                        } else { // parse already has this item, update it
-                            Log.d(TAG, "item " + item.getName() + " already exists on Parse, update parse");
-                            updateParse(item);
+
+                    // add/update/remove local wish
+                    for (ParseObject parseItem : itemList) {
+                        final WishItem existingItem = WishItemManager.getInstance().getItemByObjectId(parseItem.getObjectId());
+                        if (existingItem == null) {
+                            // item does not exist locally
+                            if (parseItem.getBoolean(ItemDBManager.KEY_DELETED)) {
+                                // item on parse is deleted, and we don't have the item locally either,
+                                // so just ignore this item.
+                                itemDownloadDone();
+                                continue;
+                            }
+                            saveFromParse(parseItem);
+                        } else {
+                            if (existingItem.getUpdatedTime() >= parseItem.getLong(ItemDBManager.KEY_UPDATED_TIME)) {
+                                itemDownloadDone();
+                                continue;
+                            }
+                            Log.d(TAG, "item " + existingItem.getName() + " exists locally, but parse item is newer, overwrite local one");
+                            // parseItem could be marked as deleted, update local item to be deleted will just hide the item
+                            updateFromParse(parseItem, existingItem);
                         }
                     }
-
-                    // (parseItem could be marked as deleted, update local item to be deleted will just hide the item)
                 } else {
                     Log.e(TAG, "Error: " + e.getMessage());
                 }
@@ -165,19 +103,114 @@ public class SyncAgent {
         });
     }
 
+    private void uploadToParse() {
+        // sync to parse
+        // get from local the items with updated time > last synced time and push them to parse
+        Log.d(TAG, "uploadToParse");
+        ArrayList<WishItem> items = WishItemManager.getInstance().getItemsSinceLastSynced();
+        m_items_to_upload = items.size();
+        Log.d(TAG, m_items_to_upload + " items to upload");
+        if (m_items_to_upload == 0) {
+            syncDone();
+            return;
+        }
+        for (WishItem item : items) {
+            if (m_downloaded_items.contains(item.getId())) {
+                // skip the items we just saved from parse
+                itemUploadDone();
+                continue;
+            }
+            if (item.getObjectId().isEmpty()) { // parse does not have this item
+                Log.d(TAG, "item " + item.getName() + " does not exist on Parse, add to parse");
+                addToParse(item);
+            } else { // parse already has this item, update it
+                Log.d(TAG, "item " + item.getName() + " already exists on Parse, update parse");
+                updateParse(item);
+            }
+        }
+    }
+
+    private void saveFromParse(final ParseObject parseItem)
+    {
+        String photoURL = parseItem.getString(ItemDBManager.KEY_PHOTO_URL);
+        final ParseFile parseImage = parseItem.getParseFile("image");
+        if (photoURL == null && parseImage == null) {
+            onPhotoDone(parseItem, null, null);
+            return;
+        }
+        if (photoURL != null) {
+            saveWebImage(photoURL, parseItem, null);
+            return;
+        }
+        saveParseImage(parseImage, parseItem, null);
+    }
+
+    private void updateFromParse(final ParseObject parseItem, WishItem existingItem)
+    {
+        Log.d(TAG, "updateFromParse: item " + existingItem.getName());
+        String photoURL = parseItem.getString(ItemDBManager.KEY_PHOTO_URL);
+        final ParseFile parseImage = parseItem.getParseFile("image");
+        if (photoURL == null && parseImage == null) {
+            onPhotoDone(parseItem, existingItem, null);
+            return;
+        }
+        if (photoURL != null) {
+            if (!photoURL.equals(existingItem.getPicURL())) {
+                // we have a new image, update it locally
+                saveWebImage(photoURL, parseItem, existingItem);
+            } else {
+                onPhotoDone(parseItem, existingItem, existingItem.getFullsizePicPath());
+            }
+            return;
+        }
+        if (!parseImage.getName().equals(existingItem.getPicName())) {
+            saveParseImage(parseImage, parseItem, existingItem);
+        } else {
+            onPhotoDone(parseItem, existingItem, existingItem.getFullsizePicPath());
+        }
+    }
+
+    // onPhotoDone is called for every wish that is updated locally from parse
+    // if downloading photo fails, we won't come here and the wish attributes from parse will not
+    // be saved locally Fixme: how do we treat this wish to be not synced and sync it next time?
+    private void onPhotoDone(final ParseObject parseItem, WishItem existingItem, final String fullsizePicPath)
+    {
+        WishItem newItem;
+        if (existingItem == null) {
+            newItem = fromParseObject(parseItem, -1);
+        } else {
+            newItem = fromParseObject(parseItem, existingItem.getId());
+        }
+        Log.d(TAG, "onPhotoDone: item " + newItem.getName());
+        if (fullsizePicPath == null && existingItem != null) {
+            existingItem.removeImage();
+        }
+        newItem.setFullsizePicPath(fullsizePicPath);
+        long item_id = newItem.saveToLocal();
+        updateTags(parseItem, item_id);
+
+        m_downloaded_items.add(item_id);
+
+        itemDownloadDone();
+        if (m_items_to_download == 0) {
+            // notify list/grid view to refresh
+            SyncAgent.this.mSyncWishChangedListener.onSyncWishChanged();
+        }
+    }
+
     private void updateTags(ParseObject item, long item_id) {
         List<String> tags = item.getList(WishItem.PARSE_KEY_TAGS);
         TagItemDBManager.instance().Update_item_tags(item_id, new ArrayList<>(tags));
     }
 
-    private void saveWebImage(final String url, final long item_id)
+    private void saveWebImage(final String url, final ParseObject parseItem, final WishItem existingItem)
     {
         Log.d(TAG, "saveWebImage " + url);
         Target target = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 if (bitmap != null) {
-                    bitmapLoaded(bitmap, item_id, url);
+                    bitmapLoaded(bitmap, parseItem, existingItem, url);
                 } else {
                     Log.e(TAG, "saveWebImage->onBitmapLoaded null bitmap");
                 }
@@ -193,29 +226,24 @@ public class SyncAgent {
         Picasso.with(WishlistApplication.getAppContext()).load(url).into(target);
     }
 
-    private void bitmapLoaded(final Bitmap bitmap, long item_id, String url)
+    private void bitmapLoaded(final Bitmap bitmap, final ParseObject parseItem, WishItem existingItem, String url)
     {
-        // remove the old image
-        WishItem item = WishItemManager.getInstance().getItemById(item_id);
-        item.removeImage();
-
         String fullsizePath = ImageManager.saveBitmapToAlbum(bitmap);
         ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
-        item.setFullsizePicPath(fullsizePath);
-        item.setPicURL(url);
-        item.saveToLocal();
+        onPhotoDone(parseItem, existingItem, fullsizePath);
         m_targets.remove(url);
+
+        SyncAgent.this.mSyncWishChangedListener.onSyncWishChanged();
     }
 
-    private void saveParseImage(WishItem localItem, ParseFile parseImage)
+    private void saveParseImage(ParseFile parseImage, final ParseObject parseItem, WishItem existingItem)
     {
-        Log.d(TAG, "saveParseImage for item " + localItem.getName());
+        Log.d(TAG, "saveParseImage: item " + parseItem.getString(ItemDBManager.KEY_NAME));
         try {
-            localItem.removeImage();
             final byte[] imageBytes = parseImage.getData();
             ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), true);
             String fullsizePicPath = ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), false);
-            localItem.setFullsizePicPath(fullsizePicPath);
+            onPhotoDone(parseItem, existingItem, fullsizePicPath);
         } catch (com.parse.ParseException e) {
             Log.e(TAG, e.toString());
         }
@@ -257,7 +285,7 @@ public class SyncAgent {
                 } else {
                     Log.e(TAG, "save failed " + e.toString());
                 }
-                itemDone();
+                itemUploadDone();
             }
         });
     }
@@ -300,11 +328,20 @@ public class SyncAgent {
         });
     }
 
-    private void itemDone()
+    private void itemUploadDone()
     {
         m_items_to_upload--;
         if (m_items_to_upload == 0) {
             syncDone();
+        }
+    }
+
+    private void itemDownloadDone()
+    {
+        m_items_to_download--;
+        if (m_items_to_download == 0) {
+            // download from parse is finished, now upload to parse
+            uploadToParse();
         }
     }
 
@@ -328,7 +365,7 @@ public class SyncAgent {
                 item.getString(ItemDBManager.KEY_NAME),
                 item.getString(ItemDBManager.KEY_DESCRIPTION),
                 item.getLong(ItemDBManager.KEY_UPDATED_TIME),
-                null, // photoURL
+                item.getString(ItemDBManager.KEY_PHOTO_URL),
                 null, // _fullsizePhotoPath,
                 item.getDouble(ItemDBManager.KEY_PRICE),
                 item.getDouble(ItemDBManager.KEY_LATITUDE),
