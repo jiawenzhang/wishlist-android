@@ -40,6 +40,7 @@ public class SyncAgent {
     private HashSet<Long> m_downloaded_items = new HashSet<>();
     private HashMap<String, Target> m_targets = new HashMap<>();
     private OnSyncWishChangedListener mSyncWishChangedListener;
+    private Date m_synced_time;
     private static String TAG = "SyncAgent";
 
     public static SyncAgent getInstance() {
@@ -61,6 +62,7 @@ public class SyncAgent {
         final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
         final Date last_synced_time = new Date(sharedPref.getLong("last_synced_time", 0));
         Log.d(TAG, "last_synced_time " + last_synced_time.getTime());
+        m_synced_time = last_synced_time;
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
         query.whereGreaterThan("updatedAt", last_synced_time);
@@ -105,11 +107,10 @@ public class SyncAgent {
 
     private void uploadToParse() {
         // sync to parse
-        // get from local the items with updated time > last synced time and push them to parse
-        Log.d(TAG, "uploadToParse");
-        ArrayList<WishItem> items = WishItemManager.getInstance().getItemsSinceLastSynced();
+        // get from local the items with synced_to_parse == false and push them to parse
+        //Log.d(TAG, "uploadToParse");
+        ArrayList<WishItem> items = WishItemManager.getInstance().getItemsNotSyncedToServer();
         m_items_to_upload = items.size();
-        Log.d(TAG, m_items_to_upload + " items to upload");
         if (m_items_to_upload == 0) {
             syncDone();
             return;
@@ -151,6 +152,7 @@ public class SyncAgent {
         String photoURL = parseItem.getString(ItemDBManager.KEY_PHOTO_URL);
         final ParseFile parseImage = parseItem.getParseFile("image");
         if (photoURL == null && parseImage == null) {
+            existingItem.removeImage();
             onPhotoDone(parseItem, existingItem, null);
             return;
         }
@@ -173,7 +175,7 @@ public class SyncAgent {
     // onPhotoDone is called for every wish that is updated locally from parse
     // if downloading photo fails, we won't come here and the wish attributes from parse will not
     // be saved locally Fixme: how do we treat this wish to be not synced and sync it next time?
-    private void onPhotoDone(final ParseObject parseItem, WishItem existingItem, final String fullsizePicPath)
+    private void onPhotoDone(final ParseObject parseItem, WishItem existingItem, final String newfullsizePicPath)
     {
         WishItem newItem;
         if (existingItem == null) {
@@ -182,10 +184,8 @@ public class SyncAgent {
             newItem = fromParseObject(parseItem, existingItem.getId());
         }
         Log.d(TAG, "onPhotoDone: item " + newItem.getName());
-        if (fullsizePicPath == null && existingItem != null) {
-            existingItem.removeImage();
-        }
-        newItem.setFullsizePicPath(fullsizePicPath);
+
+        newItem.setFullsizePicPath(newfullsizePicPath);
         long item_id = newItem.saveToLocal();
         updateTags(parseItem, item_id);
 
@@ -196,6 +196,7 @@ public class SyncAgent {
             // notify list/grid view to refresh
             SyncAgent.this.mSyncWishChangedListener.onSyncWishChanged();
         }
+        m_synced_time = parseItem.getUpdatedAt();
     }
 
     private void updateTags(ParseObject item, long item_id) {
@@ -230,6 +231,9 @@ public class SyncAgent {
     {
         String fullsizePath = ImageManager.saveBitmapToAlbum(bitmap);
         ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
+        if (existingItem != null) {
+            existingItem.removeImage();
+        }
         onPhotoDone(parseItem, existingItem, fullsizePath);
         m_targets.remove(url);
 
@@ -241,8 +245,11 @@ public class SyncAgent {
         Log.d(TAG, "saveParseImage: item " + parseItem.getString(ItemDBManager.KEY_NAME));
         try {
             final byte[] imageBytes = parseImage.getData();
-            ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), true);
-            String fullsizePicPath = ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), false);
+            ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), /*thumb*/true);
+            String fullsizePicPath = ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), /*thumb*/false);
+            if (existingItem != null) {
+                existingItem.removeImage();
+            }
             onPhotoDone(parseItem, existingItem, fullsizePicPath);
         } catch (com.parse.ParseException e) {
             Log.e(TAG, e.toString());
@@ -276,12 +283,15 @@ public class SyncAgent {
             public void done(com.parse.ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "save wish success, object id: " + wishObject.getObjectId());
+                    m_synced_time = wishObject.getUpdatedAt();
+                    WishItem item = WishItemManager.getInstance().getItemById(item_id);
+                    Log.d(TAG, "set item " + item.getName() + " synced to true");
+                    item.setSyncedToServer(true);
                     if (isNew) {
                         String object_id = wishObject.getObjectId();
-                        WishItem item = WishItemManager.getInstance().getItemById(item_id);
                         item.setObjectId(object_id);
-                        item.saveToLocal();
                     }
+                    item.saveToLocal();
                 } else {
                     Log.e(TAG, "save failed " + e.toString());
                 }
@@ -292,7 +302,7 @@ public class SyncAgent {
 
     private void addToParse(WishItem item)
     {
-        Log.d(TAG, "addToParse");
+        Log.d(TAG, "Adding item " + item.getName() + " to Parse");
 
         final ParseObject wishObject = item.toParseObject();
         saveToParse(wishObject, item.getId(), true, true);
@@ -300,6 +310,7 @@ public class SyncAgent {
 
     private void updateParse(final WishItem item)
     {
+        Log.d(TAG, "Updating item " + item.getName() + " to Parse");
         ParseQuery<ParseObject> query = ParseQuery.getQuery(ItemDBManager.DB_TABLE);
 
         // Retrieve the object by id
@@ -347,12 +358,12 @@ public class SyncAgent {
 
     private void syncDone()
     {
-        Log.d(TAG, "sync finished at " + System.currentTimeMillis());
+        Log.d(TAG, "sync finished at " + m_synced_time.getTime());
         // all items are processed, sync is done
         // save current time as last synced time
         final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putLong("last_synced_time", System.currentTimeMillis());
+        editor.putLong("last_synced_time", m_synced_time.getTime());
         editor.commit();
     }
 
@@ -374,7 +385,8 @@ public class SyncAgent {
                 0, // priority
                 item.getInt(ItemDBManager.KEY_COMPLETE),
                 item.getString(ItemDBManager.KEY_LINK),
-                item.getBoolean(ItemDBManager.KEY_DELETED));
+                item.getBoolean(ItemDBManager.KEY_DELETED),
+                true);
 
         return wishItem;
     }

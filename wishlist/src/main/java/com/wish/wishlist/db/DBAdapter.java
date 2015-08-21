@@ -127,9 +127,14 @@ public class DBAdapter {
                     + ItemDBManager.DB_TABLE
                     + " ADD COLUMN updated_time INTEGER ";
 
+            String sql6 = "ALTER TABLE "
+                    + ItemDBManager.DB_TABLE
+                    + " ADD COLUMN synced_to_server INTEGER ";
+
             db.execSQL(sql3);
             db.execSQL(sql4);
             db.execSQL(sql5);
+            db.execSQL(sql6);
 
             //convert date_time in String to updated_time in long(ms)
             String sql = String.format("SELECT _id, date_time FROM Item");
@@ -180,7 +185,8 @@ public class DBAdapter {
             + ItemDBManager.KEY_PRIORITY 	+ " INTEGER, "
             + ItemDBManager.KEY_COMPLETE 	+ " INTEGER, "
             + ItemDBManager.KEY_LINK 	    + " TEXT, "
-            + ItemDBManager.KEY_DELETED 	+ " INTEGER"
+            + ItemDBManager.KEY_DELETED 	+ " INTEGER, "
+            + ItemDBManager.KEY_SYNCED_TO_SERVER 	+ " INTEGER"
             + ");";
 
     //Query string to create table "Tag"
@@ -260,6 +266,7 @@ public class DBAdapter {
                         0,
                         0,
                         "",
+                        false,
                         false);
 
                 mItemDBManager.addItem(
@@ -278,6 +285,7 @@ public class DBAdapter {
                         3,
                         1,
                         "",
+                        false,
                         false);
 
                 mItemDBManager.addItem(
@@ -296,6 +304,7 @@ public class DBAdapter {
                         2,
                         0,
                         "",
+                        false,
                         false);
 
                 mItemDBManager.addItem(
@@ -314,6 +323,7 @@ public class DBAdapter {
                         1,
                         0,
                         "",
+                        false,
                         false);
 
                 mItemDBManager.addItem(
@@ -332,6 +342,7 @@ public class DBAdapter {
                         1,
                         1,
                         "",
+                        false,
                         false);
 
                 mItemDBManager.addItem(
@@ -350,6 +361,7 @@ public class DBAdapter {
                         1,
                         0,
                         "",
+                        false,
                         false);
             }
 

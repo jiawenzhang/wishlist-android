@@ -45,13 +45,14 @@ public class WishItem {
     private String _address;
     private String _object_id;
     private boolean _deleted;
+    private boolean _synced_to_server;
 
     public final static String PARSE_KEY_TAGS = "tags";
     public final static String PARSE_KEY_IMAGE = "image";
 
     public WishItem(long itemId, String object_id, String storeName, String name, String desc,
                     long updated_time, String picURL, String fullsizePicPath, double price, double latitude, double longitude,
-                    String address, int priority, int complete, String link, boolean deleted) {
+                    String address, int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
         _id = itemId;
         _object_id = object_id;
         _fullsizePicPath = fullsizePicPath;
@@ -68,6 +69,7 @@ public class WishItem {
         _complete = complete;
         _link = link;
         _deleted = deleted;
+        _synced_to_server = synced_to_server;
     }
 
     public long getId() {
@@ -80,6 +82,14 @@ public class WishItem {
 
     public void setDeleted(boolean value) {
         _deleted = value;
+    }
+
+    public boolean getSyncedToServer() {
+        return _synced_to_server;
+    }
+
+    public void setSyncedToServer(boolean value) {
+        _synced_to_server = value;
     }
 
     public String getObjectId() {
@@ -369,7 +379,7 @@ public class WishItem {
         ItemDBManager manager = new ItemDBManager();
         if (_id == -1) { // new item
             _id = manager.addItem(_object_id, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,
-                    _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted);
+                    _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted, _synced_to_server);
         } else { // existing item
             updateDB();
         }
@@ -380,7 +390,7 @@ public class WishItem {
     {
         ItemDBManager manager = new ItemDBManager();
         manager.updateItem(_id, _object_id, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,
-                _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted);
+                _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted, _synced_to_server);
     }
 
     public static void toParseObject(final WishItem item, ParseObject wishObject)
@@ -429,7 +439,6 @@ public class WishItem {
 
     public void removeImage()
     {
-        Log.e(TAG, "removeImage");
         String fullsizePicPath= getFullsizePicPath();
         if (fullsizePicPath != null) {
             File file = new File(fullsizePicPath);

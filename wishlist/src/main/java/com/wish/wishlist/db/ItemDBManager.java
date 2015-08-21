@@ -34,6 +34,7 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_COMPLETE = "complete";
     public static final String KEY_LINK = "link";
 	public static final String KEY_DELETED = "deleted";
+	public static final String KEY_SYNCED_TO_SERVER = "synced_to_server";
 
 	public static final String DB_TABLE = "Item";
 	private static final String TAG = "ItemDBManager";
@@ -56,7 +57,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public long addItem(String object_id, String store_name, String name, String description, long updated_time,
 			String picture_url, String fullsize_picture_path, double price, String address, double latitude, double longitude,
-			int priority, int complete, String link, boolean deleted) {
+			int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
 		// String sql = String.format(
 		// "INSERT INTO ITEM (_id, name, description, create_date, store_id,  picture, price, location, priority) "
 		// +
@@ -80,6 +81,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_COMPLETE, complete);
         initialValues.put(KEY_LINK, link);
 		initialValues.put(KEY_DELETED, deleted);
+		initialValues.put(KEY_SYNCED_TO_SERVER, synced_to_server);
 
 		long id = DBAdapter.getInstance().db().insert(DB_TABLE, null, initialValues);
 		return id;
@@ -97,7 +99,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public void updateItem(long _id, String object_id, String store_name, String name, String description, long updated_time,
 			String picture_url, String fullsize_picture_path, double price, String address, double latitude, double longitude,
-			int priority, int complete, String link, boolean deleted) {
+			int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
 
 //		String sql = String.format("UPDATE Item " + "SET item_name = '%s',  "
 //				+ " description = '%s', " + " date_time = '%s', "
@@ -126,6 +128,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_COMPLETE, complete);
         initialValues.put(KEY_LINK, link);
 		initialValues.put(KEY_DELETED, deleted);
+		initialValues.put(KEY_SYNCED_TO_SERVER, synced_to_server);
 
 		String where = String.format("_id = '%d'", _id);
 		DBAdapter.getInstance().db().update(DB_TABLE, initialValues, where, null);
@@ -399,6 +402,24 @@ public class ItemDBManager extends DBManager {
 		}
 		return ids;
     }
+
+	public ArrayList<Long> getItemsNotSyncedToServer()
+	{
+		String sql = String.format("SELECT _id FROM Item WHERE synced_to_server = 0");
+		SQLiteDatabase d = DBAdapter.getInstance().db();
+		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(new ItemsCursor.Factory(), sql, null, null);
+
+		ArrayList<Long> ids = new ArrayList<>();
+		if (c != null) {
+			c.moveToFirst();
+			while (!c.isAfterLast()){
+				long id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
+				ids.add(id);
+				c.moveToNext();
+			}
+		}
+		return ids;
+	}
 
 	/**
 	 * get the Cursor of table store according to item id

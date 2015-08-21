@@ -676,6 +676,7 @@ public class WishList extends Activity implements
                         .build());
             }
             wish_item.setUpdatedTime(System.currentTimeMillis());
+            wish_item.setSyncedToServer(false);
             wish_item.save();
             updateView();
         }

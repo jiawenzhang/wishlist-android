@@ -716,7 +716,7 @@ public class EditItem extends Activity
             // create a new item
             WishItem item = new WishItem(mItem_id, "", itemStoreName, itemName, itemDesc,
                     System.currentTimeMillis(), _webPicUrl, _fullsizePhotoPath, itemPrice, _lat, _lng,
-                    _ddStr, itemPriority, itemComplete, itemLink, false);
+                    _ddStr, itemPriority, itemComplete, itemLink, false, false);
 
             mItem_id = item.saveToLocal();
         } else {
@@ -726,6 +726,7 @@ public class EditItem extends Activity
             item.setName(itemName);
             item.setDesc(itemDesc);
             item.setUpdatedTime(System.currentTimeMillis());
+            //item.setPicURL(_webPicUrl);
             item.setFullsizePicPath(_fullsizePhotoPath);
             item.setPrice(itemPrice);
             item.setLatitude(_lat);
@@ -733,6 +734,7 @@ public class EditItem extends Activity
             item.setAddress(_ddStr);
             item.setComplete(itemComplete);
             item.setLink(itemLink);
+            item.setSyncedToServer(false);
             item.saveToLocal();
         }
 
