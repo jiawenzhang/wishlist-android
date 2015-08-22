@@ -23,7 +23,7 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_STORENAME = "store_name";
 	public static final String KEY_NAME = "item_name";
 	public static final String KEY_DESCRIPTION = "description";
-    public static final String KEY_UPDATED_TIME = "updated_time"; // ms, migrated from date_time:String
+    public static final String KEY_UPDATED_TIME = "updated_time"; // ms, migrated from data_time:String
 	public static final String KEY_PHOTO_URL = "picture";
 	public static final String KEY_FULLSIZE_PHOTO_PATH = "fullsize_picture";
 	public static final String KEY_PRICE = "price";
@@ -102,7 +102,7 @@ public class ItemDBManager extends DBManager {
 			int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
 
 //		String sql = String.format("UPDATE Item " + "SET item_name = '%s',  "
-//				+ " description = '%s', " + " date_time = '%s', "
+//				+ " description = '%s', " + " updated_time = '%s', "
 //				+ " store_id = '%d' " + "WHERE _id = '%d' ", name, description,
 //				date, store_id, _id);
 //		try {
@@ -180,15 +180,27 @@ public class ItemDBManager extends DBManager {
 	}
 
 	public static class ItemsCursor extends SQLiteCursor {
-		public static enum SortBy {
-			item_name, date_time, price, priority, _id,
-		}
+        public enum SortBy {
+            item_name,
+            updated_time,
+            price,
+            priority,
+            _id,
+        }
 
-		private static final String QUERY = "SELECT _id, item_name, store_name, description, date_time, store_id, picture, fullsize_picture, price, location, priority "
-				+ "FROM Item " + "ORDER BY ";
-		
-//		private static final String QUERY_NAME = "SELECT _id, item_name, description, date_time, store_id, picture, price, location, priority "
-//			+ "FROM Item " + "WHERE item_name LIKE Book " + "ORDER BY ";
+		private static final String QUERY = "SELECT " +
+                KEY_ID + ", " +
+                KEY_NAME + ", " +
+                KEY_STORENAME + ", " +
+                KEY_DESCRIPTION + ", " +
+                KEY_UPDATED_TIME + ", " +
+                KEY_STORE_ID + ", " +
+                KEY_PHOTO_URL + ", " +
+                KEY_FULLSIZE_PHOTO_PATH + ", " +
+                KEY_PRICE + ", " +
+                KEY_ADDRESS + ", " +
+                KEY_PRIORITY + ", " +
+                "FROM " + DB_TABLE + " ORDER_BY ";
 
 		private ItemsCursor(SQLiteDatabase db, SQLiteCursorDriver driver,
 				String editTable, SQLiteQuery query) {
@@ -236,7 +248,7 @@ public class ItemDBManager extends DBManager {
             WHERE = WHERE.substring(0, WHERE.length()-2);
             WHERE += ")";
         }
-		if (sortOption.equals(ItemsCursor.SortBy.date_time.toString())) {
+		if (sortOption.equals(ItemsCursor.SortBy.updated_time.toString())) {
 			// sort by date is most recent at the top
 			sortOption = sortOption + " DESC";
 		}

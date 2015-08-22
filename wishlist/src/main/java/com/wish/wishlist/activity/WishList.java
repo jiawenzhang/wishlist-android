@@ -138,7 +138,7 @@ public class WishList extends Activity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences pref = this.getPreferences(MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         _viewOption = pref.getString(PREF_VIEW_OPTION, "list");
         Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         if (_viewOption.equals("list")) {
@@ -705,7 +705,7 @@ public class WishList extends Activity implements
                 sortBuilder.setTitle("Sort wishes");
 
                 int j = 0;// 0 is by name
-                if (_sortOption.equals(ItemsCursor.SortBy.date_time.toString())) {
+                if (_sortOption.equals(ItemsCursor.SortBy.updated_time.toString())) {
                     j = 1;
                 }
                 else if (_sortOption.equals(ItemsCursor.SortBy.price.toString())) {
@@ -717,13 +717,13 @@ public class WishList extends Activity implements
                             _sortOption = ItemsCursor.SortBy.item_name.toString();
                         }
                         else if (sortOption[item].equals(BY_TIME)) {
-                            _sortOption = ItemsCursor.SortBy.date_time.toString();
+                            _sortOption = ItemsCursor.SortBy.updated_time.toString();
                         }
                         else {
                             _sortOption = ItemsCursor.SortBy.price.toString();
                         }
 
-                        SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
+                        SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putString(PREF_SORT_OPTION, _sortOption);
                         editor.commit();
@@ -777,7 +777,7 @@ public class WishList extends Activity implements
                             _statusOption = "in_progress";
                         }
 
-                        SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
+                        SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putString(PREF_FILTER_OPTION, _statusOption);
                         editor.commit();
@@ -912,7 +912,7 @@ public class WishList extends Activity implements
                 if (resultCode == Activity.RESULT_OK) {
                     _tagOption = data.getStringExtra("tag");
 
-                    SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
+                    SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putString(PREF_TAG_OPTION, _tagOption);
                     editor.commit();
@@ -1019,7 +1019,7 @@ public class WishList extends Activity implements
 
             _where.clear();
 
-            SharedPreferences pref = WishList.this.getPreferences(MODE_PRIVATE);
+            SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
             editor.putString(PREF_FILTER_OPTION, _statusOption);
             editor.putString(PREF_TAG_OPTION, _tagOption);
@@ -1140,7 +1140,7 @@ public class WishList extends Activity implements
                 else if (item.equals("List view")) {
                     _viewOption = "list";
                     populateItems(_nameQuery, _where);
-                    SharedPreferences pref = getPreferences(MODE_PRIVATE);
+                    SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putString(PREF_VIEW_OPTION, _viewOption);
                     editor.commit();
@@ -1152,7 +1152,7 @@ public class WishList extends Activity implements
                 else if (item.equals("Grid view")) {
                     _viewOption = "grid";
                     populateItems(_nameQuery, _where);
-                    SharedPreferences pref = getPreferences(MODE_PRIVATE);
+                    SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putString(PREF_VIEW_OPTION, _viewOption);
                     editor.commit();

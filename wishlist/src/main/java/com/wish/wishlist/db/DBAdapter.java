@@ -136,15 +136,15 @@ public class DBAdapter {
             db.execSQL(sql5);
             db.execSQL(sql6);
 
-            //convert date_time in String to updated_time in long(ms)
-            String sql = String.format("SELECT _id, date_time FROM Item");
+            //convert updated_time in String to updated_time in long(ms)
+            String sql = String.format("SELECT _id, updated_time FROM Item");
             Cursor c = db.rawQuery(sql, null);
             if (c != null) {
                 SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 c.moveToFirst();
                 while (!c.isAfterLast()){
                     long id = c.getLong(c.getColumnIndexOrThrow("_id"));
-                    String updated_time_str = c.getString(c.getColumnIndexOrThrow("date_time"));
+                    String updated_time_str = c.getString(c.getColumnIndexOrThrow("updated_time"));
                     long updated_time = 0;
                     try {
                         Date date = f.parse(updated_time_str);

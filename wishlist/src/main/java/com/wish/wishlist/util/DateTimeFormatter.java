@@ -16,7 +16,7 @@ public class DateTimeFormatter {
     }
 
     public String getDateTimeString(String dateTimeStr) {
-        // Format the date_time and save it as a string
+        // Format the updated_time and save it as a string
         int mYear = -1;
         int mMonth = -1;
         int mDay = -1;

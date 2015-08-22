@@ -24,13 +24,13 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
     }
 
     /***
-     * WishListItemViewBinder defines how the item's photo and date_time are displayed in
+     * WishListItemViewBinder defines how the item's photo and updated_time are displayed in
      * the view.
      *
      * It retrieves the image file from the picture_uri saved in database and set the image
      * to the view
      *
-     * It retrieves the date_time from the database and converts it to "July 6, 1983" format
+     * It retrieves the updated_time from the database and converts it to "July 6, 1983" format
      * for display in the view
      */
     public class WishListItemViewBinder implements SimpleCursorAdapter.ViewBinder {
@@ -78,7 +78,7 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 //				//get the TextView in which the date and time will be displayed
 //				TextView viewDate = (TextView) view;
 //				
-//				//get the date_time string from db and reformat it
+//				//get the updated_time string from db and reformat it
 //				String dateTimeStr = cursor.getString(columnIndex);
 //				SimpleDateFormat sdfFrom = new SimpleDateFormat("yyyy-MM-dd");
 //				SimpleDateFormat sdfTo = new SimpleDateFormat("MMM dd, yyyy");
@@ -91,7 +91,7 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
 //					e.printStackTrace();
 //				}
 //
-//				//set the reformatted date_time
+//				//set the reformatted updated_time
 //				viewDate.setText(dateTimeStrNew);
 //				return true;
 //			}
