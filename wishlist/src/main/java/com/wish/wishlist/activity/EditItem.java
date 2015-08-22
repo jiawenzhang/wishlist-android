@@ -227,8 +227,7 @@ public class EditItem extends Activity
             }
         }
 
-        //get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from
-        //dashboard camera
+        //get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from camera
         _fullsizePhotoPath = intent.getStringExtra(FULLSIZE_PHOTO_PATH);
         setTakenPhoto();
         if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
@@ -268,13 +267,14 @@ public class EditItem extends Activity
             _linkEditText.setText(item.getLink());
             _storeEditText.setText(item.getStoreName());
             _fullsizePhotoPath = item.getFullsizePicPath();
+            _webPicUrl = item.getPicURL();
             if (_fullsizePhotoPath != null) {
                 String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(_fullsizePhotoPath);
                 Picasso.with(this).load(new File(thumb_path)).fit().centerCrop().into(_imageItem);
                 _imageItem.setVisibility(View.VISIBLE);
             }
             _tags = TagItemDBManager.instance().tags_of_item(mItem_id);
-        } else { //we are editing a new wish, get the location in background
+        } else { //we are creating a new wish, get the location in background
             boolean action_send = (Intent.ACTION_SEND.equals(action) && type != null);
             boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true) && !action_send;
             if (tagLocation) {
@@ -726,7 +726,7 @@ public class EditItem extends Activity
             item.setName(itemName);
             item.setDesc(itemDesc);
             item.setUpdatedTime(System.currentTimeMillis());
-            //item.setPicURL(_webPicUrl);
+            item.setPicURL(_webPicUrl);
             item.setFullsizePicPath(_fullsizePhotoPath);
             item.setPrice(itemPrice);
             item.setLatitude(_lat);

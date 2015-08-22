@@ -25,6 +25,8 @@ import com.wish.wishlist.util.sync.SyncAgent;
 
 import android.preference.PreferenceManager;
 
+import org.json.JSONObject;
+
 
 public class WishItem {
     private static final String TAG = "WishItem";
@@ -401,6 +403,8 @@ public class WishItem {
         wishObject.put(ItemDBManager.KEY_UPDATED_TIME, item.getUpdatedTime());
         if (item.getPicURL() != null) {
             wishObject.put(ItemDBManager.KEY_PHOTO_URL, item.getPicURL());
+        } else {
+            wishObject.put(ItemDBManager.KEY_PHOTO_URL, JSONObject.NULL);
         }
         wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice());
         wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude());
