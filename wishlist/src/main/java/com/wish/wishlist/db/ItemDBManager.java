@@ -180,14 +180,6 @@ public class ItemDBManager extends DBManager {
 	}
 
 	public static class ItemsCursor extends SQLiteCursor {
-        public enum SortBy {
-            item_name,
-            updated_time,
-            price,
-            priority,
-            _id,
-        }
-
 		private static final String QUERY = "SELECT " +
                 KEY_ID + ", " +
                 KEY_NAME + ", " +
@@ -248,7 +240,7 @@ public class ItemDBManager extends DBManager {
             WHERE = WHERE.substring(0, WHERE.length()-2);
             WHERE += ")";
         }
-		if (sortOption.equals(ItemsCursor.SortBy.updated_time.toString())) {
+		if (sortOption.equals(KEY_UPDATED_TIME)) {
 			// sort by date is most recent at the top
 			sortOption = sortOption + " DESC";
 		}

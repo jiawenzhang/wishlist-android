@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
+import com.wish.wishlist.db.DBAdapter;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
@@ -265,7 +266,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
         long[] next_pos_id = new long[2];
         // ItemsCursor c = wishListDB.getItems(ItemsCursor.SortBy.name);
         _itemDBManager = new ItemDBManager();
-        ItemsCursor c = _itemDBManager.getItems(ItemsCursor.SortBy.item_name.toString(), null, new ArrayList<Long>());
+        ItemsCursor c = _itemDBManager.getItems(ItemDBManager.KEY_NAME, null, new ArrayList<Long>());
         long nextItemID;
         if (_position < c.getCount())
             _nextPosition = _position + 1;
@@ -295,7 +296,7 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
 
         // open the database for operations of Item table
         _itemDBManager = new ItemDBManager();
-        ItemsCursor c = _itemDBManager.getItems(ItemsCursor.SortBy.item_name.toString(), null, new ArrayList<Long>());
+        ItemsCursor c = _itemDBManager.getItems(ItemDBManager.KEY_NAME, null, new ArrayList<Long>());
         long prevItemID;
         if (_position > 0)
             _prevPosition = _position - 1;

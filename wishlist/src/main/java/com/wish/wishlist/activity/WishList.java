@@ -10,7 +10,6 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -24,7 +23,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -47,6 +45,7 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.util.DrawerItemCustomAdapter;
+import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.WishItemStaggeredCursorAdapter;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
 import com.wish.wishlist.util.camera.CameraManager;
@@ -81,16 +80,10 @@ public class WishList extends Activity implements
     static final private int DIALOG_FILTER = 1;
     static final private int DIALOG_SORT = 2;
     static final private int POST_ITEM = 3;
-
     private static final String SELECTED_INDEX_KEY = "SELECTED_INDEX_KEY";
-    private static final String SORT_BY_KEY = "SORT_BY_KEY";
-    private static final String PREF_VIEW_OPTION = "viewOption";
-    private static final String PREF_FILTER_OPTION = "filterOption";
-    private static final String PREF_TAG_OPTION = "tagOption";
-    private static final String PREF_SORT_OPTION = "sortOption";
 
-    private ItemsCursor.SortBy SORT_BY = ItemsCursor.SortBy.item_name;
-    private java.util.Map _where = new HashMap<String, String>();
+
+    private java.util.Map _where = new HashMap<>();
     private String _nameQuery = null;
     public static final String LOG_TAG = "WishList";
 
@@ -103,10 +96,10 @@ public class WishList extends Activity implements
 
     private static final String TAG = "wishlist";
 
-    private String _viewOption = "list";
-    private String _statusOption = "all";
-    private String _tagOption = null;
-    private String _sortOption = ItemsCursor.SortBy.item_name.toString();
+    private Options.View _view = new Options.View(Options.View.LIST);
+    private Options.Status _status = new Options.Status(Options.Status.ALL);
+    private Options.Tag _tag = new Options.Tag(null);
+    private Options.Sort _sort = new Options.Sort(Options.Sort.NAME);
 
     private String _fullsizePhotoPath = null;
     private String _newfullsizePhotoPath = null;
@@ -125,7 +118,7 @@ public class WishList extends Activity implements
     private WishItemStaggeredCursorAdapter _wishItemStaggeredAdapterCursor;
 
     private ItemDBManager _itemDBManager;
-    private ArrayList<Long> _itemIds = new ArrayList<Long>();
+    private ArrayList<Long> _itemIds = new ArrayList<>();
 
     private long _selectedItem_id;
 
@@ -138,38 +131,31 @@ public class WishList extends Activity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
-        _viewOption = pref.getString(PREF_VIEW_OPTION, "list");
+        _view.read();
         Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        if (_viewOption.equals("list")) {
+        if (_view.val() == Options.View.LIST) {
             t.setScreenName("ListView");
-        }
-        else {
+        } else {
             t.setScreenName("GridView");
         }
         t.send(new HitBuilders.AppViewBuilder().build());
 
-        _statusOption = pref.getString(PREF_FILTER_OPTION, "all");
-
-        if (_statusOption.equals("all")) {
+        _status.read();
+        if (_status.val() == Options.Status.ALL) {
             _where.clear();
-        }
-        else if(_statusOption.equals("completed")) {
+        } else if(_status.val() == Options.Status.COMPLETED) {
             _where.put("complete", "1");
-        }
-        else if(_statusOption.equals("in_progress")) {
+        } else if(_status.val() == Options.Status.IN_PROGRESS) {
             _where.put("complete", "0");
         }
 
-        _sortOption = pref.getString(PREF_SORT_OPTION, ItemsCursor.SortBy.item_name.toString());
-
-        _tagOption = pref.getString(PREF_TAG_OPTION, null);
-        if (_tagOption != null) {
-            _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tagOption);
+        _sort.read();
+        _tag.read();
+        if (_tag.val() != null) {
+            _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tag.val());
         }
 
         // Get the intent, verify the action and get the query
-        Intent intent = getIntent();
         setContentView(R.layout.main);
 
         setUpActionBar();
@@ -195,8 +181,8 @@ public class WishList extends Activity implements
         _gridView.setOnItemClickListener(this);
 
         _addNew = (Button) findViewById(R.id.addNewWishButton);
-        _addNew.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        _addNew.setOnClickListener(new android.view.View.OnClickListener() {
+            public void onClick(android.view.View v) {
                 Intent editItem = new Intent(WishList.this, EditItem.class);
                 startActivityForResult(editItem, ADD_ITEM);
             }
@@ -220,7 +206,7 @@ public class WishList extends Activity implements
 //		myViewSpinner.setAdapter(adapter);
 
 //		// set the default spinner option
-//		if (_viewOption == "list") {
+//		if (_view == "list") {
 //			myViewSpinner.setSelection(0);
 //		} else {
 //			myViewSpinner.setSelection(1);
@@ -234,14 +220,14 @@ public class WishList extends Activity implements
 //				// list view is selected
 //				if (pos == 0) {
 //					// Recall populate here is inefficient
-//					_viewOption = "list";
+//					_view = "list";
 //					populateItems(_nameQuery, SORT_BY);
 //					_viewFlipper.setDisplayedChild(0);
 //
 //				}
 //				// grid view is selected
 //				else if (pos == 1) {
-//					_viewOption = "grid";
+//					_view = "grid";
 //					populateItems(_nameQuery, SORT_BY);
 //					_viewFlipper.setDisplayedChild(1);
 //
@@ -311,11 +297,9 @@ public class WishList extends Activity implements
     /***
      * initial display of items in both list and grid view, called when the
      * activity is created
-     *
-     * @param sortBy
      */
     private void initializeView() {
-        _wishItemCursor = _itemDBManager.getItems(_sortOption, _where, _itemIds);
+        _wishItemCursor = _itemDBManager.getItems(_sort.toString(), _where, _itemIds);
         if (_itemDBManager.getItemsCount() == 0) {
             // make a new wish button
             _viewFlipper.setDisplayedChild(3);
@@ -327,7 +311,7 @@ public class WishList extends Activity implements
             return;
         }
 
-        if (_viewOption.equals("list")) {
+        if (_view.val() == Options.View.LIST) {
             updateListView();
             _viewFlipper.setDisplayedChild(1);
         }
@@ -342,7 +326,6 @@ public class WishList extends Activity implements
     /***
      * display the items in either list or grid view sorted by "sortBy"
      *
-     * @param sortBy
      * @param searchName
      *            : the item name to match, null for all items
      */
@@ -351,9 +334,9 @@ public class WishList extends Activity implements
             // Get all of the rows from the Item table
             // Keep track of the TextViews added in list lstTable
             // _wishItemCursor = wishListDB.getItems(sortBy);
-            _wishItemCursor = _itemDBManager.getItems(_sortOption, where, _itemIds);
+            _wishItemCursor = _itemDBManager.getItems(_sort.toString(), where, _itemIds);
         } else {
-            _wishItemCursor = _itemDBManager.searchItems(searchName, _sortOption);
+            _wishItemCursor = _itemDBManager.searchItems(searchName, _sort.toString());
         }
 
         updateView();
@@ -377,12 +360,10 @@ public class WishList extends Activity implements
             _viewFlipper.setDisplayedChild(4);
             return;
         }
-        if (_viewOption.equals("list")) {
+        if (_view.val() == Options.View.LIST) {
             updateListView();
             _viewFlipper.setDisplayedChild(1);
-        }
-
-        else if (_viewOption.equals("grid")) {
+        } else if (_view.val() == Options.View.GRID) {
             //updateGridView();
             //_viewFlipper.setDisplayedChild(1);
             updateStaggeredView();
@@ -448,7 +429,7 @@ public class WishList extends Activity implements
 
         // save index and top position
         int index = _listView.getFirstVisiblePosition();
-        View v = _listView.getChildAt(0);
+        android.view.View v = _listView.getChildAt(0);
         int top = (v == null) ? 0 : v.getTop();
 
         _listView.setAdapter(_wishListItemAdapterCursor);
@@ -509,7 +490,7 @@ public class WishList extends Activity implements
             // Style the searchView with yellow accent color
             int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
             // Getting the 'search_plate' LinearLayout.
-            View searchPlate = searchView.findViewById(searchPlateId);
+            android.view.View searchPlate = searchView.findViewById(searchPlateId);
             // Setting background of 'search_plate'.
             searchPlate.setBackgroundResource(R.drawable.textfield_searchview_yellow);
 
@@ -521,7 +502,7 @@ public class WishList extends Activity implements
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
+    public void onCreateContextMenu(ContextMenu menu, android.view.View v,
                                     ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
@@ -533,11 +514,9 @@ public class WishList extends Activity implements
         MenuItem mi = menu.findItem(R.id.COMPLETE);
         if (complete == 1) {
             mi.setTitle("Mark as incomplete");
-        }
-        else {
+        } else {
             mi.setTitle("Mark as complete");
         }
-
         return;
     }
 
@@ -558,38 +537,20 @@ public class WishList extends Activity implements
         if (itemId == R.id.menu_search) {
             //do nothing here, the search view is already configured in onCreateOptionsMenu()
             return true;
-        }
-        else if (itemId == R.id.menu_add) {
+        } else if (itemId == R.id.menu_add) {
             // let user generate a wish item
             dispatchTakePictureIntent();
             //Intent editItem = new Intent(this, EditItem.class);
             //startActivityForResult(editItem, ADD_ITEM);
             return true;
-        }
-        //else if (itemId == R.id.menu_post) {
-        //	Intent snsIntent = new Intent(this, WishItemPostToSNS.class);
-        //	startActivityForResult(snsIntent, POST_ITEM);
-        //	return true;
-        //}
-
-//		else if (itemId == R.id.menu_scan) {
-//			IntentIntegrator.initiateScan(this);
-//			return true;
-//		}
-
-        else if(itemId == R.id.menu_sort) {
+        } else if(itemId == R.id.menu_sort) {
             showDialog(DIALOG_SORT);
-        }
-
-        else if (itemId == R.id.menu_status) {
+        } else if (itemId == R.id.menu_status) {
             showDialog(DIALOG_FILTER);
-        }
-
-        else if (itemId == R.id.menu_tags) {
+        } else if (itemId == R.id.menu_tags) {
             Intent i = new Intent(WishList.this, FindTag.class);
             startActivityForResult(i, FIND_TAG);
         }
-
         return false;
     }
 
@@ -615,22 +576,18 @@ public class WishList extends Activity implements
         //		return true;
         //	}
         else if (itemId == R.id.MARK) {
-
             WishItem wishItem = WishItemManager.getInstance().getItemById(_selectedItem_id);
             if (wishItem.getLatitude() == Double.MIN_VALUE && wishItem.getLongitude() == Double.MIN_VALUE) {
                 Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
                 toast.show();
-            }
-            else {
+            } else {
                 Intent mapIntent = new Intent(this, Map.class);
                 mapIntent.putExtra("type", "markOne");
                 mapIntent.putExtra("id", _selectedItem_id);
                 startActivity(mapIntent);
             }
             return true;
-        }
-
-        else if (itemId == R.id.SHARE) {
+        } else if (itemId == R.id.SHARE) {
             //Display display = getWindowManager().getDefaultDisplay();
             //int width = display.getWidth();  // deprecated
             //int height = display.getHeight();  // deprecated
@@ -653,9 +610,7 @@ public class WishList extends Activity implements
             //}
             //startActivity(Intent.createChooser(sendIntent, "Share using"));
             return true;
-        }
-
-        else if (itemId == R.id.COMPLETE) {
+        } else if (itemId == R.id.COMPLETE) {
             WishItem wish_item = WishItemManager.getInstance().getItemById(_selectedItem_id);
             if (wish_item.getComplete() == 1) {
                 wish_item.setComplete(0);
@@ -665,8 +620,7 @@ public class WishList extends Activity implements
                         .setAction("ChangeStatus")
                         .setLabel("InProgress")
                         .build());
-            }
-            else {
+            } else {
                 wish_item.setComplete(1);
                 Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                 t.send(new HitBuilders.EventBuilder()
@@ -679,13 +633,11 @@ public class WishList extends Activity implements
             wish_item.setSyncedToServer(false);
             wish_item.save();
             updateView();
-        }
-        else if (itemId == R.id.TAG) {
+        } else if (itemId == R.id.TAG) {
             Intent i = new Intent(WishList.this, AddTag.class);
             i.putExtra(AddTag.ITEM_ID, _selectedItem_id);
             startActivityForResult(i, ADD_TAG);
         }
-
         return false; }
 
     @Override
@@ -705,31 +657,22 @@ public class WishList extends Activity implements
                 sortBuilder.setTitle("Sort wishes");
 
                 int j = 0;// 0 is by name
-                if (_sortOption.equals(ItemsCursor.SortBy.updated_time.toString())) {
+                if (_sort.val() == Options.Sort.UPDATED_TIME) {
                     j = 1;
-                }
-                else if (_sortOption.equals(ItemsCursor.SortBy.price.toString())) {
+                } else if (_sort.val() == Options.Sort.PRICE) {
                     j = 2;
-                }
-                sortBuilder.setSingleChoiceItems(sortOption, j, new DialogInterface.OnClickListener() {
+                } sortBuilder.setSingleChoiceItems(sortOption, j, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         if (sortOption[item].equals(BY_NAME)) {
-                            _sortOption = ItemsCursor.SortBy.item_name.toString();
+                            _sort.setVal(Options.Sort.NAME);
+                        } else if (sortOption[item].equals(BY_TIME)) {
+                            _sort.setVal(Options.Sort.UPDATED_TIME);
+                        } else {
+                            _sort.setVal(Options.Sort.PRICE);
                         }
-                        else if (sortOption[item].equals(BY_TIME)) {
-                            _sortOption = ItemsCursor.SortBy.updated_time.toString();
-                        }
-                        else {
-                            _sortOption = ItemsCursor.SortBy.price.toString();
-                        }
-
-                        SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = pref.edit();
-                        editor.putString(PREF_SORT_OPTION, _sortOption);
-                        editor.commit();
+                        _sort.save();
 
                         dialog.dismiss();
-
                         populateItems(_nameQuery, _where);
 
                         // This is a HACK to fix the bug:
@@ -753,34 +696,20 @@ public class WishList extends Activity implements
                 AlertDialog.Builder optionBuilder = new AlertDialog.Builder(WishList.this);
                 optionBuilder.setTitle("Wish status");
 
-                int i = 0;
-                if (_statusOption.equals("completed")) {
-                    i = 1;
-                }
-                else if (_statusOption.equals("in_progress")) {
-                    i = 2;
-                }
-                optionBuilder.setSingleChoiceItems(options, i, new DialogInterface.OnClickListener() {
+                optionBuilder.setSingleChoiceItems(options, _status.val(), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
 
                         if (options[item].equals(BY_ALL)) {
                             _where.clear();
-                            _statusOption = "all";
-                        }
-
-                        else if (options[item].equals(BY_COMPLETED)) {
+                            _status.setVal(Options.Status.ALL);
+                        } else if (options[item].equals(BY_COMPLETED)) {
                             _where.put("complete", "1");
-                            _statusOption = "completed";
-                        }
-                        else {
+                            _status.setVal(Options.Status.COMPLETED);
+                        } else {
                             _where.put("complete", "0");
-                            _statusOption = "in_progress";
+                            _status.setVal(Options.Status.IN_PROGRESS);
                         }
-
-                        SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = pref.edit();
-                        editor.putString(PREF_FILTER_OPTION, _statusOption);
-                        editor.commit();
+                        _status.save();
 
                         dialog.dismiss();
                         populateItems(null, _where);
@@ -816,7 +745,7 @@ public class WishList extends Activity implements
     protected void onSaveInstanceState(Bundle savedInstanceState) {
 
         // save the position of the currently selected item in the list
-        if (_viewOption.equals("list")) {
+        if (_view.val() == Options.View.LIST) {
             savedInstanceState.putInt(SELECTED_INDEX_KEY, _listView.getSelectedItemPosition());
         }
         else {
@@ -850,10 +779,10 @@ public class WishList extends Activity implements
         // If the current wishlist is filtered by tag "T", and there is an item "A" in this list
         // we then enter the AddTag view for item "A" and delete the tag "T" from A. When we come back to
         // this list, we need to update _itemIds to exclude "A" so "A" will not show up in this list.
-        if (_tagOption != null) {
-            _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tagOption);
+        if (_tag.val() != null) {
+            _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tag.val());
             if (_itemIds.isEmpty()) {
-                _tagOption = null;
+                _tag.setVal(null);
             }
         }
     }
@@ -910,15 +839,11 @@ public class WishList extends Activity implements
             }
             case FIND_TAG: {
                 if (resultCode == Activity.RESULT_OK) {
-                    _tagOption = data.getStringExtra("tag");
+                    _tag.setVal(data.getStringExtra("tag"));
+                    _tag.save();
 
-                    SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putString(PREF_TAG_OPTION, _tagOption);
-                    editor.commit();
-
-                    if (_tagOption != null) {
-                        _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tagOption);
+                    if (_tag.val() != null) {
+                        _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tag.val());
 
                         // This is a HACK to fix the bug:
                         // If we have scrolled to the middle of the staggered view, and then filter wish by tag,
@@ -938,15 +863,14 @@ public class WishList extends Activity implements
             case TAKE_PICTURE: {
                 if (resultCode == RESULT_OK) {
                     Log.d(WishList.LOG_TAG, "TAKE_PICTURE: RESULT_OK");
-                    Log.v("TAKE PICTURE", "_new " + _newfullsizePhotoPath);
+                    Log.d("TAKE PICTURE", "_new " + _newfullsizePhotoPath);
                     _fullsizePhotoPath = String.valueOf(_newfullsizePhotoPath);
                     _newfullsizePhotoPath = null;
                     Intent i = new Intent(this, EditItem.class);
                     i.putExtra(EditItem.FULLSIZE_PHOTO_PATH, _fullsizePhotoPath);
                     if (_fullsizePhotoPath != null) {
                         Log.v("photo path", _fullsizePhotoPath);
-                    }
-                    else {
+                    } else {
                         Log.v("photo path", "null");
                     }
                     Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
@@ -956,8 +880,7 @@ public class WishList extends Activity implements
                             .setLabel("FromActionBarCameraButton")
                             .build());
                     startActivityForResult(i, EDIT_ITEM);
-                }
-                else {
+                } else {
                     Log.d(WishList.LOG_TAG, "TAKE_PICTURE: not RESULT_OK");
                 }
                 break;
@@ -993,9 +916,9 @@ public class WishList extends Activity implements
         if (_nameQuery != null) {
             // We tap back on search results view, show all wishes
             _nameQuery = null;
-            _tagOption = null;
+            _tag.setVal(null);
             _itemIds.clear();
-            _statusOption = "all";
+            _status.setVal(Options.Status.ALL);
             _where.clear();
 
             MenuItem tagItem =  _menu.findItem(R.id.menu_tags);
@@ -1007,23 +930,20 @@ public class WishList extends Activity implements
             populateItems(null, _where);
             return true;
         }
-        if (_tagOption != null || !_statusOption.equals("all")) {
+        if (_tag.val() != null || _status.val() != Options.Status.ALL) {
             //the wishes are currently filtered by tag or status, tapping back button now should clean up the filter and show all wishes
-            _tagOption = null;
+            _tag.setVal(null);
             _itemIds.clear();
 
-            _statusOption = "all";
+            _status.setVal(Options.Status.ALL);
             // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
             // next time it is opened.
             removeDialog(DIALOG_FILTER);
 
             _where.clear();
 
-            SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putString(PREF_FILTER_OPTION, _statusOption);
-            editor.putString(PREF_TAG_OPTION, _tagOption);
-            editor.commit();
+            _tag.save();
+            _status.save();
 
             populateItems(null, _where);
         }
@@ -1053,20 +973,17 @@ public class WishList extends Activity implements
             return;
         }
 
-        if (_tagOption == null) {
+        if (_tag.val() == null) {
             getActionBar().setTitle(R.string.app_name);
-        }
-        else {
-            getActionBar().setTitle(_tagOption);
+        } else {
+            getActionBar().setTitle(_tag.val());
         }
 
-        if (_statusOption.equals("completed")) {
+        if (_status.val() == Options.Status.COMPLETED) {
             getActionBar().setSubtitle("Completed");
-        }
-        else if (_statusOption.equals("in_progress")) {
+        } else if (_status.val() == Options.Status.IN_PROGRESS) {
             getActionBar().setSubtitle("In progress");
-        }
-        else {
+        } else {
             getActionBar().setSubtitle(null);
         }
     }
@@ -1079,7 +996,7 @@ public class WishList extends Activity implements
 
     private void updateDrawerList() {
         ArrayList<ObjectDrawerItem> drawerItems = new ArrayList<ObjectDrawerItem>();
-        if (!_itemIds.isEmpty() || !_statusOption.equals("all") || _nameQuery != null) {
+        if (!_itemIds.isEmpty() || _status.val() != Options.Status.ALL || _nameQuery != null) {
             drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_goleft, "All wishes"));
         }
         drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_add, "Add"));
@@ -1105,13 +1022,13 @@ public class WishList extends Activity implements
                 R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
+            public void onDrawerClosed(android.view.View view) {
                 super.onDrawerClosed(view);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
+            public void onDrawerOpened(android.view.View drawerView) {
                 super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
@@ -1123,7 +1040,7 @@ public class WishList extends Activity implements
         // Setting item click listener for the listview mDrawerList
         mDrawerList.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
+            public void onItemClick(AdapterView<?> parent, android.view.View view,
                                     int position, long id) {
                 TextView textViewName = (TextView) view.findViewById(R.id.textViewName);
                 String item = textViewName.getText().toString();
@@ -1132,41 +1049,30 @@ public class WishList extends Activity implements
                 mDrawerList.clearChoices();
                 if (item.equals("All wishes")) {
                     goBack();
-                }
-                else if (item.equals("Add")) {
+                } else if (item.equals("Add")) {
                     Intent editItem = new Intent(WishList.this, EditItem.class);
                     startActivityForResult(editItem, ADD_ITEM);
-                }
-                else if (item.equals("List view")) {
-                    _viewOption = "list";
+                } else if (item.equals("List view")) {
+                    _view.setVal(Options.View.LIST);
                     populateItems(_nameQuery, _where);
-                    SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putString(PREF_VIEW_OPTION, _viewOption);
-                    editor.commit();
+                    _view.save();
 
                     Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.setScreenName("ListView");
                     t.send(new HitBuilders.AppViewBuilder().build());
-                }
-                else if (item.equals("Grid view")) {
-                    _viewOption = "grid";
+                } else if (item.equals("Grid view")) {
+                    _view.setVal(Options.View.GRID);
                     populateItems(_nameQuery, _where);
-                    SharedPreferences pref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putString(PREF_VIEW_OPTION, _viewOption);
-                    editor.commit();
+                    _view.save();
 
                     Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.setScreenName("GridView");
                     t.send(new HitBuilders.AppViewBuilder().build());
-                }
-                else if (item.equals("Map view")) {
+                } else if (item.equals("Map view")) {
                     Intent mapIntent = new Intent(WishList.this, Map.class);
                     mapIntent.putExtra("type", "markAll");
                     startActivity(mapIntent);
-                }
-                else if (item.equals("Settings")) {
+                } else if (item.equals("Settings")) {
                     Intent prefIntent = new Intent(getApplicationContext(), WishListPreference.class);
                     startActivity(prefIntent);
                 }
@@ -1201,7 +1107,7 @@ public class WishList extends Activity implements
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+    public void onItemClick(AdapterView<?> adapterView, android.view.View view, int position, long id) {
         // Create an intent to show the item detail.
         // Pass the item_id along so the next activity can use it to
         // retrieve the info. about the item from database
@@ -1212,13 +1118,12 @@ public class WishList extends Activity implements
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+    public boolean onItemLongClick(AdapterView<?> parent, android.view.View view, int position, long id)
     {
         _selectedItem_id = id;
-        if (_viewOption.equals("list")) {
+        if (_view.val() == Options.View.LIST) {
             _listView.showContextMenu();
-        }
-        else {
+        } else {
             _staggeredView.showContextMenu();
         }
         return true;
