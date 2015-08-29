@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -75,7 +76,8 @@ public class WishList extends Activity implements
         AbsListView.OnScrollListener,
         AbsListView.OnItemClickListener,
         AdapterView.OnItemLongClickListener,
-        SyncAgent.OnSyncWishChangedListener {
+        SyncAgent.OnSyncWishChangedListener,
+        SyncAgent.OnDownloadWishDoneListener {
     static final private int DIALOG_MAIN = 0;
     static final private int DIALOG_FILTER = 1;
     static final private int DIALOG_SORT = 2;
@@ -108,6 +110,7 @@ public class WishList extends Activity implements
     private ListView _listView;
     private GridView _gridView;
     private StaggeredGridView _staggeredView;
+    private SwipeRefreshLayout _swipeRefreshLayout;
     private Button _addNew;
     private MenuItem _menuSearch;
 
@@ -256,6 +259,24 @@ public class WishList extends Activity implements
         }
 
         SyncAgent.getInstance().register(this);
+
+        _swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        // the refresh listner. this would be called when the layout is pulled down
+        _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                _swipeRefreshLayout.setRefreshing(true);
+                Log.e(TAG, "refresh");
+                SyncAgent.getInstance().sync();
+                // TODO : request data here
+                // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation
+                //handler.post(refreshing);
+            }
+        });
+        // sets the colors used in the refresh animation
+        //_swipeRefreshLayout.setColorSchemeResources(R.color.blue_bright, R.color.green_light,
+                //R.color.orange_light, R.color.red_light);
+
     }
 
     @Override
@@ -1132,5 +1153,10 @@ public class WishList extends Activity implements
     public void onSyncWishChanged() {
         Log.d(TAG, "onSyncWishChanged");
         populateItems(_nameQuery, _where);
+    }
+
+    public void onDownloadWishDone() {
+        Log.d(TAG, "onDownloadWishDone");
+        _swipeRefreshLayout.setRefreshing(false);
     }
 }

@@ -40,6 +40,7 @@ public class SyncAgent {
     private HashSet<Long> m_downloaded_items = new HashSet<>();
     private HashMap<String, Target> m_targets = new HashMap<>();
     private OnSyncWishChangedListener mSyncWishChangedListener;
+    private OnDownloadWishDoneListener mDownloadWishDoneListener;
     private Date m_synced_time;
     private static String TAG = "SyncAgent";
 
@@ -72,6 +73,7 @@ public class SyncAgent {
                     m_downloaded_items.clear();
                     m_items_to_download = itemList.size();
                     if (m_items_to_download == 0) {
+                        SyncAgent.this.mDownloadWishDoneListener.onDownloadWishDone();
                         uploadToParse();
                         return;
                     }
@@ -99,6 +101,7 @@ public class SyncAgent {
                         }
                     }
                 } else {
+                    SyncAgent.this.mDownloadWishDoneListener.onDownloadWishDone();
                     Log.e(TAG, "Error: " + e.getMessage());
                 }
             }
@@ -352,6 +355,7 @@ public class SyncAgent {
         m_items_to_download--;
         if (m_items_to_download == 0) {
             // download from parse is finished, now upload to parse
+            SyncAgent.this.mDownloadWishDoneListener.onDownloadWishDone();
             uploadToParse();
         }
     }
@@ -394,15 +398,20 @@ public class SyncAgent {
     public void register(Activity activity) {
         try {
             this.mSyncWishChangedListener = (OnSyncWishChangedListener) activity;
+            this.mDownloadWishDoneListener = (OnDownloadWishDoneListener) activity;
         }
         catch (final ClassCastException e) {
             Log.e(TAG, "fail to register");
-            throw new ClassCastException(activity.toString() + " must implement OnSyncWishChanged");
+            throw new ClassCastException(activity.toString() + " must implement OnSyncWishChanged/OnDownloadWishDone");
         }
     }
 
     public interface OnSyncWishChangedListener {
         void onSyncWishChanged();
+    }
+
+    public interface OnDownloadWishDoneListener {
+        void onDownloadWishDone();
     }
 }
 
