@@ -173,6 +173,7 @@ public class WishList extends Activity implements
         _staggeredView.setOnItemLongClickListener(this);
 
         _listView = (ListView) findViewById(R.id.myListView);
+        _listView.setOnScrollListener(this);
         _listView.setOnItemClickListener(this);
         _listView.setOnItemLongClickListener(this);
 
@@ -276,7 +277,6 @@ public class WishList extends Activity implements
         // sets the colors used in the refresh animation
         //_swipeRefreshLayout.setColorSchemeResources(R.color.blue_bright, R.color.green_light,
                 //R.color.orange_light, R.color.red_light);
-
     }
 
     @Override
@@ -1122,6 +1122,31 @@ public class WishList extends Activity implements
 
     @Override
     public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
+        if (_swipeRefreshLayout == null) {
+            return;
+        }
+
+        boolean enable = false;
+        if (_view.val() == Options.View.LIST) {
+            if (_listView != null && _listView.getChildCount() > 0) {
+                // check if the first item of the list is visible
+                boolean firstItemVisible = _listView.getFirstVisiblePosition() == 0;
+                // check if the top of the first item is visible
+                boolean topOfFirstItemVisible = _listView.getChildAt(0).getTop() >= 0;
+                // enabling or disabling the refresh layout
+                enable = firstItemVisible && topOfFirstItemVisible;
+            }
+        } else {
+            if (_staggeredView != null && _staggeredView.getChildCount() > 0) {
+                // check if the first item of the list is visible
+                boolean firstItemVisible = _staggeredView.getFirstVisiblePosition() == 0;
+                // check if the top of the first item is visible
+                boolean topOfFirstItemVisible = _staggeredView.getChildAt(0).getTop() >= 0;
+                // enabling or disabling the refresh layout
+                enable = firstItemVisible && topOfFirstItemVisible;
+            }
+        }
+        _swipeRefreshLayout.setEnabled(enable);
         //    Log.d("wishlist", "onScroll firstVisibleItem:" + firstVisibleItem +
         //            " visibleItemCount:" + visibleItemCount +
         //            " totalItemCount:" + totalItemCount);
