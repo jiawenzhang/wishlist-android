@@ -28,8 +28,6 @@ import java.util.List;
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.facebook.model.WishGraphObject;
-import com.wish.wishlist.facebook.model.MakeAction;
 import com.wish.wishlist.util.DialogOnShowListener;
 
 

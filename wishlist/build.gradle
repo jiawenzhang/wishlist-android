@@ -17,8 +17,17 @@ android {
 
     defaultConfig {
         applicationId "com.wish.wishlist"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 21
+    }
+    sourceSets {
+        main {
+            java {
+                exclude '**/FacebookPost.java'
+                exclude '**/WishItemPostToSNS.java'
+                exclude '**/Login.java'
+            }
+        }
     }
     
     signingConfigs {

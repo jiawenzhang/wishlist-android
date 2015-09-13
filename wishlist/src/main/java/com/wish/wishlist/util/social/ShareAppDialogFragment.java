@@ -20,7 +20,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.R;
-import com.wish.wishlist.activity.FacebookPost;
+//import com.wish.wishlist.activity.FacebookPost;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 
@@ -83,9 +83,10 @@ public class ShareAppDialogFragment extends DialogFragment {
                         Toast.makeText(_ctx, "Network not available", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    Intent facebookPostIntent = new Intent(_ctx, FacebookPost.class);
-                    facebookPostIntent.putExtra("itemId", _itemId);
-                    ((Activity) _ctx).startActivityForResult(facebookPostIntent, 1);
+                    // Fixme: need to fix for facebook sdk 4.6
+                    //Intent facebookPostIntent = new Intent(_ctx, FacebookPost.class);
+                    //facebookPostIntent.putExtra("itemId", _itemId);
+                    //((Activity) _ctx).startActivityForResult(facebookPostIntent, 1);
 
                     // Intent snsIntent = new Intent(_ctx, WishItemPostToSNS.class);
                     // snsIntent.putExtra("itemId", _itemId);

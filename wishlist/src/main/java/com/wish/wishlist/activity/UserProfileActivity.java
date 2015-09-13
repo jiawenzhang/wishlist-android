@@ -82,7 +82,7 @@ public class UserProfileActivity extends Activity {
                     ParseLoginBuilder builder = new ParseLoginBuilder(
                             UserProfileActivity.this);
                     Intent parseLoginIntent = builder.setParseLoginEnabled(true)
-                            .setParseLoginButtonText("Go")
+                            .setParseLoginButtonText("Login")
                             .setParseSignupButtonText("Register")
                             .setParseLoginHelpText("Forgot password?")
                             .setParseLoginInvalidCredentialsToastText("You email and/or password is not correct")
