@@ -4,20 +4,24 @@
     android:versionCode="24"
     android:versionName="1.2.2" >
 
-    <!-- min sdkversion earlier than 4 will implicitly require WRITE_EXTERNAL_STORAGE and READ_PHONE_STATE 
-    user permission. set the min version >= 4 to avoid that -->
-    <!--<uses-sdk android:minSdkVersion="8"
-            android:targetSdkVersion="17" /> -->
+    <!--
+    min sdkversion earlier than 4 will implicitly require WRITE_EXTERNAL_STORAGE and READ_PHONE_STATE 
+    user permission. set the min version >= 4 to avoid that
+    -->
+    <!--
+        <uses-sdk android:minSdkVersion="8"
+            android:targetSdkVersion="17" />
+    -->
     <!-- 8 is android 2.2.x FROYO -->
-    <!-- 17 is android 4.2.x  JELLY BEAN-->
+    <!-- 17 is android 4.2.x  JELLY BEAN -->
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <!-- permission for Parse push notification -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -30,173 +34,209 @@
       IMPORTANT: Change "com.parse.starter.permission.C2D_MESSAGE" in the lines below
       to match your app's package name + ".permission.C2D_MESSAGE".
     -->
-    <permission android:protectionLevel="signature"
-                android:name="com.wish.wishlist.permission.C2D_MESSAGE" />
+    <permission
+        android:name="com.wish.wishlist.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="com.wish.wishlist.permission.C2D_MESSAGE" />
 
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
-    <uses-feature android:name="android.hardware.location" android:required="false" />
-    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
-    <uses-feature android:name="android.hardware.location.network" android:required="false" />
-    <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <application
         android:name=".WishlistApplication"
-        android:label="@string/app_name"
         android:icon="@drawable/ic_logo"
+        android:label="@string/app_name"
         android:logo="@drawable/ic_logo"
-        android:theme="@style/Wishlist_Yellow">
-
-        <meta-data android:name="com.google.android.gms.version"
+        android:theme="@style/Wishlist_Yellow" >
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <!-- Google Analytics Version v4 needs this value for easy tracking, parsing this will cause app freeze -->
-        <!--        <meta-data android:name="com.google.android.gms.analytics.globalConfigResource"
-                    android:resource="@xml/global_tracker" /> -->
-
+        <!--
+                    <meta-data android:name="com.google.android.gms.analytics.globalConfigResource"
+                    android:resource="@xml/global_tracker" />
+        -->
 
         <uses-library android:name="com.google.android.maps" />
 
-        <activity android:name=".activity.Splash"
+        <activity
+            android:name=".activity.Splash"
             android:label="@string/app_name"
-            android:theme="@style/Theme.D1.noActionBar"
-            >
+            android:theme="@style/Theme.D1.noActionBar" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activity.Login"
-            android:label="@string/app_name"
-            >
+        <activity
+            android:name=".activity.Login"
+            android:label="@string/app_name" >
         </activity>
 
-
-        <!--        <activity android:name=".WishListLogin"
+        <!--
+                    <activity android:name=".WishListLogin"
                           android:label="@string/app_name"
-                          android:theme="@style/ToDoTheme"> -->
-        <!--             <intent-filter> -->
-        <!--                 <action android:name="android.intent.action.MAIN" /> -->
-        <!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!--             </intent-filter> -->
+                          android:theme="@style/ToDoTheme">
+        -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.MAIN" /> -->
+        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!-- </intent-filter> -->
 
-        <!--        </activity>   -->
 
-        <!--	    <activity android:name=".WishListLoginReal">
+        <!-- </activity> -->
+
+
+        <!--
+            	    <activity android:name=".WishListLoginReal">
                 </activity>
         -->
         <!-- The default activity of the app.  Can also display search results. -->
-        <activity android:name=".activity.WishList"
+        <activity
+            android:name=".activity.WishList"
             android:label="@string/app_name"
-            android:theme="@style/Wishlist_Yellow"
             android:launchMode="singleTop"
-            >
-            <!--                   android:launchMode="singleTask"> -->
+            android:theme="@style/Wishlist_Yellow" >
 
-            <!--                   <meta-data android:name="android.app.default_searchable" -->
-            <!--                    	   android:value=".WishListSearchEngine" /> -->
+            <!-- android:launchMode="singleTask"> -->
 
-            <!--               <intent-filter> -->
-            <!--                	<action android:name="android.intent.action.MAIN" />  -->
-            <!--                	<category android:name="android.intent.category.LAUNCHER" />  -->
-            <!--           	</intent-filter> -->
+
+            <!-- <meta-data android:name="android.app.default_searchable" -->
+            <!-- android:value=".WishListSearchEngine" /> -->
+
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+
 
             <!-- Receives the search request. -->
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!-- 	            Points to searchable meta data. -->
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
-
+            <!-- Points to searchable meta data. -->
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
-
-        <activity android:name=".activity.EditItem"
+        <activity
+            android:name=".activity.EditItem"
             android:label="@string/app_name"
-            android:theme="@style/WishList.EditWish.Theme.ActionBar"
-            >
-            <!--android:theme="@style/Theme.D1"-->
-            <!--  android:screenOrientation="portrait"> -->
+            android:theme="@style/WishList.EditWish.Theme.ActionBar" >
+
+            <!-- android:theme="@style/Theme.D1" -->
+            <!-- android:screenOrientation="portrait"> -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="*/*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activity.WishListPreference"
+        <activity
+            android:name=".activity.WishListPreference"
             android:label="@string/app_name"
-            android:theme="@style/WishList_Yellow_PreferenceCategory">
-            <!--  android:screenOrientation="portrait"> -->
-        </activity>
+            android:theme="@style/WishList_Yellow_PreferenceCategory" >
 
-        <activity android:name=".activity.WishItemDetail"
+            <!-- android:screenOrientation="portrait"> -->
+        </activity>
+        <activity
+            android:name=".activity.WishItemDetail"
             android:label="@string/app_name"
-            android:theme="@style/Wishlist_Yellow"
-            >
-            <!--  android:screenOrientation="portrait"> -->
-        </activity>
+            android:theme="@style/Wishlist_Yellow" >
 
-        <activity android:name=".activity.FullscreenPhoto"
+            <!-- android:screenOrientation="portrait"> -->
+        </activity>
+        <activity
+            android:name=".activity.FullscreenPhoto"
             android:label="@string/app_name"
-            android:theme="@style/Theme.D1.noActionBar"
-            >
-            <!--  android:screenOrientation="portrait"> -->
+            android:theme="@style/Theme.D1.noActionBar" >
+
+            <!-- android:screenOrientation="portrait"> -->
+        </activity>
+        <activity
+            android:name=".activity.WishItemPostToSNS"
+            android:label="@string/app_name" >
+
+            <!-- android:theme="@style/ToDoTheme"> -->
+        </activity>
+        <activity
+            android:name=".activity.FacebookPost"
+            android:label="@string/app_name" >
         </activity>
 
-        <activity android:name=".activity.WishItemPostToSNS"
-            android:label="@string/app_name">
-            <!--              android:theme="@style/ToDoTheme"> -->
-        </activity>
+        <!-- <activity android:name=".WishListSearchEngine" -->
+        <!-- android:label="@string/app_name" -->
+        <!-- android:theme="@style/ToDoTheme"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.SEARCH" /> -->
+        <!-- </intent-filter> -->
+        <!-- <meta-data android:name="android.app.searchable" -->
+        <!-- android:resource="@xml/searchable"/> -->
+        <!-- </activity> -->
 
-        <activity android:name=".activity.FacebookPost"
-            android:label="@string/app_name">
-        </activity>
-
-        <!--         <activity android:name=".WishListSearchEngine" -->
-        <!--                 android:label="@string/app_name" -->
-        <!--                 android:theme="@style/ToDoTheme"> -->
-        <!--             <intent-filter> -->
-        <!--                 <action android:name="android.intent.action.SEARCH" /> -->
-        <!--             </intent-filter> -->
-        <!--               <meta-data android:name="android.app.searchable" -->
-        <!--                     android:resource="@xml/searchable"/> -->
-        <!--         </activity> -->
-
-        <activity android:name=".activity.Map"
-                  android:label="@string/app_name"
-                  android:theme="@style/Theme.D1.noActionBar" >
-        </activity>
-
-        <activity android:name=".activity.FindTag"
+        <activity
+            android:name=".activity.Map"
             android:label="@string/app_name"
-            android:theme="@style/WishList.EditWish.Theme.ActionBar" >
+            android:theme="@style/Theme.D1.noActionBar" >
         </activity>
-
-        <activity android:name=".activity.AddTag"
+        <activity
+            android:name=".activity.FindTag"
             android:label="@string/app_name"
             android:theme="@style/WishList.EditWish.Theme.ActionBar" >
         </activity>
-        <activity android:name=".activity.AddTagFromEditItem"
+        <activity
+            android:name=".activity.AddTag"
+            android:label="@string/app_name"
+            android:theme="@style/WishList.EditWish.Theme.ActionBar" >
+        </activity>
+        <activity
+            android:name=".activity.AddTagFromEditItem"
             android:label="@string/app_name"
             android:theme="@style/WishList.EditWish.Theme.ActionBar" >
         </activity>
@@ -206,17 +246,26 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.D1.noActionBar" >
         </activity>
-        <!--    android:theme="@style/ToDoTheme"></activity> -->
+        <activity
+            android:name=".activity.Profile"
+            android:label="Wishlist"
+            android:theme="@style/WishList.EditWish.Theme.ActionBar" >
+        </activity>
+        <!-- android:theme="@style/ToDoTheme"></activity> -->
 
-        <!--         <provider android:name="com.android.wishlist.defaultphotoprovider" -->
-        <!--           android:authorities="com.android.wishlist.provider.defaultphotoprovider"> -->
-        <!-- 		</provider> -->
 
-        <!-- 		<provider android:name="com.google.provider.NotePad" -->
-        <!--           android:authorities="com.google.provider.NotePad"> -->
-        <!-- 		</provider> -->
+        <!-- <provider android:name="com.android.wishlist.defaultphotoprovider" -->
+        <!-- android:authorities="com.android.wishlist.provider.defaultphotoprovider"> -->
+        <!-- </provider> -->
 
-        <!-- Fixme: for sdk 4.6
+
+        <!-- <provider android:name="com.google.provider.NotePad" -->
+        <!-- android:authorities="com.google.provider.NotePad"> -->
+        <!-- </provider> -->
+
+
+        <!--
+        Fixme: for sdk 4.6
         <activity android:name="com.facebook.LoginActivity"
             android:label="@string/app_name" />
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/applicationId" />
@@ -224,29 +273,28 @@
         <provider android:authorities="com.facebook.app.NativeAppCallContentProvider221345307993103"
             android:name="com.facebook.NativeAppCallContentProvider"
             android:exported="true" />
-
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDXt7pwa4cvJA2O62kjTftAMVR17JjwrEc"/>
+            android:value="AIzaSyDXt7pwa4cvJA2O62kjTftAMVR17JjwrEc" />
 
         <activity
             android:name=".activity.UserProfileActivity"
             android:label="app_name"
-            android:theme="@style/ParseLogin"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:theme="@style/ParseLogin" >
         </activity>
         <activity
             android:name="com.parse.ui.ParseLoginActivity"
             android:label="app_name"
-            android:theme="@style/ParseLogin"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:theme="@style/ParseLogin" >
         </activity>
-        <activity android:name="com.facebook.FacebookActivity"
-                  android:configChanges=
-                      "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
-                  android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <meta-data
             android:name="com.parse.APPLICATION_ID"
@@ -256,37 +304,38 @@
             android:value="@string/parse_client_id" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
+            android:value="@string/facebook_app_id" />
 
         <service android:name="com.parse.PushService" />
         <!-- Fixme: use our own receiver for non GCM push -->
-        <receiver android:name="com.parse.ParseBroadcastReceiver">
+        <receiver android:name="com.parse.ParseBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-        <!--<receiver android:name="com.parse.ParsePushBroadcastReceiver"-->
-        <receiver android:name=".util.sync.PushBroadcastReceiver"
-                  android:exported="false">
+        <!-- <receiver android:name="com.parse.ParsePushBroadcastReceiver" -->
+        <receiver
+            android:name=".util.sync.PushBroadcastReceiver"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
                 <action android:name="com.parse.push.intent.DELETE" />
                 <action android:name="com.parse.push.intent.OPEN" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.parse.GcmBroadcastReceiver"
-                  android:permission="com.google.android.c2dm.permission.SEND">
+        <receiver
+            android:name="com.parse.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <!--
-                  IMPORTANT: Change "com.parse.starter" to match your app's package name.
-                -->
+<!--                   IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
                 <category android:name="com.wish.wishlist" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

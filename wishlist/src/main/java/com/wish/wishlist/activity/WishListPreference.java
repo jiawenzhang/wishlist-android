@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.util.sync.SyncAgent;
 import com.wish.wishlist.view.ReleaseNotesView;
@@ -39,7 +40,12 @@ public class WishListPreference extends PreferenceActivity implements
         Preference userProfile = (Preference) findPreference("userProfile");
         userProfile.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(getApplication(), UserProfileActivity.class));
+                ParseUser currentUser = ParseUser.getCurrentUser();
+                if (currentUser != null) {
+                    startActivity(new Intent(getApplication(), Profile.class));
+                } else {
+                    startActivity(new Intent(getApplication(), UserProfileActivity.class));
+                }
                 return true;
             }
         });

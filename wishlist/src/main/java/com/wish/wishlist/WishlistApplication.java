@@ -3,7 +3,6 @@ package com.wish.wishlist;
 import android.app.Application;
 import android.content.Context;
 
-import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 

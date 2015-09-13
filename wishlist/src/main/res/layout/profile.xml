@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+    >
+
+    <ImageView android:id="@+id/profile_image"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@color/white"
+               android:adjustViewBounds="true"
+               android:scaleType="centerInside"
+               android:padding="1dp"
+               android:layout_gravity="center_horizontal|bottom"
+               android:layout_marginTop="20dp"
+               android:layout_marginLeft="30dp"
+               android:layout_marginRight="30dp"
+               android:layout_marginBottom="30dp"
+        />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:layout_marginLeft="30dp"
+                  android:layout_marginRight="30dp"
+                  android:orientation="vertical"
+                  android:layout_weight="1"
+                  android:layout_marginBottom="15dp"
+        >
+
+        <TextView android:id="@+id/username"
+                  android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:text="Username"
+                  android:textSize="13sp"
+                  android:singleLine="false"
+                  android:ellipsize="end"
+                  android:textColor="@color/red"
+            />
+        <TextView android:id="@+id/username_text"
+                  android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:text="UserName"
+                  android:textSize="18sp"
+                  android:singleLine="false"
+                  android:ellipsize="end"
+                  android:textColor="@color/medium_grey"
+                  android:paddingRight="30dp"
+            />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:layout_marginLeft="30dp"
+                  android:layout_marginRight="30dp"
+                  android:orientation="vertical"
+                  android:layout_weight="1"
+        >
+
+        <TextView android:id="@+id/user_email"
+                  android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:text="Email"
+                  android:textSize="13sp"
+                  android:singleLine="false"
+                  android:ellipsize="end"
+                  android:textColor="@color/red"
+            />
+        <TextView android:id="@+id/user_email_text"
+                  android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:text="UserEmail"
+                  android:textSize="18sp"
+                  android:singleLine="false"
+                  android:ellipsize="end"
+                  android:textColor="@color/medium_grey"
+                  android:paddingRight="30dp"
+            />
+    </LinearLayout>
+
+</LinearLayout>
