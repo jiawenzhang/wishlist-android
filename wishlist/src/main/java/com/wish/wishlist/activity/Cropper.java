@@ -10,12 +10,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
-
-import com.theartofdev.edmodo.cropper.CropImageView;
+import com.isseiaoki.simplecropview.CropImageView;
 import com.wish.wishlist.R;
 
 import java.io.File;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class Cropper extends Activity {
-    Bitmap mCroppedImage;
     CropImageView mCropImageView;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -40,11 +38,16 @@ public class Cropper extends Activity {
 
         // Initialize components of the app
         mCropImageView = (CropImageView) findViewById(R.id.CropImageView);
-        mCropImageView.setCropShape(CropImageView.CropShape.OVAL);
-        mCropImageView.setFixedAspectRatio(true);
-        mCropImageView.setGuidelines(1);
-        mCropImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        mCropImageView.setImageUri(imageUri);
+        mCropImageView.setCropMode(CropImageView.CropMode.CIRCLE);
+
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+            mCropImageView.setImageBitmap(bitmap);
+        } catch (FileNotFoundException e) {
+            Log.e("Cropper", e.toString());
+        } catch (IOException e) {
+            Log.e("Cropper", e.toString());
+        }
     }
 
     private void setUpActionBar() {
@@ -67,7 +70,7 @@ public class Cropper extends Activity {
                 finish();
                 return true;
             case R.id.menu_cropper_crop:
-                mCroppedImage = mCropImageView.getCroppedImage();
+                final Bitmap croppedImage = mCropImageView.getCroppedBitmap();
                 File rootDataDir = getFilesDir();
                 File profileImage = new File(rootDataDir, "profile_image.jpg");
                 Log.d("Cropper", profileImage.getAbsolutePath());
@@ -75,7 +78,7 @@ public class Cropper extends Activity {
                     //save the image to a file we created in wishlist album
                     String path = profileImage.getAbsolutePath();
                     OutputStream stream = new FileOutputStream(path);
-                    mCroppedImage.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+                    croppedImage.compress(Bitmap.CompressFormat.JPEG, 85, stream);
                     stream.flush();
                     stream.close();
                     setResult(RESULT_OK, null);

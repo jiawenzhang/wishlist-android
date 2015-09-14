@@ -49,5 +49,10 @@
 
     <color name="dark_purple">#790980</color>
 
+    <!-- image cropper -->
+    <color name="overlay">#AA1C1C1C</color>
+    <color name="handle">#86C166</color>
+    <color name="frame">#86C166</color>
+    <color name="guide">#AA86C166</color>
 
 </resources>
