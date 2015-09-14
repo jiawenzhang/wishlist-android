@@ -251,6 +251,12 @@
             android:label="Wishlist"
             android:theme="@style/WishList.EditWish.Theme.ActionBar" >
         </activity>
+        <activity
+            android:name=".activity.Cropper"
+            android:label="Wishlist"
+            android:screenOrientation="portrait"
+            android:theme="@style/WishList.EditWish.Theme.ActionBar" >
+        </activity>
         <!-- android:theme="@style/ToDoTheme"></activity> -->
 
 

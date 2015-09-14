@@ -145,4 +145,5 @@ public class UserProfileActivity extends Activity {
         nameTextView.setText("");
         loginOrLogoutButton.setText(R.string.profile_login_button_label);
     }
+
 }
