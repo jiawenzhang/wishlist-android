@@ -5,20 +5,15 @@ import android.app.ActionBar;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
-import com.wish.wishlist.util.sync.SyncAgent;
 import com.wish.wishlist.view.ReleaseNotesView;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.SharedPreferences;
@@ -44,7 +39,7 @@ public class WishListPreference extends PreferenceActivity implements
                 if (currentUser != null) {
                     startActivity(new Intent(getApplication(), Profile.class));
                 } else {
-                    startActivity(new Intent(getApplication(), UserProfileActivity.class));
+                    startActivity(new Intent(getApplication(), UserLoginActivity.class));
                 }
                 return true;
             }

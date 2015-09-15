@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 
 public class Splash extends Activity{
     private static final String VERSION_KEY = "version_number";
+    private static final String TAG = "Splash";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +57,7 @@ public class Splash extends Activity{
             try {
                 PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
                 currentVersionNumber = pi.versionCode;
-            } catch (Exception e) {
-            }
+            } catch (Exception e) {}
 
 
             if (currentVersionNumber > savedVersionNumber) {
@@ -107,17 +108,14 @@ public class Splash extends Activity{
                 editor.commit();
                 //startActivity(new Intent(getApplication(), NewFeatureFragmentActivity.class));
                 //startActivity(new Intent(getApplication(), WishList.class));
-
-                Intent intent = new Intent(getApplication(), UserProfileActivity.class);
-                intent.putExtra("fromSplash", true);
-                startActivity(intent);
-            }
-            else {
+            } else {
                 //startActivity(new Intent(getApplication(), WishList.class));
-                Intent intent = new Intent(getApplication(), UserProfileActivity.class);
-                intent.putExtra("fromSplash", true);
-                startActivity(intent);
             }
+
+            Intent intent = new Intent(getApplication(), UserLoginActivity.class);
+            intent.putExtra("fromSplash", true);
+            startActivity(intent);
+
             Splash.this.finish();
         }
 

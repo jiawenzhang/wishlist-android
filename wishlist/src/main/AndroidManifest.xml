@@ -285,7 +285,7 @@
             android:value="AIzaSyDXt7pwa4cvJA2O62kjTftAMVR17JjwrEc" />
 
         <activity
-            android:name=".activity.UserProfileActivity"
+            android:name=".activity.UserLoginActivity"
             android:label="app_name"
             android:launchMode="singleTop"
             android:theme="@style/ParseLogin" >
