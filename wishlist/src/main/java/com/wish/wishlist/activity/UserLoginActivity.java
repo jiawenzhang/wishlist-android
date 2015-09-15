@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.parse.ParseUser;
 import com.parse.ui.ParseLoginBuilder;
+import com.wish.wishlist.R;
 
 import java.util.Arrays;
 
@@ -36,6 +37,7 @@ public class UserLoginActivity extends Activity {
         ParseLoginBuilder builder = new ParseLoginBuilder(
                 UserLoginActivity.this);
         Intent parseLoginIntent = builder.setParseLoginEnabled(true)
+                .setAppLogo(R.drawable.splash_logo)
                 .setParseLoginButtonText("Login")
                 .setParseSignupButtonText("Register")
                 .setParseLoginHelpText("Forgot password?")
