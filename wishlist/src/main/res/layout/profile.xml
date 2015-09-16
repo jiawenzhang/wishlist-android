@@ -21,6 +21,9 @@
     <include android:id="@+id/profile_username"
              layout="@layout/profile_item"/>
 
+    <include android:id="@+id/profile_name"
+             layout="@layout/profile_item"/>
+
     <include android:id="@+id/profile_email"
              layout="@layout/profile_item"/>
 

@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
 
@@ -43,27 +44,39 @@ public class Profile extends Activity {
         setUpActionBar();
 
         mUser = ParseUser.getCurrentUser();
-        if (mUser != null) {
-            setProfileImage();
-            ImageView profileImage = (ImageView) findViewById(R.id.profile_image);
-            profileImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivityForResult(getPickImageChooserIntent(), CHOOSE_IMAGE);
-                }
-            });
+        if (mUser == null) {
+            Log.d(TAG, "currentUser null ");
+            return;
+        }
 
-            //userName.setText(mUser.getString("name"));
-            FrameLayout profile_username = (FrameLayout) findViewById(R.id.profile_username);
+        setProfileImage();
+        ImageView profileImage = (ImageView) findViewById(R.id.profile_image);
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(getPickImageChooserIntent(), CHOOSE_IMAGE);
+            }
+        });
+
+        FrameLayout profile_username = (FrameLayout) findViewById(R.id.profile_username);
+        FrameLayout profile_name = (FrameLayout) findViewById(R.id.profile_name);
+        FrameLayout profile_email = (FrameLayout) findViewById(R.id.profile_email);
+
+        if (ParseFacebookUtils.isLinked(mUser)) {
+            Log.d(TAG, "user linked to facebook");
+            // when user logs in via Facebook, username is an array of characters meaningless to display
+            profile_username.setVisibility(View.GONE);
+        } else {
+            profile_username.setVisibility(View.VISIBLE);
             ((TextView) profile_username.findViewById(R.id.title)).setText("Username");
             ((TextView) profile_username.findViewById(R.id.value)).setText(mUser.getUsername());
-
-            FrameLayout profile_email = (FrameLayout) findViewById(R.id.profile_email);
-            ((TextView) profile_email.findViewById(R.id.title)).setText("Email");
-            ((TextView) profile_email.findViewById(R.id.value)).setText(mUser.getEmail());
-        } else {
-            Log.d(TAG, "currentUser null ");
         }
+
+        ((TextView) profile_name.findViewById(R.id.title)).setText("Name");
+        ((TextView) profile_name.findViewById(R.id.value)).setText(mUser.getString("name"));
+
+        ((TextView) profile_email.findViewById(R.id.title)).setText("Email");
+        ((TextView) profile_email.findViewById(R.id.value)).setText(mUser.getEmail());
     }
 
     @Override
