@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -52,11 +53,14 @@ public class Profile extends Activity {
                 }
             });
 
-            TextView userName = (TextView) findViewById(R.id.username_text);
-            userName.setText(mUser.getString("name"));
+            //userName.setText(mUser.getString("name"));
+            FrameLayout profile_username = (FrameLayout) findViewById(R.id.profile_username);
+            ((TextView) profile_username.findViewById(R.id.title)).setText("Username");
+            ((TextView) profile_username.findViewById(R.id.value)).setText(mUser.getUsername());
 
-            TextView userEmail = (TextView) findViewById(R.id.user_email_text);
-            userEmail.setText(mUser.getEmail());
+            FrameLayout profile_email = (FrameLayout) findViewById(R.id.profile_email);
+            ((TextView) profile_email.findViewById(R.id.title)).setText("Email");
+            ((TextView) profile_email.findViewById(R.id.value)).setText(mUser.getEmail());
         } else {
             Log.d(TAG, "currentUser null ");
         }

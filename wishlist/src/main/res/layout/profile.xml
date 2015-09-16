@@ -18,65 +18,10 @@
         android:src="@drawable/ic_logo"
         />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:layout_marginLeft="30dp"
-                  android:layout_marginRight="30dp"
-                  android:orientation="vertical"
-                  android:layout_weight="1"
-                  android:layout_marginBottom="15dp"
-        >
+    <include android:id="@+id/profile_username"
+             layout="@layout/profile_item"/>
 
-        <TextView android:id="@+id/username"
-                  android:layout_height="wrap_content"
-                  android:layout_width="wrap_content"
-                  android:text="Username"
-                  android:textSize="13sp"
-                  android:singleLine="false"
-                  android:ellipsize="end"
-                  android:textColor="@color/red"
-            />
-        <TextView android:id="@+id/username_text"
-                  android:layout_height="wrap_content"
-                  android:layout_width="wrap_content"
-                  android:text="UserName"
-                  android:textSize="18sp"
-                  android:singleLine="false"
-                  android:ellipsize="end"
-                  android:textColor="@color/medium_grey"
-                  android:paddingRight="30dp"
-            />
-    </LinearLayout>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:layout_marginLeft="30dp"
-                  android:layout_marginRight="30dp"
-                  android:orientation="vertical"
-                  android:layout_weight="1"
-        >
-
-        <TextView android:id="@+id/user_email"
-                  android:layout_height="wrap_content"
-                  android:layout_width="wrap_content"
-                  android:text="Email"
-                  android:textSize="13sp"
-                  android:singleLine="false"
-                  android:ellipsize="end"
-                  android:textColor="@color/red"
-            />
-        <TextView android:id="@+id/user_email_text"
-                  android:layout_height="wrap_content"
-                  android:layout_width="wrap_content"
-                  android:text="UserEmail"
-                  android:textSize="18sp"
-                  android:singleLine="false"
-                  android:ellipsize="end"
-                  android:textColor="@color/medium_grey"
-                  android:paddingRight="30dp"
-            />
-    </LinearLayout>
+    <include android:id="@+id/profile_email"
+             layout="@layout/profile_item"/>
 
 </LinearLayout>
