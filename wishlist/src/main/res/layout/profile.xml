@@ -1,30 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-    >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/profile_image"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="40dp"
-        app:border_width="2dp"
-        app:border_color="#FF000000"
-        android:src="@drawable/ic_logo"
-        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
 
-    <include android:id="@+id/profile_username"
-             layout="@layout/profile_item"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_image"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="40dp"
+            app:border_width="2dp"
+            app:border_color="#FF000000"
+            android:src="@drawable/ic_logo"
+            />
 
-    <include android:id="@+id/profile_name"
-             layout="@layout/profile_item"/>
+        <include android:id="@+id/profile_username"
+                 android:clickable="false"
+                 layout="@layout/profile_item"/>
 
-    <include android:id="@+id/profile_email"
-             layout="@layout/profile_item"/>
+        <include android:id="@+id/profile_name"
+                 layout="@layout/profile_item"/>
 
-</LinearLayout>
+        <include android:id="@+id/profile_email"
+                 layout="@layout/profile_item"/>
+
+    </LinearLayout>
+</ScrollView>

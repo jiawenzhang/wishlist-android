@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.app.DialogFragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,18 +24,25 @@ import android.widget.TextView;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
+import com.wish.wishlist.fragment.EmailFragmentDialog;
+import com.wish.wishlist.fragment.NameFragmentDialog;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Profile extends Activity {
+public class Profile extends Activity implements
+        EmailFragmentDialog.onEmailChangedListener,
+        NameFragmentDialog.onNameChangedListener {
     final static String TAG = "Profile";
     ParseUser mUser;
 
     public static final String IMAGE_URI = "IMAGE_URI";
     private static final int CHOOSE_IMAGE = 1;
     private static final int PROFILE_IMAGE = 2;
+
+    private TextView mEmailTextView;
+    private TextView mNameTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +81,26 @@ public class Profile extends Activity {
         }
 
         ((TextView) profile_name.findViewById(R.id.title)).setText("Name");
-        ((TextView) profile_name.findViewById(R.id.value)).setText(mUser.getString("name"));
+        mNameTextView = ((TextView) profile_name.findViewById(R.id.value));
+        mNameTextView.setText(mUser.getString("name"));
+
+        profile_name.setOnClickListener(new android.view.View.OnClickListener() {
+            public void onClick(android.view.View v) {
+                DialogFragment newFragment = new NameFragmentDialog();
+                newFragment.show(getFragmentManager(), "dialog");
+            }
+        });
 
         ((TextView) profile_email.findViewById(R.id.title)).setText("Email");
-        ((TextView) profile_email.findViewById(R.id.value)).setText(mUser.getEmail());
+        mEmailTextView = ((TextView) profile_email.findViewById(R.id.value));
+        mEmailTextView.setText(mUser.getEmail());
+
+        profile_email.setOnClickListener(new android.view.View.OnClickListener() {
+            public void onClick(android.view.View v) {
+                DialogFragment newFragment = new EmailFragmentDialog();
+                newFragment.show(getFragmentManager(), "dialog");
+            }
+        });
     }
 
     @Override
@@ -219,5 +243,25 @@ public class Profile extends Activity {
             isCamera = action != null && action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
         }
         return isCamera ? getCaptureImageOutputUri() : data.getData();
+    }
+
+    @Override
+    public void onNameChanged(String name) {
+        Log.d(TAG, "name changed to: " + name);
+        if (!name.equals(mUser.getEmail())) {
+            mUser.put("name", name);
+            mUser.saveEventually();
+            mNameTextView.setText(name);
+        }
+    }
+
+    @Override
+    public void onEmailChanged(String email) {
+        Log.d(TAG, "email changed to: " + email);
+        if (!email.equals(mUser.getString("name"))) {
+            mUser.setEmail(email);
+            mUser.saveEventually();
+            mEmailTextView.setText(email);
+        }
     }
 }
