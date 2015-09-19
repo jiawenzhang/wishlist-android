@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -14,20 +15,31 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.app.DialogFragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseFile;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.wish.wishlist.R;
 import com.wish.wishlist.fragment.EmailFragmentDialog;
 import com.wish.wishlist.fragment.NameFragmentDialog;
+import com.wish.wishlist.util.ImageManager;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +69,7 @@ public class Profile extends Activity implements
             return;
         }
 
-        setProfileImage();
+        showProfileImage();
         ImageView profileImage = (ImageView) findViewById(R.id.profile_image);
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +149,10 @@ public class Profile extends Activity implements
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case PROFILE_IMAGE: {
-                    setProfileImage();
+                    Bitmap croppedBitmap = data.getParcelableExtra(Cropper.PROFILE_BITMAP);
+                    ByteArrayOutputStream bs = new ByteArrayOutputStream();
+                    croppedBitmap.compress(Bitmap.CompressFormat.PNG, 100, bs);
+                    saveProfileImageToParse(bs.toByteArray(), profileImageName());
                     break;
                 }
                 case CHOOSE_IMAGE: {
@@ -151,15 +166,50 @@ public class Profile extends Activity implements
         }
     }
 
-    private void setProfileImage() {
-        File profileImageFile = new File(getFilesDir(), "profile_image.jpg");
-        Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
-        ImageView profileImage = (ImageView) findViewById(R.id.profile_image);
-        if (bitmap != null) {
-            profileImage.setImageBitmap(bitmap);
-        } else {
-            profileImage.setImageResource(R.drawable.splash_logo);
+    private String profileImageName() {
+        if (mUser == null) {
+            return null;
         }
+        return mUser.getObjectId() + "-profile-image.jpg";
+    }
+
+    private boolean saveProfileImageToFile(byte[] data) {
+        File rootDataDir = getFilesDir();
+        String absPath = new File(rootDataDir, profileImageName()).getAbsolutePath();
+        return ImageManager.saveByteToPath(data, absPath);
+    }
+
+    private void showProfileImage() {
+        File profileImageFile = new File(getFilesDir(), profileImageName());
+        Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
+        ImageView profileImageView = (ImageView) findViewById(R.id.profile_image);
+        if (bitmap != null) {
+            profileImageView.setImageBitmap(bitmap);
+        } else {
+            profileImageView.setImageResource(R.drawable.splash_logo);
+        }
+    }
+
+    private void saveProfileImageToParse (final byte[] data, final String parseFileName){
+        final ParseFile profileImage = new ParseFile(parseFileName, data);
+        profileImage.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "succeed in saving profile image to parse success");
+                    mUser.put("profileImage", profileImage);
+                    mUser.saveEventually();
+                    saveProfileImageToFile(data);
+                    showProfileImage();
+                } else {
+                    Log.e(TAG, "fail to save profile image to parse " + e.toString());
+                    Toast toast = Toast.makeText(Profile.this, "Fail to upload profile image to cloud", Toast.LENGTH_SHORT);
+                    int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+                    toast.setGravity(Gravity.TOP | Gravity.CENTER, 0, screenHeight/4);
+                    toast.show();
+                }
+            }
+        });
     }
 
     /**

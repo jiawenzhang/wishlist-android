@@ -172,6 +172,22 @@ public class ImageManager
         return null;
     }
 
+    public static boolean saveByteToPath(byte[] data, String absPath) {
+        Log.d(TAG, "save byte to file " + absPath);
+        try {
+            FileOutputStream fos = new FileOutputStream(absPath);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            bos.write(data);
+            bos.close();
+            return true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static byte[] readFile(String path)
     {
         File file = new File(path);

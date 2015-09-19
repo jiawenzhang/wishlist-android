@@ -26,6 +26,8 @@ import java.io.OutputStream;
 public class Cropper extends Activity {
     CropImageView mCropImageView;
 
+    public final static String PROFILE_BITMAP = "PROFILE_BITMAP";
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cropper);
@@ -71,23 +73,10 @@ public class Cropper extends Activity {
                 return true;
             case R.id.menu_cropper_crop:
                 final Bitmap croppedImage = mCropImageView.getCroppedBitmap();
-                File rootDataDir = getFilesDir();
-                File profileImage = new File(rootDataDir, "profile_image.jpg");
-                Log.d("Cropper", profileImage.getAbsolutePath());
-                try {
-                    //save the image to a file we created in wishlist album
-                    String path = profileImage.getAbsolutePath();
-                    OutputStream stream = new FileOutputStream(path);
-                    croppedImage.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-                    stream.flush();
-                    stream.close();
-                    setResult(RESULT_OK, null);
-                    finish();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(PROFILE_BITMAP, croppedImage);
+                setResult(RESULT_OK, resultIntent);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
