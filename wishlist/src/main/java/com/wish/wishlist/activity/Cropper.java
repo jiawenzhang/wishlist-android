@@ -16,17 +16,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import com.isseiaoki.simplecropview.CropImageView;
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.ImageManager;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class Cropper extends Activity {
     CropImageView mCropImageView;
-
-    public final static String PROFILE_BITMAP = "PROFILE_BITMAP";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,13 +71,20 @@ public class Cropper extends Activity {
                 return true;
             case R.id.menu_cropper_crop:
                 final Bitmap croppedImage = mCropImageView.getCroppedBitmap();
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra(PROFILE_BITMAP, croppedImage);
-                setResult(RESULT_OK, resultIntent);
+                saveProfileImageToFile(croppedImage);
+                setResult(RESULT_OK);
                 finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private boolean saveProfileImageToFile(Bitmap bitmap) {
+        File rootDataDir = getFilesDir();
+        String absPath = new File(rootDataDir, Profile.profileImageName()).getAbsolutePath();
+        ByteArrayOutputStream bs = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
+        return ImageManager.saveByteToPath(bs.toByteArray(), absPath);
     }
 }
