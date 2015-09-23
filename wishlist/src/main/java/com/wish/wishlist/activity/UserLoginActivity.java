@@ -18,7 +18,8 @@ import java.util.Arrays;
  */
 public class UserLoginActivity extends Activity {
     private static final int LOGIN_REQUEST = 0;
-    private boolean fromSplash;
+    private boolean mFromSplash;
+    final static String FROM_SPLASH = "FROM_SPLASH";
     final static String TAG = "UserLoginActivity";
 
     @Override
@@ -26,7 +27,7 @@ public class UserLoginActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        fromSplash = intent.getBooleanExtra("fromSplash", false);
+        mFromSplash = intent.getBooleanExtra(FROM_SPLASH, false);
 
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
@@ -54,10 +55,22 @@ public class UserLoginActivity extends Activity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case LOGIN_REQUEST: {
-                onLogin();
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case LOGIN_REQUEST: {
+                    onLogin();
+                }
             }
+        } else if (resultCode == RESULT_CANCELED){
+            Log.e(TAG, "Login canceled");
+            if (mFromSplash) {
+                // Show Android home screen
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+            finish();
         }
     }
 
@@ -65,13 +78,13 @@ public class UserLoginActivity extends Activity {
         Log.d(TAG, "login success");
         ParseUser currentUser = ParseUser.getCurrentUser();
         Log.d(TAG, "You are logged in as " + currentUser.getEmail() + " " + currentUser.getString("name"));
-        ParseInstallation i = ParseInstallation.getCurrentInstallation();
-        i.put("user", ParseUser.getCurrentUser());
-        i.saveInBackground();
+        ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+        installation.put("user", ParseUser.getCurrentUser());
+        installation.saveInBackground();
         Log.d(TAG, "installation saved");
-        Log.d(TAG, "installation id: " + i.getInstallationId());
+        Log.d(TAG, "installation id: " + installation.getInstallationId());
 
-        if (fromSplash) {
+        if (mFromSplash) {
             startActivity(new Intent(this, WishList.class));
         }
         finish();

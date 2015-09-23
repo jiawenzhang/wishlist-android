@@ -113,7 +113,7 @@ public class Splash extends Activity{
             }
 
             Intent intent = new Intent(getApplication(), UserLoginActivity.class);
-            intent.putExtra("fromSplash", true);
+            intent.putExtra(UserLoginActivity.FROM_SPLASH, true);
             startActivity(intent);
 
             Splash.this.finish();
