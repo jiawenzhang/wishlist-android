@@ -71,7 +71,8 @@ public class Cropper extends Activity {
                 return true;
             case R.id.menu_cropper_crop:
                 final Bitmap croppedImage = mCropImageView.getCroppedBitmap();
-                saveProfileImageToFile(croppedImage);
+                final Bitmap scaledCroppedImage = ImageManager.getThumb(croppedImage);
+                saveProfileImageToFile(scaledCroppedImage);
                 setResult(RESULT_OK);
                 finish();
                 return true;
