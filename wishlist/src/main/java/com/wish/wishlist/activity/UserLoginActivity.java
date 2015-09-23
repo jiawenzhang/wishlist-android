@@ -86,6 +86,9 @@ public class UserLoginActivity extends Activity {
 
         if (mFromSplash) {
             startActivity(new Intent(this, WishList.class));
+        } else {
+            // from Settings->Profile
+            startActivity(new Intent(getApplication(), Profile.class));
         }
         finish();
     }
