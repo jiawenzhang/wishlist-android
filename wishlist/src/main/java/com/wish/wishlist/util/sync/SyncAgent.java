@@ -13,11 +13,13 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.activity.Profile;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
@@ -404,6 +406,25 @@ public class SyncAgent {
             Log.e(TAG, "fail to register");
             throw new ClassCastException(activity.toString() + " must implement OnSyncWishChanged/OnDownloadWishDone");
         }
+    }
+
+    public void updateProfileFromParse() {
+        ParseUser.getCurrentUser().fetchInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject object, ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "success to fetch Parse user");
+                    ParseUser currentUser = (ParseUser) object;
+                    final ParseFile parseImage = currentUser.getParseFile("profileImage");
+                    try {
+                        Profile.saveProfileImageToFile(parseImage.getData());
+                    } catch (com.parse.ParseException e2) {
+                        Log.e(TAG, e2.toString());
+                    }
+                } else {
+                    Log.e(TAG, "fail to fetch Parse user");
+                }
+            }
+        });
     }
 
     public interface OnSyncWishChangedListener {

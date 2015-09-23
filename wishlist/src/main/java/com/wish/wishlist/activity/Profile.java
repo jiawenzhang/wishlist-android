@@ -29,7 +29,9 @@ import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.fragment.EmailFragmentDialog;
 import com.wish.wishlist.fragment.NameFragmentDialog;
 import com.wish.wishlist.job.UploadProfileImageJob;
+import com.wish.wishlist.util.ImageManager;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -177,6 +179,17 @@ public class Profile extends Activity implements
         JobManager jobManager = ((WishlistApplication) getApplication()).getJobManager();
         jobManager.addJobInBackground(new UploadProfileImageJob());
         showProfileImage();
+    }
+
+    public static boolean saveProfileImageToFile(Bitmap bitmap) {
+        ByteArrayOutputStream bs = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
+        return saveProfileImageToFile(bs.toByteArray());
+    }
+
+    public static boolean saveProfileImageToFile(byte[] data) {
+        File profileImageFile = new File(WishlistApplication.getAppContext().getFilesDir(), profileImageName());
+        return ImageManager.saveByteToPath(data, profileImageFile.getAbsolutePath());
     }
 
     /**

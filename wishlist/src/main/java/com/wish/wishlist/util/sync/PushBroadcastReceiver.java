@@ -4,7 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
 import com.parse.ParsePushBroadcastReceiver;
+import com.parse.ParseUser;
+import com.wish.wishlist.activity.Profile;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by jiawen on 15-08-04.
@@ -22,7 +31,17 @@ public class PushBroadcastReceiver extends ParsePushBroadcastReceiver {
     @Override
     protected void onPushReceive(Context context, Intent intent) {
         Log.e(TAG, "onPushReceive");
-        SyncAgent.getInstance().sync();
+        try {
+            JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
+            Log.d(TAG, "json: " + json);
+            if (json.has("syncUserProfile")) {
+                SyncAgent.getInstance().updateProfileFromParse();
+            } else if (json.has("syncWishes")) {
+                SyncAgent.getInstance().sync();
+            }
+        } catch (JSONException e) {
+            Log.d(TAG, "JSONException: " + e.getMessage());
+        }
     }
 
     @Override

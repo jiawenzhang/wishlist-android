@@ -72,20 +72,12 @@ public class Cropper extends Activity {
             case R.id.menu_cropper_crop:
                 final Bitmap croppedImage = mCropImageView.getCroppedBitmap();
                 final Bitmap scaledCroppedImage = ImageManager.getThumb(croppedImage);
-                saveProfileImageToFile(scaledCroppedImage);
+                Profile.saveProfileImageToFile(scaledCroppedImage);
                 setResult(RESULT_OK);
                 finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private boolean saveProfileImageToFile(Bitmap bitmap) {
-        File rootDataDir = getFilesDir();
-        String absPath = new File(rootDataDir, Profile.profileImageName()).getAbsolutePath();
-        ByteArrayOutputStream bs = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
-        return ImageManager.saveByteToPath(bs.toByteArray(), absPath);
     }
 }
