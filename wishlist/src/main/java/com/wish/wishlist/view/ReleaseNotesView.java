@@ -3,16 +3,18 @@ package com.wish.wishlist.view;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import com.wish.wishlist.R;
 import com.wish.wishlist.activity.WishList;
 import com.wish.wishlist.util.DialogOnShowListener;
 
 import java.io.IOException;
 import android.app.Dialog;
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
+import android.support.v7.app.AlertDialog.Builder;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.util.Log;
@@ -83,7 +85,7 @@ public class ReleaseNotesView {
 		webView.setWebViewClient(new WebViewClient() {
 		public void onPageFinished(WebView view, String url) {
 			Log.d(TAG, "onPageFinished");
-			AlertDialog.Builder builder = new AlertDialog.Builder(_act)
+			Builder builder = new Builder(_act, R.style.AppCompatAlertDialogStyle)
 			.setPositiveButton("Close", new Dialog.OnClickListener() {
 				public void onClick(DialogInterface dialogInterface, int i) {
 					dialogInterface.dismiss();
@@ -92,7 +94,7 @@ public class ReleaseNotesView {
 			AlertDialog dialog = builder.create();
 			dialog.setTitle("Release notes");
 			dialog.setView(view, 0, 0, 0, 0);
-            dialog.setOnShowListener(new DialogOnShowListener(_act));
+            //dialog.setOnShowListener(new DialogOnShowListener(_act));
 			dialog.show();
 			Log.d(TAG, "dialog show");
 		}

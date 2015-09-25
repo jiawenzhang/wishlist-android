@@ -21,6 +21,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.widgets.TextWatcherAdapter.TextWatcherListener;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.AppCompatEditText;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,7 +36,7 @@ import android.widget.EditText;
  * android:drawableRight="@drawable/custom_icon"
  * </pre>
  */
-public class ClearableEditText extends EditText implements OnTouchListener,
+public class ClearableEditText extends AppCompatEditText implements OnTouchListener,
         OnFocusChangeListener, TextWatcherListener {
 
     public interface Listener {

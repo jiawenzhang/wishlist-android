@@ -1,9 +1,8 @@
 package com.wish.wishlist.activity;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
@@ -317,7 +316,7 @@ public class WishItemDetail extends ActionBarActivity implements TokenCompleteTe
     }
 
     private void deleteItem(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
         builder.setMessage("Discard the wish?").setCancelable(
                 false).setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
@@ -336,7 +335,7 @@ public class WishItemDetail extends ActionBarActivity implements TokenCompleteTe
                     }
                 });
         AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(new DialogOnShowListener(this));
+        //dialog.setOnShowListener(new DialogOnShowListener(this));
         dialog.show();
     }
 

@@ -36,7 +36,7 @@ import com.wish.wishlist.util.camera.PhotoFileCreater;
 import com.wish.wishlist.util.camera.CameraManager;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
@@ -287,7 +287,7 @@ public class EditItem extends ActionBarActivity
         _cameraImageButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(EditItem.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditItem.this, R.style.AppCompatAlertDialogStyle);
                 final CharSequence[] items = {"Take a photo", "From gallery"};
                 builder.setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -302,7 +302,7 @@ public class EditItem extends ActionBarActivity
                     }
                 });
                 AlertDialog dialog = builder.create();
-                dialog.setOnShowListener(new DialogOnShowListener(EditItem.this));
+                //dialog.setOnShowListener(new DialogOnShowListener(EditItem.this));
                 dialog.show();
             };
         });
@@ -917,7 +917,7 @@ public class EditItem extends ActionBarActivity
         //only show warning if user is editing a new item
         if(_editNew){
             AlertDialog dialog;
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
             builder.setMessage("Discard the wish?").setCancelable(
                     false).setPositiveButton("Yes",
                     new DialogInterface.OnClickListener() {
@@ -932,7 +932,7 @@ public class EditItem extends ActionBarActivity
                         }
                     });
             dialog = builder.create();
-            dialog.setOnShowListener(new DialogOnShowListener(this));
+            //dialog.setOnShowListener(new DialogOnShowListener(this));
             dialog.show();
         }
         else{

@@ -1,7 +1,7 @@
 package com.wish.wishlist.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -357,7 +357,7 @@ public class FacebookPost extends Activity {
 
         if (postResponse != null && postResponse.getId() != null) {
             String dialogBody = String.format(getString(R.string.result_dialog_text), postResponse.getId());
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle)
                     .setPositiveButton(R.string.result_dialog_button_text, null)
                     .setTitle(R.string.result_dialog_title)
                     .setMessage(dialogBody)
@@ -441,12 +441,12 @@ public class FacebookPost extends Activity {
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
         builder.setPositiveButton(R.string.error_dialog_button_text, listener)
                 .setTitle(R.string.error_dialog_title)
                 .setMessage(dialogBody);
         AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(new DialogOnShowListener(this));
+        //dialog.setOnShowListener(new DialogOnShowListener(this));
         dialog.show();
     }
 

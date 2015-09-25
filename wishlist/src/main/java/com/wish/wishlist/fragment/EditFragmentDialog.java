@@ -1,11 +1,12 @@
 package com.wish.wishlist.fragment;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.support.v7.app.AlertDialog;
+//import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.app.DialogFragment;
+import android.support.v7.app.AppCompatDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,8 +37,8 @@ public class EditFragmentDialog extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
@@ -63,7 +64,7 @@ public class EditFragmentDialog extends DialogFragment {
                         EditFragmentDialog.this.getDialog().cancel();
                     }
                 });
-        Dialog d = builder.create();
+        AppCompatDialog d = builder.create();
         d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         return d;
     }
@@ -75,7 +76,7 @@ public class EditFragmentDialog extends DialogFragment {
         //super.onStart() is where dialog.show() is actually called on the underlying dialog, so we have to do it after this point
         final AlertDialog d = (AlertDialog) getDialog();
         if(d != null) {
-            Button positiveButton = d.getButton(Dialog.BUTTON_POSITIVE);
+            Button positiveButton = d.getButton(AppCompatDialog.BUTTON_POSITIVE);
             positiveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v)

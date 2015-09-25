@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -463,7 +463,7 @@ public class WishList extends ActionBarActivity implements
 
     private void deleteItem(long item_id){
         _selectedItem_id = item_id;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
         builder.setMessage("Delete the wish?");
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -481,7 +481,7 @@ public class WishList extends ActionBarActivity implements
 
         AlertDialog dialog;
         dialog = builder.create();
-        dialog.setOnShowListener(new DialogOnShowListener(this));
+        //dialog.setOnShowListener(new DialogOnShowListener(this));
         dialog.show();
     }
 
@@ -675,7 +675,7 @@ public class WishList extends ActionBarActivity implements
                 final String BY_PRICE = "By price";
                 final CharSequence[] sortOption = {BY_NAME, BY_TIME, BY_PRICE};
 
-                AlertDialog.Builder sortBuilder = new AlertDialog.Builder(WishList.this);
+                AlertDialog.Builder sortBuilder = new AlertDialog.Builder(WishList.this, R.style.AppCompatAlertDialogStyle);
                 sortBuilder.setTitle("Sort wishes");
 
                 int j = 0;// 0 is by name
@@ -706,7 +706,7 @@ public class WishList extends ActionBarActivity implements
                 });
 
                 dialog = sortBuilder.create();
-                dialog.setOnShowListener(new DialogOnShowListener(this));
+                //dialog.setOnShowListener(new DialogOnShowListener(this));
                 break;
 
             case DIALOG_FILTER:
@@ -715,7 +715,7 @@ public class WishList extends ActionBarActivity implements
                 final String BY_INPROGRESS = "In progress";
                 final CharSequence[] options = {BY_ALL, BY_COMPLETED, BY_INPROGRESS};
 
-                AlertDialog.Builder optionBuilder = new AlertDialog.Builder(WishList.this);
+                AlertDialog.Builder optionBuilder = new AlertDialog.Builder(WishList.this, R.style.AppCompatAlertDialogStyle);
                 optionBuilder.setTitle("Wish status");
 
                 optionBuilder.setSingleChoiceItems(options, _status.val(), new DialogInterface.OnClickListener() {
@@ -745,7 +745,7 @@ public class WishList extends ActionBarActivity implements
                 });
 
                 dialog = optionBuilder.create();
-                dialog.setOnShowListener(new DialogOnShowListener(this));
+                //dialog.setOnShowListener(new DialogOnShowListener(this));
                 break;
             default:
                 dialog = null;

@@ -1,7 +1,7 @@
 package com.wish.wishlist.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -120,7 +120,7 @@ public class Splash extends Activity{
         }
 
         private void showWhatsNewDialog() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(Splash.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(Splash.this, R.style.AppCompatAlertDialogStyle);
             builder.setTitle("What's new");
             builder.setMessage("Version 1.1.1\n\n" +
                     "Completely renovated grid view, showing wishes in multi-column staggered fashion.\n\n" +
@@ -136,7 +136,7 @@ public class Splash extends Activity{
                 }
             });
             AlertDialog dialog = builder.create();
-            dialog.setOnShowListener(new DialogOnShowListener(Splash.this));
+            //dialog.setOnShowListener(new DialogOnShowListener(Splash.this));
             dialog.show();
         }
     }
