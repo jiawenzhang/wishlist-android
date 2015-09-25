@@ -283,8 +283,9 @@
         <!--<item name="actionBarStyle">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>-->
 
         <!-- Set AppCompat’s color theming attrs -->
-        <!--<item name="colorPrimary">@color/black</item> -->
-        <!--<item name="colorPrimaryDark">@color/my_awesome_darker_red</item> -->
+        <item name="colorPrimary">@color/primary_material_dark</item>
+        <!--<item name="colorPrimaryDark">@color/material_blue_grey_800</item>-->
+        <item name="colorAccent">@color/wishlist_yellow_color</item>
         <!---->
 
         <!-- The rest of your attributes -->
