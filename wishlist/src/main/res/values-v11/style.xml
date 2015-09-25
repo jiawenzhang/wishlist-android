@@ -7,6 +7,7 @@
 
     <style name="_Wishlist_Yellow" parent="android:Theme.Holo.Light.DarkActionBar">
         <!--<item name="android:actionBarItemBackground">@drawable/wishlist_yellow_item_background_holo_light</item>-->
+
         <item name="android:actionBarItemBackground">@drawable/selectable_background_wishlist</item>
 
         <!-- Light.DarkActionBar specific -->
@@ -266,5 +267,26 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:background">@color/footerBarBackground_dark_grey</item>
+    </style>
+
+
+
+
+
+
+
+
+
+
+    <style name="Theme.MyTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Set AppCompat’s actionBarStyle -->
+        <!--<item name="actionBarStyle">@style/Wishlist_Yellow</item>-->
+
+        <!-- Set AppCompat’s color theming attrs -->
+        <!--<item name="colorPrimary">@color/my_awesome_red</item>
+        <item name="colorPrimaryDark">@color/my_awesome_darker_red</item> -->
+        <!---->
+
+        <!-- The rest of your attributes -->
     </style>
 </resources>

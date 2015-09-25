@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -72,7 +74,7 @@ import com.etsy.android.grid.StaggeredGridView;
  *
  */
 @SuppressLint("NewApi")
-public class WishList extends Activity implements
+public class WishList extends ActionBarActivity implements
         AbsListView.OnScrollListener,
         AbsListView.OnItemClickListener,
         AdapterView.OnItemLongClickListener,
@@ -163,7 +165,6 @@ public class WishList extends Activity implements
 
         setUpActionBar();
         setupNavigationDrawer();
-
 
         // get the resources by their IDs
         _viewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
@@ -498,27 +499,27 @@ public class WishList extends Activity implements
         inflater.inflate(R.menu.menu_main, menu);
         _menu = menu;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            //search view is part the action bar in honeycomeb and up
-            //Get the SearchView and set the searchable configuration
-            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            _menuSearch = menu.findItem(R.id.menu_search);
-            SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-            // Assumes current activity is the searchable activity
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-            searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-
-            // Style the searchView with yellow accent color
-            int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
-            // Getting the 'search_plate' LinearLayout.
-            android.view.View searchPlate = searchView.findViewById(searchPlateId);
-            // Setting background of 'search_plate'.
-            searchPlate.setBackgroundResource(R.drawable.textfield_searchview_yellow);
-
-            int closeButtonId = searchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
-            ImageView closeButton= (ImageView) searchView.findViewById(closeButtonId);
-            closeButton.setBackgroundResource(R.drawable.selectable_background_wishlist);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//            //search view is part the action bar in honeycomeb and up
+//            //Get the SearchView and set the searchable configuration
+//            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//            _menuSearch = menu.findItem(R.id.menu_search);
+//            SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+//            // Assumes current activity is the searchable activity
+//            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//            searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+//
+//            // Style the searchView with yellow accent color
+//            int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
+//            // Getting the 'search_plate' LinearLayout.
+//            android.view.View searchPlate = searchView.findViewById(searchPlateId);
+//            // Setting background of 'search_plate'.
+//            searchPlate.setBackgroundResource(R.drawable.textfield_searchview_yellow);
+//
+//            int closeButtonId = searchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
+//            ImageView closeButton= (ImageView) searchView.findViewById(closeButtonId);
+//            closeButton.setBackgroundResource(R.drawable.selectable_background_wishlist);
+//        }
         return true;
     }
 
@@ -989,29 +990,32 @@ public class WishList extends Activity implements
     private void updateActionBarTitle() {
         if (_nameQuery != null) {
             // we are showing search results
-            getActionBar().setTitle("Search: " + _nameQuery);
-            getActionBar().setSubtitle(null);
+            getSupportActionBar().setTitle("Search: " + _nameQuery);
+            getSupportActionBar().setSubtitle(null);
             return;
         }
 
         if (_tag.val() == null) {
-            getActionBar().setTitle(R.string.app_name);
+            getSupportActionBar().setTitle(R.string.app_name);
         } else {
-            getActionBar().setTitle(_tag.val());
+            getSupportActionBar().setTitle(_tag.val());
         }
 
         if (_status.val() == Options.Status.COMPLETED) {
-            getActionBar().setSubtitle("Completed");
+            getSupportActionBar().setSubtitle("Completed");
         } else if (_status.val() == Options.Status.IN_PROGRESS) {
-            getActionBar().setSubtitle("In progress");
+            getSupportActionBar().setSubtitle("In progress");
         } else {
-            getActionBar().setSubtitle(null);
+            getSupportActionBar().setSubtitle(null);
         }
     }
 
     private void setUpActionBar() {
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        // Set a toolbar to replace the action bar.
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         updateActionBarTitle();
     }
 
@@ -1098,7 +1102,8 @@ public class WishList extends Activity implements
                     startActivity(prefIntent);
                 }
                 // Closing the drawer
-                mDrawerLayout.closeDrawer(mDrawerList);
+                mDrawerLayout.closeDrawers();
+                //mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
     }

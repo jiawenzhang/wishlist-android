@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -49,7 +51,7 @@ import java.util.Locale;
  * the order of the items during swiping is the order of the items displayed in 
  * the WishList activity
  */
-public class WishItemDetail extends Activity implements TokenCompleteTextView.TokenListener {
+public class WishItemDetail extends ActionBarActivity implements TokenCompleteTextView.TokenListener {
     private static final int SWIPE_MIN_DISTANCE = 120;
     private static final int SWIPE_MAX_OFF_PATH = 250;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
@@ -509,8 +511,9 @@ public class WishItemDetail extends Activity implements TokenCompleteTextView.To
     @SuppressLint("NewApi")
     private void setUpActionBar() {
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.item_detail_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

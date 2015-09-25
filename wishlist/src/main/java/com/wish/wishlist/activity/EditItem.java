@@ -36,8 +36,6 @@ import com.wish.wishlist.util.camera.PhotoFileCreater;
 import com.wish.wishlist.util.camera.CameraManager;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.DialogFragment;
@@ -53,6 +51,8 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
@@ -88,7 +88,7 @@ import com.wish.wishlist.util.sync.SyncAgent;
  * as a row in the Item table in the database
  */
 @SuppressLint("NewApi")
-public class EditItem extends Activity
+public class EditItem extends ActionBarActivity
         implements Observer,
         WebImageFragmentDialog.OnWebImageSelectedListener,
         WebImageFragmentDialog.OnLoadMoreFromWebViewListener,
@@ -1090,8 +1090,9 @@ public class EditItem extends Activity
     @SuppressLint("NewApi")
     private void setUpActionBar() {
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-            ActionBar actionBar = getActionBar();
-            actionBar.setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.edit_item_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void lockScreenOrientation() {

@@ -8,11 +8,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -38,7 +39,7 @@ import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 
-public class AddTag extends Activity implements TokenCompleteTextView.TokenListener {
+public class AddTag extends ActionBarActivity implements TokenCompleteTextView.TokenListener {
     protected final static String PREFIX = "Tags: ";
     protected TagsCompletionView completionView;
     ArrayAdapter<String> adapter;
@@ -82,7 +83,6 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
         if (savedInstanceState == null) {
             completionView.setPrefix(PREFIX);
         }
-
 
         setUpActionBar();
 
@@ -189,8 +189,9 @@ public class AddTag extends Activity implements TokenCompleteTextView.TokenListe
 
     private void setUpActionBar() {
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private class TagListAdapter extends ArrayAdapter<String> {

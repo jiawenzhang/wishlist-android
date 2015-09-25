@@ -1,7 +1,6 @@
 package com.wish.wishlist.activity;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,7 +8,10 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 
 import com.parse.ParseUser;
@@ -18,6 +20,7 @@ import com.wish.wishlist.view.ReleaseNotesView;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.SharedPreferences;
 import android.preference.EditTextPreference;
+import android.widget.LinearLayout;
 
 @SuppressLint("NewApi")
 public class WishListPreference extends PreferenceActivity implements
@@ -29,8 +32,6 @@ public class WishListPreference extends PreferenceActivity implements
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.layout.wishlist_preference);
         setContentView(R.layout.preference_parent);
-
-        setUpActionBar();
 
         Preference userProfile = (Preference) findPreference("userProfile");
         userProfile.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -114,6 +115,22 @@ public class WishListPreference extends PreferenceActivity implements
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        LinearLayout root = (LinearLayout)findViewById(android.R.id.list).getParent().getParent().getParent();
+        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.tool_bar, root, false);
+        bar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+        root.addView(bar, 0); // insert at top
+        bar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         // Set up a listener whenever a key changes
@@ -149,10 +166,5 @@ public class WishListPreference extends PreferenceActivity implements
             EditTextPreference editTextPref = (EditTextPreference) p;
             p.setSummary(editTextPref.getText());
         }
-    }
-
-    private void setUpActionBar() {
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 }

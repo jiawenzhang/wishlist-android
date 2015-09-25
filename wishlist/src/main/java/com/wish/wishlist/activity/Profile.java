@@ -1,6 +1,5 @@
 package com.wish.wishlist.activity;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -13,6 +12,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.app.DialogFragment;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +37,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Profile extends Activity implements
+public class Profile extends ActionBarActivity implements
         EmailFragmentDialog.onEmailChangedListener,
         NameFragmentDialog.onNameChangedListener {
     final static String TAG = "Profile";
@@ -133,8 +134,9 @@ public class Profile extends Activity implements
     }
 
     private void setUpActionBar() {
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.profile_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
