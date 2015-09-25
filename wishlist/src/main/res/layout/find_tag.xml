@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <include layout="@layout/tool_bar"
-        android:id="@+id/add_tag_tool_bar"
+        android:id="@+id/find_tag_toolbar"
         />
 
     <EditText android:id="@+id/tagFilter" android:layout_width="match_parent"

@@ -96,7 +96,7 @@ public class FindTag extends ActionBarActivity {
 
     private void setUpActionBar() {
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        Toolbar toolbar = (Toolbar) findViewById(R.id.add_tag_tool_bar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.find_tag_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }

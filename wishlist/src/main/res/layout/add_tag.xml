@@ -5,6 +5,9 @@
     android:layout_height="match_parent">
     <!--imeOption="flagNoExtractUi" will prevent the TagsCompletionView from scaling
      to take up the screen, in which case, the tokens will disappear -->
+    <include layout="@layout/tool_bar"
+             android:id="@+id/add_tag_toolbar"
+        />
 
     <com.wish.wishlist.activity.TagsCompletionView
         android:id="@+id/searchView"
