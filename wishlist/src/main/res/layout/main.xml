@@ -121,38 +121,16 @@
     </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <!-- The navigation drawer -->
-    <LinearLayout
-        android:layout_width="240dp"
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_view"
         android:layout_height="match_parent"
+        android:layout_width="wrap_content"
         android:layout_gravity="start"
-        android:background="#111"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_logo"
-            android:paddingLeft="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="User name"
-            android:textColor="@color/wishlist_yellow_color"
-            android:paddingLeft="20dp"
-            android:paddingBottom="20dp"/>
-
-        <ListView android:id="@+id/left_drawer"
-                  android:layout_width="240dp"
-                  android:layout_height="match_parent"
-                  android:layout_gravity="start"
-                  android:choiceMode="singleChoice"
-                  android:divider="@android:color/transparent"
-                  android:dividerHeight="0dp"
-                  android:background="#111"/>
-    </LinearLayout>
+        app:headerLayout="@layout/navigation_drawer_header"
+        app:menu="@menu/menu_navigation_drawer"
+        app:itemIconTint="@drawable/drawer_item"
+        app:itemTextColor="@drawable/drawer_item"
+        />
+    <!--android:background="@color/primary_material_dark"-->
 
 </android.support.v4.widget.DrawerLayout>

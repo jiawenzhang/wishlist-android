@@ -26,6 +26,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -37,6 +38,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+import android.support.design.widget.NavigationView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -128,7 +130,7 @@ public class WishList extends ActionBarActivity implements
     private long _selectedItem_id;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    private NavigationView mNavigationView;
     private ActionBarDrawerToggle mDrawerToggle;
 
     /** Called when the activity is first created. */
@@ -1020,40 +1022,84 @@ public class WishList extends ActionBarActivity implements
     }
 
     private void updateDrawerList() {
-        ArrayList<ObjectDrawerItem> drawerItems = new ArrayList<ObjectDrawerItem>();
+        Menu menuNav = mNavigationView.getMenu();
+        MenuItem item  = menuNav.findItem(R.id.all_wishes);
         if (!_itemIds.isEmpty() || _status.val() != Options.Status.ALL || _nameQuery != null) {
-            drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_goleft, "All wishes"));
+            item.setVisible(true);
+        } else {
+            item.setVisible(false);
         }
-        drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_add, "Add"));
-        drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_list, "List view"));
-        drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_tiles_small, "Grid view"));
-        drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_map, "Map view"));
-        drawerItems.add(new ObjectDrawerItem(R.drawable.ic_action_gear, "Settings"));
-
-        ObjectDrawerItem[] drawerItemArray = new ObjectDrawerItem[drawerItems.size()];
-        drawerItems.toArray(drawerItemArray);
-
-        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.listview_item_row, drawerItemArray);
-        mDrawerList.setAdapter(adapter);
     }
 
     private void setupNavigationDrawer() {
+        // Setup NavigationView
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
+        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
         updateDrawerList();
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            // This method will trigger on item Click of navigation menu
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                //Closing drawer on item click
+                mDrawerLayout.closeDrawers();
+
+                //Check to see which item was being clicked and perform appropriate action
+                switch (menuItem.getItemId()){
+                    case R.id.all_wishes:
+                        goBack();
+                        return true;
+                    case R.id.Add:
+                        Intent editItem = new Intent(WishList.this, EditItem.class);
+                        startActivityForResult(editItem, ADD_ITEM);
+                        return true;
+                    case R.id.list_view: {
+                        _view.setVal(Options.View.LIST);
+                        populateItems(_nameQuery, _where);
+                        _view.save();
+
+                        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
+                        t.setScreenName("ListView");
+                        t.send(new HitBuilders.AppViewBuilder().build());
+                        return true;
+                    }
+                    case R.id.grid_view:
+                        _view.setVal(Options.View.GRID);
+                        populateItems(_nameQuery, _where);
+                        _view.save();
+
+                        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
+                        t.setScreenName("GridView");
+                        t.send(new HitBuilders.AppViewBuilder().build());
+                        return true;
+                    case R.id.map_view:
+                        Intent mapIntent = new Intent(WishList.this, Map.class);
+                        mapIntent.putExtra("type", "markAll");
+                        startActivity(mapIntent);
+                        return true;
+                    case R.id.settings:
+                        Intent prefIntent = new Intent(getApplicationContext(), WishListPreference.class);
+                        startActivity(prefIntent);
+                        return true;
+                    default:
+                        return true;
+                }
+            }
+        });
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 
+            @Override
+            public void onDrawerClosed(View drawerView) {
             /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(android.view.View view) {
-                super.onDrawerClosed(view);
+                super.onDrawerClosed(drawerView);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
+            @Override
+            public void onDrawerOpened(View drawerView) {
             /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(android.view.View drawerView) {
+                mDrawerLayout.requestFocus();
                 super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
@@ -1062,50 +1108,8 @@ public class WishList extends ActionBarActivity implements
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        // Setting item click listener for the listview mDrawerList
-        mDrawerList.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, android.view.View view,
-                                    int position, long id) {
-                TextView textViewName = (TextView) view.findViewById(R.id.textViewName);
-                String item = textViewName.getText().toString();
-
-                // Don't show the selected option in pressed state when the drawer is shown the next time
-                mDrawerList.clearChoices();
-                if (item.equals("All wishes")) {
-                    goBack();
-                } else if (item.equals("Add")) {
-                    Intent editItem = new Intent(WishList.this, EditItem.class);
-                    startActivityForResult(editItem, ADD_ITEM);
-                } else if (item.equals("List view")) {
-                    _view.setVal(Options.View.LIST);
-                    populateItems(_nameQuery, _where);
-                    _view.save();
-
-                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                    t.setScreenName("ListView");
-                    t.send(new HitBuilders.AppViewBuilder().build());
-                } else if (item.equals("Grid view")) {
-                    _view.setVal(Options.View.GRID);
-                    populateItems(_nameQuery, _where);
-                    _view.save();
-
-                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                    t.setScreenName("GridView");
-                    t.send(new HitBuilders.AppViewBuilder().build());
-                } else if (item.equals("Map view")) {
-                    Intent mapIntent = new Intent(WishList.this, Map.class);
-                    mapIntent.putExtra("type", "markAll");
-                    startActivity(mapIntent);
-                } else if (item.equals("Settings")) {
-                    Intent prefIntent = new Intent(getApplicationContext(), WishListPreference.class);
-                    startActivity(prefIntent);
-                }
-                // Closing the drawer
-                mDrawerLayout.closeDrawers();
-                //mDrawerLayout.closeDrawer(mDrawerList);
-            }
-        });
+        // Calling sync state is needed or the hamburger icon wont show up
+        mDrawerToggle.syncState();
     }
 
     @Override
