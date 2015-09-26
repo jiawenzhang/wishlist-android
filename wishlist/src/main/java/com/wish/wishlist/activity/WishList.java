@@ -54,7 +54,6 @@ import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
-import com.wish.wishlist.util.DrawerItemCustomAdapter;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.WishItemStaggeredCursorAdapter;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
@@ -62,7 +61,6 @@ import com.wish.wishlist.util.camera.CameraManager;
 import com.wish.wishlist.util.social.ShareHelper;
 import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.sync.SyncAgent;
-import com.wish.wishlist.view.ObjectDrawerItem;
 
 import com.etsy.android.grid.StaggeredGridView;
 
@@ -1041,10 +1039,10 @@ public class WishList extends ActionBarActivity implements
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
         RelativeLayout headerLayout = (RelativeLayout) mNavigationView.findViewById(R.id.drawer_header_layout);
+        final ParseUser currentUser = ParseUser.getCurrentUser();
         headerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ParseUser currentUser = ParseUser.getCurrentUser();
                 if (currentUser != null) {
                     startActivity(new Intent(getApplication(), Profile.class));
                 } else {
@@ -1052,6 +1050,14 @@ public class WishList extends ActionBarActivity implements
                 }
             }
         });
+
+        if (currentUser != null) {
+            TextView nameTextView = (TextView) headerLayout.findViewById(R.id.username);
+            nameTextView.setText(currentUser.getString("name"));
+
+            TextView emailTextView = (TextView) headerLayout.findViewById(R.id.email);
+            emailTextView.setText(currentUser.getEmail());
+        }
 
         // show profile image in the header
         File profileImageFile = new File(getFilesDir(), Profile.profileImageName());
