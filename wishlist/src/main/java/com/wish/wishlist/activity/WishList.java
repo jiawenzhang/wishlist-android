@@ -1,10 +1,13 @@
 package com.wish.wishlist.activity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -34,6 +37,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +46,7 @@ import android.support.design.widget.NavigationView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
@@ -1035,6 +1040,29 @@ public class WishList extends ActionBarActivity implements
         // Setup NavigationView
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+        RelativeLayout headerLayout = (RelativeLayout) mNavigationView.findViewById(R.id.drawer_header_layout);
+        headerLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseUser currentUser = ParseUser.getCurrentUser();
+                if (currentUser != null) {
+                    startActivity(new Intent(getApplication(), Profile.class));
+                } else {
+                    startActivity(new Intent(getApplication(), UserLoginActivity.class));
+                }
+            }
+        });
+
+        // show profile image in the header
+        File profileImageFile = new File(getFilesDir(), Profile.profileImageName());
+        Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
+        ImageView profileImageView = (ImageView) mNavigationView.findViewById(R.id.profile_image);
+        if (bitmap != null) {
+            profileImageView.setImageBitmap(bitmap);
+        } else {
+            profileImageView.setImageResource(R.drawable.splash_logo);
+        }
+
         updateDrawerList();
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             // This method will trigger on item Click of navigation menu
