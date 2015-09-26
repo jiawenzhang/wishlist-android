@@ -12,7 +12,7 @@ public class AddTagFromEditItem extends AddTag {
     public final static String TAGS = "tags";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ArrayList<String> tags = getIntent().getStringArrayListExtra(TAGS);
         if (tags != null) {

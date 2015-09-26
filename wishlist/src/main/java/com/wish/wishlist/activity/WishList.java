@@ -20,8 +20,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -79,7 +77,7 @@ import com.etsy.android.grid.StaggeredGridView;
  *
  */
 @SuppressLint("NewApi")
-public class WishList extends ActionBarActivity implements
+public class WishList extends ActivityBase implements
         AbsListView.OnScrollListener,
         AbsListView.OnItemClickListener,
         AdapterView.OnItemLongClickListener,
@@ -138,8 +136,13 @@ public class WishList extends ActionBarActivity implements
 
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.main);
+        setupActionBar(R.id.main_toolbar);
+        updateActionBarTitle();
+        setupNavigationDrawer();
 
         _view.read();
         Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
@@ -166,12 +169,6 @@ public class WishList extends ActionBarActivity implements
         }
 
         // Get the intent, verify the action and get the query
-        setContentView(R.layout.main);
-
-        setUpActionBar();
-        setupNavigationDrawer();
-
-        // get the resources by their IDs
         _viewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
         _staggeredView = (StaggeredGridView) findViewById(R.id.staggered_view);
         _staggeredView.setOnScrollListener(this);
@@ -1013,15 +1010,6 @@ public class WishList extends ActionBarActivity implements
         } else {
             getSupportActionBar().setSubtitle(null);
         }
-    }
-
-    private void setUpActionBar() {
-        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        // Set a toolbar to replace the action bar.
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        updateActionBarTitle();
     }
 
     private void updateDrawerList() {

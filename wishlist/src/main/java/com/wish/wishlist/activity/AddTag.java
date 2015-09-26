@@ -12,8 +12,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -39,7 +37,7 @@ import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 
-public class AddTag extends ActionBarActivity implements TokenCompleteTextView.TokenListener {
+public class AddTag extends ActivityBase implements TokenCompleteTextView.TokenListener {
     protected final static String PREFIX = "Tags: ";
     protected TagsCompletionView completionView;
     ArrayAdapter<String> adapter;
@@ -51,9 +49,10 @@ public class AddTag extends ActionBarActivity implements TokenCompleteTextView.T
     protected long mItem_id;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_tag);
+        setupActionBar(R.id.add_tag_toolbar);
 
         adapter = new FilteredArrayAdapter<String>(this, R.layout.tag_layout, new String[]{}) {
             @Override
@@ -83,8 +82,6 @@ public class AddTag extends ActionBarActivity implements TokenCompleteTextView.T
         if (savedInstanceState == null) {
             completionView.setPrefix(PREFIX);
         }
-
-        setUpActionBar();
 
         mItem_id = getIntent().getLongExtra(ITEM_ID, -1);
         if (savedInstanceState == null) { // make sure on screen orientation, we don't add the same tags again to the view
@@ -185,13 +182,6 @@ public class AddTag extends ActionBarActivity implements TokenCompleteTextView.T
         Intent resultIntent = new Intent();
         setResult(RESULT_OK, resultIntent);
         finish();
-    }
-
-    private void setUpActionBar() {
-        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        Toolbar toolbar = (Toolbar) findViewById(R.id.add_tag_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private class TagListAdapter extends ArrayAdapter<String> {

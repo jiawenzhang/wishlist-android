@@ -4,15 +4,11 @@ package com.wish.wishlist.activity;
 /**
  * Created by jiawen on 15-09-13.
  */
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,19 +16,16 @@ import com.isseiaoki.simplecropview.CropImageView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.util.ImageManager;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class Cropper extends ActionBarActivity {
+public class Cropper extends ActivityBase {
     CropImageView mCropImageView;
 
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cropper);
-
-        setUpActionBar();
+        setupActionBar(R.id.cropper_toolbar);
 
         Intent i = getIntent();
         String uri = i.getStringExtra(Profile.IMAGE_URI);
@@ -50,12 +43,6 @@ public class Cropper extends ActionBarActivity {
         } catch (IOException e) {
             Log.e("Cropper", e.toString());
         }
-    }
-
-    private void setUpActionBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.cropper_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

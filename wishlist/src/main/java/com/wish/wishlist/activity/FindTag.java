@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -27,15 +25,15 @@ import android.widget.TextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagDBManager;
 
-public class FindTag extends ActionBarActivity {
+public class FindTag extends ActivityBase {
     TagListAdapter tagsAdapter = null;
     protected final static String ITEM_ID = "item_id";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.find_tag);
-        setUpActionBar();
+        setupActionBar(R.id.find_tag_toolbar);
 
         showTags();
     }
@@ -92,13 +90,6 @@ public class FindTag extends ActionBarActivity {
         else {
             return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void setUpActionBar() {
-        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        Toolbar toolbar = (Toolbar) findViewById(R.id.find_tag_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private class TagListAdapter extends ArrayAdapter<String> {

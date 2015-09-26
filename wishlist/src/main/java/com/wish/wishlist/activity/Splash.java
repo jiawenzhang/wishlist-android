@@ -27,7 +27,7 @@ import com.wish.wishlist.util.ImageManager;
 
 import java.util.ArrayList;
 
-public class Splash extends Activity{
+public class Splash extends Activity {
     private static final String VERSION_KEY = "version_number";
     private static final String TAG = "Splash";
 

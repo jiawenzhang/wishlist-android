@@ -12,8 +12,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.app.DialogFragment;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,7 +35,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Profile extends ActionBarActivity implements
+public class Profile extends ActivityBase implements
         EmailFragmentDialog.onEmailChangedListener,
         NameFragmentDialog.onNameChangedListener {
     final static String TAG = "Profile";
@@ -54,8 +52,7 @@ public class Profile extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
-
-        setUpActionBar();
+        setupActionBar(R.id.profile_toolbar);
 
         mUser = ParseUser.getCurrentUser();
         if (mUser == null) {
@@ -131,12 +128,6 @@ public class Profile extends ActionBarActivity implements
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void setUpActionBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.profile_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
