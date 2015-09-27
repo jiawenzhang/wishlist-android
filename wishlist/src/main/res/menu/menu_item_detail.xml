@@ -4,22 +4,22 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_item_detail_edit"
         android:title="@string/edit"
-        android1:icon="@android:drawable/ic_menu_edit"
+        android1:icon="@drawable/ic_action_edit_white"
         app:showAsAction="always"
         />
     <item android:id="@+id/menu_item_detail_share"
         android:title="@string/share"
-        android1:icon="@android:drawable/ic_menu_share"
+        android1:icon="@drawable/ic_action_share_white"
         app:showAsAction="ifRoom"
         />
     <item android1:id="@+id/menu_item_detail_map"
         android1:title="Map"
-        android1:icon="@android:drawable/ic_menu_mapmode"
+        android1:icon="@drawable/ic_action_map_white"
         app:showAsAction="ifRoom"
         />
     <item android1:id="@+id/menu_item_detail_delete"
         android1:title="@string/remove"
-        android1:icon="@android:drawable/ic_menu_delete"
+        android1:icon="@drawable/ic_action_trash_white"
         app:showAsAction="ifRoom"
         />
 </menu>  
