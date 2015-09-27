@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="General"
+        android:key="general">
+        <Preference
+            android:title="Profile"
+            android:key="userProfile"
+            android:layout="@xml/preference_style"/>
+        <CheckBoxPreference
+            android:title="Auto tag location"
+            android:summary="Tag location automatically when creating new wishes"
+            android:defaultValue="true"
+            android:key="autoLocation"
+            android:layout="@xml/checkbox_preference_style"/>
+        <EditTextPreference
+            android:title="Currency symbol"
+            android:summary="$"
+            android:key="currency"
+            android:defaultValue="$"
+            android:layout="@xml/preference_style"/>
+        <!--<com.wish.wishlist.view.CustomEditTextPreference-->
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="About"
+        android:key="about">
+
+        <Preference
+            android:title="New feature"
+            android:key="newFeature"
+            android:layout="@xml/preference_style"/>
+
+        <Preference
+            android:title="Release notes"
+            android:key="releaseNotes"
+            android:layout="@xml/preference_style"/>
+
+        <Preference
+            android:title="Rate the app"
+            android:key="rateApp"
+            android:layout="@xml/preference_style"/>
+
+        <Preference
+            android:title="Follow @Facebook"
+            android:key="facebook"
+            android:layout="@xml/preference_style"/>
+
+        <Preference
+            android:title="Privacy"
+            android:key="privacy"
+            android:layout="@xml/preference_style"/>
+    </PreferenceCategory>
+</PreferenceScreen>
