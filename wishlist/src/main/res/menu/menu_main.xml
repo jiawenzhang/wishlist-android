@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_add"
         android:title="@string/add_new"
         android:icon="@android:drawable/ic_menu_add"
-        android:showAsAction="ifRoom|withText"
+        app:showAsAction="ifRoom|withText"
         />
     <!--    <item android:id="@+id/menu_search"
             android:title="@string/search" android1:icon="@android:drawable/ic_search_category_default"/>
@@ -11,7 +12,7 @@
     <item android:id="@+id/menu_map"
         android:title="Map"
         android:icon="@android:drawable/ic_menu_mapmode"
-        android:showAsAction="ifRoom|withText"
+        app:showAsAction="ifRoom|withText"
         />
     <!--   	<item android1:id="@+id/menu_post"
              android1:title="@string/post" android1:icon="@android:drawable/ic_menu_upload"/>
@@ -21,11 +22,11 @@
     <item android:id="@+id/menu_sort"
         android:title="Sort"
         android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:showAsAction="ifRoom|withText"
+        app:showAsAction="ifRoom|withText"
         />
 
     <item android:id="@+id/menu_status"
         android:title="Filter"
-        android:icon="@drawable/ic_menu_filter"
+        app:icon="@drawable/ic_menu_filter"
         />
 </menu>  
