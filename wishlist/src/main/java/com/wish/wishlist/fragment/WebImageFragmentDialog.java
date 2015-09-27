@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.DialogFragment;
+import android.support.v7.app.AppCompatDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,17 +47,13 @@ public class WebImageFragmentDialog extends DialogFragment implements
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        int style = DialogFragment.STYLE_NO_TITLE, theme;
-        theme = android.R.style.Theme_Holo_Light_Dialog;
-        setStyle(style, theme);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateDialog");
         if (mList.size() > 1) {
             // We have multiple images, we show them in a grid view that is loaded in onCreateView
-            return super.onCreateDialog(savedInstanceState);
+            return new AppCompatDialog(getActivity());
         }
 
         if (savedInstanceState == null) {
