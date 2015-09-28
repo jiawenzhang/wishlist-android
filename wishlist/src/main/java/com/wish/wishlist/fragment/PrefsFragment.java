@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.app.DialogFragment;
+import android.preference.PreferenceManager;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.NewFeatureFragmentActivity;
 import com.wish.wishlist.activity.Profile;
 import com.wish.wishlist.activity.UserLoginActivity;
@@ -19,8 +21,8 @@ import com.wish.wishlist.view.ReleaseNotesView;
 /**
  * Created by jiawen on 15-09-27.
  */
-public class PrefsFragment extends PreferenceFragment
-    implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class PrefsFragment extends PreferenceFragment implements
+        CurrencyFragmentDialog.onCurrencyChangedListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,11 +44,20 @@ public class PrefsFragment extends PreferenceFragment
             }
         });
 
-        // Get the custom preference
-        final EditTextPreference currencyTextPref = (EditTextPreference) findPreference("currency");
-        currencyTextPref.setSummary(currencyTextPref.getText());
+        final Preference currencyPref = findPreference("currency");
+        String currency = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).getString("currency", "");
+        currencyPref.setSummary(currency);
+        currencyPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                DialogFragment currencyFragment = new CurrencyFragmentDialog();
+                currencyFragment.setTargetFragment(PrefsFragment.this, 0);
+                currencyFragment.show(getFragmentManager(), "dialog");
+                return true;
+            }
+        });
 
-        Preference newFeature = findPreference("newFeature");
+        // Get the custom preference
+        final Preference newFeature = findPreference("newFeature");
         newFeature.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 startActivity(new Intent(getActivity(), NewFeatureFragmentActivity.class));
@@ -110,30 +121,12 @@ public class PrefsFragment extends PreferenceFragment
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Set up a listener whenever a key changes
-        getPreferenceScreen().getSharedPreferences()
-                .registerOnSharedPreferenceChangeListener(this);
-    }
+    public void onCurrencyChanged(String currency) {
+        final Preference currencyPref = findPreference("currency");
+        currencyPref.setSummary(currency);
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        // Unregister the listener whenever a key changes
-        getPreferenceScreen().getSharedPreferences()
-                .unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        updatePrefSummary(findPreference(key));
-    }
-
-    private void updatePrefSummary(Preference p) {
-        if (p instanceof EditTextPreference) {
-            EditTextPreference editTextPref = (EditTextPreference) p;
-            p.setSummary(editTextPref.getText());
-        }
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).edit();
+        editor.putString("currency", currency);
+        editor.commit();
     }
 }

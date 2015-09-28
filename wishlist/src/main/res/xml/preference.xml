@@ -13,13 +13,12 @@
             android:defaultValue="true"
             android:key="autoLocation"
             android:layout="@xml/checkbox_preference_style"/>
-        <EditTextPreference
+        <Preference
             android:title="Currency symbol"
             android:summary="$"
             android:key="currency"
-            android:defaultValue="$"
             android:layout="@xml/preference_style"/>
-        <!--<com.wish.wishlist.view.CustomEditTextPreference-->
+
     </PreferenceCategory>
 
     <PreferenceCategory
