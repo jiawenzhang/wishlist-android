@@ -68,18 +68,6 @@ public class PrefsFragment extends PreferenceFragment implements
         final Preference releaseNotes = findPreference("releaseNotes");
         releaseNotes.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
-                //Toast.makeText(getBaseContext(), "The release notes has been clicked", Toast.LENGTH_LONG).show();
-                //		SharedPreferences customSharedPreference = getSharedPreferences(
-                //			"myCustomSharedPrefs", Activity.MODE_PRIVATE);
-                //		SharedPreferences.Editor editor = customSharedPreference;
-                //	.edit();
-                //editor.putString("myCustomPref",
-                //	"The preference has been clicked");
-                //editor.commit();
-
-                //for testing
-                //SyncAgent.getInstance(WishListPreference.this).sync();
-
                 ReleaseNotesView view = new ReleaseNotesView(getActivity());
                 view.show();
                 return true;

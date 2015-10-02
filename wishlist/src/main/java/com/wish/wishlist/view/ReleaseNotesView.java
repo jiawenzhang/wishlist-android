@@ -92,7 +92,6 @@ public class ReleaseNotesView {
 				}
 			});
 			AlertDialog dialog = builder.create();
-			dialog.setTitle("Release notes");
 			dialog.setView(view, 0, 0, 0, 0);
             //dialog.setOnShowListener(new DialogOnShowListener(_act));
 			dialog.show();
