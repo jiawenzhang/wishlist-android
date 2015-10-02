@@ -299,7 +299,6 @@
 
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
-
         <!--app abar color in Activties Task manager -->
         <item name="colorPrimary">@color/primary_dark_material_dark</item>
 
@@ -308,7 +307,16 @@
 
         <!--status bar color -->
         <item name="colorPrimaryDark">@color/wishlist_yellow_color</item>
+    </style>
 
 
+    <style name="Wishlist.Dark.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="actionMenuTextAppearance">@style/Wishlist.actionMenuTextSize</item>
+    </style>
+    <!--<item name="actionMenuTextColor">@color/black</item>-->
+
+    <style name="Wishlist.actionMenuTextSize" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Menu">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">normal</item>
     </style>
 </resources>
