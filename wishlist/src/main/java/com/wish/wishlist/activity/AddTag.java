@@ -92,7 +92,6 @@ public class AddTag extends ActivityBase implements TokenCompleteTextView.TokenL
             }
         }
         showTags();
-
     }
 
     private void showTags() {

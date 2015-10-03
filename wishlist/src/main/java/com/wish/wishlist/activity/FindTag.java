@@ -99,9 +99,9 @@ public class FindTag extends ActivityBase {
 
         public TagListAdapter(Context context, int textViewResourceId, ArrayList<String> tagList) {
             super(context, textViewResourceId, tagList);
-            this.tagList = new ArrayList<String>();
+            this.tagList = new ArrayList<>();
             this.tagList.addAll(tagList);
-            this.originalList = new ArrayList<String>();
+            this.originalList = new ArrayList<>();
             this.originalList.addAll(tagList);
         }
 
@@ -119,7 +119,7 @@ public class FindTag extends ActivityBase {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
+            ViewHolder holder;
             if (convertView == null) {
                 LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = vi.inflate(R.layout.tag_list, null);

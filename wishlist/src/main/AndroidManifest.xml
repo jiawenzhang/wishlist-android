@@ -240,12 +240,14 @@
             android:name=".activity.FindTag"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
-            <!--android:theme="@style/WishList.EditWish.Theme.ActionBar" >-->
+            <!-- android:theme="@style/WishList.EditWish.Theme.ActionBar" -->
         </activity>
         <activity
             android:name=".activity.AddTag"
             android:label="@string/app_name"
-            android:theme="@style/Theme.WishlistTheme" >
+            android:theme="@style/Theme.WishlistTheme"
+            android:screenOrientation="portrait" >
+            <!-- TagsCompletionView crashes on screen orientation, this is a workaround -->
             <!--android:theme="@style/WishList.EditWish.Theme.ActionBar" >-->
         </activity>
         <activity
