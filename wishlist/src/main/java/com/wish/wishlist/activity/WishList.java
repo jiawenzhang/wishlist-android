@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -15,7 +16,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -36,7 +36,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SearchView;
+import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -290,15 +290,15 @@ public class WishList extends ActivityBase implements
     private void handleIntent(Intent intent) {
         // check if the activity is started from search
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            _menuSearch.collapseActionView();
+            MenuItemCompat.collapseActionView(_menuSearch);
             // activity is started from search, get the search query and
             // displayed the searched items
             _nameQuery = intent.getStringExtra(SearchManager.QUERY);
             MenuItem tagItem =  _menu.findItem(R.id.menu_tags);
-            tagItem.setVisible(false);
+            MenuItemCompat.collapseActionView(tagItem);
 
             MenuItem statusItem = _menu.findItem(R.id.menu_status);
-            statusItem.setVisible(false);
+            MenuItemCompat.collapseActionView(statusItem);
 
             // This is a HACK to fix the bug:
             // If we have scrolled to the middle of the staggered view, and then sort,
@@ -501,27 +501,23 @@ public class WishList extends ActivityBase implements
         inflater.inflate(R.menu.menu_main, menu);
         _menu = menu;
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//            //search view is part the action bar in honeycomeb and up
-//            //Get the SearchView and set the searchable configuration
-//            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//            _menuSearch = menu.findItem(R.id.menu_search);
-//            SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-//            // Assumes current activity is the searchable activity
-//            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//            searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-//
-//            // Style the searchView with yellow accent color
-//            int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
-//            // Getting the 'search_plate' LinearLayout.
-//            android.view.View searchPlate = searchView.findViewById(searchPlateId);
-//            // Setting background of 'search_plate'.
-//            searchPlate.setBackgroundResource(R.drawable.textfield_searchview_yellow);
-//
-//            int closeButtonId = searchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
-//            ImageView closeButton= (ImageView) searchView.findViewById(closeButtonId);
-//            closeButton.setBackgroundResource(R.drawable.selectable_background_wishlist);
-//        }
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        _menuSearch = menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(_menuSearch);
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
+        // Style the searchView with yellow accent color
+        //int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
+        // Getting the 'search_plate' LinearLayout.
+        //android.view.View searchPlate = searchView.findViewById(searchPlateId);
+        // Setting background of 'search_plate'.
+        //searchPlate.setBackgroundResource(R.drawable.textfield_searchview_yellow);
+
+        //int closeButtonId = searchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
+        //ImageView closeButton= (ImageView) searchView.findViewById(closeButtonId);
+        //closeButton.setBackgroundResource(R.drawable.selectable_background_wishlist);
         return true;
     }
 
