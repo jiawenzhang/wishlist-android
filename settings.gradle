@@ -1,6 +1,6 @@
 include ':third-party:facebook-android-sdk:facebook'
 include ':third-party:Parse'
 include ':third-party:ParseUI-Android:ParseLoginUI'
-include ':third-party:TokenAutoComplete'
+include ':third-party:TokenAutoComplete:library'
 include ':third-party:AndroidStaggeredGrid:library'
 include ':wishlist'

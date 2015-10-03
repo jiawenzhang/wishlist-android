@@ -13,3 +13,6 @@
 [submodule "TokenAutoComplete"]
 	path = third-party/TokenAutoComplete
 	url = https://github.com/jiawenzhang/TokenAutoComplete.git
+[submodule "third-party/TokenAutoComplete"]
+	path = third-party/TokenAutoComplete
+	url = https://github.com/jiawenzhang/TokenAutoComplete.git

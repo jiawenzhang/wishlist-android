@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.wish.wishlist"
-    android:versionCode="24"
-    android:versionName="1.2.2" >
+          xmlns:app="http://schemas.android.com/apk/res-auto"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.wish.wishlist"
+          android:versionCode="24"
+          android:versionName="1.2.2">
 
     <!--
     min sdkversion earlier than 4 will implicitly require WRITE_EXTERNAL_STORAGE and READ_PHONE_STATE 
@@ -60,6 +62,7 @@
         android:required="true" />
 
     <application
+        tools:node="replace"
         android:name=".WishlistApplication"
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
