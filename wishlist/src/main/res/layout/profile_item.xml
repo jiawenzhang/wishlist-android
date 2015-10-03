@@ -23,7 +23,7 @@
                   android:textSize="13sp"
                   android:singleLine="false"
                   android:ellipsize="end"
-                  android:textColor="@color/red"
+                  android:textColor="@color/dark_grey"
             />
         <TextView android:id="@+id/value"
                   android:layout_height="wrap_content"
