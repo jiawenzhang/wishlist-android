@@ -1,4 +1,4 @@
-package com.wish.wishlist.util;
+package com.wish.wishlist.event;
 
 import com.squareup.otto.Bus;
 

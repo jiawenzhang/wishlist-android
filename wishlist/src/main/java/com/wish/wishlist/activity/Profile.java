@@ -25,10 +25,11 @@ import com.parse.ParseUser;
 import com.path.android.jobqueue.JobManager;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.fragment.EmailFragmentDialog;
 import com.wish.wishlist.fragment.NameFragmentDialog;
 import com.wish.wishlist.job.UploadProfileImageJob;
-import com.wish.wishlist.util.EventBus;
+import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.util.ImageManager;
 
 import java.io.ByteArrayOutputStream;
@@ -48,8 +49,6 @@ public class Profile extends ActivityBase implements
 
     private TextView mEmailTextView;
     private TextView mNameTextView;
-
-    public static class ProfileChanged {}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,7 +186,7 @@ public class Profile extends ActivityBase implements
         File profileImageFile = new File(WishlistApplication.getAppContext().getFilesDir(), profileImageName());
         if (ImageManager.saveByteToPath(data, profileImageFile.getAbsolutePath())) {
             // Wishlist activity listens to this and update the profile info in navigation view
-            EventBus.getInstance().post(new Profile.ProfileChanged());
+            EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.image));
             return true;
         }
         return false;
@@ -283,6 +282,7 @@ public class Profile extends ActivityBase implements
             mUser.put("name", name);
             mUser.saveEventually();
             mNameTextView.setText(name);
+            EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.name));
         }
     }
 
@@ -293,6 +293,7 @@ public class Profile extends ActivityBase implements
             mUser.setEmail(email);
             mUser.saveEventually();
             mEmailTextView.setText(email);
+            EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.email));
         }
     }
 }

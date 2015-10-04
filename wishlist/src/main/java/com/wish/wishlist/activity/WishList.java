@@ -30,7 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -50,16 +49,16 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
+import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
-import com.wish.wishlist.util.EventBus;
+import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.WishItemStaggeredCursorAdapter;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
 import com.wish.wishlist.util.camera.CameraManager;
 import com.wish.wishlist.util.social.ShareHelper;
-import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.sync.SyncAgent;
 
 import com.etsy.android.grid.StaggeredGridView;
@@ -135,6 +134,7 @@ public class WishList extends ActivityBase implements
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
     private ActionBarDrawerToggle mDrawerToggle;
+    private RelativeLayout mHeaderLayout;
 
     /** Called when the activity is first created. */
     @Override
@@ -1025,22 +1025,28 @@ public class WishList extends ActivityBase implements
     }
 
     @Subscribe
-    public void profileChanged(Profile.ProfileChanged c) {
-        Log.d(TAG, "profileChanged");
-        setupProfileInfo();
+    public void profileChanged(ProfileChangeEvent event) {
+        Log.d(TAG, "profileChanged " + event.type.toString());
+        if (event.type == ProfileChangeEvent.ProfileChangeType.email) {
+            setupUserEmail();
+        } else if (event.type == ProfileChangeEvent.ProfileChangeType.name) {
+            setupUserName();
+        } else if (event.type == ProfileChangeEvent.ProfileChangeType.image) {
+            setupProfileImage();
+        }
     }
 
-    private void setupProfileInfo() {
-        final ParseUser currentUser = ParseUser.getCurrentUser();
-        final RelativeLayout headerLayout = (RelativeLayout) mNavigationView.findViewById(R.id.drawer_header_layout);
-        if (currentUser != null) {
-            TextView nameTextView = (TextView) headerLayout.findViewById(R.id.username);
-            nameTextView.setText(currentUser.getString("name"));
+    private void setupUserEmail() {
+        TextView emailTextView = (TextView) mHeaderLayout.findViewById(R.id.email);
+        emailTextView.setText(ParseUser.getCurrentUser().getEmail());
+    }
 
-            TextView emailTextView = (TextView) headerLayout.findViewById(R.id.email);
-            emailTextView.setText(currentUser.getEmail());
-        }
+    private void setupUserName() {
+        TextView nameTextView = (TextView) mHeaderLayout.findViewById(R.id.username);
+        nameTextView.setText(ParseUser.getCurrentUser().getString("name"));
+    }
 
+    private void setupProfileImage() {
         // set profile image in the header
         final File profileImageFile = new File(getFilesDir(), Profile.profileImageName());
         final Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
@@ -1056,9 +1062,9 @@ public class WishList extends ActivityBase implements
         // Setup NavigationView
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-        final RelativeLayout headerLayout = (RelativeLayout) mNavigationView.findViewById(R.id.drawer_header_layout);
+        mHeaderLayout = (RelativeLayout) mNavigationView.findViewById(R.id.drawer_header_layout);
         final ParseUser currentUser = ParseUser.getCurrentUser();
-        headerLayout.setOnClickListener(new View.OnClickListener() {
+        mHeaderLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentUser != null) {
@@ -1069,7 +1075,11 @@ public class WishList extends ActivityBase implements
             }
         });
 
-        setupProfileInfo();
+        if (currentUser != null) {
+            setupUserName();
+            setupUserEmail();
+        }
+        setupProfileImage();
 
         updateDrawerList();
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
