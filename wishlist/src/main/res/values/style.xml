@@ -261,7 +261,7 @@
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <!--app abar color in Activties Task manager -->
-        <item name="colorPrimary">@color/primary_dark_material_dark</item>
+        <item name="colorPrimary">@color/primary_material_dark</item>
 
         <!--copy/paste colors -->
         <item name="colorAccent">@color/wishlist_yellow_color</item>

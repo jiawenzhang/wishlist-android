@@ -19,18 +19,25 @@
             android:orientation="vertical"
             >
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/profile_image"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="40dp"
-                app:border_width="2dp"
-                app:border_color="#FF000000"
-                android:src="@drawable/ic_logo"
-                />
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:id="@+id/drawer_header_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="190dp"
+                            android:background="@color/primary_material_dark"
+                            android:orientation="vertical" >
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="center"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginBottom="40dp"
+                    android:src="@drawable/ic_logo"
+                    />
+
+            </RelativeLayout>
 
             <include android:id="@+id/profile_username"
                      android:clickable="false"
