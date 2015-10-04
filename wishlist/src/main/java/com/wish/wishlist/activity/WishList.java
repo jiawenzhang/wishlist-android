@@ -45,6 +45,7 @@ import android.support.design.widget.NavigationView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.parse.ParseUser;
+import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
@@ -52,6 +53,7 @@ import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.util.EventBus;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.WishItemStaggeredCursorAdapter;
 import com.wish.wishlist.util.WishListItemCursorAdapter;
@@ -138,6 +140,9 @@ public class WishList extends ActivityBase implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Listen for profile change events
+        EventBus.getInstance().register(this);
 
         setContentView(R.layout.main);
         setupActionBar(R.id.main_toolbar);
@@ -265,7 +270,7 @@ public class WishList extends ActivityBase implements
         SyncAgent.getInstance().register(this);
 
         _swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-        // the refresh listner. this would be called when the layout is pulled down
+        // the refresh listener. this would be called when the layout is pulled down
         _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -810,6 +815,7 @@ public class WishList extends ActivityBase implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getInstance().unregister(this);
     }
 
     @Override
@@ -1018,11 +1024,39 @@ public class WishList extends ActivityBase implements
         }
     }
 
+    @Subscribe
+    public void profileChanged(Profile.ProfileChanged c) {
+        Log.d(TAG, "profileChanged");
+        setupProfileInfo();
+    }
+
+    private void setupProfileInfo() {
+        final ParseUser currentUser = ParseUser.getCurrentUser();
+        final RelativeLayout headerLayout = (RelativeLayout) mNavigationView.findViewById(R.id.drawer_header_layout);
+        if (currentUser != null) {
+            TextView nameTextView = (TextView) headerLayout.findViewById(R.id.username);
+            nameTextView.setText(currentUser.getString("name"));
+
+            TextView emailTextView = (TextView) headerLayout.findViewById(R.id.email);
+            emailTextView.setText(currentUser.getEmail());
+        }
+
+        // set profile image in the header
+        final File profileImageFile = new File(getFilesDir(), Profile.profileImageName());
+        final Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
+        final ImageView profileImageView = (ImageView) mNavigationView.findViewById(R.id.profile_image);
+        if (bitmap != null) {
+            profileImageView.setImageBitmap(bitmap);
+        } else {
+            profileImageView.setImageResource(R.drawable.splash_logo);
+        }
+    }
+
     private void setupNavigationDrawer() {
         // Setup NavigationView
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-        RelativeLayout headerLayout = (RelativeLayout) mNavigationView.findViewById(R.id.drawer_header_layout);
+        final RelativeLayout headerLayout = (RelativeLayout) mNavigationView.findViewById(R.id.drawer_header_layout);
         final ParseUser currentUser = ParseUser.getCurrentUser();
         headerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1035,23 +1069,7 @@ public class WishList extends ActivityBase implements
             }
         });
 
-        if (currentUser != null) {
-            TextView nameTextView = (TextView) headerLayout.findViewById(R.id.username);
-            nameTextView.setText(currentUser.getString("name"));
-
-            TextView emailTextView = (TextView) headerLayout.findViewById(R.id.email);
-            emailTextView.setText(currentUser.getEmail());
-        }
-
-        // show profile image in the header
-        File profileImageFile = new File(getFilesDir(), Profile.profileImageName());
-        Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
-        ImageView profileImageView = (ImageView) mNavigationView.findViewById(R.id.profile_image);
-        if (bitmap != null) {
-            profileImageView.setImageBitmap(bitmap);
-        } else {
-            profileImageView.setImageResource(R.drawable.splash_logo);
-        }
+        setupProfileInfo();
 
         updateDrawerList();
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {

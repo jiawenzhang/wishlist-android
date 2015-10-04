@@ -28,6 +28,7 @@ import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.fragment.EmailFragmentDialog;
 import com.wish.wishlist.fragment.NameFragmentDialog;
 import com.wish.wishlist.job.UploadProfileImageJob;
+import com.wish.wishlist.util.EventBus;
 import com.wish.wishlist.util.ImageManager;
 
 import java.io.ByteArrayOutputStream;
@@ -47,6 +48,8 @@ public class Profile extends ActivityBase implements
 
     private TextView mEmailTextView;
     private TextView mNameTextView;
+
+    public static class ProfileChanged {}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,7 +185,12 @@ public class Profile extends ActivityBase implements
 
     public static boolean saveProfileImageToFile(byte[] data) {
         File profileImageFile = new File(WishlistApplication.getAppContext().getFilesDir(), profileImageName());
-        return ImageManager.saveByteToPath(data, profileImageFile.getAbsolutePath());
+        if (ImageManager.saveByteToPath(data, profileImageFile.getAbsolutePath())) {
+            // Wishlist activity listens to this and update the profile info in navigation view
+            EventBus.getInstance().post(new Profile.ProfileChanged());
+            return true;
+        }
+        return false;
     }
 
     /**

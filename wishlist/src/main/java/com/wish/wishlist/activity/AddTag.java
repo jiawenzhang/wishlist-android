@@ -44,7 +44,7 @@ public class AddTag extends ActivityBase implements TokenCompleteTextView.TokenL
 
     TagListAdapter tagsAdapter = null;
     protected final static String ITEM_ID = "item_id";
-    protected Set<String> currentTags = new HashSet<String>();
+    protected Set<String> currentTags = new HashSet<>();
 
     protected long mItem_id;
 
