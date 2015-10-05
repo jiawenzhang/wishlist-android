@@ -165,8 +165,6 @@ public class Profile extends ActivityBase implements
         ImageView profileImageView = (ImageView) findViewById(R.id.profile_image);
         if (bitmap != null) {
             profileImageView.setImageBitmap(bitmap);
-        } else {
-            profileImageView.setImageResource(R.drawable.splash_logo);
         }
     }
 

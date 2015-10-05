@@ -1053,8 +1053,6 @@ public class WishList extends ActivityBase implements
         final ImageView profileImageView = (ImageView) mNavigationView.findViewById(R.id.profile_image);
         if (bitmap != null) {
             profileImageView.setImageBitmap(bitmap);
-        } else {
-            profileImageView.setImageResource(R.drawable.splash_logo);
         }
     }
 
