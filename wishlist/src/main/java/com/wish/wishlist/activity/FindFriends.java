@@ -3,6 +3,8 @@ package com.wish.wishlist.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
 
+import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FriendManager;
@@ -104,7 +107,16 @@ public class FindFriends extends ActivityBase
         }
 
         ArrayList<UserAdapter.UserMeta> userData = new ArrayList<>();
-        UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getString("name"), user.getUsername());
+        final ParseFile parseImage = user.getParseFile("profileImage");
+        Bitmap bitmap = null;
+        if (parseImage != null) {
+            try {
+                bitmap = BitmapFactory.decodeByteArray(parseImage.getData(), 0, parseImage.getData().length);
+            } catch (com.parse.ParseException e) {
+                Log.e(TAG, e.toString());
+            }
+        }
+        UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getString("name"), user.getUsername(), bitmap);
         userData.add(userMeta);
         mUserAdapter = new UserAdapter(userData);
         mRecyclerView.setAdapter(mUserAdapter);
