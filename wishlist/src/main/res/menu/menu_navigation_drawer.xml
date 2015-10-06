@@ -39,5 +39,11 @@
             android:icon="@drawable/ic_action_gear"
             android:title="Settings" />
 
+        <item
+            android:id="@+id/friends"
+            android:checked="false"
+            android:icon="@drawable/ic_action_picture"
+            android:title="Friends" />
+
     </group>
 </menu>

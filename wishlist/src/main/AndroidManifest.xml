@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.wish.wishlist"
-          android:versionCode="24"
-          android:versionName="1.2.2">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.wish.wishlist"
+    android:versionCode="24"
+    android:versionName="1.2.2" >
 
     <!--
     min sdkversion earlier than 4 will implicitly require WRITE_EXTERNAL_STORAGE and READ_PHONE_STATE 
@@ -61,13 +61,13 @@
         android:required="true" />
 
     <application
-        tools:node="replace"
         android:name=".WishlistApplication"
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
         android:logo="@drawable/ic_logo"
-        android:theme="@style/Theme.WishlistTheme" >
-        <!--android:theme="@style/Wishlist_Yellow" >-->
+        android:theme="@style/Theme.WishlistTheme"
+        tools:node="replace" >
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -84,7 +84,7 @@
             android:name=".activity.Splash"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
-           <!-- android:theme="@style/Theme.D1.noActionBar" >-->
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -120,7 +120,6 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/Theme.WishlistTheme" >
-            <!-- android:theme="@style/Wishlist_Yellow" > -->
 
             <!-- android:launchMode="singleTask"> -->
 
@@ -138,7 +137,6 @@
             <!-- Receives the search request. -->
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
@@ -151,10 +149,7 @@
             android:name=".activity.EditItem"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
-            <!--android:theme="@style/WishList.EditWish.Theme.ActionBar" >-->
 
-            <!-- android:theme="@style/Theme.D1" -->
-            <!-- android:screenOrientation="portrait"> -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -188,31 +183,21 @@
             android:name=".activity.WishListPreference"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
-            <!--android:theme="@style/WishList_Yellow_PreferenceCategory" > -->
 
-            <!-- android:screenOrientation="portrait"> -->
         </activity>
         <activity
             android:name=".activity.WishItemDetail"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
-            <!--android:theme="@style/Wishlist_Yellow" >-->
-
-            <!-- android:screenOrientation="portrait"> -->
         </activity>
         <activity
             android:name=".activity.FullscreenPhoto"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
-            <!--android:theme="@style/Theme.D1.noActionBar" >-->
-
-            <!-- android:screenOrientation="portrait"> -->
         </activity>
         <activity
             android:name=".activity.WishItemPostToSNS"
             android:label="@string/app_name" >
-
-            <!-- android:theme="@style/ToDoTheme"> -->
         </activity>
         <activity
             android:name=".activity.FacebookPost"
@@ -233,51 +218,58 @@
             android:name=".activity.Map"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
-            <!--android:theme="@style/Theme.D1.noActionBar" >-->
         </activity>
         <activity
             android:name=".activity.FindTag"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
-            <!-- android:theme="@style/WishList.EditWish.Theme.ActionBar" -->
         </activity>
         <activity
             android:name=".activity.AddTag"
             android:label="@string/app_name"
-            android:theme="@style/Theme.WishlistTheme"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.WishlistTheme" >
             <!-- TagsCompletionView crashes on screen orientation, this is a workaround -->
-            <!--android:theme="@style/WishList.EditWish.Theme.ActionBar" >-->
         </activity>
         <activity
             android:name=".activity.AddTagFromEditItem"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
-            <!--android:theme="@style/WishList.EditWish.Theme.ActionBar" > -->
         </activity>
         <activity
             android:name=".activity.NewFeatureFragmentActivity"
-            android:label="Wishlist"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
-            <!--android:theme="@style/Theme.D1.noActionBar" >-->
         </activity>
         <activity
             android:name=".activity.Profile"
-            android:label="Wishlist"
+            android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
-            <!--android:theme="@style/WishList.EditWish.Theme.ActionBar" > -->
         </activity>
         <activity
             android:name=".activity.Cropper"
-            android:label="Wishlist"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
-            <!--android:theme="@style/WishList.EditWish.Theme.ActionBar" >-->
         </activity>
-        <!-- android:theme="@style/ToDoTheme"></activity> -->
 
+        <activity
+            android:name=".activity.FindFriends"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.WishlistTheme" >
 
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <!-- Points to searchable meta data. -->
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/find_friends_searchable" />
+        </activity>
         <!-- <provider android:name="com.android.wishlist.defaultphotoprovider" -->
         <!-- android:authorities="com.android.wishlist.provider.defaultphotoprovider"> -->
         <!-- </provider> -->
@@ -355,11 +347,10 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-<!--                   IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
+                <!-- IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
                 <category android:name="com.wish.wishlist" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

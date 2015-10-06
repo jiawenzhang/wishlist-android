@@ -50,6 +50,7 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.ProfileChangeEvent;
+import com.wish.wishlist.friend.FriendManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
@@ -1123,6 +1124,10 @@ public class WishList extends ActivityBase implements
                     case R.id.settings:
                         Intent prefIntent = new Intent(getApplicationContext(), WishListPreference.class);
                         startActivity(prefIntent);
+                        return true;
+                    case R.id.friends:
+                        final Intent findFriendsIntent = new Intent(getApplicationContext(), FindFriends.class);
+                        startActivity(findFriendsIntent);
                         return true;
                     default:
                         return true;

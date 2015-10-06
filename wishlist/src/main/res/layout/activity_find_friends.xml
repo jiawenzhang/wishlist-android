@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/bodyBackground_light_grey">
+    <include
+        layout="@layout/tool_bar"
+        android:id="@+id/find_friends_toolbar"
+        xmlns:android="http://schemas.android.com/apk/res/android"/>
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/find_friends_fragment"
+              android:name="com.wish.wishlist.fragment.FindFriendsFragment"
+              tools:layout="@layout/fragment_find_friends"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"/>
+
+</LinearLayout>
