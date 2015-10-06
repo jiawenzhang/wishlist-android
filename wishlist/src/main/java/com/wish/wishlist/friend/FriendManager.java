@@ -1,5 +1,6 @@
 package com.wish.wishlist.friend;
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.parse.FindCallback;
@@ -21,6 +22,22 @@ public class FriendManager {
     final static int REQUESTED = 0;
     final static int ACCEPTED = 0;
     final static int REJECTED = 0;
+
+    onFoundUserListener mListener;
+
+    public interface onFoundUserListener {
+        void onFoundUser(ParseUser user);
+    }
+
+    protected void onFoundUser(ParseUser user) {
+        if (mListener != null) {
+            mListener.onFoundUser(user);
+        }
+    }
+
+    public void setListener(Activity a) {
+        mListener = (onFoundUserListener) a;
+    }
 
     public void requestFriend(final String friendId)
     {
@@ -124,14 +141,17 @@ public class FriendManager {
                 if (e == null) {
                     if (users.isEmpty()) {
                         Log.d(TAG, "no user found for username: " + username);
+                        onFoundUser(null);
                         return;
                     }
 
                     for (final ParseUser user : users) {
+                        onFoundUser(user);
                         Log.d(TAG, "find user: username " + user.getUsername() + " email: " + user.getEmail() + " name: " + user.getString("name"));
                     }
                 } else {
                     Log.e(TAG, e.toString());
+                    onFoundUser(null);
                 }
             }
         });

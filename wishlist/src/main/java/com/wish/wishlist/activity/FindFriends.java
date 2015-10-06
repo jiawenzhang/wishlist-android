@@ -5,18 +5,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
 
+import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FriendManager;
+import com.wish.wishlist.util.UserAdapter;
 
-public class FindFriends extends ActivityBase {
+import java.util.ArrayList;
+
+public class FindFriends extends ActivityBase
+        implements FriendManager.onFoundUserListener {
+
     final static String TAG = "FindFriends";
-
     private MenuItem _menuSearch;
+
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mUserAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +36,16 @@ public class FindFriends extends ActivityBase {
         setupActionBar(R.id.find_friends_toolbar);
 
         handleIntent(getIntent());
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.user_recycler_view);
+
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        mRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
     }
 
     @Override
@@ -40,6 +61,7 @@ public class FindFriends extends ActivityBase {
             // displayed the searched items
             String username = intent.getStringExtra(SearchManager.QUERY);
             FriendManager m = new FriendManager();
+            m.setListener(this);
             m.findUser(username);
         } else {
             // activity is not started from search
@@ -71,5 +93,20 @@ public class FindFriends extends ActivityBase {
         else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onFoundUser(ParseUser user) {
+        Log.d(TAG, "onFoundUser");
+        if (user == null) {
+            Log.d(TAG, "no user");
+            return;
+        }
+
+        ArrayList<UserAdapter.UserMeta> userData = new ArrayList<>();
+        UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getString("name"), user.getUsername());
+        userData.add(userMeta);
+        mUserAdapter = new UserAdapter(userData);
+        mRecyclerView.setAdapter(mUserAdapter);
     }
 }
