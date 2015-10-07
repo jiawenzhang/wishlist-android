@@ -10,9 +10,6 @@
 [submodule "third-party/ParseUI-Android"]
 	path = third-party/ParseUI-Android
 	url = https://github.com/jiawenzhang/ParseUI-Android.git
-[submodule "TokenAutoComplete"]
-	path = third-party/TokenAutoComplete
-	url = https://github.com/jiawenzhang/TokenAutoComplete.git
 [submodule "third-party/TokenAutoComplete"]
 	path = third-party/TokenAutoComplete
 	url = https://github.com/jiawenzhang/TokenAutoComplete.git
