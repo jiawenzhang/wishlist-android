@@ -44,4 +44,14 @@
         android:text="Name"
         android:textSize="16sp" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:layout_alignRight="@+id/username"
+        android:layout_alignEnd="@+id/username"
+        android:text="Add friend"
+        android:id="@+id/add_friend"/>
+
 </RelativeLayout>

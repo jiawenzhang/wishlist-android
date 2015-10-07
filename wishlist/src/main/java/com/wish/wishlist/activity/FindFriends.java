@@ -22,14 +22,15 @@ import com.wish.wishlist.util.UserAdapter;
 
 import java.util.ArrayList;
 
-public class FindFriends extends ActivityBase
-        implements FriendManager.onFoundUserListener {
+public class FindFriends extends ActivityBase implements
+        FriendManager.onFoundUserListener,
+        UserAdapter.addFriendListener {
 
     final static String TAG = "FindFriends";
     private MenuItem _menuSearch;
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mUserAdapter;
+    private UserAdapter mUserAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
@@ -116,9 +117,17 @@ public class FindFriends extends ActivityBase
                 Log.e(TAG, e.toString());
             }
         }
-        UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getString("name"), user.getUsername(), bitmap);
+        UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
         userData.add(userMeta);
         mUserAdapter = new UserAdapter(userData);
+        mUserAdapter.setAddFriendListener(this);
         mRecyclerView.setAdapter(mUserAdapter);
+    }
+
+    @Override
+    public void onAddFriend(String friendId) {
+        Log.d(TAG, "onAddFriend " + friendId);
+        FriendManager m = new FriendManager();
+        m.requestFriend(friendId);
     }
 }

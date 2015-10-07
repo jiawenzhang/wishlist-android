@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,17 +21,30 @@ import com.wish.wishlist.R;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     public static class UserMeta {
+        String objectId;
         String name;
         String username;
         Bitmap image;
 
-        public UserMeta(String name, String username, Bitmap image) {
+        public UserMeta(String objectId, String name, String username, Bitmap image) {
+            this.objectId = objectId;
             this.name = name;
             this.username = username;
             this.image = image;
         }
     }
 
+    public interface addFriendListener {
+        void onAddFriend(String friendId);
+    }
+
+    protected void onAddFriend(String friendId) {
+        if (mAddFriendListener != null) {
+            mAddFriendListener.onAddFriend(friendId);
+        }
+    }
+
+    private addFriendListener mAddFriendListener = null;
     private ArrayList<UserMeta> mUserMetaList;
     private static final String TAG = "UserAdapter";
 
@@ -38,13 +52,24 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         public TextView txtName;
         public TextView txtUsername;
         public ImageView imgProfile;
+        public Button buttonAddFriend;
 
         public ViewHolder(View v) {
             super(v);
             txtName= (TextView) v.findViewById(R.id.name);
             txtUsername = (TextView) v.findViewById(R.id.username);
             imgProfile = (ImageView) v.findViewById(R.id.profile_image);
+            buttonAddFriend = (Button) v.findViewById(R.id.add_friend);
         }
+    }
+
+    public UserAdapter(ArrayList<UserMeta> userData) {
+        mUserMetaList = userData;
+    }
+
+    public void setAddFriendListener(addFriendListener listener)
+    {
+        mAddFriendListener = listener;
     }
 
     public void add(int position, UserMeta item) {
@@ -56,10 +81,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         int position = mUserMetaList.indexOf(item);
         mUserMetaList.remove(position);
         notifyItemRemoved(position);
-    }
-
-    public UserAdapter(ArrayList<UserMeta> userData) {
-        mUserMetaList = userData;
     }
 
     // Create new views (invoked by the layout manager)
@@ -78,18 +99,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         // - get element from your data set at this position
         // - replace the contents of the view with that element
         final UserMeta userMeta = mUserMetaList.get(position);
-        holder.txtName.setText(userMeta.name);
-        holder.txtUsername.setText(userMeta.username);
-        holder.txtUsername.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "user name clicked");
-            }
-        });
-
         if (userMeta.image != null) {
             holder.imgProfile.setImageBitmap(mUserMetaList.get(position).image);
         }
+        holder.txtName.setText(userMeta.name);
+        holder.txtUsername.setText(userMeta.username);
+        holder.buttonAddFriend.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "add friend button clicked");
+                onAddFriend(userMeta.objectId);
+            }
+        });
     }
 
     // Return the size of your data set (invoked by the layout manager)
