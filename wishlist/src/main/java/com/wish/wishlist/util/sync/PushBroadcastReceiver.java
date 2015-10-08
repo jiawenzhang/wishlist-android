@@ -4,13 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
 import com.parse.ParsePushBroadcastReceiver;
-import com.parse.ParseUser;
-import com.wish.wishlist.activity.Profile;
 
 import org.json.JSONException;
 import org.json.JSONObject;

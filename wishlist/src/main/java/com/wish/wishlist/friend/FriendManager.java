@@ -20,18 +20,25 @@ public class FriendManager {
     final static String FRIEND_REQUEST = "FriendRequest";
 
     final static int REQUESTED = 0;
-    final static int ACCEPTED = 0;
-    final static int REJECTED = 0;
+    final static int ACCEPTED = 1;
+    final static int REJECTED = 2;
 
     onFoundUserListener mListener;
 
     public interface onFoundUserListener {
         void onFoundUser(ParseUser user);
+        void onGotAllFriends(List<ParseUser> friends);
     }
 
     protected void onFoundUser(ParseUser user) {
         if (mListener != null) {
             mListener.onFoundUser(user);
+        }
+    }
+
+    protected void onGotAllFriends(List<ParseUser> friends) {
+        if (mListener != null) {
+            mListener.onGotAllFriends(friends);
         }
     }
 
@@ -157,7 +164,7 @@ public class FriendManager {
         });
     }
 
-    public void friends()
+    public void fetchFriends()
     {
         ParseQuery<ParseObject> queryToMe = ParseQuery.getQuery(FRIEND_REQUEST);
         queryToMe.whereEqualTo("to", ParseUser.getCurrentUser().getObjectId());
@@ -194,6 +201,18 @@ public class FriendManager {
                     for (final String friendId : friendIds) {
                         Log.d(TAG, "friend id: " + friendId);
                     }
+
+                    ParseQuery<ParseUser> query = ParseUser.getQuery();
+                    query.whereContainedIn("objectId", friendIds);
+                    query.findInBackground(new FindCallback<ParseUser>() {
+                        public void done(List<ParseUser> users, com.parse.ParseException e) {
+                            if (e == null) {
+                                onGotAllFriends(users);
+                            } else {
+                                Log.e(TAG, e.toString());
+                            }
+                        }
+                    });
                 } else {
                     Log.e(TAG, e.toString());
                 }

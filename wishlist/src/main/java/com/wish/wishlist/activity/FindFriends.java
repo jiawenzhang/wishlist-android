@@ -21,6 +21,7 @@ import com.wish.wishlist.friend.FriendManager;
 import com.wish.wishlist.util.UserAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FindFriends extends ActivityBase implements
         FriendManager.onFoundUserListener,
@@ -50,6 +51,9 @@ public class FindFriends extends ActivityBase implements
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        FriendManager m = new FriendManager();
+        m.setListener(this);
+        m.fetchFriends();
     }
 
     @Override
@@ -107,7 +111,7 @@ public class FindFriends extends ActivityBase implements
             return;
         }
 
-        ArrayList<UserAdapter.UserMeta> userData = new ArrayList<>();
+        ArrayList<UserAdapter.UserMeta> userMetaList = new ArrayList<>();
         final ParseFile parseImage = user.getParseFile("profileImage");
         Bitmap bitmap = null;
         if (parseImage != null) {
@@ -118,8 +122,8 @@ public class FindFriends extends ActivityBase implements
             }
         }
         UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
-        userData.add(userMeta);
-        mUserAdapter = new UserAdapter(userData);
+        userMetaList.add(userMeta);
+        mUserAdapter = new UserAdapter(userMetaList);
         mUserAdapter.setAddFriendListener(this);
         mRecyclerView.setAdapter(mUserAdapter);
     }
@@ -129,5 +133,27 @@ public class FindFriends extends ActivityBase implements
         Log.d(TAG, "onAddFriend " + friendId);
         FriendManager m = new FriendManager();
         m.requestFriend(friendId);
+    }
+
+    @Override
+    public void onGotAllFriends(List<ParseUser> friends) {
+        Log.d(TAG, "onGotAllFriend");
+        ArrayList<UserAdapter.UserMeta> userMetaList = new ArrayList<>();
+        for (final ParseUser user : friends) {
+            final ParseFile parseImage = user.getParseFile("profileImage");
+            Bitmap bitmap = null;
+            if (parseImage != null) {
+                try {
+                    bitmap = BitmapFactory.decodeByteArray(parseImage.getData(), 0, parseImage.getData().length);
+                } catch (com.parse.ParseException e) {
+                    Log.e(TAG, e.toString());
+                }
+            }
+            UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
+            userMetaList.add(userMeta);
+        }
+        mUserAdapter = new UserAdapter(userMetaList);
+        mUserAdapter.setAddFriendListener(this);
+        mRecyclerView.setAdapter(mUserAdapter);
     }
 }
