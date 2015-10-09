@@ -44,7 +44,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
     }
 
+    public interface acceptFriendListener {
+        void onAcceptFriend(String friendId);
+    }
+
+    protected void onAcceptFriend(String friendId) {
+        if (mAcceptFriendListener != null) {
+            mAcceptFriendListener.onAcceptFriend(friendId);
+        }
+    }
+
     private addFriendListener mAddFriendListener = null;
+    private acceptFriendListener mAcceptFriendListener = null;
     private ArrayList<UserMeta> mUserMetaList;
     private static final String TAG = "UserAdapter";
 
@@ -70,6 +81,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     public void setAddFriendListener(addFriendListener listener)
     {
         mAddFriendListener = listener;
+    }
+
+    public void setAcceptFriendListener(acceptFriendListener listener)
+    {
+        mAcceptFriendListener = listener;
     }
 
     public void add(int position, UserMeta item) {
@@ -109,6 +125,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             public void onClick(View v) {
                 Log.d(TAG, "add friend button clicked");
                 onAddFriend(userMeta.objectId);
+                onAcceptFriend(userMeta.objectId);
             }
         });
     }

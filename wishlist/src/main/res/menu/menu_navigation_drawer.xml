@@ -45,5 +45,11 @@
             android:icon="@drawable/ic_action_picture"
             android:title="Friends" />
 
+        <item
+            android:id="@+id/notifications"
+            android:checked="false"
+            android:icon="@drawable/ic_action_camera"
+            android:title="Notifications" />
+
     </group>
 </menu>

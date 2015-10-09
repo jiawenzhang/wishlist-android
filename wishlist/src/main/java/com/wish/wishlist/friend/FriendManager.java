@@ -23,27 +23,41 @@ public class FriendManager {
     final static int ACCEPTED = 1;
     final static int REJECTED = 2;
 
-    onFoundUserListener mListener;
-
+    onFoundUserListener mFoundUserListener;
     public interface onFoundUserListener {
         void onFoundUser(ParseUser user);
         void onGotAllFriends(List<ParseUser> friends);
     }
 
+    onFriendRequestListener mFriendRequestListener;
+    public interface onFriendRequestListener {
+        void onGotFriendRequest(List<ParseUser> friends);
+    }
+
     protected void onFoundUser(ParseUser user) {
-        if (mListener != null) {
-            mListener.onFoundUser(user);
+        if (mFoundUserListener != null) {
+            mFoundUserListener.onFoundUser(user);
         }
     }
 
     protected void onGotAllFriends(List<ParseUser> friends) {
-        if (mListener != null) {
-            mListener.onGotAllFriends(friends);
+        if (mFoundUserListener != null) {
+            mFoundUserListener.onGotAllFriends(friends);
         }
     }
 
-    public void setListener(Activity a) {
-        mListener = (onFoundUserListener) a;
+    protected void onGotFriendRequest(List<ParseUser> friends) {
+        if (mFriendRequestListener != null) {
+            mFriendRequestListener.onGotFriendRequest(friends);
+        }
+    }
+
+    public void setFoundUserListener(Activity a) {
+        mFoundUserListener = (onFoundUserListener) a;
+    }
+
+    public void setFriendRequestListener(Activity a) {
+        mFriendRequestListener = (onFriendRequestListener) a;
     }
 
     public void requestFriend(final String friendId)
@@ -93,7 +107,7 @@ public class FriendManager {
     {
     }
 
-    public void friendRequest()
+    public void fetchFriendRequest()
     {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(FRIEND_REQUEST);
         query.whereEqualTo("to", ParseUser.getCurrentUser().getObjectId());
@@ -103,12 +117,26 @@ public class FriendManager {
                 if (e == null) {
                     if (friendRequestList.isEmpty()) {
                         Log.d(TAG, "no friend request to me");
+                        onGotFriendRequest(new ArrayList<ParseUser>());
                         return;
                     }
 
+                    HashSet<String> friendIds = new HashSet<>();
                     for (final ParseObject friendRequest : friendRequestList) {
-                        Log.d(TAG, "friend request from " + friendRequest.getString("from"));
+                        friendIds.add(friendRequest.getString("from"));
                     }
+
+                    ParseQuery<ParseUser> query = ParseUser.getQuery();
+                    query.whereContainedIn("objectId", friendIds);
+                    query.findInBackground(new FindCallback<ParseUser>() {
+                        public void done(List<ParseUser> users, com.parse.ParseException e) {
+                            if (e == null) {
+                                onGotFriendRequest(users);
+                            } else {
+                                Log.e(TAG, e.toString());
+                            }
+                        }
+                    });
                 } else {
                     Log.e(TAG, e.toString());
                 }

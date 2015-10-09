@@ -52,7 +52,7 @@ public class FindFriends extends ActivityBase implements
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         FriendManager m = new FriendManager();
-        m.setListener(this);
+        m.setFoundUserListener(this);
         m.fetchFriends();
     }
 
@@ -69,7 +69,7 @@ public class FindFriends extends ActivityBase implements
             // displayed the searched items
             String username = intent.getStringExtra(SearchManager.QUERY);
             FriendManager m = new FriendManager();
-            m.setListener(this);
+            m.setFoundUserListener(this);
             m.findUser(username);
         } else {
             // activity is not started from search
