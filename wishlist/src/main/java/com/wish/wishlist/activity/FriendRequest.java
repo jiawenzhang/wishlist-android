@@ -4,11 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 
 import com.parse.ParseFile;
 import com.parse.ParseUser;
-import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FriendManager;
 import com.wish.wishlist.util.AddFriendAdapter;
 import com.wish.wishlist.util.FriendRequestAdapter;

@@ -35,7 +35,7 @@ public class FriendRequestAdapter extends UserAdapter {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         // - get element from your data set at this position
         // - replace the contents of the view with that element
         super.onBindViewHolder(holder, position);
@@ -47,6 +47,7 @@ public class FriendRequestAdapter extends UserAdapter {
             public void onClick(View v) {
                 Log.d(TAG, "accept friend button clicked");
                 onAcceptFriend(userMeta.objectId);
+                remove(position);
             }
         });
     }

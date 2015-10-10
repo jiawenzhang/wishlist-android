@@ -60,8 +60,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         notifyItemInserted(position);
     }
 
-    public void remove(String item) {
-        int position = mUserMetaList.indexOf(item);
+    protected void remove(int position) {
         mUserMetaList.remove(position);
         notifyItemRemoved(position);
     }
