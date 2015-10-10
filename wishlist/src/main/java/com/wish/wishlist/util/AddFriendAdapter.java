@@ -33,7 +33,7 @@ public class AddFriendAdapter extends UserAdapter {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         // - get element from your data set at this position
         // - replace the contents of the view with that element
         super.onBindViewHolder(holder, position);
@@ -44,6 +44,8 @@ public class AddFriendAdapter extends UserAdapter {
             public void onClick(View v) {
                 Log.d(TAG, "add friend button clicked");
                 onAddFriend(userMeta.objectId);
+                holder.button.setText("Request sent");
+                holder.button.setEnabled(false);
             }
         });
     }

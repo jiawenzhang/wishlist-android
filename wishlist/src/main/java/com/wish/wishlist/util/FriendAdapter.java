@@ -35,7 +35,7 @@ public class FriendAdapter extends UserAdapter {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
 
         final UserMeta userMeta = mUserMetaList.get(position);
