@@ -3,11 +3,8 @@ package com.wish.wishlist.activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -19,53 +16,23 @@ import com.wish.wishlist.util.FriendRequestAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendRequest extends ActivityBase implements
+public class FriendRequest extends FriendsBase implements
         FriendManager.onFriendRequestListener,
         FriendRequestAdapter.acceptFriendListener {
 
     final static String TAG = "FriendRequest";
-
-    private RecyclerView mRecyclerView;
     private FriendRequestAdapter mFriendRequestAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_find_friends);
-        setupActionBar(R.id.find_friends_toolbar);
+    }
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.user_recycler_view);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+    @Override
+    protected void loadView() {
         FriendManager m = new FriendManager();
         m.setFriendRequestListener(this);
         m.fetchFriendRequest();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_find_friends, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            finish();
-            return true;
-        }
-        else {
-            return super.onOptionsItemSelected(item);
-        }
     }
 
     public void onGotFriendRequest(List<ParseUser> friends) {

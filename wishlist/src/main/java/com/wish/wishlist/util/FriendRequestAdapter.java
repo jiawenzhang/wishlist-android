@@ -41,8 +41,8 @@ public class FriendRequestAdapter extends UserAdapter {
         super.onBindViewHolder(holder, position);
 
         final UserMeta userMeta = mUserMetaList.get(position);
-        holder.buttonAddFriend.setText("Accept friend");
-        holder.buttonAddFriend.setOnClickListener(new OnClickListener() {
+        holder.button.setText("Accept friend");
+        holder.button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "accept friend button clicked");

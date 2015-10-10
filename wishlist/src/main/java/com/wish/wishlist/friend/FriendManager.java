@@ -23,15 +23,10 @@ public class FriendManager {
     final static int ACCEPTED = 1;
     final static int REJECTED = 2;
 
+    /******************* FoundUserListener  *************************/
     onFoundUserListener mFoundUserListener;
     public interface onFoundUserListener {
         void onFoundUser(ParseUser user);
-        void onGotAllFriends(List<ParseUser> friends);
-    }
-
-    onFriendRequestListener mFriendRequestListener;
-    public interface onFriendRequestListener {
-        void onGotFriendRequest(List<ParseUser> friends);
     }
 
     protected void onFoundUser(ParseUser user) {
@@ -40,10 +35,14 @@ public class FriendManager {
         }
     }
 
-    protected void onGotAllFriends(List<ParseUser> friends) {
-        if (mFoundUserListener != null) {
-            mFoundUserListener.onGotAllFriends(friends);
-        }
+    public void setFoundUserListener(Activity a) {
+        mFoundUserListener = (onFoundUserListener) a;
+    }
+
+    /****************** FriendRequestListener ************************/
+    onFriendRequestListener mFriendRequestListener;
+    public interface onFriendRequestListener {
+        void onGotFriendRequest(List<ParseUser> friends);
     }
 
     protected void onGotFriendRequest(List<ParseUser> friends) {
@@ -52,13 +51,26 @@ public class FriendManager {
         }
     }
 
-    public void setFoundUserListener(Activity a) {
-        mFoundUserListener = (onFoundUserListener) a;
-    }
-
     public void setFriendRequestListener(Activity a) {
         mFriendRequestListener = (onFriendRequestListener) a;
     }
+
+    /******************* AllFriendsListener **************************/
+    onGotAllFriendsListener mGotAllFriendsListener;
+    public interface onGotAllFriendsListener {
+        void onGotAllFriends(List<ParseUser> friends);
+    }
+
+    protected void onGotAllFriends(List<ParseUser> friends) {
+        if (mGotAllFriendsListener!= null) {
+            mGotAllFriendsListener.onGotAllFriends(friends);
+        }
+    }
+
+    public void setAllFriendsListener(Activity a) {
+        mGotAllFriendsListener = (onGotAllFriendsListener) a;
+    }
+
 
     public void requestFriend(final String friendId)
     {

@@ -1126,8 +1126,8 @@ public class WishList extends ActivityBase implements
                         startActivity(prefIntent);
                         return true;
                     case R.id.friends:
-                        final Intent findFriendsIntent = new Intent(getApplicationContext(), FindFriends.class);
-                        startActivity(findFriendsIntent);
+                        final Intent friendsIntent = new Intent(getApplicationContext(), Friends.class);
+                        startActivity(friendsIntent);
                         return true;
                     case R.id.notifications:
                         final Intent friendRequestIntent = new Intent(getApplicationContext(), FriendRequest.class);

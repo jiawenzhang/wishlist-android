@@ -255,6 +255,11 @@
         </activity>
 
         <activity
+            android:name=".activity.Friends"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.WishlistTheme" >
+        </activity>
+        <activity
             android:name=".activity.FindFriends"
             android:label="@string/app_name"
             android:launchMode="singleTop"

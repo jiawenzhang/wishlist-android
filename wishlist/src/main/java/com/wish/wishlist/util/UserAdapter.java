@@ -6,7 +6,6 @@ package com.wish.wishlist.util;
 
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,14 +40,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         public TextView txtName;
         public TextView txtUsername;
         public ImageView imgProfile;
-        public Button buttonAddFriend;
+        public Button button;
 
         public ViewHolder(View v) {
             super(v);
             txtName= (TextView) v.findViewById(R.id.name);
             txtUsername = (TextView) v.findViewById(R.id.username);
             imgProfile = (ImageView) v.findViewById(R.id.profile_image);
-            buttonAddFriend = (Button) v.findViewById(R.id.button);
+            button = (Button) v.findViewById(R.id.button);
         }
     }
 
