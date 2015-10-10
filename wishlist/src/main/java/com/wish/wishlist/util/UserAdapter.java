@@ -3,20 +3,20 @@ package com.wish.wishlist.util;
 /**
  * Created by jiawen on 15-10-05.
  */
-import java.util.ArrayList;
 
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wish.wishlist.R;
+
+import java.util.ArrayList;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
@@ -34,29 +34,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
     }
 
-    public interface addFriendListener {
-        void onAddFriend(String friendId);
-    }
-
-    protected void onAddFriend(String friendId) {
-        if (mAddFriendListener != null) {
-            mAddFriendListener.onAddFriend(friendId);
-        }
-    }
-
-    public interface acceptFriendListener {
-        void onAcceptFriend(String friendId);
-    }
-
-    protected void onAcceptFriend(String friendId) {
-        if (mAcceptFriendListener != null) {
-            mAcceptFriendListener.onAcceptFriend(friendId);
-        }
-    }
-
-    private addFriendListener mAddFriendListener = null;
-    private acceptFriendListener mAcceptFriendListener = null;
-    private ArrayList<UserMeta> mUserMetaList;
+    protected ArrayList<UserMeta> mUserMetaList;
     private static final String TAG = "UserAdapter";
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -70,22 +48,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             txtName= (TextView) v.findViewById(R.id.name);
             txtUsername = (TextView) v.findViewById(R.id.username);
             imgProfile = (ImageView) v.findViewById(R.id.profile_image);
-            buttonAddFriend = (Button) v.findViewById(R.id.add_friend);
+            buttonAddFriend = (Button) v.findViewById(R.id.button);
         }
     }
 
     public UserAdapter(ArrayList<UserMeta> userData) {
         mUserMetaList = userData;
-    }
-
-    public void setAddFriendListener(addFriendListener listener)
-    {
-        mAddFriendListener = listener;
-    }
-
-    public void setAcceptFriendListener(acceptFriendListener listener)
-    {
-        mAcceptFriendListener = listener;
     }
 
     public void add(int position, UserMeta item) {
@@ -120,14 +88,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
         holder.txtName.setText(userMeta.name);
         holder.txtUsername.setText(userMeta.username);
-        holder.buttonAddFriend.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "add friend button clicked");
-                onAddFriend(userMeta.objectId);
-                onAcceptFriend(userMeta.objectId);
-            }
-        });
     }
 
     // Return the size of your data set (invoked by the layout manager)

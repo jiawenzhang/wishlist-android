@@ -13,19 +13,20 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FriendManager;
-import com.wish.wishlist.util.UserAdapter;
+import com.wish.wishlist.util.AddFriendAdapter;
+import com.wish.wishlist.util.FriendRequestAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FriendRequest extends ActivityBase implements
-    FriendManager.onFriendRequestListener,
-    UserAdapter.acceptFriendListener {
+        FriendManager.onFriendRequestListener,
+        FriendRequestAdapter.acceptFriendListener {
 
     final static String TAG = "FriendRequest";
 
     private RecyclerView mRecyclerView;
-    private UserAdapter mUserAdapter;
+    private FriendRequestAdapter mFriendRequestAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
@@ -74,7 +75,7 @@ public class FriendRequest extends ActivityBase implements
             return;
         }
 
-        ArrayList<UserAdapter.UserMeta> userMetaList = new ArrayList<>();
+        ArrayList<AddFriendAdapter.UserMeta> userMetaList = new ArrayList<>();
         for (final ParseUser user : friends) {
             final ParseFile parseImage = user.getParseFile("profileImage");
             Bitmap bitmap = null;
@@ -85,12 +86,12 @@ public class FriendRequest extends ActivityBase implements
                     Log.e(TAG, e.toString());
                 }
             }
-            UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
+            AddFriendAdapter.UserMeta userMeta = new AddFriendAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
             userMetaList.add(userMeta);
         }
-        mUserAdapter = new UserAdapter(userMetaList);
-        mUserAdapter.setAcceptFriendListener(this);
-        mRecyclerView.setAdapter(mUserAdapter);
+        mFriendRequestAdapter = new FriendRequestAdapter(userMetaList);
+        mFriendRequestAdapter.setAcceptFriendListener(this);
+        mRecyclerView.setAdapter(mFriendRequestAdapter);
     }
 
     @Override

@@ -18,20 +18,20 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FriendManager;
-import com.wish.wishlist.util.UserAdapter;
+import com.wish.wishlist.util.AddFriendAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FindFriends extends ActivityBase implements
         FriendManager.onFoundUserListener,
-        UserAdapter.addFriendListener {
+        AddFriendAdapter.addFriendListener {
 
     final static String TAG = "FindFriends";
     private MenuItem _menuSearch;
 
     private RecyclerView mRecyclerView;
-    private UserAdapter mUserAdapter;
+    private AddFriendAdapter mAddFriendAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
@@ -111,7 +111,7 @@ public class FindFriends extends ActivityBase implements
             return;
         }
 
-        ArrayList<UserAdapter.UserMeta> userMetaList = new ArrayList<>();
+        ArrayList<AddFriendAdapter.UserMeta> userMetaList = new ArrayList<>();
         final ParseFile parseImage = user.getParseFile("profileImage");
         Bitmap bitmap = null;
         if (parseImage != null) {
@@ -121,11 +121,11 @@ public class FindFriends extends ActivityBase implements
                 Log.e(TAG, e.toString());
             }
         }
-        UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
+        AddFriendAdapter.UserMeta userMeta = new AddFriendAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
         userMetaList.add(userMeta);
-        mUserAdapter = new UserAdapter(userMetaList);
-        mUserAdapter.setAddFriendListener(this);
-        mRecyclerView.setAdapter(mUserAdapter);
+        mAddFriendAdapter = new AddFriendAdapter(userMetaList);
+        mAddFriendAdapter.setAddFriendListener(this);
+        mRecyclerView.setAdapter(mAddFriendAdapter);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class FindFriends extends ActivityBase implements
     @Override
     public void onGotAllFriends(List<ParseUser> friends) {
         Log.d(TAG, "onGotAllFriend");
-        ArrayList<UserAdapter.UserMeta> userMetaList = new ArrayList<>();
+        ArrayList<AddFriendAdapter.UserMeta> userMetaList = new ArrayList<>();
         for (final ParseUser user : friends) {
             final ParseFile parseImage = user.getParseFile("profileImage");
             Bitmap bitmap = null;
@@ -149,11 +149,11 @@ public class FindFriends extends ActivityBase implements
                     Log.e(TAG, e.toString());
                 }
             }
-            UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
+            AddFriendAdapter.UserMeta userMeta = new AddFriendAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
             userMetaList.add(userMeta);
         }
-        mUserAdapter = new UserAdapter(userMetaList);
-        mUserAdapter.setAddFriendListener(this);
-        mRecyclerView.setAdapter(mUserAdapter);
+        mAddFriendAdapter = new AddFriendAdapter(userMetaList);
+        mAddFriendAdapter.setAddFriendListener(this);
+        mRecyclerView.setAdapter(mAddFriendAdapter);
     }
 }

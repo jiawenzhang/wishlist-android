@@ -51,7 +51,7 @@
         android:layout_centerVertical="true"
         android:layout_alignRight="@+id/username"
         android:layout_alignEnd="@+id/username"
-        android:text="Add friend"
-        android:id="@+id/add_friend"/>
+        android:text="Button"
+        android:id="@+id/button"/>
 
 </RelativeLayout>
