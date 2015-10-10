@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.wish.wishlist.R;
@@ -41,6 +42,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         public TextView txtUsername;
         public ImageView imgProfile;
         public Button button;
+        public RelativeLayout userLayout;
 
         public ViewHolder(View v) {
             super(v);
@@ -48,6 +50,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             txtUsername = (TextView) v.findViewById(R.id.username);
             imgProfile = (ImageView) v.findViewById(R.id.profile_image);
             button = (Button) v.findViewById(R.id.button);
+            userLayout = (RelativeLayout) v.findViewById(R.id.user_layout);
         }
     }
 

@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Friends extends FriendsBase implements
-    FriendManager.onGotAllFriendsListener {
+        FriendAdapter.FriendTapListener,
+        FriendManager.onGotAllFriendsListener {
 
     final static String TAG = "Friends";
     private FriendAdapter mFriendAdapter;
@@ -66,6 +67,12 @@ public class Friends extends FriendsBase implements
             userMetaList.add(userMeta);
         }
         mFriendAdapter= new FriendAdapter(userMetaList);
+        mFriendAdapter.setFriendTapListener(this);
         mRecyclerView.setAdapter(mFriendAdapter);
+    }
+
+    public void onFriendTap(String friendId) {
+        Log.d(TAG, "friend with objectId: " + friendId + " tapped");
+        // show the friend's wishes
     }
 }

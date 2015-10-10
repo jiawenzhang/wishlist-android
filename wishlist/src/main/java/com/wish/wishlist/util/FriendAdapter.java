@@ -4,7 +4,9 @@ package com.wish.wishlist.util;
  * Created by jiawen on 15-10-05.
  */
 
+import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import java.util.ArrayList;
 
@@ -36,7 +38,14 @@ public class FriendAdapter extends UserAdapter {
     public void onBindViewHolder(ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
 
-        //final UserMeta userMeta = mUserMetaList.get(position);
+        final UserMeta userMeta = mUserMetaList.get(position);
         holder.button.setVisibility(View.GONE);
+        holder.userLayout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "friend clicked");
+                onFriendTap(userMeta.objectId);
+            }
+        });
     }
 }
