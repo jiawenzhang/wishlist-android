@@ -17,7 +17,7 @@ public class FriendsBase extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_find_friends);
+        setContentView(R.layout.activity_friends);
         setupActionBar(R.id.find_friends_toolbar);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.user_recycler_view);
