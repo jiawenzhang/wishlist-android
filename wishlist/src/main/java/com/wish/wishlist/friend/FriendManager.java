@@ -219,6 +219,7 @@ public class FriendManager {
         queries.add(queryFromMe);
 
         ParseQuery<ParseObject> mainQuery = ParseQuery.or(queries);
+        mainQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         mainQuery.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> results, com.parse.ParseException e) {
                 if (e == null) {
@@ -243,6 +244,7 @@ public class FriendManager {
                     }
 
                     ParseQuery<ParseUser> query = ParseUser.getQuery();
+                    query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                     query.whereContainedIn("objectId", friendIds);
                     query.findInBackground(new FindCallback<ParseUser>() {
                         public void done(List<ParseUser> users, com.parse.ParseException e) {
