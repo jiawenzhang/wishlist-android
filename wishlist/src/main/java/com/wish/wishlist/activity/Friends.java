@@ -8,11 +8,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.parse.ParseFile;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FriendManager;
-import com.wish.wishlist.friend.WishLoader;
 import com.wish.wishlist.util.FriendAdapter;
 import com.wish.wishlist.util.UserAdapter;
 
@@ -21,9 +19,9 @@ import java.util.List;
 
 public class Friends extends FriendsBase implements
         FriendAdapter.FriendTapListener,
-        FriendManager.onGotAllFriendsListener,
-        WishLoader.onGotWishesListener {
+        FriendManager.onGotAllFriendsListener {
 
+    public static final String FRIEND_ID = "FRIEND_ID";
     final static String TAG = "Friends";
     private FriendAdapter mFriendAdapter;
 
@@ -77,11 +75,8 @@ public class Friends extends FriendsBase implements
     public void onFriendTap(String friendId) {
         Log.d(TAG, "friend with objectId: " + friendId + " tapped");
         // show the friend's wishes
-        WishLoader.getInstance().setGotWishesListener(this);
-        WishLoader.getInstance().fetchWishes(friendId);
-    }
-
-    public void onGotWishes(String friendId, List<ParseObject> wishList) {
-        Log.d(TAG, "got " + wishList.size() + " wishes from friendId " + friendId);
+        final Intent friendsWishIntent = new Intent(this, FriendsWish.class);
+        friendsWishIntent.putExtra(FRIEND_ID, friendId);
+        startActivity(friendsWishIntent);
     }
 }

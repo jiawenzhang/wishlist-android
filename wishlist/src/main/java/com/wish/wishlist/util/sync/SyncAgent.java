@@ -140,7 +140,7 @@ public class SyncAgent {
     private void saveFromParse(final ParseObject parseItem)
     {
         String photoURL = parseItem.getString(ItemDBManager.KEY_PHOTO_URL);
-        final ParseFile parseImage = parseItem.getParseFile("image");
+        final ParseFile parseImage = parseItem.getParseFile(WishItem.PARSE_KEY_IMAGE);
         if (photoURL == null && parseImage == null) {
             onPhotoDone(parseItem, null, null);
             return;

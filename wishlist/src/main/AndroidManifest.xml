@@ -280,6 +280,11 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
+        <activity
+            android:name=".activity.FriendsWish"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.WishlistTheme" >
+        </activity>
         <!-- <provider android:name="com.android.wishlist.defaultphotoprovider" -->
         <!-- android:authorities="com.android.wishlist.provider.defaultphotoprovider"> -->
         <!-- </provider> -->
