@@ -69,6 +69,7 @@ public class SyncAgent {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
         query.whereGreaterThan("updatedAt", last_synced_time);
+        query.whereEqualTo(WishItem.PARSE_KEY_OWNDER_ID, ParseUser.getCurrentUser().getObjectId());
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> itemList, com.parse.ParseException e) {
                 if (e == null) {

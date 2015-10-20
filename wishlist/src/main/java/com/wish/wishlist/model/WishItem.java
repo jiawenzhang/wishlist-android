@@ -14,8 +14,10 @@ import android.content.ContentValues;
 import android.util.Log;
 import android.database.Cursor;
 
+import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
@@ -49,6 +51,7 @@ public class WishItem {
     private boolean _deleted;
     private boolean _synced_to_server;
 
+    public final static String PARSE_KEY_OWNDER_ID = "owner_id";
     public final static String PARSE_KEY_TAGS = "tags";
     public final static String PARSE_KEY_IMAGE = "image";
 
@@ -397,6 +400,10 @@ public class WishItem {
 
     public static void toParseObject(final WishItem item, ParseObject wishObject)
     {
+        final ParseUser user = ParseUser.getCurrentUser();
+        if (user != null) {// user here should never be null
+            wishObject.put(WishItem.PARSE_KEY_OWNDER_ID, user.getObjectId());
+        }
         wishObject.put(ItemDBManager.KEY_STORENAME, item.getStoreName());
         wishObject.put(ItemDBManager.KEY_NAME, item.getName());
         wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc());
