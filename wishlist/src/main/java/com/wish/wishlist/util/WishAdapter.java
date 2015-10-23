@@ -9,8 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.View.OnClickListener;
 
@@ -36,7 +36,7 @@ public class WishAdapter extends RecyclerView.Adapter<WishAdapter.ViewHolder> {
         public TextView txtAddress;
         public ImageView imgComplete;
         public ImageView imgPhoto;
-        public FrameLayout rootLayout;
+        public LinearLayout rootLayout;
 
         public ViewHolder(View v) {
             super(v);
@@ -46,7 +46,7 @@ public class WishAdapter extends RecyclerView.Adapter<WishAdapter.ViewHolder> {
             txtAddress = (TextView) v.findViewById(R.id.txtAddress);
             imgComplete = (ImageView) v.findViewById(R.id.checkmark_complete);
             imgPhoto = (ImageView) v.findViewById(R.id.imgPhoto);
-            rootLayout = (FrameLayout) v.findViewById(R.id.wish_root_layout);
+            rootLayout = (LinearLayout) v.findViewById(R.id.wish_root_layout);
         }
     }
 
