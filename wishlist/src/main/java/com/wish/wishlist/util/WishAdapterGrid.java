@@ -4,54 +4,59 @@ package com.wish.wishlist.util;
  * Created by jiawen on 15-10-05.
  */
 
+import android.content.Context;
+import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.view.View.OnClickListener;
 
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.model.WishItem;
 
 import java.text.DecimalFormat;
 import java.util.List;
 
-public class WishAdapter extends RecyclerView.Adapter<WishAdapter.ViewHolder> {
+public class WishAdapterGrid extends RecyclerView.Adapter<WishAdapterGrid.ViewHolder> {
 
+    private int mScreenWidth;
     protected List<ParseObject> mWishList;
+
     private static final String TAG = "WishAdapter";
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView txtName;
         public TextView txtPrice;
-        public TextView txtStore;
-        public TextView txtAddress;
         public ImageView imgComplete;
         public ImageView imgPhoto;
-        public FrameLayout rootLayout;
 
         public ViewHolder(View v) {
             super(v);
             txtName = (TextView) v.findViewById(R.id.txtName);
             txtPrice = (TextView) v.findViewById(R.id.txtPrice);
-            txtStore = (TextView) v.findViewById(R.id.txtStore);
-            txtAddress = (TextView) v.findViewById(R.id.txtAddress);
             imgComplete = (ImageView) v.findViewById(R.id.checkmark_complete);
             imgPhoto = (ImageView) v.findViewById(R.id.imgPhoto);
-            rootLayout = (FrameLayout) v.findViewById(R.id.wish_root_layout);
         }
     }
 
-    public WishAdapter(List<ParseObject> wishList) {
+    public WishAdapterGrid(List<ParseObject> wishList) {
         mWishList = wishList;
+        final Display display = ((WindowManager) WishlistApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        mScreenWidth = size.x / 2;
+        Log.d(TAG, " screen width " + mScreenWidth);
     }
 
     public void add(int position, ParseObject item) {
@@ -64,11 +69,17 @@ public class WishAdapter extends RecyclerView.Adapter<WishAdapter.ViewHolder> {
         notifyItemRemoved(position);
     }
 
+    public void removeAll() {
+        int size = mWishList.size();
+        mWishList.clear();
+        notifyItemRangeRemoved(0, size);
+    }
+
     // Create new views (invoked by the layout manager)
     @Override
-    public WishAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+    public WishAdapterGrid.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wishitem_single, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wishitem_grid, parent, false);
         // set the view's size, margins, padding and layout parameters
         ViewHolder vh = new ViewHolder(v);
         return vh;
@@ -85,10 +96,14 @@ public class WishAdapter extends RecyclerView.Adapter<WishAdapter.ViewHolder> {
         ParseFile photoFile = wish.getParseFile(WishItem.PARSE_KEY_IMAGE);
         if (photoURL != null) {
             holder.imgPhoto.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgPhoto.getContext()).load(photoURL).fit().centerCrop().into(holder.imgPhoto);
+            //Picasso.with(holder.imgPhoto.getContext()).load(photoURL).fit().centerCrop().into(holder.imgPhoto);
+            Picasso.with(holder.imgPhoto.getContext()).load(photoURL).resize(mScreenWidth, 0).into(holder.imgPhoto);
+            Log.e(TAG, "web url " + photoURL);
         } else if (photoFile != null) {
             holder.imgPhoto.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgPhoto.getContext()).load(photoFile.getUrl()).fit().centerCrop().into(holder.imgPhoto);
+            //Picasso.with(holder.imgPhoto.getContext()).load(photoFile.getUrl()).fit().into(holder.imgPhoto);
+            Picasso.with(holder.imgPhoto.getContext()).load(photoFile.getUrl()).resize(mScreenWidth, 0).into(holder.imgPhoto);
+            Log.e(TAG, "parse url " + photoFile.getUrl());
         } else {
             holder.imgPhoto.setVisibility(View.GONE);
         }
@@ -106,27 +121,6 @@ public class WishAdapter extends RecyclerView.Adapter<WishAdapter.ViewHolder> {
             holder.txtPrice.setVisibility(View.GONE);
         }
 
-        String storeName = wish.getString(ItemDBManager.KEY_STORENAME);
-        boolean hasStoreName = false;
-        if (!storeName.equals("")) {
-            hasStoreName = true;
-            holder.txtStore.setText(storeName);
-            holder.txtStore.setVisibility(View.VISIBLE);
-        } else {
-            holder.txtStore.setVisibility(View.GONE);
-        }
-
-        String Address = wish.getString(ItemDBManager.KEY_ADDRESS);
-        if (!Address.equals("unknown") && !Address.equals("")) {
-            if (!hasStoreName) {
-                Address = "At " + Address;
-            }
-            holder.txtAddress.setText(Address);
-            holder.txtAddress.setVisibility(View.VISIBLE);
-        } else {
-            holder.txtAddress.setVisibility(View.GONE);
-        }
-
         int complete = wish.getInt(ItemDBManager.KEY_COMPLETE);
         if (complete == 1) {
             holder.imgComplete.setVisibility(View.VISIBLE);
@@ -134,13 +128,13 @@ public class WishAdapter extends RecyclerView.Adapter<WishAdapter.ViewHolder> {
             holder.imgComplete.setVisibility(View.GONE);
         }
 
-        holder.rootLayout.setClickable(true);
-        holder.rootLayout.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "wish clicked");
-            }
-        });
+//        holder.rootLayout.setClickable(true);
+//        holder.rootLayout.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAG, "wish clicked");
+//            }
+//        });
     }
 
     // Return the size of your data set (invoked by the layout manager)

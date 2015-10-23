@@ -74,8 +74,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                                                    int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user, parent, false);
         // set the view's size, margins, padding and layout parameters
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        return new ViewHolder(v);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
