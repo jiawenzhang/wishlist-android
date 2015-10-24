@@ -4,6 +4,7 @@ package com.wish.wishlist.util;
  * Created by jiawen on 15-10-05.
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.parse.ParseFile;
@@ -38,6 +40,7 @@ public class WishAdapterGrid extends WishAdapter {
         public TextView txtPrice;
         public ImageView imgComplete;
         public ImageView imgPhoto;
+        public LinearLayout rootLayout;
 
         public ViewHolder(View v) {
             super(v);
@@ -45,11 +48,13 @@ public class WishAdapterGrid extends WishAdapter {
             txtPrice = (TextView) v.findViewById(R.id.txtPrice);
             imgComplete = (ImageView) v.findViewById(R.id.checkmark_complete);
             imgPhoto = (ImageView) v.findViewById(R.id.imgPhoto);
+            rootLayout = (LinearLayout) v.findViewById(R.id.wish_root_layout);
         }
     }
 
-    public WishAdapterGrid(List<ParseObject> wishList) {
+    public WishAdapterGrid(List<ParseObject> wishList, Activity fromActivity) {
         super(wishList);
+        setWishTapListener(fromActivity);
         final Display display = ((WindowManager) WishlistApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -78,12 +83,10 @@ public class WishAdapterGrid extends WishAdapter {
         ParseFile photoFile = wish.getParseFile(WishItem.PARSE_KEY_IMAGE);
         if (photoURL != null) {
             holder.imgPhoto.setVisibility(View.VISIBLE);
-            //Picasso.with(holder.imgPhoto.getContext()).load(photoURL).fit().centerCrop().into(holder.imgPhoto);
             Picasso.with(holder.imgPhoto.getContext()).load(photoURL).resize(mScreenWidth, 0).into(holder.imgPhoto);
             Log.e(TAG, "web url " + photoURL);
         } else if (photoFile != null) {
             holder.imgPhoto.setVisibility(View.VISIBLE);
-            //Picasso.with(holder.imgPhoto.getContext()).load(photoFile.getUrl()).fit().into(holder.imgPhoto);
             Picasso.with(holder.imgPhoto.getContext()).load(photoFile.getUrl()).resize(mScreenWidth, 0).into(holder.imgPhoto);
             Log.e(TAG, "parse url " + photoFile.getUrl());
         } else {
@@ -110,12 +113,13 @@ public class WishAdapterGrid extends WishAdapter {
             holder.imgComplete.setVisibility(View.GONE);
         }
 
-//        holder.rootLayout.setClickable(true);
-//        holder.rootLayout.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAG, "wish clicked");
-//            }
-//        });
+        holder.rootLayout.setClickable(true);
+        holder.rootLayout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "wish tapped");
+                onWishTapped(WishItem.fromParseObject(wish, -1));
+            }
+        });
     }
 }

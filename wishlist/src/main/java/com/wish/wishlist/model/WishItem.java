@@ -9,6 +9,8 @@ import java.util.List;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.content.ContentValues;
 import android.util.Log;
@@ -30,7 +32,7 @@ import android.preference.PreferenceManager;
 import org.json.JSONObject;
 
 
-public class WishItem {
+public class WishItem implements Parcelable {
     private static final String TAG = "WishItem";
     private long _id = -1;
     private String _storeName;
@@ -39,6 +41,7 @@ public class WishItem {
     private String _desc;
     private long _updated_time;
     private String _picURL;
+    private String _picParseURL;
     private String _fullsizePicPath;
     private int _priority;
     private int _complete;
@@ -56,7 +59,7 @@ public class WishItem {
     public final static String PARSE_KEY_IMAGE = "image";
 
     public WishItem(long itemId, String object_id, String storeName, String name, String desc,
-                    long updated_time, String picURL, String fullsizePicPath, double price, double latitude, double longitude,
+                    long updated_time, String picURL, String picParseURL, String fullsizePicPath, double price, double latitude, double longitude,
                     String address, int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
         _id = itemId;
         _object_id = object_id;
@@ -66,6 +69,7 @@ public class WishItem {
         _longitude = longitude;
         _address = address;
         _picURL = picURL;
+        _picParseURL = picParseURL;
         _storeName = storeName;
         _name = name;
         _desc = desc;
@@ -308,6 +312,10 @@ public class WishItem {
         return _picURL;
     }
 
+    public String getPicParseURL() {
+        return _picParseURL;
+    }
+
     public void setPicURL(String picURL) {
         _picURL = picURL;
     }
@@ -398,6 +406,36 @@ public class WishItem {
                 _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted, _synced_to_server);
     }
 
+    public static WishItem fromParseObject(final ParseObject item, long item_id)
+    {
+        String picParseURL = null;
+        final ParseFile parseImage = item.getParseFile(WishItem.PARSE_KEY_IMAGE);
+        if (parseImage != null ) {
+            picParseURL = parseImage.getUrl();
+        }
+        WishItem wishItem = new WishItem(
+                item_id,
+                item.getObjectId(),
+                item.getString(ItemDBManager.KEY_STORENAME),
+                item.getString(ItemDBManager.KEY_NAME),
+                item.getString(ItemDBManager.KEY_DESCRIPTION),
+                item.getLong(ItemDBManager.KEY_UPDATED_TIME),
+                item.getString(ItemDBManager.KEY_PHOTO_URL),
+                picParseURL,
+                null, // _fullsizePhotoPath,
+                item.getDouble(ItemDBManager.KEY_PRICE),
+                item.getDouble(ItemDBManager.KEY_LATITUDE),
+                item.getDouble(ItemDBManager.KEY_LONGITUDE),
+                item.getString(ItemDBManager.KEY_ADDRESS),
+                0, // priority
+                item.getInt(ItemDBManager.KEY_COMPLETE),
+                item.getString(ItemDBManager.KEY_LINK),
+                item.getBoolean(ItemDBManager.KEY_DELETED),
+                true);
+
+        return wishItem;
+    }
+
     public static void toParseObject(final WishItem item, ParseObject wishObject)
     {
         final ParseUser user = ParseUser.getCurrentUser();
@@ -464,5 +502,69 @@ public class WishItem {
         }
         setFullsizePicPath(null);
         saveToLocal();
+    }
+
+    /****************** everything below here is for implementing Parcelable *********************/
+
+    // 99.9% of the time you can just ignore this
+    public int describeContents() {
+        return 0;
+    }
+
+    // write object's data to the passed-in Parcel
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeLong(_id);
+        out.writeString(_storeName);
+        out.writeString(_name);
+        out.writeString(_comments);
+        out.writeString(_desc);
+        out.writeLong(_updated_time);
+        out.writeString(_picURL);
+        out.writeString(_picParseURL);
+        out.writeString(_fullsizePicPath);
+        out.writeInt(_priority);
+        out.writeInt(_complete);
+        out.writeString(_link);
+        out.writeDouble(_price);
+        out.writeDouble(_latitude);
+        out.writeDouble(_longitude);
+        out.writeString(_address);
+        out.writeString(_object_id);
+        out.writeByte((byte) (_deleted ? 1 : 0));
+        out.writeByte((byte) (_synced_to_server ? 1 : 0));
+    }
+
+    // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
+    public static final Parcelable.Creator<WishItem> CREATOR = new Parcelable.Creator<WishItem>() {
+        public WishItem createFromParcel(Parcel in) {
+            return new WishItem(in);
+        }
+
+        public WishItem[] newArray(int size) {
+            return new WishItem[size];
+        }
+    };
+
+    private WishItem(Parcel in) {
+        // data in Parcel is FIFO, make sure to read data in the same order of write
+        _id = in.readLong();
+        _storeName = in.readString();
+        _name = in.readString();
+        _comments = in.readString();
+        _desc = in.readString();
+        _updated_time = in.readLong();
+        _picURL = in.readString();
+        _picParseURL = in.readString();
+        _fullsizePicPath = in.readString();
+        _priority = in.readInt();
+        _complete = in.readInt();
+        _link = in.readString();
+        _price = in.readDouble();
+        _latitude = in.readDouble();
+        _longitude = in.readDouble();
+        _address = in.readString();
+        _object_id = in.readString();
+        _deleted = in.readByte() != 0;
+        _synced_to_server = in.readByte() != 0;
     }
 }

@@ -4,6 +4,7 @@ package com.wish.wishlist.util;
  * Created by jiawen on 15-10-05.
  */
 
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,8 +49,9 @@ public class WishAdapterList extends WishAdapter {
         }
     }
 
-    public WishAdapterList(List<ParseObject> wishList) {
+    public WishAdapterList(List<ParseObject> wishList, Activity fromActivity) {
         super(wishList);
+        setWishTapListener(fromActivity);
     }
 
     // Create new views (invoked by the layout manager)
@@ -127,6 +129,7 @@ public class WishAdapterList extends WishAdapter {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "wish clicked");
+                onWishTapped(WishItem.fromParseObject(wish, -1));
             }
         });
     }

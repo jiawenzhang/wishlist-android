@@ -711,7 +711,7 @@ public class EditItem extends ActivityBase
         if (mItem_id == -1) {
             // create a new item
             WishItem item = new WishItem(mItem_id, "", itemStoreName, itemName, itemDesc,
-                    System.currentTimeMillis(), _webPicUrl, _fullsizePhotoPath, itemPrice, _lat, _lng,
+                    System.currentTimeMillis(), _webPicUrl, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
                     _ddStr, itemPriority, itemComplete, itemLink, false, false);
 
             mItem_id = item.saveToLocal();

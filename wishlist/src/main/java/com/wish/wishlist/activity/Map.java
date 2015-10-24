@@ -165,7 +165,7 @@ public class Map extends Activity {
         mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(Map.this, WishItemDetail.class);
+                Intent intent = new Intent(Map.this, MyWishDetail.class);
                 WishItem item = mMarkerItemMap.get(marker);
                 intent.putExtra("item_id", item.getId());
                 startActivityForResult(intent, ITEM_DETAILS);

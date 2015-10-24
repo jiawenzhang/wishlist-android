@@ -50,7 +50,6 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.ProfileChangeEvent;
-import com.wish.wishlist.friend.FriendManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
@@ -854,7 +853,7 @@ public class WishList extends ActivityBase implements
                     }
 
                     if (id != -1) {
-                        Intent i = new Intent(WishList.this, WishItemDetail.class);
+                        Intent i = new Intent(WishList.this, MyWishDetail.class);
                         i.putExtra("item_id", id);
                         startActivityForResult(i, ITEM_DETAILS);
                     }
@@ -1218,7 +1217,7 @@ public class WishList extends ActivityBase implements
         // Create an intent to show the item detail.
         // Pass the item_id along so the next activity can use it to
         // retrieve the info. about the item from database
-        Intent i = new Intent(WishList.this, WishItemDetail.class);
+        Intent i = new Intent(WishList.this, MyWishDetail.class);
         i.putExtra("item_id", id);
         i.putExtra("position", position);
         startActivityForResult(i, ITEM_DETAILS);

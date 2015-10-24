@@ -128,7 +128,7 @@ public class WishItemManager {
                 .getColumnIndexOrThrow(ItemDBManager.KEY_SYNCED_TO_SERVER)) == 1;
 
         WishItem item = new WishItem(itemId, objectId, storeName, itemName, itemDesc,
-                updated_time, picture_str, fullsize_pic_path, itemPrice, latitude, longitude,
+                updated_time, picture_str, null, fullsize_pic_path, itemPrice, latitude, longitude,
                 itemLocation, itemPriority, itemComplete, itemLink, deleted, synced_to_server);
 
         return item;

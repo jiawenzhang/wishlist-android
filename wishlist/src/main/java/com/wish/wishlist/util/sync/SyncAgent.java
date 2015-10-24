@@ -185,9 +185,9 @@ public class SyncAgent {
     {
         WishItem newItem;
         if (existingItem == null) {
-            newItem = fromParseObject(parseItem, -1);
+            newItem = WishItem.fromParseObject(parseItem, -1);
         } else {
-            newItem = fromParseObject(parseItem, existingItem.getId());
+            newItem = WishItem.fromParseObject(parseItem, existingItem.getId());
         }
         Log.d(TAG, "onPhotoDone: item " + newItem.getName());
 
@@ -372,30 +372,6 @@ public class SyncAgent {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putLong("last_synced_time", m_synced_time.getTime());
         editor.commit();
-    }
-
-    private WishItem fromParseObject(ParseObject item, long item_id)
-    {
-        WishItem wishItem = new WishItem(
-                item_id,
-                item.getObjectId(),
-                item.getString(ItemDBManager.KEY_STORENAME),
-                item.getString(ItemDBManager.KEY_NAME),
-                item.getString(ItemDBManager.KEY_DESCRIPTION),
-                item.getLong(ItemDBManager.KEY_UPDATED_TIME),
-                item.getString(ItemDBManager.KEY_PHOTO_URL),
-                null, // _fullsizePhotoPath,
-                item.getDouble(ItemDBManager.KEY_PRICE),
-                item.getDouble(ItemDBManager.KEY_LATITUDE),
-                item.getDouble(ItemDBManager.KEY_LONGITUDE),
-                item.getString(ItemDBManager.KEY_ADDRESS),
-                0, // priority
-                item.getInt(ItemDBManager.KEY_COMPLETE),
-                item.getString(ItemDBManager.KEY_LINK),
-                item.getBoolean(ItemDBManager.KEY_DELETED),
-                true);
-
-        return wishItem;
     }
 
     public void register(Activity activity) {

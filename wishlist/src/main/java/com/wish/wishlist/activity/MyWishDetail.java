@@ -1,23 +1,18 @@
 package com.wish.wishlist.activity;
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
+import android.support.v7.app.AlertDialog;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -28,8 +23,6 @@ import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.util.DateTimeFormatter;
-import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.social.ShareHelper;
 
 import java.io.File;
@@ -39,14 +32,15 @@ import java.util.List;
 import java.util.Locale;
 
 /***
- * WishItemDetail is responsible for displaying the detailed info. of an item. 
- * It also handles the left/right swipe gesture form user, which correspond to 
+ * MyWishDetail displays the detailed info. of an item.
+ * It also handles the left/right swipe gesture form user, which correspond to
  * navigating to the previous and next item, respectively.
  *
- * the order of the items during swiping is the order of the items displayed in 
+ * the order of the items during swiping is the order of the items displayed in
  * the WishList activity
  */
-public class WishItemDetail extends ActivityBase implements TokenCompleteTextView.TokenListener {
+
+public class MyWishDetail extends WishDetail implements TokenCompleteTextView.TokenListener {
     private static final int SWIPE_MIN_DISTANCE = 120;
     private static final int SWIPE_MAX_OFF_PATH = 250;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
@@ -54,40 +48,27 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
     View.OnTouchListener _gestureListener;
 
     private static final int EDIT_ITEM = 0;
-    private ItemDBManager _itemDBManager;
+    private ItemDBManager mItemDBManager;
 
-    private ImageView _photoView;
-    private TextView _nameView;
-    private TextView _descrpView;
-    private TextView _dateView;
-    private TextView _priceView;
-    private TextView _storeView;
-    private TextView _locationView;
-    private TextView _linkView;
-    private TagsCompletionView _tagsView;
-
-    private long _itemId = -1;
+    private long mItemId = -1;
     private int _position;
     private int _prevPosition;
     private int _nextPosition;
-    private String _fullsize_picture_str = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.wishitem_detail);
-        setupActionBar(R.id.item_detail_toolbar);
 
         // Remember the id of the item user clicked
         // in the previous activity (WishList.java)
         Intent i = getIntent();
-        _itemId = i.getLongExtra("item_id", -1);
+        mItemId = i.getLongExtra("item_id", -1);
         _position = i.getIntExtra("position", 0);
 
-        WishItem item = WishItemManager.getInstance().getItemById(_itemId);
-        double lat = item.getLatitude();
-        double lng = item.getLongitude();
-        String address = item.getAddress();
+        mItem = WishItemManager.getInstance().getItemById(mItemId);
+        double lat = mItem.getLatitude();
+        double lng = mItem.getLongitude();
+        String address = mItem.getAddress();
 
         if (lat != Double.MIN_VALUE && lng != Double.MIN_VALUE && (address.equals("unknown") || address.equals(""))) {
             //we have a location by gps, but don't have an address
@@ -104,37 +85,12 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
             } catch (IOException e) {
                 address = "unknown";
             }
-            item.setAddress(address);
-            item.setUpdatedTime(System.currentTimeMillis());
-            item.save();
+            mItem.setAddress(address);
+            mItem.setUpdatedTime(System.currentTimeMillis());
+            mItem.save();
         }
 
-        _nameView = (TextView) findViewById(R.id.itemNameDetail);
-        _descrpView = (TextView) findViewById(R.id.itemDesriptDetail);
-        _dateView = (TextView) findViewById(R.id.itemDateDetail);
-        _priceView = (TextView) findViewById(R.id.itemPriceDetail);
-        _storeView = (TextView) findViewById(R.id.itemStoreDetail);
-        _locationView = (TextView) findViewById(R.id.itemLocationDetail);
-        _linkView = (TextView) findViewById(R.id.itemLink);
-        _photoView = (ImageView) findViewById(R.id.imgPhotoDetail);
-
-        // tagsView will gain focus automatically when the activity starts, and it will trigger the keyboard to
-        // show up if we don't have the following line.
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        _tagsView = (TagsCompletionView)findViewById(R.id.ItemTagsView);
-        View.OnTouchListener otl = new View.OnTouchListener() {
-            public boolean onTouch (View v, MotionEvent event) {
-                return true;
-                // the listener has consumed the event
-                // this is to prevent touch event on the tagsView such as
-                // keyboard pops up, text select, copy/paste etc.
-            }
-        };
-        _tagsView.setOnTouchListener(otl);
-        _tagsView.setCursorVisible(false);
-
-        showItemInfo(item);
+        showItemInfo(mItem);
 
         if (savedInstanceState == null) {
             // if screen is oriented, savedInstanceStat != null,
@@ -155,97 +111,35 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
 //		};
         final View imageFrame = findViewById(R.id.imagePhotoDetailFrame);
         imageFrame.setOnClickListener(new View.OnClickListener() {
+            final String fullsize_picture_str = mItem.getFullsizePicPath();
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(WishItemDetail.this, FullscreenPhoto.class);
-                if (_fullsize_picture_str != null) {
-                    i.putExtra(EditItem.FULLSIZE_PHOTO_PATH, _fullsize_picture_str);
+                if (fullsize_picture_str != null) {
+                    Intent i = new Intent(MyWishDetail.this, FullscreenPhoto.class);
+                    i.putExtra(EditItem.FULLSIZE_PHOTO_PATH, fullsize_picture_str);
                     startActivity(i);
                 }
             }
         });
     }
 
-    private void showItemInfo(WishItem item) {
-        _fullsize_picture_str = item.getFullsizePicPath();
-        if (_fullsize_picture_str != null) {
-            Picasso.with(this).load(new File(_fullsize_picture_str)).fit().centerCrop().into(_photoView);
-            _photoView.setVisibility(View.VISIBLE);
-        }
-        else {
-            //pic_str is null, so user added this item without taking a pic.
-            //simply don't show any picture in this case.
-            _photoView.setVisibility(View.GONE);
-        }
-
-        String dateTimeStr = item.getUpdatedTimeStr();
-        String dateTimeStrNew = DateTimeFormatter.getInstance().getDateTimeString(dateTimeStr);
-
-        _nameView.setText(item.getName());
-        if (item.getComplete() == 1) {
-            final ImageView completeImage = (ImageView) findViewById(R.id.item_checkmark_complete);
-            completeImage.setVisibility(View.VISIBLE);
-        }
-        _dateView.setText(dateTimeStrNew);
-
-        // format the price
-        String priceStr = item.getPriceAsString();
-        if (priceStr != null) {
-            _priceView.setText(WishItem.priceStringWithCurrency(priceStr));
-            _priceView.setVisibility(View.VISIBLE);
-        }
-        else {
-            _priceView.setVisibility(View.GONE);
-        }
-
-        //used as a note
-        String descrptStr = item.getDesc();
-        if (!descrptStr.equals("")) {
-            _descrpView.setText(descrptStr);
-            _descrpView.setVisibility(View.VISIBLE);
-        }
-        else {
-            _descrpView.setVisibility(View.GONE);
-        }
-
-        String storeName = item.getStoreName();
-        if (!storeName.equals("")) {
-            _storeView.setText(storeName);
-            _storeView.setVisibility(View.VISIBLE);
-        }
-        else {
-            _storeView.setVisibility(View.GONE);
-        }
-
-        String address = item.getAddress();
-        if (!address.equals("unknown") && !address.equals("")) {
-            _locationView.setText(address);
-            _locationView.setVisibility(View.VISIBLE);
-        }
-        else {
-            _locationView.setVisibility(View.GONE);
-        }
-
-        String link = item.getLink();
-        if (link != null && !link.isEmpty()) {
-            String url = item.getLink();
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "http://" + url;
-            }
-            String text = "<a href=\"" + url + "\">Link</a>";
-            _linkView.setText(Html.fromHtml(text));
-            _linkView.setMovementMethod(LinkMovementMethod.getInstance());
-            _linkView.setVisibility(View.VISIBLE);
+    @Override
+    protected void showPhoto() {
+        String fullsize_picture_str = mItem.getFullsizePicPath();
+        if (fullsize_picture_str != null) {
+            Picasso.with(this).load(new File(fullsize_picture_str)).fit().centerCrop().into(mPhotoView);
+            mPhotoView.setVisibility(View.VISIBLE);
         } else {
-            _linkView.setVisibility(View.GONE);
+            // user added this item without taking a pic
+            mPhotoView.setVisibility(View.GONE);
         }
     }
 
     void addTags() {
-        ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(_itemId);
-        _tagsView.removeAllObject();
+        ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItemId);
+        mTagsView.removeAllObject();
         for (String tag : tags) {
-            _tagsView.addObject(tag);
+            mTagsView.addObject(tag);
         }
     }
 
@@ -261,8 +155,8 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
         // Get all of the rows from the database in sorted order as in the
         long[] next_pos_id = new long[2];
         // ItemsCursor c = wishListDB.getItems(ItemsCursor.SortBy.name);
-        _itemDBManager = new ItemDBManager();
-        ItemsCursor c = _itemDBManager.getItems(ItemDBManager.KEY_NAME, null, new ArrayList<Long>());
+        mItemDBManager = new ItemDBManager();
+        ItemsCursor c = mItemDBManager.getItems(ItemDBManager.KEY_NAME, null, new ArrayList<Long>());
         long nextItemID;
         if (_position < c.getCount())
             _nextPosition = _position + 1;
@@ -291,8 +185,8 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
         long[] prev_pos_id = new long[2];
 
         // open the database for operations of Item table
-        _itemDBManager = new ItemDBManager();
-        ItemsCursor c = _itemDBManager.getItems(ItemDBManager.KEY_NAME, null, new ArrayList<Long>());
+        mItemDBManager = new ItemDBManager();
+        ItemsCursor c = mItemDBManager.getItems(ItemDBManager.KEY_NAME, null, new ArrayList<Long>());
         long prevItemID;
         if (_position > 0)
             _prevPosition = _position - 1;
@@ -310,18 +204,17 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
         return prev_pos_id;
     }
 
-    private void deleteItem(){
+    private void deleteItem() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
         builder.setMessage("Discard the wish?").setCancelable(
                 false).setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        WishItemManager.getInstance().deleteItemById(_itemId);
+                        WishItemManager.getInstance().deleteItemById(mItemId);
                         Intent intent = new Intent();
-                        intent.putExtra("id", _itemId);
+                        intent.putExtra("id", mItemId);
                         setResult(RESULT_OK, intent);
-                        WishItemDetail.this.finish();
-                        //return super.onKeyDown(keyCode, event);
+                        MyWishDetail.this.finish();
                     }
                 }).setNegativeButton("No",
                 new DialogInterface.OnClickListener() {
@@ -330,18 +223,17 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
                     }
                 });
         AlertDialog dialog = builder.create();
-        //dialog.setOnShowListener(new DialogOnShowListener(this));
         dialog.show();
     }
 
-    private void editItem(){
-        Intent i = new Intent(WishItemDetail.this, EditItem.class);
-        i.putExtra("item_id", _itemId);
+    private void editItem() {
+        Intent i = new Intent(MyWishDetail.this, EditItem.class);
+        i.putExtra("item_id", mItemId);
         startActivityForResult(i, EDIT_ITEM);
     }
 
     private void shareItem(){
-        ShareHelper share = new ShareHelper(this, _itemId);
+        ShareHelper share = new ShareHelper(this, mItemId);
         share.share();
     }
 
@@ -373,7 +265,7 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
                 // right to left swipe
                 if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
                         && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    // Toast.makeText(WishItemDetail.this, "swipe to right",
+                    // Toast.makeText(WishDetail.this, "swipe to right",
                     // Toast.LENGTH_SHORT).show();
 
                     //get the item id of the next item and
@@ -381,8 +273,8 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
                     //next item's detailed info.
                     long[] next_p_i = new long[2];
                     next_p_i = getNextDBItemID();
-                    Intent i = new Intent(WishItemDetail.this,
-                            WishItemDetail.class);
+                    Intent i = new Intent(MyWishDetail.this,
+                            MyWishDetail.class);
 
                     i.putExtra("position", (int) next_p_i[0]);
                     i.putExtra("item_id", next_p_i[1]);
@@ -393,11 +285,11 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
                     overridePendingTransition(R.anim.slide_left_in,
                             R.anim.slide_right_out);
 
-                    // WishItemDetail.this.overridePendingTransition(0,0);
+                    // WishDetail.this.overridePendingTransition(0,0);
 
                 } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
                         && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    // Toast.makeText(WishItemDetail.this, "swipe to left",
+                    // Toast.makeText(WishDetail.this, "swipe to left",
                     // Toast.LENGTH_SHORT).show();
 
 
@@ -406,8 +298,8 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
                     //previous item's detailed info.
                     long[] prev_p_i = new long[2];
                     prev_p_i = getPrevDBItemID();
-                    Intent i = new Intent(WishItemDetail.this,
-                            WishItemDetail.class);
+                    Intent i = new Intent(MyWishDetail.this,
+                            MyWishDetail.class);
                     i.putExtra("position", (int) prev_p_i[0]);
                     i.putExtra("item_id", prev_p_i[1]);
 
@@ -432,15 +324,15 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
 
     /***
      * called when the "return" button is clicked
-     * it closes the WishItemDetail activity and starts
+     * it closes the WishDetail activity and starts
      * the WishList activity
      */
 //	@Override
 //	public boolean onKeyDown(int keyCode, KeyEvent event) {
 //		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
 //			// do something on back.
-//			startActivity(new Intent(WishItemDetail.this, WishList.class));
-//			WishItemDetail.this.finish();
+//			startActivity(new Intent(WishDetail.this, WishList.class));
+//			WishDetail.this.finish();
 //
 //			return true;
 //		}
@@ -455,34 +347,19 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
         inflater.inflate(R.menu.menu_item_detail, menu);
         return true;
     }
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        return true;
-    }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-
-        long itemId = item.getItemId();
-        if (itemId ==  android.R.id.home) {
-            Intent resultIntent = new Intent();
-            setResult(RESULT_OK, resultIntent);
-            finish();
-            return true;
-        }
-        else if (itemId == R.id.menu_item_detail_edit) {
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        long itemId = menuItem.getItemId();
+        if (itemId == R.id.menu_item_detail_edit) {
             editItem();
             return true;
-        }
-        else if (itemId == R.id.menu_item_detail_share) {
+        } else if (itemId == R.id.menu_item_detail_share) {
             shareItem();
             return true;
-        }
-        else if (itemId == R.id.menu_item_detail_map) {
-            _itemDBManager = new ItemDBManager();
-            WishItem wishItem = WishItemManager.getInstance().getItemById(_itemId);
+        } else if (itemId == R.id.menu_item_detail_map) {
+            mItemDBManager = new ItemDBManager();
+            WishItem wishItem = WishItemManager.getInstance().getItemById(mItemId);
 
             if (wishItem.getLatitude() == Double.MIN_VALUE && wishItem.getLongitude() == Double.MIN_VALUE) {
                 Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
@@ -490,16 +367,15 @@ public class WishItemDetail extends ActivityBase implements TokenCompleteTextVie
             } else {
                 Intent mapIntent = new Intent(this, Map.class);
                 mapIntent.putExtra("type", "markOne");
-                mapIntent.putExtra("id", _itemId);
+                mapIntent.putExtra("id", mItemId);
                 startActivity(mapIntent);
             }
             return true;
-        }
-        else if (itemId == R.id.menu_item_detail_delete) {
+        } else if (itemId == R.id.menu_item_detail_delete) {
             deleteItem();
             return true;
         }
-        return false;
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override

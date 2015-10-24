@@ -12,15 +12,19 @@ import android.view.MenuItem;
 import com.parse.ParseObject;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.WishLoader;
+import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.WishAdapter;
 import com.wish.wishlist.util.WishAdapterGrid;
 import com.wish.wishlist.util.WishAdapterList;
 
 import java.util.List;
 
 public class FriendsWish extends ActivityBase implements
-    WishLoader.onGotWishesListener {
+        WishLoader.onGotWishesListener,
+        WishAdapter.onWishTapListener {
 
     final static String TAG = "FriendsWish";
+    final static String ITEM = "Item";
 
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLinearLayoutManager;
@@ -62,10 +66,10 @@ public class FriendsWish extends ActivityBase implements
         // the items in the grid layout will be displaced the second time setAdapter is called.
         // Using swapAdapter and passing false as the removeAndRecycleExistingViews flag will avoid this
         if (mListView) {
-            mWishAdapterList = new WishAdapterList(mWishlist);
+            mWishAdapterList = new WishAdapterList(mWishlist, this);
             mRecyclerView.swapAdapter(mWishAdapterList, false);
         } else {
-            mWishAdapterGrid = new WishAdapterGrid(mWishlist);
+            mWishAdapterGrid = new WishAdapterGrid(mWishlist, this);
             mRecyclerView.swapAdapter(mWishAdapterGrid, false);
         }
     }
@@ -83,7 +87,7 @@ public class FriendsWish extends ActivityBase implements
         if (id == R.id.menu_list) {
             mRecyclerView.setLayoutManager(mLinearLayoutManager);
             if (mWishAdapterList == null) {
-                mWishAdapterList = new WishAdapterList(mWishlist);
+                mWishAdapterList = new WishAdapterList(mWishlist, this);
             }
             mRecyclerView.swapAdapter(mWishAdapterList, false);
             mListView = true;
@@ -91,7 +95,7 @@ public class FriendsWish extends ActivityBase implements
         } else if (id == R.id.menu_grid) {
             mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
             if (mWishAdapterGrid == null) {
-                mWishAdapterGrid = new WishAdapterGrid(mWishlist);
+                mWishAdapterGrid = new WishAdapterGrid(mWishlist, this);
             }
             mRecyclerView.swapAdapter(mWishAdapterGrid, false);
             mListView = false;
@@ -102,5 +106,12 @@ public class FriendsWish extends ActivityBase implements
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void onWishTapped(WishItem item) {
+        Log.d(TAG, "onWishTapped");
+        Intent i = new Intent(this, FriendWishDetail.class);
+        i.putExtra(ITEM, item);
+        startActivity(i);
     }
 }
