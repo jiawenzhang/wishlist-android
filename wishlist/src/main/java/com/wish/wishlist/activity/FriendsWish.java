@@ -12,8 +12,8 @@ import android.view.MenuItem;
 import com.parse.ParseObject;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.WishLoader;
-import com.wish.wishlist.util.WishAdapter;
 import com.wish.wishlist.util.WishAdapterGrid;
+import com.wish.wishlist.util.WishAdapterList;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class FriendsWish extends ActivityBase implements
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
-    private WishAdapter mWishAdapter;
+    private WishAdapterList mWishAdapterList;
     private WishAdapterGrid mWishAdapterGrid;
     private List<ParseObject> mWishlist;
     private String mFriendId;
@@ -62,8 +62,8 @@ public class FriendsWish extends ActivityBase implements
         // the items in the grid layout will be displaced the second time setAdapter is called.
         // Using swapAdapter and passing false as the removeAndRecycleExistingViews flag will avoid this
         if (mListView) {
-            mWishAdapter = new WishAdapter(mWishlist);
-            mRecyclerView.swapAdapter(mWishAdapter, false);
+            mWishAdapterList = new WishAdapterList(mWishlist);
+            mRecyclerView.swapAdapter(mWishAdapterList, false);
         } else {
             mWishAdapterGrid = new WishAdapterGrid(mWishlist);
             mRecyclerView.swapAdapter(mWishAdapterGrid, false);
@@ -82,10 +82,10 @@ public class FriendsWish extends ActivityBase implements
         int id = item.getItemId();
         if (id == R.id.menu_list) {
             mRecyclerView.setLayoutManager(mLinearLayoutManager);
-            if (mWishAdapter == null) {
-                mWishAdapter = new WishAdapter(mWishlist);
+            if (mWishAdapterList == null) {
+                mWishAdapterList = new WishAdapterList(mWishlist);
             }
-            mRecyclerView.swapAdapter(mWishAdapter, false);
+            mRecyclerView.swapAdapter(mWishAdapterList, false);
             mListView = true;
             return true;
         } else if (id == R.id.menu_grid) {
