@@ -6,15 +6,18 @@ package com.wish.wishlist.util;
 
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
 
 import java.util.ArrayList;
 
@@ -41,16 +44,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         public TextView txtName;
         public TextView txtUsername;
         public ImageView imgProfile;
-        public Button button;
-        public RelativeLayout userLayout;
+        public Button button1;
+        public Button button2;
+        public LinearLayout userLayout;
 
         public ViewHolder(View v) {
             super(v);
             txtName= (TextView) v.findViewById(R.id.name);
             txtUsername = (TextView) v.findViewById(R.id.username);
             imgProfile = (ImageView) v.findViewById(R.id.profile_image);
-            button = (Button) v.findViewById(R.id.button);
-            userLayout = (RelativeLayout) v.findViewById(R.id.user_layout);
+            button1 = (Button) v.findViewById(R.id.button1);
+            button2 = (Button) v.findViewById(R.id.button2);
+            userLayout = (LinearLayout) v.findViewById(R.id.user_root_layout);
         }
     }
 
@@ -75,6 +80,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user, parent, false);
         // set the view's size, margins, padding and layout parameters
         return new ViewHolder(v);
+    }
+
+    protected void setUserProfileLayoutWidth(final int width_dp, final View v) {
+        RelativeLayout l = (RelativeLayout) v.findViewById(R.id.user_profile_layout);
+        final float scale = WishlistApplication.getAppContext().getResources().getDisplayMetrics().density;
+        final int width_px = (int) (width_dp * scale + 0.5f);
+        l.getLayoutParams().width = width_px;
     }
 
     // Replace the contents of a view (invoked by the layout manager)

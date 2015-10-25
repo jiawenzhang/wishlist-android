@@ -39,7 +39,8 @@ public class FriendAdapter extends UserAdapter {
         super.onBindViewHolder(holder, position);
 
         final UserMeta userMeta = mUserMetaList.get(position);
-        holder.button.setVisibility(View.GONE);
+        holder.button1.setVisibility(View.GONE);
+        holder.button2.setVisibility(View.GONE);
         holder.userLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
