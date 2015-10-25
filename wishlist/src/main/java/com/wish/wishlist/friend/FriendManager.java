@@ -74,45 +74,30 @@ public class FriendManager {
 
     public void requestFriend(final String friendId)
     {
-        ParseObject friendRequest =  new ParseObject(FRIEND_REQUEST);
-        friendRequest.put("from", ParseUser.getCurrentUser().getObjectId());
-        friendRequest.put("to", friendId);
-        friendRequest.put("status", REQUESTED);
-        friendRequest.saveEventually();
+        setFriendRequestStatus(ParseUser.getCurrentUser().getObjectId(), friendId, REQUESTED);
     }
 
     public void acceptFriend(final String friendId)
     {
-        setFriendRequestStatus(friendId, ACCEPTED);
+        setFriendRequestStatus(friendId, ParseUser.getCurrentUser().getObjectId(), ACCEPTED);
     }
 
     public void rejectFriend(final String friendId)
     {
-        setFriendRequestStatus(friendId, REJECTED);
+        setFriendRequestStatus(friendId, ParseUser.getCurrentUser().getObjectId(), REJECTED);
     }
 
-    private void setFriendRequestStatus(final String friendId, final int status)
+    private void setFriendRequestStatus(final String from, final String to, final int status)
     {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(FRIEND_REQUEST);
-        query.whereEqualTo("from", friendId);
-        query.whereEqualTo("to", ParseUser.getCurrentUser().getObjectId());
-        query.whereEqualTo("status", REQUESTED);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> friendRequestList, com.parse.ParseException e) {
-                if (e == null) {
-                    if (friendRequestList.size() != 1) {
-                        Log.e(TAG, "find " + friendRequestList.size() + " friendRequest from " + friendId + " to me");
-                        return;
-                    }
-                    ParseObject friendRequest = friendRequestList.get(0);
-                    friendRequest.put("status", status);
-                    friendRequest.saveEventually();
-                    Log.d(TAG, "set friend request from " + friendId + " to " + status);
-                } else {
-                    Log.e(TAG, e.toString());
-                }
-            }
-        });
+        Log.d(TAG, "set friend request to " + status);
+        ParseObject friendRequest =  new ParseObject(FRIEND_REQUEST);
+        friendRequest.put("from", from);
+        friendRequest.put("to", to);
+        friendRequest.put("status", status);
+
+        // on Parse Cloud code beforeSave trigger for FriendRequest, we validate various conditions before save
+        // if it does, we ignore the save
+        friendRequest.saveEventually();
     }
 
     public void removeFriend(final String friendId)
