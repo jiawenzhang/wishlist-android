@@ -10,18 +10,33 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jiawen on 15-10-05.
  */
 public class FriendManager {
+    private static FriendManager instance = null;
+    public static FriendManager getInstance() {
+        if (instance == null) {
+            instance = new FriendManager();
+        }
+        return instance;
+    }
+
+    private FriendManager() {}
+
     final static String TAG = "FriendManager";
     final static String FRIEND_REQUEST = "FriendRequest";
 
     final static int REQUESTED = 0;
     final static int ACCEPTED = 1;
     final static int REJECTED = 2;
+
+    // one friendId can have one or two FriendRequest objects linked to it - one I send to my friend, or/and one my friend sent to me
+    private Hashtable<String /* friendId */, Set<String> /* FriendRequest object_id */> mFriendRequestTable = new Hashtable<>();
 
     /******************* FoundUserListener  *************************/
     onFoundUserListener mFoundUserListener;
@@ -102,6 +117,13 @@ public class FriendManager {
 
     public void removeFriend(final String friendId)
     {
+        final Set<String> friendRequestIds = mFriendRequestTable.get(friendId);
+        if (friendRequestIds != null) {
+            for (final String id : friendRequestIds) {
+                Log.d(TAG, "removing friend - friendId: " + friendId + " requestId: " + id);
+                ParseObject.createWithoutData(FRIEND_REQUEST, id).deleteEventually();
+            }
+        }
     }
 
     public void fetchFriendRequest()
@@ -208,14 +230,31 @@ public class FriendManager {
         mainQuery.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> results, com.parse.ParseException e) {
                 if (e == null) {
+                    mFriendRequestTable.clear();
                     HashSet<String> friendIds = new HashSet<>();
                     final String selfId = ParseUser.getCurrentUser().getObjectId();
                     for (final ParseObject friendRequest : results) {
                         if (!friendRequest.getString("from").equals(selfId)) {
-                            friendIds.add(friendRequest.getString("from"));
+                            final String friendId = friendRequest.getString("from");
+                            friendIds.add(friendId);
+                            if (mFriendRequestTable.containsKey(friendId)) {
+                                mFriendRequestTable.get(friendId).add(friendRequest.getObjectId());
+                            } else {
+                                mFriendRequestTable.put(friendId, new HashSet<String>() {{
+                                    add(friendRequest.getObjectId());
+                                }});
+                            }
                         }
                         if (!friendRequest.getString("to").equals(selfId)) {
-                            friendIds.add(friendRequest.getString("to"));
+                            final String friendId = friendRequest.getString("to");
+                            friendIds.add(friendId);
+                            if (mFriendRequestTable.containsKey(friendId)) {
+                                mFriendRequestTable.get(friendId).add(friendRequest.getObjectId());
+                            } else {
+                                mFriendRequestTable.put(friendId, new HashSet<String>() {{
+                                    add(friendRequest.getObjectId());
+                                }} );
+                            }
                         }
                     }
 

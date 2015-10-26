@@ -47,9 +47,8 @@ public class FindFriends extends FriendsBase implements
             // activity is started from search, get the search query and
             // displayed the searched items
             String username = intent.getStringExtra(SearchManager.QUERY);
-            FriendManager m = new FriendManager();
-            m.setFoundUserListener(this);
-            m.findUser(username);
+            FriendManager.getInstance().setFoundUserListener(this);
+            FriendManager.getInstance().findUser(username);
         } else {
             // activity is not started from search
         }
@@ -98,8 +97,7 @@ public class FindFriends extends FriendsBase implements
     @Override
     public void onAddFriend(String friendId) {
         Log.d(TAG, "onAddFriend " + friendId);
-        FriendManager m = new FriendManager();
-        m.requestFriend(friendId);
+        FriendManager.getInstance().requestFriend(friendId);
     }
 
 }

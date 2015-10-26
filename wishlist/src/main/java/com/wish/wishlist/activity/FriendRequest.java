@@ -29,9 +29,8 @@ public class FriendRequest extends FriendsBase implements
 
     @Override
     protected void loadView() {
-        FriendManager m = new FriendManager();
-        m.setFriendRequestListener(this);
-        m.fetchFriendRequest();
+        FriendManager.getInstance().setFriendRequestListener(this);
+        FriendManager.getInstance().fetchFriendRequest();
     }
 
     public void onGotFriendRequest(List<ParseUser> friends) {
@@ -64,14 +63,12 @@ public class FriendRequest extends FriendsBase implements
     @Override
     public void onAcceptFriend(final String friendId) {
         Log.d(TAG, "onAddFriend " + friendId);
-        FriendManager m = new FriendManager();
-        m.acceptFriend(friendId);
+        FriendManager.getInstance().acceptFriend(friendId);
     }
 
     @Override
     public void onRejectFriend(final String friendId) {
         Log.d(TAG, "onRejectFriend " + friendId);
-        FriendManager m = new FriendManager();
-        m.rejectFriend(friendId);
+        FriendManager.getInstance().rejectFriend(friendId);
     }
 }

@@ -26,9 +26,8 @@ public class Friends extends FriendsBase implements
     private FriendAdapter mFriendAdapter;
 
     protected void loadView() {
-        FriendManager m = new FriendManager();
-        m.setAllFriendsListener(this);
-        m.fetchFriends();
+        FriendManager.getInstance().setAllFriendsListener(this);
+        FriendManager.getInstance().fetchFriends();
     }
 
     @Override

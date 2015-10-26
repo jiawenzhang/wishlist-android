@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import com.wish.wishlist.friend.FriendManager;
+
 import java.util.ArrayList;
 
 public class FriendAdapter extends UserAdapter {
@@ -35,12 +37,21 @@ public class FriendAdapter extends UserAdapter {
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         super.onBindViewHolder(holder, position);
 
         final UserMeta userMeta = mUserMetaList.get(position);
         holder.button1.setVisibility(View.GONE);
-        holder.button2.setVisibility(View.GONE);
+        holder.button2.setText("Remove");
+        holder.button2.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "remove friend button clicked");
+                FriendManager.getInstance().removeFriend(userMeta.objectId);
+                remove(position);
+            }
+        });
+
         holder.userLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
