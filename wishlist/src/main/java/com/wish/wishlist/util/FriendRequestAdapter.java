@@ -16,26 +16,41 @@ import java.util.ArrayList;
 
 public class FriendRequestAdapter extends UserAdapter {
 
+    /******************** acceptFriendListener*************************/
     public interface acceptFriendListener {
-        void onAcceptFriend(String friendId);
+        void onAcceptFriend(final String friendId);
     }
-
-    protected void onAcceptFriend(String friendId) {
+    private void onAcceptFriend(final String friendId) {
         if (mAcceptFriendListener != null) {
             mAcceptFriendListener.onAcceptFriend(friendId);
         }
     }
-
-    public FriendRequestAdapter(ArrayList<UserMeta> userData) {
-        super(userData);
-    }
-
     private acceptFriendListener mAcceptFriendListener = null;
-    private static final String TAG = "FriendRequestAdapter";
-
     public void setAcceptFriendListener(acceptFriendListener listener)
     {
         mAcceptFriendListener = listener;
+    }
+
+    /******************** rejectFriendListener*************************/
+    public interface rejectFriendListener {
+        void onRejectFriend(final String friendId);
+    }
+    private void onRejectFriend(final String friendId) {
+        if (mRejectFriendListener != null) {
+            mRejectFriendListener.onRejectFriend(friendId);
+        }
+    }
+    private rejectFriendListener mRejectFriendListener = null;
+    public void setRejectFriendListener(rejectFriendListener listener)
+    {
+        mRejectFriendListener = listener;
+    }
+
+
+    private static final String TAG = "FriendRequestAdapter";
+
+    public FriendRequestAdapter(ArrayList<UserMeta> userData) {
+        super(userData);
     }
 
     @Override
@@ -70,7 +85,7 @@ public class FriendRequestAdapter extends UserAdapter {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "reject friend button clicked");
-                //onAcceptFriend(userMeta.objectId);
+                onRejectFriend(userMeta.objectId);
                 remove(position);
             }
         });

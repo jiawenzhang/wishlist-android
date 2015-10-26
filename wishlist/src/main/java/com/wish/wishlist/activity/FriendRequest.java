@@ -16,7 +16,8 @@ import java.util.List;
 
 public class FriendRequest extends FriendsBase implements
         FriendManager.onFriendRequestListener,
-        FriendRequestAdapter.acceptFriendListener {
+        FriendRequestAdapter.acceptFriendListener,
+        FriendRequestAdapter.rejectFriendListener {
 
     final static String TAG = "FriendRequest";
     private FriendRequestAdapter mFriendRequestAdapter;
@@ -56,13 +57,21 @@ public class FriendRequest extends FriendsBase implements
         }
         mFriendRequestAdapter = new FriendRequestAdapter(userMetaList);
         mFriendRequestAdapter.setAcceptFriendListener(this);
+        mFriendRequestAdapter.setRejectFriendListener(this);
         mRecyclerView.setAdapter(mFriendRequestAdapter);
     }
 
     @Override
-    public void onAcceptFriend(String friendId) {
+    public void onAcceptFriend(final String friendId) {
         Log.d(TAG, "onAddFriend " + friendId);
         FriendManager m = new FriendManager();
         m.acceptFriend(friendId);
+    }
+
+    @Override
+    public void onRejectFriend(final String friendId) {
+        Log.d(TAG, "onRejectFriend " + friendId);
+        FriendManager m = new FriendManager();
+        m.rejectFriend(friendId);
     }
 }
