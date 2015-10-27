@@ -189,7 +189,8 @@ public class FriendManager {
     public void findUser(final String username)
     {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereEqualTo("username", username); // this is email user name, not display name
+        // this is email user name, not display name. email username is unique while display name is not
+        query.whereEqualTo("username", username);
         query.findInBackground(new FindCallback<ParseUser>() {
             public void done(List<ParseUser> users, com.parse.ParseException e) {
                 if (e == null) {
