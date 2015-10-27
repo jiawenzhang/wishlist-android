@@ -86,7 +86,6 @@ public class FriendManager {
         mGotAllFriendsListener = (onGotAllFriendsListener) a;
     }
 
-
     public void requestFriend(final String friendId)
     {
         setFriendRequestStatus(ParseUser.getCurrentUser().getObjectId(), friendId, REQUESTED);
@@ -212,8 +211,66 @@ public class FriendManager {
         });
     }
 
-    public void fetchFriends()
-    {
+    private void gotFriendRequestResults(final List<ParseObject> results, final ParseQuery.CachePolicy cachePolicy) {
+        mFriendRequestTable.clear();
+        HashSet<String> friendIds = new HashSet<>();
+        final String selfId = ParseUser.getCurrentUser().getObjectId();
+        for (final ParseObject friendRequest : results) {
+            if (!friendRequest.getString("from").equals(selfId)) {
+                final String friendId = friendRequest.getString("from");
+                friendIds.add(friendId);
+                if (mFriendRequestTable.containsKey(friendId)) {
+                    mFriendRequestTable.get(friendId).add(friendRequest.getObjectId());
+                } else {
+                    mFriendRequestTable.put(friendId, new HashSet<String>() {{
+                        add(friendRequest.getObjectId());
+                    }});
+                }
+            }
+            if (!friendRequest.getString("to").equals(selfId)) {
+                final String friendId = friendRequest.getString("to");
+                friendIds.add(friendId);
+                if (mFriendRequestTable.containsKey(friendId)) {
+                    mFriendRequestTable.get(friendId).add(friendRequest.getObjectId());
+                } else {
+                    mFriendRequestTable.put(friendId, new HashSet<String>() {{
+                        add(friendRequest.getObjectId());
+                    }} );
+                }
+            }
+        }
+
+        if (friendIds.isEmpty()) {
+            Log.d(TAG, "no friends");
+            onGotAllFriends(new ArrayList<ParseUser>());
+            if (cachePolicy == ParseQuery.CachePolicy.CACHE_ONLY) {
+                fetchFriends(ParseQuery.CachePolicy.NETWORK_ONLY);
+            }
+            return;
+        }
+
+        for (final String friendId : friendIds) {
+            Log.d(TAG, "friend id: " + friendId);
+        }
+
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.setCachePolicy(cachePolicy);
+        query.whereContainedIn("objectId", friendIds);
+        query.findInBackground(new FindCallback<ParseUser>() {
+            public void done(List<ParseUser> users, com.parse.ParseException e) {
+                if (e == null) {
+                    onGotAllFriends(users);
+                    if (cachePolicy == ParseQuery.CachePolicy.CACHE_ONLY) {
+                        fetchFriends(ParseQuery.CachePolicy.NETWORK_ONLY);
+                    }
+                } else {
+                    Log.e(TAG, e.toString());
+                }
+            }
+        });
+    }
+
+    private void fetchFriends(final ParseQuery.CachePolicy cachePolicy) {
         ParseQuery<ParseObject> queryToMe = ParseQuery.getQuery(FRIEND_REQUEST);
         queryToMe.whereEqualTo("to", ParseUser.getCurrentUser().getObjectId());
         queryToMe.whereEqualTo("status", ACCEPTED);
@@ -227,64 +284,21 @@ public class FriendManager {
         queries.add(queryFromMe);
 
         ParseQuery<ParseObject> mainQuery = ParseQuery.or(queries);
-        mainQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
+        mainQuery.setCachePolicy(cachePolicy);
         mainQuery.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> results, com.parse.ParseException e) {
                 if (e == null) {
-                    mFriendRequestTable.clear();
-                    HashSet<String> friendIds = new HashSet<>();
-                    final String selfId = ParseUser.getCurrentUser().getObjectId();
-                    for (final ParseObject friendRequest : results) {
-                        if (!friendRequest.getString("from").equals(selfId)) {
-                            final String friendId = friendRequest.getString("from");
-                            friendIds.add(friendId);
-                            if (mFriendRequestTable.containsKey(friendId)) {
-                                mFriendRequestTable.get(friendId).add(friendRequest.getObjectId());
-                            } else {
-                                mFriendRequestTable.put(friendId, new HashSet<String>() {{
-                                    add(friendRequest.getObjectId());
-                                }});
-                            }
-                        }
-                        if (!friendRequest.getString("to").equals(selfId)) {
-                            final String friendId = friendRequest.getString("to");
-                            friendIds.add(friendId);
-                            if (mFriendRequestTable.containsKey(friendId)) {
-                                mFriendRequestTable.get(friendId).add(friendRequest.getObjectId());
-                            } else {
-                                mFriendRequestTable.put(friendId, new HashSet<String>() {{
-                                    add(friendRequest.getObjectId());
-                                }} );
-                            }
-                        }
-                    }
-
-                    if (friendIds.isEmpty()) {
-                        Log.d(TAG, "no friends");
-                        return;
-                    }
-
-                    for (final String friendId : friendIds) {
-                        Log.d(TAG, "friend id: " + friendId);
-                    }
-
-                    ParseQuery<ParseUser> query = ParseUser.getQuery();
-                    query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
-                    query.whereContainedIn("objectId", friendIds);
-                    query.findInBackground(new FindCallback<ParseUser>() {
-                        public void done(List<ParseUser> users, com.parse.ParseException e) {
-                            if (e == null) {
-                                onGotAllFriends(users);
-                            } else {
-                                Log.e(TAG, e.toString());
-                            }
-                        }
-                    });
+                    gotFriendRequestResults(results, cachePolicy);
                 } else {
                     Log.e(TAG, e.toString());
                 }
             }
         });
+    }
+
+    public void fetchFriends() {
+        // we fetch friends from cache first, then from network
+        fetchFriends(ParseQuery.CachePolicy.CACHE_ONLY);
     }
 }
 
