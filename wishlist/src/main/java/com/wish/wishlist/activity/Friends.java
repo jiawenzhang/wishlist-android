@@ -23,7 +23,6 @@ public class Friends extends FriendsBase implements
 
     public static final String FRIEND_ID = "FRIEND_ID";
     final static String TAG = "Friends";
-    private FriendAdapter mFriendAdapter;
 
     protected void loadView() {
         FriendManager.getInstance().setAllFriendsListener(this);
@@ -51,7 +50,7 @@ public class Friends extends FriendsBase implements
 
     @Override
     public void onGotAllFriends(List<ParseUser> friends) {
-        Log.d(TAG, "onGotAllFriend");
+        Log.d(TAG, "onGotAllFriend " + friends.size());
         ArrayList<UserAdapter.UserMeta> userMetaList = new ArrayList<>();
         for (final ParseUser user : friends) {
             final ParseFile parseImage = user.getParseFile("profileImage");
@@ -66,9 +65,9 @@ public class Friends extends FriendsBase implements
             UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
             userMetaList.add(userMeta);
         }
-        mFriendAdapter= new FriendAdapter(userMetaList);
-        mFriendAdapter.setFriendTapListener(this);
-        mRecyclerView.setAdapter(mFriendAdapter);
+        FriendAdapter friendAdapter= new FriendAdapter(userMetaList);
+        friendAdapter.setFriendTapListener(this);
+        mRecyclerView.swapAdapter(friendAdapter, false);
     }
 
     public void onFriendTap(String friendId) {
