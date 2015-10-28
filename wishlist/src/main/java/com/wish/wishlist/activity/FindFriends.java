@@ -3,8 +3,6 @@ package com.wish.wishlist.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
@@ -12,13 +10,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
 
-import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FriendManager;
 import com.wish.wishlist.util.AddFriendAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FindFriends extends FriendsBase implements
         FriendManager.onFoundUserListener,
@@ -76,26 +74,11 @@ public class FindFriends extends FriendsBase implements
     @Override
     public void onFoundUser(ParseUser user) {
         Log.d(TAG, "onFoundUser");
-        if (user == null) {
-            Log.d(TAG, "no user");
-            return;
-        }
-
-        ArrayList<AddFriendAdapter.UserMeta> userMetaList = new ArrayList<>();
-        final ParseFile parseImage = user.getParseFile("profileImage");
-        Bitmap bitmap = null;
-        if (parseImage != null) {
-            try {
-                bitmap = BitmapFactory.decodeByteArray(parseImage.getData(), 0, parseImage.getData().length);
-            } catch (com.parse.ParseException e) {
-                Log.e(TAG, e.toString());
-            }
-        }
-        AddFriendAdapter.UserMeta userMeta = new AddFriendAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
-        userMetaList.add(userMeta);
-        mAddFriendAdapter = new AddFriendAdapter(userMetaList);
+        List<ParseUser> parseUsers = new ArrayList<>();
+        parseUsers.add(user);
+        mAddFriendAdapter = new AddFriendAdapter(getUserMetaList(parseUsers));
         mAddFriendAdapter.setAddFriendListener(this);
-        mRecyclerView.setAdapter(mAddFriendAdapter);
+        mRecyclerView.swapAdapter(mAddFriendAdapter, false);
     }
 
     @Override

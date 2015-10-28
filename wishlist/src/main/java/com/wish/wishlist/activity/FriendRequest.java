@@ -1,7 +1,5 @@
 package com.wish.wishlist.activity;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -35,29 +33,10 @@ public class FriendRequest extends FriendsBase implements
 
     public void onGotFriendRequest(List<ParseUser> friends) {
         Log.d(TAG, "onGotFriendRequest");
-        if (friends.isEmpty()) {
-            Log.d(TAG, "no friend request");
-            return;
-        }
-
-        ArrayList<AddFriendAdapter.UserMeta> userMetaList = new ArrayList<>();
-        for (final ParseUser user : friends) {
-            final ParseFile parseImage = user.getParseFile("profileImage");
-            Bitmap bitmap = null;
-            if (parseImage != null) {
-                try {
-                    bitmap = BitmapFactory.decodeByteArray(parseImage.getData(), 0, parseImage.getData().length);
-                } catch (com.parse.ParseException e) {
-                    Log.e(TAG, e.toString());
-                }
-            }
-            AddFriendAdapter.UserMeta userMeta = new AddFriendAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
-            userMetaList.add(userMeta);
-        }
-        mFriendRequestAdapter = new FriendRequestAdapter(userMetaList);
+        mFriendRequestAdapter = new FriendRequestAdapter(getUserMetaList(friends));
         mFriendRequestAdapter.setAcceptFriendListener(this);
         mFriendRequestAdapter.setRejectFriendListener(this);
-        mRecyclerView.setAdapter(mFriendRequestAdapter);
+        mRecyclerView.swapAdapter(mFriendRequestAdapter, false);
     }
 
     @Override

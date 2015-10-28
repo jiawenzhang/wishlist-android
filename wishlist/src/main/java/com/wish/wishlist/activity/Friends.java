@@ -51,21 +51,7 @@ public class Friends extends FriendsBase implements
     @Override
     public void onGotAllFriends(List<ParseUser> friends) {
         Log.d(TAG, "onGotAllFriend " + friends.size());
-        ArrayList<UserAdapter.UserMeta> userMetaList = new ArrayList<>();
-        for (final ParseUser user : friends) {
-            final ParseFile parseImage = user.getParseFile("profileImage");
-            Bitmap bitmap = null;
-            if (parseImage != null) {
-                try {
-                    bitmap = BitmapFactory.decodeByteArray(parseImage.getData(), 0, parseImage.getData().length);
-                } catch (com.parse.ParseException e) {
-                    Log.e(TAG, e.toString());
-                }
-            }
-            UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(user.getObjectId(), user.getString("name"), user.getUsername(), bitmap);
-            userMetaList.add(userMeta);
-        }
-        FriendAdapter friendAdapter= new FriendAdapter(userMetaList);
+        FriendAdapter friendAdapter= new FriendAdapter(getUserMetaList(friends));
         friendAdapter.setFriendTapListener(this);
         mRecyclerView.swapAdapter(friendAdapter, false);
     }

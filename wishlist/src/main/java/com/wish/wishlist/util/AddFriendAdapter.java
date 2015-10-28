@@ -12,7 +12,7 @@ import android.widget.Button;
 
 import com.wish.wishlist.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class AddFriendAdapter extends UserAdapter {
     private addFriendListener mAddFriendListener = null;
@@ -33,7 +33,7 @@ public class AddFriendAdapter extends UserAdapter {
         mAddFriendListener = listener;
     }
 
-    public AddFriendAdapter(ArrayList<UserMeta> userData) {
+    public AddFriendAdapter(List<UserMeta> userData) {
         super(userData);
     }
 

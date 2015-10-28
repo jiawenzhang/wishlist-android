@@ -3,9 +3,16 @@ package com.wish.wishlist.activity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 
+import com.parse.ParseFile;
+import com.parse.ParseUser;
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.UserAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FriendsBase extends ActivityBase {
 
@@ -33,6 +40,24 @@ public class FriendsBase extends ActivityBase {
     }
 
     protected void loadView() {}
+
+    protected List<UserAdapter.UserMeta> getUserMetaList(final List<ParseUser> users) {
+        ArrayList<UserAdapter.UserMeta> userMetaList = new ArrayList<>();
+        for (final ParseUser user : users) {
+            final ParseFile parseImage = user.getParseFile("profileImage");
+            String imgUrl = null;
+            if (parseImage != null) {
+                imgUrl = parseImage.getUrl();
+            }
+            UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(
+                    user.getObjectId(),
+                    user.getString("name"),
+                    user.getUsername(),
+                    imgUrl);
+            userMetaList.add(userMeta);
+        }
+        return userMetaList;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

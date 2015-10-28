@@ -10,7 +10,7 @@ import android.view.View.OnClickListener;
 
 import com.wish.wishlist.friend.FriendManager;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class FriendAdapter extends UserAdapter {
 
@@ -24,7 +24,7 @@ public class FriendAdapter extends UserAdapter {
         }
     }
 
-    public FriendAdapter(ArrayList<UserMeta> userData) {
+    public FriendAdapter(List<UserMeta> userData) {
         super(userData);
     }
 

@@ -4,9 +4,7 @@ package com.wish.wishlist.util;
  * Created by jiawen on 15-10-05.
  */
 
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
@@ -27,17 +26,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         String objectId;
         String name;
         String username;
-        Bitmap image;
+        String imageUrl;
 
-        public UserMeta(String objectId, String name, String username, Bitmap image) {
+        public UserMeta(final String objectId, final String name, final String username, final String imageUrl) {
             this.objectId = objectId;
             this.name = name;
             this.username = username;
-            this.image = image;
+            this.imageUrl = imageUrl;
         }
     }
 
-    protected ArrayList<UserMeta> mUserMetaList;
+    protected List<UserMeta> mUserMetaList;
     private static final String TAG = "UserAdapter";
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -59,7 +58,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
     }
 
-    public UserAdapter(ArrayList<UserMeta> userData) {
+    public UserAdapter(List<UserMeta> userData) {
         mUserMetaList = userData;
     }
 
@@ -95,8 +94,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         // - get element from your data set at this position
         // - replace the contents of the view with that element
         final UserMeta userMeta = mUserMetaList.get(position);
-        if (userMeta.image != null) {
-            holder.imgProfile.setImageBitmap(mUserMetaList.get(position).image);
+        if (userMeta.imageUrl != null) {
+            Picasso.with(holder.imgProfile.getContext()).load(mUserMetaList.get(position).imageUrl).fit().into(holder.imgProfile);
         }
         holder.txtName.setText(userMeta.name);
         holder.txtUsername.setText(userMeta.username);

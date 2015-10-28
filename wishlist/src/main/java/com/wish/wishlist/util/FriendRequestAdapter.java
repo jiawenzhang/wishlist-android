@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.wish.wishlist.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class FriendRequestAdapter extends UserAdapter {
 
@@ -49,7 +49,7 @@ public class FriendRequestAdapter extends UserAdapter {
 
     private static final String TAG = "FriendRequestAdapter";
 
-    public FriendRequestAdapter(ArrayList<UserMeta> userData) {
+    public FriendRequestAdapter(List<UserMeta> userData) {
         super(userData);
     }
 
