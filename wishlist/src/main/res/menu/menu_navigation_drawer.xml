@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <group android:checkableBehavior="single">
-
         <item
             android:id="@+id/all_wishes"
             android:checked="false"
             android:icon="@drawable/ic_action_goleft"
             android:title="All wishes" />
-
         <item
             android:id="@+id/Add"
             android:checked="false"
@@ -44,7 +41,5 @@
             android:checked="false"
             android:icon="@drawable/ic_action_gear"
             android:title="Settings" />
-
-
     </group>
 </menu>
