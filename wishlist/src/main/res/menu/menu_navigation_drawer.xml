@@ -14,42 +14,37 @@
             android:checked="false"
             android:icon="@drawable/ic_action_add"
             android:title="Add" />
-
         <item
             android:id="@+id/list_view"
             android:checked="false"
             android:icon="@drawable/ic_action_list"
             android:title="List view" />
-
         <item
             android:id="@+id/grid_view"
             android:checked="false"
             android:icon="@drawable/ic_action_tiles_small"
             android:title="Grid view" />
-
         <item
             android:id="@+id/map_view"
             android:checked="false"
             android:icon="@drawable/ic_action_map"
             android:title="Map view" />
-
+        <item
+            android:id="@+id/friends"
+            android:checked="false"
+            android:icon="@drawable/ic_action_user"
+            android:title="Friends" />
+        <item
+            android:id="@+id/notifications"
+            android:checked="false"
+            android:icon="@drawable/ic_action_flag"
+            android:title="Notifications" />
         <item
             android:id="@+id/settings"
             android:checked="false"
             android:icon="@drawable/ic_action_gear"
             android:title="Settings" />
 
-        <item
-            android:id="@+id/friends"
-            android:checked="false"
-            android:icon="@drawable/ic_action_picture"
-            android:title="Friends" />
-
-        <item
-            android:id="@+id/notifications"
-            android:checked="false"
-            android:icon="@drawable/ic_action_camera"
-            android:title="Notifications" />
 
     </group>
 </menu>
