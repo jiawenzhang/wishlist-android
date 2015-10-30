@@ -8,6 +8,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -291,6 +292,10 @@ public class FriendManager {
                     gotFriendRequestResults(results, cachePolicy);
                 } else {
                     Log.e(TAG, e.toString());
+                    if (e.getCode() == com.parse.ParseException.CACHE_MISS) {
+                        // we don't have cache yet, pass an empty list
+                        gotFriendRequestResults(new ArrayList<ParseObject>(), cachePolicy);
+                    }
                 }
             }
         });
