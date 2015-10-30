@@ -4,11 +4,12 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -87,6 +88,26 @@ public class FriendManager {
         mGotAllFriendsListener = (onGotAllFriendsListener) a;
     }
 
+    /******************* RequestFriendListener **************************/
+    onRequestFriendListener mRequestFriendListener;
+    public interface onRequestFriendListener {
+        void onRequestFriendResult(final String friendId, final boolean success);
+    }
+
+    protected void onRequestFriendResult(final String friendId, final boolean success) {
+        if (mRequestFriendListener!= null) {
+            mRequestFriendListener.onRequestFriendResult(friendId, success);
+        }
+    }
+
+    public void setRequestFriendListener(Activity a) {
+        mRequestFriendListener = (onRequestFriendListener) a;
+    }
+
+    /******************* AcceptFriendListener **************************/
+
+    /******************* RejectFriendListener **************************/
+
     public void requestFriend(final String friendId)
     {
         setFriendRequestStatus(ParseUser.getCurrentUser().getObjectId(), friendId, REQUESTED);
@@ -112,7 +133,31 @@ public class FriendManager {
 
         // on Parse Cloud code beforeSave trigger for FriendRequest, we validate various conditions before save
         // if it does, we ignore the save
-        friendRequest.saveEventually();
+        friendRequest.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "save FriendRequest success");
+                    onSetFriendRequestStatusResult(from, to, status, true);
+                } else {
+                    Log.e(TAG, "save FriendRequest failed " + e.toString());
+                    onSetFriendRequestStatusResult(from, to, status, false);
+                }
+            }
+        });
+    }
+
+    private void onSetFriendRequestStatusResult(final String from, final String to, final int status, final boolean success)
+    {
+        switch (status) {
+            case REQUESTED: {
+                onRequestFriendResult(to, success);
+            }
+            case ACCEPTED: {
+            }
+            case REJECTED: {
+            }
+        }
     }
 
     public void removeFriend(final String friendId)

@@ -1076,7 +1076,7 @@ public class EditItem extends ActivityBase
         @Override
         protected void onPostExecute(String add) {
             if (_ddStr.equals("unknown")) {
-                Toast.makeText(EditItem.this, "location not available", Toast.LENGTH_LONG);
+                Toast.makeText(EditItem.this, "location not available", Toast.LENGTH_LONG).show();
             }
             _locationEditText.setText(_ddStr);
             _isGettingLocation = false;

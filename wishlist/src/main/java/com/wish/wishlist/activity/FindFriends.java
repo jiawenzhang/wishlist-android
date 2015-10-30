@@ -1,7 +1,9 @@
 package com.wish.wishlist.activity;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
+import android.widget.Toast;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
@@ -20,11 +23,13 @@ import java.util.List;
 
 public class FindFriends extends FriendsBase implements
         FriendManager.onFoundUserListener,
+        FriendManager.onRequestFriendListener,
         AddFriendAdapter.addFriendListener {
 
     final static String TAG = "FindFriends";
     private MenuItem _menuSearch;
     private AddFriendAdapter mAddFriendAdapter;
+    private ProgressDialog mProgressDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +78,13 @@ public class FindFriends extends FriendsBase implements
 
     @Override
     public void onFoundUser(ParseUser user) {
-        Log.d(TAG, "onFoundUser");
         List<ParseUser> parseUsers = new ArrayList<>();
-        parseUsers.add(user);
+        if (user != null) {
+            Log.d(TAG, "Found user");
+            parseUsers.add(user);
+        } else {
+            Log.e(TAG, "No such user");
+        }
         mAddFriendAdapter = new AddFriendAdapter(getUserMetaList(parseUsers));
         mAddFriendAdapter.setAddFriendListener(this);
         mRecyclerView.swapAdapter(mAddFriendAdapter, false);
@@ -84,7 +93,32 @@ public class FindFriends extends FriendsBase implements
     @Override
     public void onAddFriend(String friendId) {
         Log.d(TAG, "onAddFriend " + friendId);
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage("Sending friend request");
+        mProgressDialog.setCancelable(true);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                Log.d(TAG, "Add friend canceled");
+                Toast.makeText(FindFriends.this, "Check network", Toast.LENGTH_LONG).show();
+            }
+        });
+        mProgressDialog.show();
+
+        FriendManager.getInstance().setRequestFriendListener(this);
         FriendManager.getInstance().requestFriend(friendId);
     }
 
+    @Override
+    public void onRequestFriendResult(final String friendId, final boolean success) {
+        if (success) {
+            mAddFriendAdapter.remove(friendId);
+            Toast.makeText(this, "Friend request sent", Toast.LENGTH_LONG).show();
+        } else {
+            Log.e(TAG, "Fail to send friend request");
+            Toast.makeText(this, "Check network", Toast.LENGTH_LONG).show();
+        }
+        mProgressDialog.dismiss();
+    }
 }

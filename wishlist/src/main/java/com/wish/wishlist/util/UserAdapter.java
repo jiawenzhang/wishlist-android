@@ -72,6 +72,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         notifyItemRemoved(position);
     }
 
+    public void remove(final String userId) {
+        for (int position = 0; position < mUserMetaList.size(); position++) {
+            if (mUserMetaList.get(position).objectId.equals(userId)) {
+                remove(position);
+                break;
+            }
+        }
+    }
+
     // Create new views (invoked by the layout manager)
     @Override
     public UserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,

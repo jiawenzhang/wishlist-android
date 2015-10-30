@@ -60,8 +60,8 @@ public class AddFriendAdapter extends UserAdapter {
             public void onClick(View v) {
                 Log.d(TAG, "add friend button clicked");
                 onAddFriend(userMeta.objectId);
-                holder.button2.setText("Request sent");
-                holder.button2.setEnabled(false);
+                //holder.button2.setText("Request sent");
+                //holder.button2.setEnabled(false);
             }
         });
     }
