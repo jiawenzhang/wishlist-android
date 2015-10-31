@@ -1,10 +1,13 @@
 package com.wish.wishlist.activity;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -20,6 +23,7 @@ public class FriendsBase extends ActivityBase {
 
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
+    protected ProgressDialog mProgressDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,5 +72,32 @@ public class FriendsBase extends ActivityBase {
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    protected void showProgressDialog(final String text) {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(text);
+        mProgressDialog.setCancelable(true);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                Log.d(TAG, text + " canceled");
+                Toast.makeText(FriendsBase.this, "Check network", Toast.LENGTH_LONG).show();
+            }
+        });
+        mProgressDialog.show();
+    }
+
+    protected void handleResult(final String friendId,
+                                final boolean success,
+                                final String successText,
+                                UserAdapter adapter) {
+        if (success) {
+            adapter.remove(friendId);
+            Toast.makeText(this, successText, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Check network", Toast.LENGTH_LONG).show();
+        }
+        mProgressDialog.dismiss();
     }
 }

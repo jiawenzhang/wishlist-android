@@ -3,17 +3,16 @@ package com.wish.wishlist.activity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.wish.wishlist.friend.FriendManager;
-import com.wish.wishlist.util.AddFriendAdapter;
 import com.wish.wishlist.util.FriendRequestAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FriendRequest extends FriendsBase implements
         FriendManager.onFriendRequestListener,
+        FriendManager.onAcceptFriendListener,
+        FriendManager.onRejectFriendListener,
         FriendRequestAdapter.acceptFriendListener,
         FriendRequestAdapter.rejectFriendListener {
 
@@ -42,12 +41,28 @@ public class FriendRequest extends FriendsBase implements
     @Override
     public void onAcceptFriend(final String friendId) {
         Log.d(TAG, "onAddFriend " + friendId);
+        showProgressDialog("Accepting friend");
+
+        FriendManager.getInstance().setAcceptFriendListener(this);
         FriendManager.getInstance().acceptFriend(friendId);
+    }
+
+    @Override
+    public void onAcceptFriendResult(final String friendId, final boolean success) {
+        handleResult(friendId, success, "Accepted", mFriendRequestAdapter);
     }
 
     @Override
     public void onRejectFriend(final String friendId) {
         Log.d(TAG, "onRejectFriend " + friendId);
+        showProgressDialog("Rejecting friend");
+
+        FriendManager.getInstance().setRejectFriendListener(this);
         FriendManager.getInstance().rejectFriend(friendId);
+    }
+
+    @Override
+    public void onRejectFriendResult(final String friendId, final boolean success) {
+        handleResult(friendId, success, "Rejected", mFriendRequestAdapter);
     }
 }

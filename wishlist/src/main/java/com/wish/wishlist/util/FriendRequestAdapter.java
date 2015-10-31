@@ -74,9 +74,8 @@ public class FriendRequestAdapter extends UserAdapter {
         holder.button1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "accept friend button clicked");
+                Log.d(TAG, "Accept friend button clicked");
                 onAcceptFriend(userMeta.objectId);
-                remove(position);
             }
         });
 
@@ -84,9 +83,8 @@ public class FriendRequestAdapter extends UserAdapter {
         holder.button2.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "reject friend button clicked");
+                Log.d(TAG, "Reject friend button clicked");
                 onRejectFriend(userMeta.objectId);
-                remove(position);
             }
         });
     }

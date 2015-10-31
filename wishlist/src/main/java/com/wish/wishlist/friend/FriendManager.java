@@ -4,16 +4,19 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -56,6 +59,8 @@ public class FriendManager {
         mFoundUserListener = (onFoundUserListener) a;
     }
 
+
+
     /****************** FriendRequestListener ************************/
     onFriendRequestListener mFriendRequestListener;
     public interface onFriendRequestListener {
@@ -71,6 +76,8 @@ public class FriendManager {
     public void setFriendRequestListener(Activity a) {
         mFriendRequestListener = (onFriendRequestListener) a;
     }
+
+
 
     /******************* AllFriendsListener **************************/
     onGotAllFriendsListener mGotAllFriendsListener;
@@ -88,6 +95,8 @@ public class FriendManager {
         mGotAllFriendsListener = (onGotAllFriendsListener) a;
     }
 
+
+
     /******************* RequestFriendListener **************************/
     onRequestFriendListener mRequestFriendListener;
     public interface onRequestFriendListener {
@@ -104,38 +113,51 @@ public class FriendManager {
         mRequestFriendListener = (onRequestFriendListener) a;
     }
 
+
+
     /******************* AcceptFriendListener **************************/
+    onAcceptFriendListener mAcceptFriendListener;
+    public interface onAcceptFriendListener {
+        void onAcceptFriendResult(final String friendId, final boolean success);
+    }
+
+    protected void onAcceptFriendResult(final String friendId, final boolean success) {
+        if (mAcceptFriendListener!= null) {
+            mAcceptFriendListener.onAcceptFriendResult(friendId, success);
+        }
+    }
+
+    public void setAcceptFriendListener(Activity a) {
+        mAcceptFriendListener = (onAcceptFriendListener) a;
+    }
+
+
 
     /******************* RejectFriendListener **************************/
-
-    public void requestFriend(final String friendId)
-    {
-        setFriendRequestStatus(ParseUser.getCurrentUser().getObjectId(), friendId, REQUESTED);
+    onRejectFriendListener mRejectFriendListener;
+    public interface onRejectFriendListener {
+        void onRejectFriendResult(final String friendId, final boolean success);
     }
 
-    public void acceptFriend(final String friendId)
-    {
-        setFriendRequestStatus(friendId, ParseUser.getCurrentUser().getObjectId(), ACCEPTED);
+    protected void onRejectFriendResult(final String friendId, final boolean success) {
+        if (mRejectFriendListener!= null) {
+            mRejectFriendListener.onRejectFriendResult(friendId, success);
+        }
     }
 
-    public void rejectFriend(final String friendId)
-    {
-        setFriendRequestStatus(friendId, ParseUser.getCurrentUser().getObjectId(), REJECTED);
+    public void setRejectFriendListener(Activity a) {
+        mRejectFriendListener = (onRejectFriendListener) a;
     }
 
-    private void setFriendRequestStatus(final String from, final String to, final int status)
-    {
-        Log.d(TAG, "set friend request to " + status);
-        ParseObject friendRequest =  new ParseObject(FRIEND_REQUEST);
-        friendRequest.put("from", from);
-        friendRequest.put("to", to);
-        friendRequest.put("status", status);
 
-        // on Parse Cloud code beforeSave trigger for FriendRequest, we validate various conditions before save
-        // if it does, we ignore the save
-        friendRequest.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
+    public void setFriendRequestStatus(final String from, final String to, final int status) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("from", from);
+        params.put("to", to);
+        params.put("status", status);
+
+        ParseCloud.callFunctionInBackground("setFriendRequestStatus", params, new FunctionCallback<Map<String, Object>>() {
+            public void done(Map<String, Object> mapObject, ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "save FriendRequest success");
                     onSetFriendRequestStatusResult(from, to, status, true);
@@ -147,6 +169,24 @@ public class FriendManager {
         });
     }
 
+    public void requestFriend(final String friendId)
+    {
+        Log.d(TAG, "Request friend");
+        setFriendRequestStatus(ParseUser.getCurrentUser().getObjectId(), friendId, REQUESTED);
+    }
+
+    public void acceptFriend(final String friendId)
+    {
+        Log.d(TAG, "Accept friend");
+        setFriendRequestStatus(friendId, ParseUser.getCurrentUser().getObjectId(), ACCEPTED);
+    }
+
+    public void rejectFriend(final String friendId)
+    {
+        Log.d(TAG, "Reject friend");
+        setFriendRequestStatus(friendId, ParseUser.getCurrentUser().getObjectId(), REJECTED);
+    }
+
     private void onSetFriendRequestStatusResult(final String from, final String to, final int status, final boolean success)
     {
         switch (status) {
@@ -154,8 +194,10 @@ public class FriendManager {
                 onRequestFriendResult(to, success);
             }
             case ACCEPTED: {
+                onAcceptFriendResult(from, success);
             }
             case REJECTED: {
+                onRejectFriendResult(from, success);
             }
         }
     }
