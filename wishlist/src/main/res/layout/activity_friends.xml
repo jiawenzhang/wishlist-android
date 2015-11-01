@@ -8,6 +8,24 @@
         android:id="@+id/find_friends_toolbar"
         xmlns:android="http://schemas.android.com/apk/res/android"/>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:id="@+id/top_relative_layout"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:visibility="gone"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New friends"
+            android:textSize="18sp"
+            android:layout_centerInParent="true"
+            />
+
+    </RelativeLayout>
+
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:id="@+id/find_friends_fragment"

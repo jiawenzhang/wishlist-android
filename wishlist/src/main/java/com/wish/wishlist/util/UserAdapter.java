@@ -23,11 +23,12 @@ import java.util.List;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     public static class UserMeta {
-        String objectId;
-        String name;
-        String username;
-        String imageUrl;
+        public String objectId;
+        public String name;
+        public String username;
+        public String imageUrl;
 
+        public UserMeta() {};
         public UserMeta(final String objectId, final String name, final String username, final String imageUrl) {
             this.objectId = objectId;
             this.name = name;
@@ -58,6 +59,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
     }
 
+    public UserAdapter() {}
     public UserAdapter(List<UserMeta> userData) {
         mUserMetaList = userData;
     }
@@ -105,6 +107,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         final UserMeta userMeta = mUserMetaList.get(position);
         if (userMeta.imageUrl != null) {
             Picasso.with(holder.imgProfile.getContext()).load(mUserMetaList.get(position).imageUrl).fit().into(holder.imgProfile);
+        } else {
+            holder.imgProfile.setImageResource(R.drawable.default_profile_image);
         }
         holder.txtName.setText(userMeta.name);
         holder.txtUsername.setText(userMeta.username);

@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class FriendListCache {
     static final String TAG = "FiendListCache";
-    List<ParseUser> mFriends = null;
+    private List<ParseUser> mFriends = null;
 
     private static FriendListCache ourInstance = new FriendListCache();
 
@@ -20,11 +20,20 @@ public class FriendListCache {
         return ourInstance;
     }
 
-    private FriendListCache() {}
+    protected FriendListCache() {}
 
     public void addFriend(final ParseUser friend) {
         if (mFriends == null) {
             mFriends = new ArrayList<>();
+            mFriends.add(friend);
+            return;
+        }
+
+        for (final ParseUser existingFriend : mFriends) {
+            if (existingFriend.getObjectId().equals(friend.getObjectId())) {
+                Log.d(TAG, "Friend already exists, ignore");
+                return;
+            }
         }
         mFriends.add(friend);
     }

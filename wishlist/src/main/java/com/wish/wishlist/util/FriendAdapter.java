@@ -38,7 +38,7 @@ public class FriendAdapter extends UserAdapter {
             mRemoveFriendListener.onRemoveFriend(friendId);
         }
     }
-    public void setmRemoveFriendListener(RemoveFriendListener listener)
+    public void setRemoveFriendListener(RemoveFriendListener listener)
     {
         mRemoveFriendListener = listener;
     }

@@ -7,6 +7,7 @@ import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -65,12 +66,12 @@ public class FriendManager {
     /****************** FriendRequestListener ************************/
     onFriendRequestListener mFriendRequestListener;
     public interface onFriendRequestListener {
-        void onGotFriendRequest(List<ParseUser> friends);
+        void onGotFriendRequest();
     }
 
-    protected void onGotFriendRequest(List<ParseUser> friends) {
+    protected void onGotFriendRequest() {
         if (mFriendRequestListener != null) {
-            mFriendRequestListener.onGotFriendRequest(friends);
+            mFriendRequestListener.onGotFriendRequest();
         }
     }
 
@@ -208,10 +209,39 @@ public class FriendManager {
     private void onSetFriendRequestStatusResult(final String from, final String to, final int status, final boolean success)
     {
         switch (status) {
-            case REQUESTED: {
+            case REQUESTED:
+                if (success) {
+                    //Add the friend request to cache
+                    ParseQuery<ParseUser> query = ParseUser.getQuery();
+                    query.whereEqualTo("objectId", to);
+                    query.setLimit(1);
+                    query.findInBackground(new FindCallback<ParseUser>() {
+                        public void done(List<ParseUser> users, com.parse.ParseException e) {
+                            if (e == null) {
+                                Log.d(TAG, "Found parse user");
+                                final ParseUser friend = users.get(0);
+                                FriendRequestMeta meta = new FriendRequestMeta();
+                                meta.objectId = friend.getObjectId();
+                                meta.name = friend.getString("name");
+                                meta.username = friend.getUsername();
+                                String imgUrl = null;
+                                final ParseFile parseImage = friend.getParseFile("profileImage");
+                                if (parseImage != null) {
+                                    imgUrl = parseImage.getUrl();
+                                }
+                                meta.imageUrl = imgUrl;
+                                meta.fromMe = true;
+                                FriendRequestCache.getInstance().addFriendRequest(meta);
+                            } else {
+                                Log.e(TAG, e.toString());
+                            }
+                        }
+                    });
+                }
                 onRequestFriendResult(to, success);
-            }
-            case ACCEPTED: {
+                break;
+
+            case ACCEPTED:
                 // Add the friend to cache
                 ParseQuery<ParseUser> query = ParseUser.getQuery();
                 query.whereEqualTo("objectId", from);
@@ -226,12 +256,14 @@ public class FriendManager {
                         }
                     }
                 });
-
+                // FriendRequest will be removed from cache in FriendRequestAdapter remove(friendId)
                 onAcceptFriendResult(from, success);
-            }
-            case REJECTED: {
+                break;
+
+            case REJECTED:
+                // FriendRequest will be removed from cache in FriendRequestAdapter remove(friendId)
                 onRejectFriendResult(from, success);
-            }
+                break;
         }
     }
 
@@ -257,57 +289,87 @@ public class FriendManager {
 
     public void fetchFriendRequest()
     {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(FRIEND_REQUEST);
-        query.whereEqualTo("to", ParseUser.getCurrentUser().getObjectId());
-        query.whereEqualTo("status", REQUESTED);
-        query.findInBackground(new FindCallback<ParseObject>() {
+        // fetch form cache first, then from network
+        if (FriendRequestCache.getInstance().valid()) {
+            Log.d(TAG, "Got cached FriendRequest");
+            onGotFriendRequest();
+        }
+
+        ParseQuery<ParseObject> queryFromMe = ParseQuery.getQuery(FRIEND_REQUEST);
+        queryFromMe.whereEqualTo("from", ParseUser.getCurrentUser().getObjectId());
+        queryFromMe.whereEqualTo("status", REQUESTED);
+
+        ParseQuery<ParseObject> queryToMe = ParseQuery.getQuery(FRIEND_REQUEST);
+        queryToMe.whereEqualTo("to", ParseUser.getCurrentUser().getObjectId());
+        queryToMe.whereEqualTo("status", REQUESTED);
+
+        List<ParseQuery<ParseObject>> queries = new ArrayList<>();
+        queries.add(queryToMe);
+        queries.add(queryFromMe);
+
+        ParseQuery<ParseObject> mainQuery = ParseQuery.or(queries);
+
+        mainQuery.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> friendRequestList, com.parse.ParseException e) {
                 if (e == null) {
                     if (friendRequestList.isEmpty()) {
-                        Log.d(TAG, "no friend request to me");
-                        onGotFriendRequest(new ArrayList<ParseUser>());
+                        Log.d(TAG, "No friend request");
+                        FriendRequestCache.getInstance().setFriendRequestList(new ArrayList<FriendRequestMeta>());
+                        onGotFriendRequest();
                         return;
                     }
+                    Log.d(TAG, "Got " + friendRequestList.size() + " FriendRequest");
 
-                    HashSet<String> friendIds = new HashSet<>();
+                    // a friendId can be linked to two FriendRequest, one to the friend and one from the friend.
+                    final HashMap<String /*friendId*/, HashSet<Boolean>> friendRequestMeta = new HashMap<>();
+                    String friendId;
                     for (final ParseObject friendRequest : friendRequestList) {
-                        friendIds.add(friendRequest.getString("from"));
+                        final boolean fromMe;
+                        if (friendRequest.getString("from").equals(ParseUser.getCurrentUser().getObjectId())) {
+                            // request from me
+                            friendId = friendRequest.getString("to");
+                            fromMe = true;
+                        } else {
+                            // request to me
+                            friendId = friendRequest.getString("from");
+                            fromMe = false;
+                        }
+                        if (friendRequestMeta.get(friendId) == null) {
+                            friendRequestMeta.put(friendId, new HashSet<Boolean>() {{ add(fromMe); }} );
+                        } else {
+                            friendRequestMeta.get(friendId).add(fromMe);
+                        }
                     }
 
                     ParseQuery<ParseUser> query = ParseUser.getQuery();
-                    query.whereContainedIn("objectId", friendIds);
+                    query.whereContainedIn("objectId", friendRequestMeta.keySet());
                     query.findInBackground(new FindCallback<ParseUser>() {
                         public void done(List<ParseUser> users, com.parse.ParseException e) {
                             if (e == null) {
-                                onGotFriendRequest(users);
+                                List<FriendRequestMeta> metaList = new ArrayList<>();
+                                for (final ParseUser user : users) {
+                                    for (boolean fromMe: friendRequestMeta.get(user.getObjectId())) {
+                                        FriendRequestMeta meta = new FriendRequestMeta();
+                                        meta.objectId = user.getObjectId();
+                                        meta.name = user.getString("name");
+                                        meta.username = user.getUsername();
+                                        String imgUrl = null;
+                                        final ParseFile parseImage = user.getParseFile("profileImage");
+                                        if (parseImage != null) {
+                                            imgUrl = parseImage.getUrl();
+                                        }
+                                        meta.imageUrl = imgUrl;
+                                        meta.fromMe = fromMe;
+                                        metaList.add(meta);
+                                    }
+                                }
+                                FriendRequestCache.getInstance().setFriendRequestList(metaList);
+                                onGotFriendRequest();
                             } else {
                                 Log.e(TAG, e.toString());
                             }
                         }
                     });
-                } else {
-                    Log.e(TAG, e.toString());
-                }
-            }
-        });
-    }
-
-    public void pendingFriends()
-    {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(FRIEND_REQUEST);
-        query.whereEqualTo("from", ParseUser.getCurrentUser().getObjectId());
-        query.whereEqualTo("status", REQUESTED);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> friendRequestList, com.parse.ParseException e) {
-                if (e == null) {
-                    if (friendRequestList.isEmpty()) {
-                        Log.d(TAG, "no pending friends");
-                        return;
-                    }
-
-                    for (final ParseObject friendRequest : friendRequestList) {
-                        Log.d(TAG, "pending friend " + friendRequest.getString("to"));
-                    }
                 } else {
                     Log.e(TAG, e.toString());
                 }

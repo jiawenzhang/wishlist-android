@@ -2,12 +2,11 @@ package com.wish.wishlist.activity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.parse.ParseUser;
 import com.wish.wishlist.friend.FriendManager;
 import com.wish.wishlist.util.FriendRequestAdapter;
 
-import java.util.List;
 
 public class FriendRequest extends FriendsBase implements
         FriendManager.onFriendRequestListener,
@@ -28,14 +27,18 @@ public class FriendRequest extends FriendsBase implements
     protected void loadView() {
         FriendManager.getInstance().setFriendRequestListener(this);
         FriendManager.getInstance().fetchFriendRequest();
+
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, "Check network, friend request may be out of date", Toast.LENGTH_LONG).show();
+        }
     }
 
-    public void onGotFriendRequest(List<ParseUser> friends) {
+    public void onGotFriendRequest() {
         Log.d(TAG, "onGotFriendRequest");
-        mFriendRequestAdapter = new FriendRequestAdapter(getUserMetaList(friends));
+        mFriendRequestAdapter = new FriendRequestAdapter();
         mFriendRequestAdapter.setAcceptFriendListener(this);
         mFriendRequestAdapter.setRejectFriendListener(this);
-        mRecyclerView.swapAdapter(mFriendRequestAdapter, false);
+        mRecyclerView.swapAdapter(mFriendRequestAdapter, true);
     }
 
     @Override

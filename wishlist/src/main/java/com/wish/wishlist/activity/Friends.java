@@ -1,9 +1,13 @@
 package com.wish.wishlist.activity;
 
+import android.view.View.OnClickListener;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
@@ -23,9 +27,25 @@ public class Friends extends FriendsBase implements
     final static String TAG = "Friends";
     private FriendAdapter mFriendAdapter;
 
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        RelativeLayout top_relative_layout = (RelativeLayout) findViewById(R.id.top_relative_layout);
+        top_relative_layout.setVisibility(View.VISIBLE);
+        top_relative_layout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "New friend tapped");
+                final Intent friendRequestIntent = new Intent(getApplicationContext(), FriendRequest.class);
+                startActivity(friendRequestIntent);
+            }
+        });
+    }
+
     protected void loadView() {
         FriendManager.getInstance().setAllFriendsListener(this);
         FriendManager.getInstance().fetchFriends();
+
         if (!isNetworkAvailable()) {
             Toast.makeText(this, "Check network, friends may be out of date", Toast.LENGTH_LONG).show();
         }
@@ -51,13 +71,13 @@ public class Friends extends FriendsBase implements
     }
 
     @Override
-    public void onGotAllFriends(List<ParseUser> friends) {
+    public void onGotAllFriends(final List<ParseUser> friends) {
         Log.d(TAG, "onGotAllFriend " + friends.size());
 
         mFriendAdapter = new FriendAdapter(getUserMetaList(friends));
         mFriendAdapter.setFriendTapListener(this);
-        mFriendAdapter.setmRemoveFriendListener(this);
-        mRecyclerView.swapAdapter(mFriendAdapter, false);
+        mFriendAdapter.setRemoveFriendListener(this);
+        mRecyclerView.swapAdapter(mFriendAdapter, true);
     }
 
     public void onFriendTap(final String friendId) {
