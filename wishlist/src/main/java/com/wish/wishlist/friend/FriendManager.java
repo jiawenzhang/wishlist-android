@@ -14,10 +14,8 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by jiawen on 15-10-05.
@@ -36,12 +34,14 @@ public class FriendManager {
     final static String TAG = "FriendManager";
     final static String FRIEND_REQUEST = "FriendRequest";
 
+    /******************* Parse Cloud Functions *************************/
+    final static String REMOVE_FRIEND = "removeFriend";
+    final static String SET_FRIEND_REQUEST_STATUS = "setFriendRequestStatus";
+
+    /******************* FriendRequest status *************************/
     final static int REQUESTED = 0;
     final static int ACCEPTED = 1;
     final static int REJECTED = 2;
-
-    // one friendId can have one or two FriendRequest objects linked to it - one I send to my friend, or/and one my friend sent to me
-    private Hashtable<String /* friendId */, Set<String> /* FriendRequest object_id */> mFriendRequestTable = new Hashtable<>();
 
     /******************* FoundUserListener  *************************/
     onFoundUserListener mFoundUserListener;
@@ -156,13 +156,13 @@ public class FriendManager {
         params.put("to", to);
         params.put("status", status);
 
-        ParseCloud.callFunctionInBackground("setFriendRequestStatus", params, new FunctionCallback<Map<String, Object>>() {
+        ParseCloud.callFunctionInBackground(SET_FRIEND_REQUEST_STATUS, params, new FunctionCallback<Map<String, Object>>() {
             public void done(Map<String, Object> mapObject, ParseException e) {
                 if (e == null) {
-                    Log.d(TAG, "save FriendRequest success");
+                    Log.d(TAG, "Save FriendRequest success");
                     onSetFriendRequestStatusResult(from, to, status, true);
                 } else {
-                    Log.e(TAG, "save FriendRequest failed " + e.toString());
+                    Log.e(TAG, "Save FriendRequest failed " + e.toString());
                     onSetFriendRequestStatusResult(from, to, status, false);
                 }
             }
@@ -204,13 +204,17 @@ public class FriendManager {
 
     public void removeFriend(final String friendId)
     {
-        final Set<String> friendRequestIds = mFriendRequestTable.get(friendId);
-        if (friendRequestIds != null) {
-            for (final String id : friendRequestIds) {
-                Log.d(TAG, "removing friend - friendId: " + friendId + " requestId: " + id);
-                ParseObject.createWithoutData(FRIEND_REQUEST, id).deleteEventually();
+        Map<String, Object> params = new HashMap<>();
+        params.put("friendId", friendId);
+        ParseCloud.callFunctionInBackground(REMOVE_FRIEND, params, new FunctionCallback<Map<String, Object>>() {
+            public void done(Map<String, Object> mapObject, ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "Remove friend success");
+                } else {
+                    Log.e(TAG, "Remove friend failed " + e.toString());
+                }
             }
-        }
+        });
     }
 
     public void fetchFriendRequest()
@@ -300,31 +304,16 @@ public class FriendManager {
     }
 
     private void gotFriendRequestResults(final List<ParseObject> results, final ParseQuery.CachePolicy cachePolicy) {
-        mFriendRequestTable.clear();
         HashSet<String> friendIds = new HashSet<>();
         final String selfId = ParseUser.getCurrentUser().getObjectId();
         for (final ParseObject friendRequest : results) {
             if (!friendRequest.getString("from").equals(selfId)) {
                 final String friendId = friendRequest.getString("from");
                 friendIds.add(friendId);
-                if (mFriendRequestTable.containsKey(friendId)) {
-                    mFriendRequestTable.get(friendId).add(friendRequest.getObjectId());
-                } else {
-                    mFriendRequestTable.put(friendId, new HashSet<String>() {{
-                        add(friendRequest.getObjectId());
-                    }});
-                }
             }
             if (!friendRequest.getString("to").equals(selfId)) {
                 final String friendId = friendRequest.getString("to");
                 friendIds.add(friendId);
-                if (mFriendRequestTable.containsKey(friendId)) {
-                    mFriendRequestTable.get(friendId).add(friendRequest.getObjectId());
-                } else {
-                    mFriendRequestTable.put(friendId, new HashSet<String>() {{
-                        add(friendRequest.getObjectId());
-                    }} );
-                }
             }
         }
 
