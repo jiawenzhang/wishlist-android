@@ -212,6 +212,21 @@ public class FriendManager {
                 onRequestFriendResult(to, success);
             }
             case ACCEPTED: {
+                // Add the friend to cache
+                ParseQuery<ParseUser> query = ParseUser.getQuery();
+                query.whereEqualTo("objectId", from);
+                query.setLimit(1);
+                query.findInBackground(new FindCallback<ParseUser>() {
+                    public void done(List<ParseUser> users, com.parse.ParseException e) {
+                        if (e == null) {
+                            Log.d(TAG, "Found parse user");
+                            FriendListCache.getInstance().addFriend(users.get(0));
+                        } else {
+                            Log.e(TAG, e.toString());
+                        }
+                    }
+                });
+
                 onAcceptFriendResult(from, success);
             }
             case REJECTED: {
@@ -228,6 +243,9 @@ public class FriendManager {
             public void done(Map<String, Object> mapObject, ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "Remove friend success");
+
+                    // Remove the friend in cache
+                    FriendListCache.getInstance().removeFriend(friendId);
                     onRemoveFriendResult(friendId, true);
                 } else {
                     Log.e(TAG, "Remove friend failed " + e.toString());
@@ -339,7 +357,8 @@ public class FriendManager {
 
         if (friendIds.isEmpty()) {
             Log.d(TAG, "no friends");
-            onGotAllFriends(new ArrayList<ParseUser>());
+            FriendListCache.getInstance().setFriends(new ArrayList<ParseUser>());
+            onGotAllFriends(FriendListCache.getInstance().friends());
             if (cachePolicy == ParseQuery.CachePolicy.CACHE_ONLY) {
                 fetchFriends(ParseQuery.CachePolicy.NETWORK_ONLY);
             }
@@ -356,6 +375,8 @@ public class FriendManager {
         query.findInBackground(new FindCallback<ParseUser>() {
             public void done(List<ParseUser> users, com.parse.ParseException e) {
                 if (e == null) {
+                    // Populate the in-memory FriendListCache with results from Parse cloud
+                    FriendListCache.getInstance().setFriends(users);
                     onGotAllFriends(users);
                     if (cachePolicy == ParseQuery.CachePolicy.CACHE_ONLY) {
                         fetchFriends(ParseQuery.CachePolicy.NETWORK_ONLY);
@@ -398,8 +419,15 @@ public class FriendManager {
     }
 
     public void fetchFriends() {
-        // we fetch friends from cache first, then from network
-        fetchFriends(ParseQuery.CachePolicy.CACHE_ONLY);
+        // we fetch friends from in-memory cache first, then from network
+        // if we have network, onGotAllFriends will be called twice
+        // first returns the cached result, second returns the result from network
+        if (FriendListCache.getInstance().valid()) {
+            Log.d(TAG, "Got friends from cache");
+            onGotAllFriends(FriendListCache.getInstance().friends());
+        }
+
+        fetchFriends(ParseQuery.CachePolicy.NETWORK_ONLY);
     }
 }
 

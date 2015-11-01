@@ -15,8 +15,6 @@ import com.parse.ParseCrashReporting;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
 import com.path.android.jobqueue.JobManager;
-import com.path.android.jobqueue.config.Configuration;
-import com.path.android.jobqueue.log.CustomLogger;
 
 /**
  * Created by jiawen on 14-12-23.

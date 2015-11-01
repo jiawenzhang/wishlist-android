@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
@@ -25,6 +26,9 @@ public class Friends extends FriendsBase implements
     protected void loadView() {
         FriendManager.getInstance().setAllFriendsListener(this);
         FriendManager.getInstance().fetchFriends();
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, "Check network, friends may be out of date", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
