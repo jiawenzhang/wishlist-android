@@ -8,33 +8,49 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.wish.wishlist.friend.FriendManager;
 
 import java.util.List;
 
 public class FriendAdapter extends UserAdapter {
 
+    /******************* FriendTapListener *********************/
+    private FriendTapListener mFriendTapListener = null;
     public interface FriendTapListener {
         void onFriendTap(String friendId);
     }
-
     protected void onFriendTap(String friendId) {
         if (mFriendTapListener != null) {
             mFriendTapListener.onFriendTap(friendId);
         }
     }
+    public void setFriendTapListener(FriendTapListener listener)
+    {
+        mFriendTapListener = listener;
+    }
+
+    /******************* RemoveFriendListener *********************/
+    private RemoveFriendListener mRemoveFriendListener = null;
+    public interface RemoveFriendListener {
+        void onRemoveFriend(final String friendId);
+    }
+    protected void onRemoveFriend(final String friendId) {
+        if (mRemoveFriendListener != null) {
+            mRemoveFriendListener.onRemoveFriend(friendId);
+        }
+    }
+    public void setmRemoveFriendListener(RemoveFriendListener listener)
+    {
+        mRemoveFriendListener = listener;
+    }
+    /*************************************************************/
+
 
     public FriendAdapter(List<UserMeta> userData) {
         super(userData);
     }
 
-    private FriendTapListener mFriendTapListener = null;
     private static final String TAG = "FriendAdapter";
 
-    public void setFriendTapListener(FriendTapListener listener)
-    {
-        mFriendTapListener = listener;
-    }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
@@ -47,8 +63,7 @@ public class FriendAdapter extends UserAdapter {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "remove friend button clicked");
-                FriendManager.getInstance().removeFriend(userMeta.objectId);
-                remove(position);
+                onRemoveFriend(userMeta.objectId);
             }
         });
 

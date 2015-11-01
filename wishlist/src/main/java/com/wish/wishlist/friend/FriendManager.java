@@ -43,6 +43,7 @@ public class FriendManager {
     final static int ACCEPTED = 1;
     final static int REJECTED = 2;
 
+
     /******************* FoundUserListener  *************************/
     onFoundUserListener mFoundUserListener;
     public interface onFoundUserListener {
@@ -150,6 +151,23 @@ public class FriendManager {
     }
 
 
+    /******************* RemoveFriendResultListener **************************/
+    onRemoveFriendResultListener mRemoveFriendResultListener;
+    public interface onRemoveFriendResultListener {
+        void onRemoveFriendResult(final String friendId, final boolean success);
+    }
+
+    protected void onRemoveFriendResult(final String friendId, final boolean success) {
+        if (mRemoveFriendResultListener != null) {
+            mRemoveFriendResultListener.onRemoveFriendResult(friendId, success);
+        }
+    }
+
+    public void setRemoveFriendResultListener(Activity a) {
+        mRemoveFriendResultListener = (onRemoveFriendResultListener) a;
+    }
+
+
     public void setFriendRequestStatus(final String from, final String to, final int status) {
         Map<String, Object> params = new HashMap<>();
         params.put("from", from);
@@ -210,8 +228,10 @@ public class FriendManager {
             public void done(Map<String, Object> mapObject, ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "Remove friend success");
+                    onRemoveFriendResult(friendId, true);
                 } else {
                     Log.e(TAG, "Remove friend failed " + e.toString());
+                    onRemoveFriendResult(friendId, false);
                 }
             }
         });
