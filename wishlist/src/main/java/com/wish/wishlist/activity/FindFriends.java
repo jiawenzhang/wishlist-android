@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
+import android.widget.Toast;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
@@ -50,6 +51,7 @@ public class FindFriends extends FriendsBase implements
                 Log.e(TAG, "Cannot add self as a friend");
                 return;
             }
+            showProgressDialog("Loading...");
             FriendManager.getInstance().setFoundUserListener(this);
             FriendManager.getInstance().findUser(username);
         } else {
@@ -73,15 +75,17 @@ public class FindFriends extends FriendsBase implements
     }
 
     @Override
-    public void onFoundUser(ParseUser user) {
-        List<ParseUser> parseUsers = new ArrayList<>();
-        if (user != null) {
-            Log.d(TAG, "Found user");
-            parseUsers.add(user);
+    public void onFoundUser(final List<ParseUser> users, final boolean success) {
+        mProgressDialog.dismiss();
+        if (success) {
+            Log.d(TAG, "Found " + users.size() + " users");
+            if (users.size() == 0) {
+                Toast.makeText(this, "No user found", Toast.LENGTH_LONG).show();
+            }
         } else {
-            Log.e(TAG, "No such user");
+            Toast.makeText(this, "Check network", Toast.LENGTH_LONG).show();
         }
-        mAddFriendAdapter = new AddFriendAdapter(getUserMetaList(parseUsers));
+        mAddFriendAdapter = new AddFriendAdapter(getUserMetaList(users));
         mAddFriendAdapter.setAddFriendListener(this);
         mRecyclerView.swapAdapter(mAddFriendAdapter, true);
     }

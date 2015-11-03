@@ -48,12 +48,12 @@ public class FriendManager {
     /******************* FoundUserListener  *************************/
     onFoundUserListener mFoundUserListener;
     public interface onFoundUserListener {
-        void onFoundUser(ParseUser user);
+        void onFoundUser(final List<ParseUser> users, final boolean success);
     }
 
-    protected void onFoundUser(ParseUser user) {
+    protected void onFoundUser(final List<ParseUser> users, final boolean success) {
         if (mFoundUserListener != null) {
-            mFoundUserListener.onFoundUser(user);
+            mFoundUserListener.onFoundUser(users, success);
         }
     }
 
@@ -385,19 +385,10 @@ public class FriendManager {
         query.findInBackground(new FindCallback<ParseUser>() {
             public void done(List<ParseUser> users, com.parse.ParseException e) {
                 if (e == null) {
-                    if (users.isEmpty()) {
-                        Log.d(TAG, "no user found for username: " + username);
-                        onFoundUser(null);
-                        return;
-                    }
-
-                    for (final ParseUser user : users) {
-                        onFoundUser(user);
-                        Log.d(TAG, "find user: username " + user.getUsername() + " email: " + user.getEmail() + " name: " + user.getString("name"));
-                    }
+                    onFoundUser(users, true);
                 } else {
                     Log.e(TAG, e.toString());
-                    onFoundUser(null);
+                    onFoundUser(new ArrayList<ParseUser>(), false);
                 }
             }
         });
