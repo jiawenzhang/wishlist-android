@@ -16,7 +16,6 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FriendManager;
 import com.wish.wishlist.util.AddFriendAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FindFriends extends FriendsBase implements
@@ -67,6 +66,22 @@ public class FindFriends extends FriendsBase implements
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         _menuSearch = menu.findItem(R.id.find_friends_menu_search);
         MenuItemCompat.expandActionView(_menuSearch);
+
+        // when the "UP" button in the toolbar with a searchView is tapped, the search view is collapsed,
+        // but the activity stays open. If we want to close the activity, we need to call finish() onMenuItemActionCollapse
+        MenuItemCompat.setOnActionExpandListener(_menuSearch, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                finish();
+                return true;
+            }
+        });
+
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(_menuSearch);
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
