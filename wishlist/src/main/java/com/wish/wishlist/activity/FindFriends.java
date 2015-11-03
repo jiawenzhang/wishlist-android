@@ -83,7 +83,7 @@ public class FindFriends extends FriendsBase implements
         }
         mAddFriendAdapter = new AddFriendAdapter(getUserMetaList(parseUsers));
         mAddFriendAdapter.setAddFriendListener(this);
-        mRecyclerView.swapAdapter(mAddFriendAdapter, false);
+        mRecyclerView.swapAdapter(mAddFriendAdapter, true);
     }
 
     @Override
