@@ -16,14 +16,14 @@ public class FriendAdapter extends UserAdapter {
     /******************* FriendTapListener *********************/
     private FriendTapListener mFriendTapListener = null;
     public interface FriendTapListener {
-        void onFriendTap(String friendId);
+        void onFriendTap(final String friendId);
     }
-    protected void onFriendTap(String friendId) {
+    protected void onFriendTap(final String friendId) {
         if (mFriendTapListener != null) {
             mFriendTapListener.onFriendTap(friendId);
         }
     }
-    public void setFriendTapListener(FriendTapListener listener)
+    public void setFriendTapListener(final FriendTapListener listener)
     {
         mFriendTapListener = listener;
     }

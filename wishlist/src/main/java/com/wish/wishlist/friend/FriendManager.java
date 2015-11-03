@@ -57,7 +57,7 @@ public class FriendManager {
         }
     }
 
-    public void setFoundUserListener(Activity a) {
+    public void setFoundUserListener(final Activity a) {
         mFoundUserListener = (onFoundUserListener) a;
     }
 
@@ -75,7 +75,7 @@ public class FriendManager {
         }
     }
 
-    public void setFriendRequestListener(Activity a) {
+    public void setFriendRequestListener(final Activity a) {
         mFriendRequestListener = (onFriendRequestListener) a;
     }
 
@@ -84,16 +84,16 @@ public class FriendManager {
     /******************* AllFriendsListener **************************/
     onGotAllFriendsListener mGotAllFriendsListener;
     public interface onGotAllFriendsListener {
-        void onGotAllFriends(List<ParseUser> friends);
+        void onGotAllFriends(final List<ParseUser> friends);
     }
 
-    protected void onGotAllFriends(List<ParseUser> friends) {
+    protected void onGotAllFriends(final List<ParseUser> friends) {
         if (mGotAllFriendsListener!= null) {
             mGotAllFriendsListener.onGotAllFriends(friends);
         }
     }
 
-    public void setAllFriendsListener(Activity a) {
+    public void setAllFriendsListener(final Activity a) {
         mGotAllFriendsListener = (onGotAllFriendsListener) a;
     }
 
@@ -111,7 +111,7 @@ public class FriendManager {
         }
     }
 
-    public void setRequestFriendListener(Activity a) {
+    public void setRequestFriendListener(final Activity a) {
         mRequestFriendListener = (onRequestFriendListener) a;
     }
 
@@ -129,7 +129,7 @@ public class FriendManager {
         }
     }
 
-    public void setAcceptFriendListener(Activity a) {
+    public void setAcceptFriendListener(final Activity a) {
         mAcceptFriendListener = (onAcceptFriendListener) a;
     }
 
@@ -147,7 +147,7 @@ public class FriendManager {
         }
     }
 
-    public void setRejectFriendListener(Activity a) {
+    public void setRejectFriendListener(final Activity a) {
         mRejectFriendListener = (onRejectFriendListener) a;
     }
 
@@ -164,7 +164,7 @@ public class FriendManager {
         }
     }
 
-    public void setRemoveFriendResultListener(Activity a) {
+    public void setRemoveFriendResultListener(final Activity a) {
         mRemoveFriendResultListener = (onRemoveFriendResultListener) a;
     }
 
