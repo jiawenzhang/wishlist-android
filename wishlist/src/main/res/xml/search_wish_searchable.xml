@@ -5,5 +5,5 @@
     android:includeInGlobalSearch="true"
     android:searchSuggestAuthority="wishlist"
     android:searchSuggestIntentAction="android.intent.action.VIEW"
-    android:hint="@string/search_hint">
+    android:hint="@string/search_wish_hint">
 </searchable>

@@ -140,10 +140,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!-- Points to searchable meta data. -->
+            <!-- Points to search_wish_searchable meta data. -->
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+                android:resource="@xml/search_wish_searchable" />
         </activity>
         <activity
             android:name=".activity.EditItem"
@@ -215,8 +215,8 @@
         <!-- <intent-filter> -->
         <!-- <action android:name="android.intent.action.SEARCH" /> -->
         <!-- </intent-filter> -->
-        <!-- <meta-data android:name="android.app.searchable" -->
-        <!-- android:resource="@xml/searchable"/> -->
+        <!-- <meta-data android:name="android.app.search_wish_searchable" -->
+        <!-- android:resource="@xml/search_wish_searchable"/> -->
         <!-- </activity> -->
 
         <activity
@@ -275,10 +275,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!-- Points to searchable meta data. -->
+            <!-- Points to search_wish_searchable meta data. -->
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/find_friends_searchable" />
+                android:resource="@xml/search_people_searchable" />
         </activity>
         <activity
             android:name=".activity.FriendRequest"
