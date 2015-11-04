@@ -2,6 +2,7 @@ package com.wish.wishlist.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -40,6 +41,9 @@ public class FriendsWish extends ActivityBase implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends_wish);
         setupActionBar(R.id.friends_wish_toolbar);
+
+        //CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        //collapsingToolbar.setTitle("Friend's wishes");
 
         mRecyclerView = (RecyclerView) findViewById(R.id.wish_recycler_view);
 
