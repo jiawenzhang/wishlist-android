@@ -11,14 +11,14 @@ import com.wish.wishlist.R;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class FindFriendsFragment extends Fragment {
+public class FriendsFragment extends Fragment {
 
-    public FindFriendsFragment() {
+    public FriendsFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_find_friends, container, false);
+        return inflater.inflate(R.layout.fragment_friends, container, false);
     }
 }

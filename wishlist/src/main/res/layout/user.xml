@@ -5,7 +5,7 @@
               android:layout_height="96dp"
               android:clickable="true"
               android:background="?android:attr/selectableItemBackground"
-              android:padding="6dip"
+              android:padding="10dp"
     >
 
     <RelativeLayout
@@ -28,7 +28,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginRight="6dip"
+        android:layout_marginRight="6dp"
         android:src="@drawable/default_profile_image"
         />
 
