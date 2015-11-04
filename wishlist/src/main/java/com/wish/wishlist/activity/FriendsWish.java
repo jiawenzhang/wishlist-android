@@ -2,7 +2,6 @@ package com.wish.wishlist.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -17,6 +16,7 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.WishAdapter;
 import com.wish.wishlist.util.WishAdapterGrid;
 import com.wish.wishlist.util.WishAdapterList;
+import com.wish.wishlist.widgets.ItemDecoration;
 
 import java.util.List;
 
@@ -28,6 +28,7 @@ public class FriendsWish extends ActivityBase implements
     final static String ITEM = "Item";
 
     protected RecyclerView mRecyclerView;
+
     protected RecyclerView.LayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     private WishAdapterList mWishAdapterList;
@@ -55,6 +56,8 @@ public class FriendsWish extends ActivityBase implements
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
         // use a linear layout manager by default
+        // Fixme use dp and covert to px
+        mRecyclerView.addItemDecoration(new ItemDecoration(10 /*px*/));
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         Intent i = getIntent();
