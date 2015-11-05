@@ -3,6 +3,7 @@ package com.wish.wishlist.util;
 /**
  * Created by jiawen on 15-10-05.
  */
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,8 +39,7 @@ public class AddFriendAdapter extends UserAdapter {
     }
 
     @Override
-    public UserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user, parent, false);
         // set the view's size, margins, padding and layout parameters
         Button button1 = (Button) v.findViewById(R.id.button1);
@@ -49,13 +49,15 @@ public class AddFriendAdapter extends UserAdapter {
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         // - get element from your data set at this position
         // - replace the contents of the view with that element
         super.onBindViewHolder(holder, position);
+
+        ViewHolder holder_ = (ViewHolder) holder;
         final UserMeta userMeta = mUserMetaList.get(position);
-        holder.button2.setText("Add friend");
-        holder.button2.setOnClickListener(new OnClickListener() {
+        holder_.button2.setText("Add friend");
+        holder_.button2.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "add friend button clicked");

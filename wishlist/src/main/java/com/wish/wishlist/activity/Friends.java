@@ -1,13 +1,10 @@
 package com.wish.wishlist.activity;
 
-import android.view.View.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
@@ -20,6 +17,7 @@ import java.util.List;
 public class Friends extends FriendsBase implements
         FriendAdapter.FriendTapListener,
         FriendAdapter.RemoveFriendListener,
+        FriendAdapter.FriendRequestTapListener,
         FriendManager.onGotAllFriendsListener,
         FriendManager.onRemoveFriendResultListener {
 
@@ -29,17 +27,6 @@ public class Friends extends FriendsBase implements
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        RelativeLayout top_relative_layout = (RelativeLayout) findViewById(R.id.top_relative_layout);
-        top_relative_layout.setVisibility(View.VISIBLE);
-        top_relative_layout.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "New friend tapped");
-                final Intent friendRequestIntent = new Intent(getApplicationContext(), FriendRequest.class);
-                startActivity(friendRequestIntent);
-            }
-        });
     }
 
     protected void loadView() {
@@ -77,6 +64,7 @@ public class Friends extends FriendsBase implements
         mFriendAdapter = new FriendAdapter(getUserMetaList(friends));
         mFriendAdapter.setFriendTapListener(this);
         mFriendAdapter.setRemoveFriendListener(this);
+        mFriendAdapter.setFriendRequestTapListener(this);
         mRecyclerView.swapAdapter(mFriendAdapter, true);
     }
 
@@ -97,5 +85,10 @@ public class Friends extends FriendsBase implements
 
     public void onRemoveFriendResult(final String friendId, final boolean success) {
         handleResult(friendId, success, "Removed", mFriendAdapter);
+    }
+
+    public void onFriendRequestTap() {
+        final Intent friendRequestIntent = new Intent(getApplicationContext(), FriendRequest.class);
+        startActivity(friendRequestIntent);
     }
 }

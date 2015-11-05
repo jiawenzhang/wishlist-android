@@ -20,7 +20,7 @@ import com.wish.wishlist.WishlistApplication;
 
 import java.util.List;
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
+public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static class UserMeta {
         public String objectId;
@@ -39,6 +39,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     protected List<UserMeta> mUserMetaList;
     private static final String TAG = "UserAdapter";
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView txtName;
@@ -64,20 +65,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         mUserMetaList = userData;
     }
 
-    public void add(int position, UserMeta item) {
-        mUserMetaList.add(position, item);
-        notifyItemInserted(position);
-    }
-
-    protected void remove(int position) {
-        mUserMetaList.remove(position);
-        notifyItemRemoved(position);
-    }
-
     public void remove(final String userId) {
         for (int position = 0; position < mUserMetaList.size(); position++) {
             if (mUserMetaList.get(position).objectId.equals(userId)) {
-                remove(position);
+                mUserMetaList.remove(position);
+                notifyItemRemoved(position);
                 break;
             }
         }
@@ -85,10 +77,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     // Create new views (invoked by the layout manager)
     @Override
-    public UserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user, parent, false);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // set the view's size, margins, padding and layout parameters
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user, parent, false);
         return new ViewHolder(v);
     }
 
@@ -101,17 +92,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         // - get element from your data set at this position
         // - replace the contents of the view with that element
+        ViewHolder holder_ = (ViewHolder) holder;
         final UserMeta userMeta = mUserMetaList.get(position);
         if (userMeta.imageUrl != null) {
-            Picasso.with(holder.imgProfile.getContext()).load(mUserMetaList.get(position).imageUrl).fit().into(holder.imgProfile);
+            Picasso.with(holder_.imgProfile.getContext()).load(mUserMetaList.get(position).imageUrl).fit().into(holder_.imgProfile);
         } else {
-            holder.imgProfile.setImageResource(R.drawable.default_profile_image);
+            holder_.imgProfile.setImageResource(R.drawable.default_profile_image);
         }
-        holder.txtName.setText(userMeta.name);
-        holder.txtUsername.setText(userMeta.username);
+        holder_.txtName.setText(userMeta.name);
+        holder_.txtUsername.setText(userMeta.username);
     }
 
     // Return the size of your data set (invoked by the layout manager)

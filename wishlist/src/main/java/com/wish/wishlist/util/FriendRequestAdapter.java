@@ -4,6 +4,7 @@ package com.wish.wishlist.util;
  * Created by jiawen on 15-10-05.
  */
 
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,17 +57,6 @@ public class FriendRequestAdapter extends UserAdapter {
         super();
     }
 
-    public void add(final int position, final FriendRequestMeta item) {
-        FriendRequestCache.getInstance().friendRequestList().add(position, item);
-        notifyItemInserted(position);
-    }
-
-    @Override
-    protected void remove(final int position) {
-        FriendRequestCache.getInstance().friendRequestList().remove(position);
-        notifyItemRemoved(position);
-    }
-
     @Override
     public void remove(final String userId) {
         ListIterator<FriendRequestMeta> it = FriendRequestCache.getInstance().friendRequestList().listIterator();
@@ -100,28 +90,30 @@ public class FriendRequestAdapter extends UserAdapter {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         // - get element from your data set at this position
         // - replace the contents of the view with that element
         // super.onBindViewHolder(holder, position);
+
+        ViewHolder holder_ = (ViewHolder) holder;
         final FriendRequestMeta meta = FriendRequestCache.getInstance().friendRequestList().get(position);
         if (meta.imageUrl != null) {
-            Picasso.with(holder.imgProfile.getContext()).load(meta.imageUrl).fit().into(holder.imgProfile);
+            Picasso.with(holder_.imgProfile.getContext()).load(meta.imageUrl).fit().into(holder_.imgProfile);
         } else {
-            holder.imgProfile.setImageResource(R.drawable.default_profile_image);
+            holder_.imgProfile.setImageResource(R.drawable.default_profile_image);
         }
-        holder.txtName.setText(meta.name);
-        holder.txtUsername.setText(meta.username);
+        holder_.txtName.setText(meta.name);
+        holder_.txtUsername.setText(meta.username);
 
         if (meta.fromMe) {
             Log.d(TAG, "request from me");
-            holder.button1.setVisibility(View.GONE);
-            holder.button2.setText("Pending");
-            holder.button2.setEnabled(false);
+            holder_.button1.setVisibility(View.GONE);
+            holder_.button2.setText("Pending");
+            holder_.button2.setEnabled(false);
         } else {
             Log.d(TAG, "request to me");
-            holder.button1.setText("Accept");
-            holder.button1.setOnClickListener(new OnClickListener() {
+            holder_.button1.setText("Accept");
+            holder_.button1.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, "Accept friend button clicked");
@@ -129,8 +121,8 @@ public class FriendRequestAdapter extends UserAdapter {
                 }
             });
 
-            holder.button2.setText("Reject");
-            holder.button2.setOnClickListener(new OnClickListener() {
+            holder_.button2.setText("Reject");
+            holder_.button2.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, "Reject friend button clicked");
