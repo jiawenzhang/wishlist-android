@@ -197,6 +197,17 @@
                     android:textSize="@dimen/text_size_medium"
                     android:textColor="@color/bodyText_dark_grey"
                     />
+                <CheckBox
+                    android:id="@+id/privateCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Private"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/bodyText_dark_grey"
+                    />
                 <!--		android:src="@drawable/icon"/> -->
 
             </LinearLayout>

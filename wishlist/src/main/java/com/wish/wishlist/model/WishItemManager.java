@@ -79,6 +79,8 @@ public class WishItemManager {
     {
         long itemId = wishItemCursor.getLong(wishItemCursor.getColumnIndexOrThrow(ItemDBManager.KEY_ID));
 
+        int access = wishItemCursor.getInt(wishItemCursor.getColumnIndexOrThrow(ItemDBManager.KEY_ACCESS));
+
         double latitude = wishItemCursor.getDouble(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_LATITUDE));
 
@@ -127,7 +129,7 @@ public class WishItemManager {
         boolean synced_to_server = wishItemCursor.getInt(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_SYNCED_TO_SERVER)) == 1;
 
-        WishItem item = new WishItem(itemId, objectId, storeName, itemName, itemDesc,
+        WishItem item = new WishItem(itemId, objectId, access, storeName, itemName, itemDesc,
                 updated_time, picture_str, null, fullsize_pic_path, itemPrice, latitude, longitude,
                 itemLocation, itemPriority, itemComplete, itemLink, deleted, synced_to_server);
 

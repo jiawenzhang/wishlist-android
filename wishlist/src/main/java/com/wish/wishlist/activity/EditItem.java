@@ -101,6 +101,7 @@ public class EditItem extends ActivityBase
     private EditText _locationEditText;
     private EditText _linkEditText;
     private CheckBox _completeCheckBox;
+    private CheckBox _privateCheckBox;
 
     private ImageButton _mapImageButton;
     private ImageButton _cameraImageButton;
@@ -116,6 +117,7 @@ public class EditItem extends ActivityBase
     PositionManager _pManager;
     private long mItem_id = -1;
     private int _complete = -1;
+    private int _access = -1;
     private boolean _editNew = true;
     private boolean _isGettingLocation = false;
     private ArrayList<String> _tags = new ArrayList<String>();
@@ -170,6 +172,7 @@ public class EditItem extends ActivityBase
         _locationEditText = (EditText) findViewById(R.id.location);
         _linkEditText = (EditText) findViewById(R.id.link);
         _completeCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
+        _privateCheckBox = (CheckBox) findViewById(R.id.privateCheckBox);
 
         _cameraImageButton = (ImageButton) findViewById(R.id.imageButton_camera);
 
@@ -251,6 +254,13 @@ public class EditItem extends ActivityBase
                 _completeCheckBox.setChecked(true);
             } else {
                 _completeCheckBox.setChecked(false);
+            }
+
+            _access = item.getAccess();
+            if (_access == WishItem.PRIVATE) {
+                _privateCheckBox.setChecked(true);
+            } else {
+                _privateCheckBox.setChecked(false);
             }
 
             _itemNameEditText.setText(item.getName());
@@ -662,6 +672,7 @@ public class EditItem extends ActivityBase
         double itemPrice;
         int itemPriority = 0;
         int itemComplete = 0;
+        int itemAccess = -1;
         String itemLink;
         itemLink = _linkEditText.getText().toString().trim();
         if (!itemLink.isEmpty() && !Patterns.WEB_URL.matcher(itemLink).matches()) {
@@ -685,9 +696,14 @@ public class EditItem extends ActivityBase
 
             if (_completeCheckBox.isChecked()) {
                 itemComplete = 1;
-            }
-            else {
+            } else {
                 itemComplete = 0;
+            }
+
+            if (_privateCheckBox.isChecked()) {
+                itemAccess = WishItem.PRIVATE;
+            } else {
+                itemAccess = WishItem.PUBLIC;
             }
 
             itemPrice = Double.valueOf(_priceEditText.getText().toString().trim());
@@ -710,7 +726,7 @@ public class EditItem extends ActivityBase
 
         if (mItem_id == -1) {
             // create a new item
-            WishItem item = new WishItem(mItem_id, "", itemStoreName, itemName, itemDesc,
+            WishItem item = new WishItem(mItem_id, "", itemAccess, itemStoreName, itemName, itemDesc,
                     System.currentTimeMillis(), _webPicUrl, null, _fullsizePhotoPath, itemPrice, _lat, _lng,
                     _ddStr, itemPriority, itemComplete, itemLink, false, false);
 
@@ -718,6 +734,7 @@ public class EditItem extends ActivityBase
         } else {
             // updating an existing item
             WishItem item = WishItemManager.getInstance().getItemById(mItem_id);
+            item.setAccess(itemAccess);
             item.setStoreName(itemStoreName);
             item.setName(itemName);
             item.setDesc(itemDesc);

@@ -16,7 +16,6 @@ import android.content.ContentValues;
 import android.util.Log;
 import android.database.Cursor;
 
-import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -34,7 +33,12 @@ import org.json.JSONObject;
 
 public class WishItem implements Parcelable {
     private static final String TAG = "WishItem";
+    public static final int PUBLIC = 0;
+    public static final int PRIVATE = 1;
+
     private long _id = -1;
+    private String _object_id;
+    private int _access = PUBLIC;
     private String _storeName;
     private String _name;
     private String _comments;
@@ -50,7 +54,6 @@ public class WishItem implements Parcelable {
     private double _latitude;
     private double _longitude;
     private String _address;
-    private String _object_id;
     private boolean _deleted;
     private boolean _synced_to_server;
 
@@ -58,11 +61,12 @@ public class WishItem implements Parcelable {
     public final static String PARSE_KEY_TAGS = "tags";
     public final static String PARSE_KEY_IMAGE = "image";
 
-    public WishItem(long itemId, String object_id, String storeName, String name, String desc,
+    public WishItem(long itemId, String object_id, int access, String storeName, String name, String desc,
                     long updated_time, String picURL, String picParseURL, String fullsizePicPath, double price, double latitude, double longitude,
                     String address, int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
         _id = itemId;
         _object_id = object_id;
+        _access = access;
         _fullsizePicPath = fullsizePicPath;
         _price = price;
         _latitude = latitude;
@@ -85,6 +89,20 @@ public class WishItem implements Parcelable {
         return _id;
     }
 
+    public String getObjectId() {
+        return _object_id;
+    }
+    public void setObjectId(final String object_id) {
+        _object_id = object_id;
+    }
+
+    public int getAccess() {
+        return _access;
+    }
+    public void setAccess(final int access) {
+        _access = access;
+    }
+
     public boolean getDeleted() {
         return _deleted;
     }
@@ -99,14 +117,6 @@ public class WishItem implements Parcelable {
 
     public void setSyncedToServer(boolean value) {
         _synced_to_server = value;
-    }
-
-    public String getObjectId() {
-        return _object_id;
-    }
-
-    public void setObjectId(String object_id) {
-        _object_id = object_id;
     }
 
     public void setStoreName(String storeName) {
@@ -391,7 +401,7 @@ public class WishItem implements Parcelable {
     {
         ItemDBManager manager = new ItemDBManager();
         if (_id == -1) { // new item
-            _id = manager.addItem(_object_id, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,
+            _id = manager.addItem(_object_id, _access, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,
                     _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted, _synced_to_server);
         } else { // existing item
             updateDB();
@@ -402,7 +412,7 @@ public class WishItem implements Parcelable {
     private void updateDB()
     {
         ItemDBManager manager = new ItemDBManager();
-        manager.updateItem(_id, _object_id, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,
+        manager.updateItem(_id, _object_id, _access, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,
                 _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted, _synced_to_server);
     }
 
@@ -416,6 +426,7 @@ public class WishItem implements Parcelable {
         WishItem wishItem = new WishItem(
                 item_id,
                 item.getObjectId(),
+                item.getInt(ItemDBManager.KEY_ACCESS),
                 item.getString(ItemDBManager.KEY_STORENAME),
                 item.getString(ItemDBManager.KEY_NAME),
                 item.getString(ItemDBManager.KEY_DESCRIPTION),
@@ -442,6 +453,7 @@ public class WishItem implements Parcelable {
         if (user != null) {// user here should never be null
             wishObject.put(WishItem.PARSE_KEY_OWNDER_ID, user.getObjectId());
         }
+        wishObject.put(ItemDBManager.KEY_ACCESS, item.getAccess());
         wishObject.put(ItemDBManager.KEY_STORENAME, item.getStoreName());
         wishObject.put(ItemDBManager.KEY_NAME, item.getName());
         wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc());
@@ -514,6 +526,8 @@ public class WishItem implements Parcelable {
     // write object's data to the passed-in Parcel
     public void writeToParcel(Parcel out, int flags) {
         out.writeLong(_id);
+        out.writeString(_object_id);
+        out.writeInt(_access);
         out.writeString(_storeName);
         out.writeString(_name);
         out.writeString(_comments);
@@ -529,7 +543,6 @@ public class WishItem implements Parcelable {
         out.writeDouble(_latitude);
         out.writeDouble(_longitude);
         out.writeString(_address);
-        out.writeString(_object_id);
         out.writeByte((byte) (_deleted ? 1 : 0));
         out.writeByte((byte) (_synced_to_server ? 1 : 0));
     }
@@ -548,6 +561,8 @@ public class WishItem implements Parcelable {
     private WishItem(Parcel in) {
         // data in Parcel is FIFO, make sure to read data in the same order of write
         _id = in.readLong();
+        _object_id = in.readString();
+        _access = in.readInt();
         _storeName = in.readString();
         _name = in.readString();
         _comments = in.readString();
@@ -563,7 +578,6 @@ public class WishItem implements Parcelable {
         _latitude = in.readDouble();
         _longitude = in.readDouble();
         _address = in.readString();
-        _object_id = in.readString();
         _deleted = in.readByte() != 0;
         _synced_to_server = in.readByte() != 0;
     }

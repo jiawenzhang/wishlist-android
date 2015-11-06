@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.model.WishItem;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -131,10 +132,16 @@ public class DBAdapter {
                     + ItemDBManager.DB_TABLE
                     + " ADD COLUMN synced_to_server INTEGER ";
 
+            //add access (PUBLIC/PRIVATE) column in the Item table
+            String sql7 = "ALTER TABLE "
+                    + ItemDBManager.DB_TABLE
+                    + " ADD COLUMN access INTEGER ";
+
             db.execSQL(sql3);
             db.execSQL(sql4);
             db.execSQL(sql5);
             db.execSQL(sql6);
+            db.execSQL(sql7);
 
             //convert updated_time in String to updated_time in long(ms)
             String sql = String.format("SELECT _id, updated_time FROM Item");
@@ -171,6 +178,7 @@ public class DBAdapter {
             + ItemDBManager.DB_TABLE + " ("
             + ItemDBManager.KEY_ID			+ " INTEGER PRIMARY KEY, "
             + ItemDBManager.KEY_OBJECT_ID	+ " TEXT, "
+            + ItemDBManager.KEY_ACCESS	    + " INTEGER, "
             + ItemDBManager.KEY_STORE_ID 	+ " INTEGER, "
             + ItemDBManager.KEY_STORENAME	+ " TEXT, "
             + ItemDBManager.KEY_NAME 		+ " TEXT, "
@@ -252,6 +260,7 @@ public class DBAdapter {
                 ItemDBManager mItemDBManager = new ItemDBManager();
                 mItemDBManager.addItem(
                         "",
+                        WishItem.PUBLIC,
                         "Apple Store",
                         "iPad mini",
                         "It is the new iPad with retina display",
@@ -271,6 +280,7 @@ public class DBAdapter {
 
                 mItemDBManager.addItem(
                         "",
+                        WishItem.PUBLIC,
                         "Coach store",
                         "Leather bag",
                         "What a beautiful bag! Cannot help noticing it.",
@@ -290,6 +300,7 @@ public class DBAdapter {
 
                 mItemDBManager.addItem(
                         "",
+                        WishItem.PUBLIC,
                         "Tiffany",
                         "Starfish necklace",
                         "Gorgeous",
@@ -309,6 +320,7 @@ public class DBAdapter {
 
                 mItemDBManager.addItem(
                         "",
+                        WishItem.PUBLIC,
                         "Bay Company",
                         "High hel",
                         "lala",
@@ -328,6 +340,7 @@ public class DBAdapter {
 
                 mItemDBManager.addItem(
                         "",
+                        WishItem.PUBLIC,
                         "Bay Inc.",
                         "Earring",
                         "I like its color",
@@ -347,6 +360,7 @@ public class DBAdapter {
 
                 mItemDBManager.addItem(
                         "",
+                        WishItem.PUBLIC,
                         "Indigo",
                         "Wooden lantern",
                         "nice",

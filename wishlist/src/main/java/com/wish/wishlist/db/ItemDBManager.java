@@ -19,6 +19,7 @@ import com.wish.wishlist.WishlistApplication;
 public class ItemDBManager extends DBManager {
 	public static final String KEY_ID = "_id";
 	public static final String KEY_OBJECT_ID = "object_id";
+	public static final String KEY_ACCESS = "access";
 	public static final String KEY_STORE_ID = "store_id";
 	public static final String KEY_STORENAME = "store_name";
 	public static final String KEY_NAME = "item_name";
@@ -55,7 +56,7 @@ public class ItemDBManager extends DBManager {
 	 * @param description
 	 *            The name description
 	 */
-	public long addItem(String object_id, String store_name, String name, String description, long updated_time,
+	public long addItem(String object_id, int access, String store_name, String name, String description, long updated_time,
 			String picture_url, String fullsize_picture_path, double price, String address, double latitude, double longitude,
 			int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
 		// String sql = String.format(
@@ -67,6 +68,7 @@ public class ItemDBManager extends DBManager {
 		ContentValues initialValues = new ContentValues();
 
 		initialValues.put(KEY_OBJECT_ID, object_id);
+		initialValues.put(KEY_ACCESS, access);
 		initialValues.put(KEY_STORENAME, store_name);
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
@@ -97,7 +99,7 @@ public class ItemDBManager extends DBManager {
 	 * @param description
 	 *            The item description
 	 */
-	public void updateItem(long _id, String object_id, String store_name, String name, String description, long updated_time,
+	public void updateItem(long _id, String object_id, int access, String store_name, String name, String description, long updated_time,
 			String picture_url, String fullsize_picture_path, double price, String address, double latitude, double longitude,
 			int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
 
@@ -114,6 +116,7 @@ public class ItemDBManager extends DBManager {
 		ContentValues initialValues = new ContentValues();
 
         initialValues.put(KEY_OBJECT_ID, object_id);
+		initialValues.put(KEY_ACCESS, access);
 		initialValues.put(KEY_STORENAME, store_name);
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
