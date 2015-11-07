@@ -317,7 +317,7 @@ public class SyncAgent {
     private void updateParse(final WishItem item)
     {
         Log.d(TAG, "Updating item " + item.getName() + " to Parse");
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(ItemDBManager.DB_TABLE);
+        final ParseQuery<ParseObject> query = ParseQuery.getQuery(ItemDBManager.DB_TABLE);
 
         // Retrieve the object by id
         query.getInBackground(item.getObjectId(), new GetCallback<ParseObject>() {

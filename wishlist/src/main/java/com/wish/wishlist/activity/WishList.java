@@ -1060,7 +1060,8 @@ public class WishList extends ActivityBase implements
         // Setup NavigationView
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-        mHeaderLayout = (RelativeLayout) mNavigationView.findViewById(R.id.drawer_header_layout);
+        final View header = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
+        mHeaderLayout = (RelativeLayout) header.findViewById(R.id.drawer_header_layout);
         final ParseUser currentUser = ParseUser.getCurrentUser();
         mHeaderLayout.setOnClickListener(new View.OnClickListener() {
             @Override

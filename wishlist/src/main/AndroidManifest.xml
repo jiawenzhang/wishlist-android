@@ -221,7 +221,7 @@
 
         <activity
             android:name=".activity.Map"
-            android:label="@string/app_name"
+            android:label="Map"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
@@ -254,7 +254,7 @@
         </activity>
         <activity
             android:name=".activity.Cropper"
-            android:label="@string/app_name"
+            android:label=""
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
@@ -282,12 +282,12 @@
         </activity>
         <activity
             android:name=".activity.FriendRequest"
-            android:label="@string/app_name"
+            android:label="Friend request"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
             android:name=".activity.FriendsWish"
-            android:label="@string/app_name"
+            android:label=""
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <!-- <provider android:name="com.android.wishlist.defaultphotoprovider" -->
