@@ -13,6 +13,12 @@
             android:defaultValue="true"
             android:key="autoLocation"
             android:layout="@xml/checkbox_preference_style"/>
+        <CheckBoxPreference
+            android:title="Default wish to private"
+            android:summary="Private wishes are visible only to yourself. Your friends won't be able to see them"
+            android:defaultValue="false"
+            android:key="wishDefaultPrivate"
+            android:layout="@xml/checkbox_preference_style"/>
         <Preference
             android:title="Currency symbol"
             android:summary="$"

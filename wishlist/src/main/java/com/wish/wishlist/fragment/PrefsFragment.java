@@ -9,6 +9,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.app.DialogFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
@@ -23,6 +24,8 @@ import com.wish.wishlist.view.ReleaseNotesView;
  */
 public class PrefsFragment extends PreferenceFragment implements
         CurrencyFragmentDialog.onCurrencyChangedListener {
+
+    private static String TAG = "PrefsFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class PrefsFragment extends PreferenceFragment implements
                 return true;
             }
         });
+
 
         final Preference currencyPref = findPreference("currency");
         String currency = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).getString("currency", "");

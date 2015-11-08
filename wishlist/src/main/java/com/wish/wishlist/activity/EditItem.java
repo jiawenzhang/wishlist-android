@@ -117,7 +117,6 @@ public class EditItem extends ActivityBase
     PositionManager _pManager;
     private long mItem_id = -1;
     private int _complete = -1;
-    private int _access = -1;
     private boolean _editNew = true;
     private boolean _isGettingLocation = false;
     private ArrayList<String> _tags = new ArrayList<String>();
@@ -256,8 +255,7 @@ public class EditItem extends ActivityBase
                 _completeCheckBox.setChecked(false);
             }
 
-            _access = item.getAccess();
-            if (_access == WishItem.PRIVATE) {
+            if (item.getAccess() == WishItem.PRIVATE) {
                 _privateCheckBox.setChecked(true);
             } else {
                 _privateCheckBox.setChecked(false);
@@ -280,13 +278,21 @@ public class EditItem extends ActivityBase
                 _imageItem.setVisibility(View.VISIBLE);
             }
             _tags = TagItemDBManager.instance().tags_of_item(mItem_id);
-        } else { //we are creating a new wish, get the location in background
-            boolean action_send = (Intent.ACTION_SEND.equals(action) && type != null);
-            boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true) && !action_send;
+        } else { //we are creating a new wish
+            // Get the location in background
+            final boolean action_send = (Intent.ACTION_SEND.equals(action) && type != null);
+            final boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true) && !action_send;
             if (tagLocation) {
                 _pManager.startLocationUpdates();
                 _isGettingLocation = true;
                 _locationEditText.setText("Loading location...");
+            }
+
+            final boolean wishDefaultPrivate = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("wishDefaultPrivate", false);
+            if (wishDefaultPrivate) {
+                _privateCheckBox.setChecked(true);
+            } else {
+                _privateCheckBox.setChecked(false);
             }
         }
 
