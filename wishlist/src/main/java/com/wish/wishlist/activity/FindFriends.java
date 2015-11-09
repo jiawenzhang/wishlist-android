@@ -1,9 +1,11 @@
 package com.wish.wishlist.activity;
 
+import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -13,15 +15,19 @@ import android.widget.Toast;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
+import com.wish.wishlist.fragment.InviteFriendFragmentDialog;
 import com.wish.wishlist.friend.FriendManager;
 import com.wish.wishlist.util.AddFriendAdapter;
+import com.wish.wishlist.util.UserAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FindFriends extends FriendsBase implements
         FriendManager.onFoundUserListener,
         FriendManager.onRequestFriendListener,
-        AddFriendAdapter.addFriendListener {
+        AddFriendAdapter.AddFriendListener,
+        AddFriendAdapter.InviteFriendTapListener {
 
     final static String TAG = "FindFriends";
     private MenuItem _menuSearch;
@@ -32,6 +38,14 @@ public class FindFriends extends FriendsBase implements
         super.onCreate(savedInstanceState);
 
         handleIntent(getIntent());
+    }
+
+    protected void loadView() {
+        // show the top invite friend button
+        mAddFriendAdapter = new AddFriendAdapter(new ArrayList<UserAdapter.UserMeta>());
+        mAddFriendAdapter.setAddFriendListener(this);
+        mAddFriendAdapter.setInviteFriendTapListener(this);
+        mRecyclerView.swapAdapter(mAddFriendAdapter, true);
     }
 
     @Override
@@ -102,11 +116,12 @@ public class FindFriends extends FriendsBase implements
         }
         mAddFriendAdapter = new AddFriendAdapter(getUserMetaList(users));
         mAddFriendAdapter.setAddFriendListener(this);
+        mAddFriendAdapter.setInviteFriendTapListener(this);
         mRecyclerView.swapAdapter(mAddFriendAdapter, true);
     }
 
     @Override
-    public void onAddFriend(String friendId) {
+    public void onAddFriend(final String friendId) {
         Log.d(TAG, "onAddFriend " + friendId);
         showProgressDialog("Sending friend request");
 
@@ -117,5 +132,14 @@ public class FindFriends extends FriendsBase implements
     @Override
     public void onRequestFriendResult(final String friendId, final boolean success) {
         handleResult(friendId, success, "Friend request sent", mAddFriendAdapter);
+    }
+
+    @Override
+    public void onInviteFriendTap() {
+        Log.d(TAG, "onInviteFriendTap");
+        final FragmentManager manager = getFragmentManager();
+
+        DialogFragment dialog = new InviteFriendFragmentDialog();
+        dialog.show(manager, "dialog");
     }
 }

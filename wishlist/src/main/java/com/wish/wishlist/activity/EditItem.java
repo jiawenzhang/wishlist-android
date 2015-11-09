@@ -27,7 +27,6 @@ import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
-import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.ImageManager;
 import com.wish.wishlist.util.PositionManager;
 import com.wish.wishlist.util.WebRequest;

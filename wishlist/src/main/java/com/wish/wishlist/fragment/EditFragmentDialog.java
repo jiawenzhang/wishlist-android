@@ -1,7 +1,6 @@
 package com.wish.wishlist.fragment;
 
 import android.support.v7.app.AlertDialog;
-//import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -38,13 +37,13 @@ public class EditFragmentDialog extends DialogFragment {
 
     @Override
     public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
         // Get the layout inflater
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        View v = inflater.inflate(R.layout.simple_edit_dialog, null);
+        final View v = inflater.inflate(R.layout.simple_edit_dialog, null);
         mEditText = (EditText) v.findViewById(R.id.edit_dialog_text);
         configEditText();
 

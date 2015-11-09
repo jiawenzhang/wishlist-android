@@ -10,10 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 
 import com.wish.wishlist.R;
 
@@ -67,18 +63,6 @@ public class FriendAdapter extends UserAdapter {
     }
     /*************************************************************/
 
-    public class TopButtonViewHolder extends RecyclerView.ViewHolder {
-        public TextView txtUsername;
-        public ImageView imgProfile;
-        public LinearLayout rootLayout;
-
-        public TopButtonViewHolder(View v) {
-            super(v);
-            txtUsername = (TextView) v.findViewById(R.id.username);
-            imgProfile = (ImageView) v.findViewById(R.id.profile_image);
-            rootLayout = (LinearLayout) v.findViewById(R.id.friend_request_button_layout);
-        }
-    }
 
     public FriendAdapter(List<UserMeta> userData) {
         super(userData);
@@ -92,7 +76,7 @@ public class FriendAdapter extends UserAdapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View topButtonView = LayoutInflater.from(parent.getContext()).inflate(R.layout.friend_request_button, parent, false);
+        final View topButtonView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_top_button, parent, false);
         final View friendView = LayoutInflater.from(parent.getContext()).inflate(R.layout.user, parent, false);
         switch (viewType) {
             case TOP_BUTTON: return new TopButtonViewHolder(topButtonView);
