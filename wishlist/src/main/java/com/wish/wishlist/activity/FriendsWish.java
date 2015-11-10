@@ -18,6 +18,7 @@ import com.wish.wishlist.util.WishAdapterGrid;
 import com.wish.wishlist.util.WishAdapterList;
 import com.wish.wishlist.widgets.ItemDecoration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FriendsWish extends ActivityBase implements
@@ -33,7 +34,7 @@ public class FriendsWish extends ActivityBase implements
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     private WishAdapterList mWishAdapterList;
     private WishAdapterGrid mWishAdapterGrid;
-    private List<ParseObject> mWishlist;
+    private List<WishItem> mWishlist;
     private String mFriendId;
     private boolean mListView = true;
 
@@ -68,7 +69,7 @@ public class FriendsWish extends ActivityBase implements
 
     public void onGotWishes(String friendId, List<ParseObject> wishList) {
         Log.d(TAG, "got " + wishList.size() + " wishes from friendId " + friendId);
-        mWishlist = wishList;
+        mWishlist = fromParseObjects(wishList);
         // onGotWishes can be call twice, one from cached data and another from network, if we use setAdapter here,
         // the items in the grid layout will be displaced the second time setAdapter is called.
         // Using swapAdapter and passing false as the removeAndRecycleExistingViews flag will avoid this
@@ -79,6 +80,14 @@ public class FriendsWish extends ActivityBase implements
             mWishAdapterGrid = new WishAdapterGrid(mWishlist, this);
             mRecyclerView.swapAdapter(mWishAdapterGrid, false);
         }
+    }
+
+    private List<WishItem> fromParseObjects(final List<ParseObject> parseWishList) {
+        List<WishItem> wishList = new ArrayList<>();
+        for (final ParseObject object : parseWishList) {
+            wishList.add(WishItem.fromParseObject(object, -1));
+        }
+        return wishList;
     }
 
     @Override

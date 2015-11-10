@@ -209,51 +209,6 @@ public class WishList extends ActivityBase implements
 
         handleIntent(getIntent());
 
-        // set the spinner for switching between list and grid views
-//		ArrayAdapter<CharSequence> adapter = ArrayAdapter
-//				.createFromResource(this, R.array.views_array,
-//						android.R.layout.simple_spinner_item);
-
-//		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//		myViewSpinner.setAdapter(adapter);
-
-//		// set the default spinner option
-//		if (_view == "list") {
-//			myViewSpinner.setSelection(0);
-//		} else {
-//			myViewSpinner.setSelection(1);
-//		}
-//
-//		myViewSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-//			@Override
-//			public void onItemSelected(AdapterView<?> parent, View view,
-//					int pos, long id) {
-//
-//				// list view is selected
-//				if (pos == 0) {
-//					// Recall populate here is inefficient
-//					_view = "list";
-//					populateItems(_nameQuery, SORT_BY);
-//					_viewFlipper.setDisplayedChild(0);
-//
-//				}
-//				// grid view is selected
-//				else if (pos == 1) {
-//					_view = "grid";
-//					populateItems(_nameQuery, SORT_BY);
-//					_viewFlipper.setDisplayedChild(1);
-//
-//				}
-//				// Toast.makeText(parent.getContext(), "The view is " +
-//				// parent.getItemAtPosition(pos).toString(),
-//				// Toast.LENGTH_LONG).show();
-//			}
-//
-//			@Override
-//			public void onNothingSelected(AdapterView parent) {
-//				// Do nothing.
-//			}
-//		});
         if (savedInstanceState != null) {
             Log.d(WishList.LOG_TAG, "savedInstanceState != null");
             // restore the current selected item in the list

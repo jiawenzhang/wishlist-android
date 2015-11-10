@@ -31,10 +31,10 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
     /***********************************************************/
 
-    protected List<ParseObject> mWishList;
+    protected List<WishItem> mWishList;
     private static final String TAG = "WishAdapter";
 
-    public WishAdapter(List<ParseObject> wishList) {
+    public WishAdapter(List<WishItem> wishList) {
         mWishList = wishList;
     }
 
@@ -44,7 +44,7 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) { return null; }
 
-    public void add(int position, ParseObject item) {
+    public void add(int position, final WishItem item) {
         mWishList.add(position, item);
         notifyItemInserted(position);
     }

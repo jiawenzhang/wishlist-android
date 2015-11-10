@@ -15,11 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.parse.ParseFile;
-import com.parse.ParseObject;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
-import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.model.WishItem;
 
 import java.text.DecimalFormat;
@@ -49,7 +46,7 @@ public class WishAdapterList extends WishAdapter {
         }
     }
 
-    public WishAdapterList(List<ParseObject> wishList, Activity fromActivity) {
+    public WishAdapterList(List<WishItem> wishList, Activity fromActivity) {
         super(wishList);
         setWishTapListener(fromActivity);
     }
@@ -68,24 +65,25 @@ public class WishAdapterList extends WishAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
         // - get element from your data set at this position
         // - replace the contents of the view with that element
-        WishAdapterList.ViewHolder holder = (WishAdapterList.ViewHolder) vh;
-        final ParseObject wish = mWishList.get(position);
+        final WishAdapterList.ViewHolder holder = (WishAdapterList.ViewHolder) vh;
+        final WishItem wish = mWishList.get(position);
 
-        String photoURL = wish.getString(ItemDBManager.KEY_PHOTO_URL);
-        ParseFile photoFile = wish.getParseFile(WishItem.PARSE_KEY_IMAGE);
-        if (photoURL != null) {
+        final String photoWebURL = wish.getPicURL();
+        //ParseFile photoFile = wish.getParseFile(WishItem.PARSE_KEY_IMAGE);
+        final String photoParseURL = wish.getPicParseURL();
+        if (photoWebURL != null) {
             holder.imgPhoto.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgPhoto.getContext()).load(photoURL).fit().centerCrop().into(holder.imgPhoto);
-        } else if (photoFile != null) {
+            Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).fit().centerCrop().into(holder.imgPhoto);
+        } else if (photoParseURL != null) {
             holder.imgPhoto.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgPhoto.getContext()).load(photoFile.getUrl()).fit().centerCrop().into(holder.imgPhoto);
+            Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).fit().centerCrop().into(holder.imgPhoto);
         } else {
             holder.imgPhoto.setVisibility(View.GONE);
         }
 
-        holder.txtName.setText(wish.getString(ItemDBManager.KEY_NAME));
+        holder.txtName.setText(wish.getName());
 
-        double price = wish.getDouble(ItemDBManager.KEY_PRICE);
+        double price = wish.getPrice();
         //we use float.min_value to indicate price is not available
         if (price != Double.MIN_VALUE) {
             DecimalFormat Dec = new DecimalFormat("0.00");
@@ -96,7 +94,7 @@ public class WishAdapterList extends WishAdapter {
             holder.txtPrice.setVisibility(View.GONE);
         }
 
-        String storeName = wish.getString(ItemDBManager.KEY_STORENAME);
+        String storeName = wish.getStoreName();
         boolean hasStoreName = false;
         if (!storeName.equals("")) {
             hasStoreName = true;
@@ -106,7 +104,7 @@ public class WishAdapterList extends WishAdapter {
             holder.txtStore.setVisibility(View.GONE);
         }
 
-        String Address = wish.getString(ItemDBManager.KEY_ADDRESS);
+        String Address = wish.getAddress();
         if (!Address.equals("unknown") && !Address.equals("")) {
             if (!hasStoreName) {
                 Address = "At " + Address;
@@ -117,7 +115,7 @@ public class WishAdapterList extends WishAdapter {
             holder.txtAddress.setVisibility(View.GONE);
         }
 
-        int complete = wish.getInt(ItemDBManager.KEY_COMPLETE);
+        int complete = wish.getComplete();
         if (complete == 1) {
             holder.imgComplete.setVisibility(View.VISIBLE);
         } else {
@@ -129,7 +127,7 @@ public class WishAdapterList extends WishAdapter {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "wish clicked");
-                onWishTapped(WishItem.fromParseObject(wish, -1));
+                onWishTapped(wish);
             }
         });
     }
