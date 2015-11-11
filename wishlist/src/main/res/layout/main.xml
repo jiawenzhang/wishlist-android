@@ -37,41 +37,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.etsy.android.grid.StaggeredGridView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/staggered_view"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/wish_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:item_margin="12dp"
-                app:column_count_portrait="2"
-                app:column_count_landscape="3"/>
-
-            <ListView
-                android:id="@+id/myListView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fadingEdge="none"
-                android:divider="@android:color/transparent"
-                android:dividerHeight="8dp"
-                android:padding = "8dp"
-                android:clipToPadding="false"
-                android:background="@color/bodyBackground_light_grey"
-                />
-            <!--  android:cacheColorHint="#00000000" -->
-
-            <GridView
-                android:id="@+id/myGridView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:numColumns="3"
-                android:stretchMode="columnWidth"
-                android:horizontalSpacing="0dp"
-                android:verticalSpacing="0dp"
-                android:gravity="center"
-                android:background="@color/black"
-                android:listSelector="@null"
-                />
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:scrollbars="vertical" />
 
             <RelativeLayout
                 android:orientation="vertical"

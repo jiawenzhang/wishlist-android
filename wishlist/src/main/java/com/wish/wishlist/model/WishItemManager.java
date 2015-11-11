@@ -1,6 +1,8 @@
 package com.wish.wishlist.model;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
@@ -33,6 +35,35 @@ public class WishItemManager {
             items.add(itemFromCursor(wishItemCursor));
         }
         return items;
+    }
+
+    public List<WishItem> searchItems(final String query, final String sortOption)
+    {
+        final ItemDBManager itemDBManager = new ItemDBManager();
+        final ItemsCursor c = itemDBManager.searchItems(query, sortOption);
+        List<WishItem> itemList = new ArrayList<>();
+        if (c != null) {
+            c.moveToFirst();
+            while (!c.isAfterLast()){
+                itemList.add(itemFromCursor(c));
+                c.moveToNext();
+            }
+        }
+        return itemList;
+    }
+
+    public List<WishItem> getItems(String sortOption, Map<String,String> where, ArrayList<Long> itemIds) {
+        final ItemDBManager itemDBManager = new ItemDBManager();
+        final ItemsCursor c = itemDBManager.getItems(sortOption, where, itemIds);
+        List<WishItem> itemList = new ArrayList<>();
+        if (c != null) {
+            c.moveToFirst();
+            while (!c.isAfterLast()){
+                itemList.add(itemFromCursor(c));
+                c.moveToNext();
+            }
+        }
+        return itemList;
     }
 
     public ArrayList<WishItem> getItemsNotSyncedToServer()

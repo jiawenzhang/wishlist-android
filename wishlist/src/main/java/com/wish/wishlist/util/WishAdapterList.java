@@ -69,7 +69,6 @@ public class WishAdapterList extends WishAdapter {
         final WishItem wish = mWishList.get(position);
 
         final String photoWebURL = wish.getPicURL();
-        //ParseFile photoFile = wish.getParseFile(WishItem.PARSE_KEY_IMAGE);
         final String photoParseURL = wish.getPicParseURL();
         if (photoWebURL != null) {
             holder.imgPhoto.setVisibility(View.VISIBLE);

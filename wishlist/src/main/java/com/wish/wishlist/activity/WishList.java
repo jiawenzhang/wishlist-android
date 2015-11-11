@@ -3,8 +3,8 @@ package com.wish.wishlist.activity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +20,9 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -28,12 +31,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.support.v7.widget.SearchView;
 import android.widget.TextView;
@@ -46,8 +45,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.parse.ParseUser;
 import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
-import com.wish.wishlist.db.ItemDBManager;
-import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.model.WishItem;
@@ -55,13 +52,13 @@ import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.util.Options;
-import com.wish.wishlist.util.WishItemStaggeredCursorAdapter;
-import com.wish.wishlist.util.WishListItemCursorAdapter;
+import com.wish.wishlist.util.WishAdapter;
+import com.wish.wishlist.util.WishAdapterGrid;
+import com.wish.wishlist.util.WishAdapterList;
 import com.wish.wishlist.util.camera.CameraManager;
 import com.wish.wishlist.util.social.ShareHelper;
 import com.wish.wishlist.util.sync.SyncAgent;
-
-import com.etsy.android.grid.StaggeredGridView;
+import com.wish.wishlist.widgets.ItemDecoration;
 
 /***
  * WishList.java is responsible for displaying wish items in either list or grid
@@ -77,13 +74,10 @@ import com.etsy.android.grid.StaggeredGridView;
  * sorting items is via "SELECT ... ORDER BY" query to the database
  *
  */
-@SuppressLint("NewApi")
 public class WishList extends ActivityBase implements
-        AbsListView.OnScrollListener,
-        AbsListView.OnItemClickListener,
-        AdapterView.OnItemLongClickListener,
         SyncAgent.OnSyncWishChangedListener,
-        SyncAgent.OnDownloadWishDoneListener {
+        SyncAgent.OnDownloadWishDoneListener,
+        WishAdapter.onWishTapListener {
     static final private int DIALOG_MAIN = 0;
     static final private int DIALOG_FILTER = 1;
     static final private int DIALOG_SORT = 2;
@@ -113,28 +107,27 @@ public class WishList extends ActivityBase implements
     private String _newfullsizePhotoPath = null;
 
     private ViewFlipper _viewFlipper;
-    private ListView _listView;
-    private GridView _gridView;
-    private StaggeredGridView _staggeredView;
     private SwipeRefreshLayout _swipeRefreshLayout;
     private Button _addNew;
     private MenuItem _menuSearch;
-
     private Menu _menu;
-
-    private ItemsCursor _wishItemCursor;
-    private WishListItemCursorAdapter _wishListItemAdapterCursor;
-    private WishItemStaggeredCursorAdapter _wishItemStaggeredAdapterCursor;
-
-    private ItemDBManager _itemDBManager;
     private ArrayList<Long> _itemIds = new ArrayList<>();
-
     private long _selectedItem_id;
-
+    protected RecyclerView mRecyclerView;
+    protected LinearLayoutManager mLinearLayoutManager;
+    protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
+    private WishAdapterList mWishAdapterList;
+    private WishAdapterGrid mWishAdapterGrid;
+    private List<WishItem> mWishlist;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
+    private View mNavigationViewHeader;
     private ActionBarDrawerToggle mDrawerToggle;
     private RelativeLayout mHeaderLayout;
+
+    private static final int WISH_VIEW = 0;
+    private static final int MAKE_A_WISH_VIEW = 1;
+    private static final int NO_MATCHING_WISH_VIEW = 2;
 
     /** Called when the activity is first created. */
     @Override
@@ -175,22 +168,6 @@ public class WishList extends ActivityBase implements
 
         // Get the intent, verify the action and get the query
         _viewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
-        _staggeredView = (StaggeredGridView) findViewById(R.id.staggered_view);
-        _staggeredView.setOnScrollListener(this);
-        _staggeredView.setOnItemClickListener(this);
-        _staggeredView.setOnItemLongClickListener(this);
-
-        _listView = (ListView) findViewById(R.id.myListView);
-        _listView.setOnScrollListener(this);
-        _listView.setOnItemClickListener(this);
-        _listView.setOnItemLongClickListener(this);
-
-        _gridView = (GridView) findViewById(R.id.myGridView);
-        _gridView.setNumColumns(3);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            _gridView.setNumColumns(4);
-        }
-        _gridView.setOnItemClickListener(this);
 
         _addNew = (Button) findViewById(R.id.addNewWishButton);
         _addNew.setOnClickListener(new android.view.View.OnClickListener() {
@@ -199,15 +176,6 @@ public class WishList extends ActivityBase implements
                 startActivityForResult(editItem, ADD_ITEM);
             }
         });
-
-        // register context menu for both listview and gridview
-        registerForContextMenu(_listView);
-        registerForContextMenu(_gridView);
-        registerForContextMenu(_staggeredView);
-
-        _itemDBManager = new ItemDBManager();
-
-        handleIntent(getIntent());
 
         if (savedInstanceState != null) {
             Log.d(WishList.LOG_TAG, "savedInstanceState != null");
@@ -239,7 +207,31 @@ public class WishList extends ActivityBase implements
         });
         // sets the colors used in the refresh animation
         //_swipeRefreshLayout.setColorSchemeResources(R.color.blue_bright, R.color.green_light,
-                //R.color.orange_light, R.color.red_light);
+        //R.color.orange_light, R.color.red_light);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.wish_recycler_view);
+
+        // only enable swipe down refresh when the first item in recycler view is visible
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                int topRowVerticalPosition =
+                        (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
+                _swipeRefreshLayout.setEnabled(topRowVerticalPosition >= 0);
+            }
+        });
+
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        //mRecyclerView.setHasFixedSize(true);
+
+        mLinearLayoutManager = new LinearLayoutManager(this);
+        mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+
+        // Fixme use dp and covert to px
+        mRecyclerView.addItemDecoration(new ItemDecoration(10 /*px*/));
+
+        handleIntent(getIntent());
     }
 
     @Override
@@ -259,12 +251,6 @@ public class WishList extends ActivityBase implements
 
             MenuItem statusItem = _menu.findItem(R.id.menu_status);
             MenuItemCompat.collapseActionView(statusItem);
-
-            // This is a HACK to fix the bug:
-            // If we have scrolled to the middle of the staggered view, and then sort,
-            // the items will be positioned incorrectly. Calling resetToTop() will somehow refresh the
-            // the view and layout the items correctly.
-            _staggeredView.resetToTop();
         } else {
             // activity is not started from search
             // display all the items saved in the Item table
@@ -273,38 +259,29 @@ public class WishList extends ActivityBase implements
         }
     }
 
-    @Override
-    public boolean onSearchRequested() {
-        return super.onSearchRequested();
-    }
-
     /***
      * initial display of items in both list and grid view, called when the
      * activity is created
      */
     private void initializeView() {
-        _wishItemCursor = _itemDBManager.getItems(_sort.toString(), _where, _itemIds);
-        if (_itemDBManager.getItemsCount() == 0) {
-            // make a new wish button
-            _viewFlipper.setDisplayedChild(3);
+        mWishlist = WishItemManager.getInstance().getItems(_sort.toString(), _where, _itemIds);
+        if (mWishlist.isEmpty() && (!_where.isEmpty() || !_itemIds.isEmpty() || _nameQuery != null)) {
+            // no matching wishes text
+            _viewFlipper.setDisplayedChild(NO_MATCHING_WISH_VIEW);
             return;
         }
-        if (_wishItemCursor.getCount() == 0 && (!_where.isEmpty() || !_itemIds.isEmpty() || _nameQuery != null)) {
-            // no matching wishes text
-            _viewFlipper.setDisplayedChild(4);
+        if (mWishlist.isEmpty()) {
+            // make a new wish button
+            _viewFlipper.setDisplayedChild(MAKE_A_WISH_VIEW);
             return;
         }
 
         if (_view.val() == Options.View.LIST) {
             updateListView();
-            _viewFlipper.setDisplayedChild(1);
-        }
-        else {
-            //updateGridView();
-            //_viewFlipper.setDisplayedChild(2);
+        } else {
             updateStaggeredView();
-            _viewFlipper.setDisplayedChild(0);
         }
+        _viewFlipper.setDisplayedChild(WISH_VIEW);
     }
 
     /***
@@ -317,10 +294,9 @@ public class WishList extends ActivityBase implements
         if (searchName == null) {
             // Get all of the rows from the Item table
             // Keep track of the TextViews added in list lstTable
-            // _wishItemCursor = wishListDB.getItems(sortBy);
-            _wishItemCursor = _itemDBManager.getItems(_sort.toString(), where, _itemIds);
+            mWishlist = WishItemManager.getInstance().getItems(_sort.toString(), where, _itemIds);
         } else {
-            _wishItemCursor = _itemDBManager.searchItems(searchName, _sort.toString());
+            mWishlist = WishItemManager.getInstance().searchItems(searchName, _sort.toString());
         }
 
         updateView();
@@ -332,95 +308,67 @@ public class WishList extends ActivityBase implements
      * update either list view or grid view according view option
      */
     private void updateView() {
-        if (_itemDBManager.getItemsCount() == 0) {
-            // make a new wish button
-            _viewFlipper.setDisplayedChild(3);
+        //_wishItemCursor.requery();
+        if (mWishlist.isEmpty() && (!_where.isEmpty() || !_itemIds.isEmpty() || _nameQuery != null)) {
+            // no matching wishes text
+            _viewFlipper.setDisplayedChild(NO_MATCHING_WISH_VIEW);
             return;
         }
-
-        _wishItemCursor.requery();
-        if (_wishItemCursor.getCount() == 0 && (!_where.isEmpty() || !_itemIds.isEmpty() || _nameQuery != null)) {
-            // no matching wishes text
-            _viewFlipper.setDisplayedChild(4);
+        if (mWishlist.isEmpty()) {
+            // make a new wish button
+            _viewFlipper.setDisplayedChild(MAKE_A_WISH_VIEW);
             return;
         }
         if (_view.val() == Options.View.LIST) {
             updateListView();
-            _viewFlipper.setDisplayedChild(1);
         } else if (_view.val() == Options.View.GRID) {
-            //updateGridView();
-            //_viewFlipper.setDisplayedChild(1);
             updateStaggeredView();
-            _viewFlipper.setDisplayedChild(0);
+        }
+        if (_viewFlipper.getDisplayedChild() != WISH_VIEW) {
+            _viewFlipper.setDisplayedChild(WISH_VIEW);
         }
     }
 
     private void updateStaggeredView() {
-        String[] from = new String[]{
-                ItemDBManager.KEY_FULLSIZE_PHOTO_PATH,
-                ItemDBManager.KEY_NAME,
-                ItemDBManager.KEY_DESCRIPTION,
-                ItemDBManager.KEY_PRICE,
-                ItemDBManager.KEY_COMPLETE};
-
-        int[] to = new int[]{
-                R.id.staggered_image,
-                R.id.staggered_name,
-                R.id.staggered_description,
-                R.id.staggered_price,
-                R.id.staggered_checkmark_complete};
-
-        _wishItemStaggeredAdapterCursor = new WishItemStaggeredCursorAdapter(this,
-                R.layout.staggeredview_item, _wishItemCursor, from, to);
-
-        _staggeredView.setAdapter(_wishItemStaggeredAdapterCursor);
-        _wishItemStaggeredAdapterCursor.notifyDataSetChanged();
-
+        mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        if (mWishAdapterGrid == null) {
+            mWishAdapterGrid = new WishAdapterGrid(mWishlist, this);
+            mRecyclerView.setAdapter(mWishAdapterGrid);
+        } else {
+            mWishAdapterGrid.setWishList(mWishlist);
+        }
     }
 
-    private void updateGridView() {
-        int resID = R.layout.wishitem_photo;
-        String[] from = new String[]{ItemDBManager.KEY_PHOTO_URL};
-
-        int[] to = new int[]{R.id.imgPhotoGrid};
-        _wishListItemAdapterCursor = new WishListItemCursorAdapter(this,
-                resID, _wishItemCursor, from, to);
-
-        _gridView.setAdapter(_wishListItemAdapterCursor);
-        _wishListItemAdapterCursor.notifyDataSetChanged();
+    private void switchToStaggeredView() {
+        mRecyclerView.setAdapter(null);
+        mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        if (mWishAdapterGrid == null) {
+            mWishAdapterGrid = new WishAdapterGrid(mWishlist, this);
+        } else {
+            mWishAdapterGrid.setWishList(mWishlist);
+        }
+        mRecyclerView.setAdapter(mWishAdapterGrid);
     }
 
     private void updateListView() {
-        int resID = R.layout.wishitem_single;
-        String[] from = new String[] {
-                ItemDBManager.KEY_FULLSIZE_PHOTO_PATH,
-                ItemDBManager.KEY_NAME,
-                ItemDBManager.KEY_PRICE,
-                ItemDBManager.KEY_STORENAME,
-                ItemDBManager.KEY_ADDRESS,
-                ItemDBManager.KEY_COMPLETE};
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        if (mWishAdapterList == null) {
+            mWishAdapterList = new WishAdapterList(mWishlist, this);
+            mRecyclerView.setAdapter(mWishAdapterList);
+        } else {
+            mWishAdapterList.setWishList(mWishlist);
+        }
+    }
 
-        int[] to = new int[] {
-                R.id.imgPhoto,
-                R.id.txtName,
-                R.id.txtPrice,
-                R.id.txtStore,
-                R.id.txtAddress,
-                R.id.checkmark_complete};
-
-        _wishListItemAdapterCursor = new WishListItemCursorAdapter(this,
-                resID, _wishItemCursor, from, to);
-
-        // save index and top position
-        int index = _listView.getFirstVisiblePosition();
-        android.view.View v = _listView.getChildAt(0);
-        int top = (v == null) ? 0 : v.getTop();
-
-        _listView.setAdapter(_wishListItemAdapterCursor);
-        _wishListItemAdapterCursor.notifyDataSetChanged();
-
-        // restore
-        _listView.setSelectionFromTop(index, top);
+    private void switchToListView() {
+        mRecyclerView.setAdapter(null);
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        if (mWishAdapterList == null) {
+            mWishAdapterList = new WishAdapterList(mWishlist, this);
+        } else {
+            mWishAdapterList.setWishList(mWishlist);
+        }
+        mRecyclerView.setAdapter(mWishAdapterList);
     }
 
     private void deleteItem(long item_id){
@@ -443,7 +391,6 @@ public class WishList extends ActivityBase implements
 
         AlertDialog dialog;
         dialog = builder.create();
-        //dialog.setOnShowListener(new DialogOnShowListener(this));
         dialog.show();
     }
 
@@ -453,7 +400,6 @@ public class WishList extends ActivityBase implements
         startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
     }
 
-    @SuppressLint("NewApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -520,8 +466,6 @@ public class WishList extends ActivityBase implements
         } else if (itemId == R.id.menu_add) {
             // let user generate a wish item
             dispatchTakePictureIntent();
-            //Intent editItem = new Intent(this, EditItem.class);
-            //startActivityForResult(editItem, ADD_ITEM);
             return true;
         } else if(itemId == R.id.menu_sort) {
             showDialog(DIALOG_SORT);
@@ -568,27 +512,8 @@ public class WishList extends ActivityBase implements
             }
             return true;
         } else if (itemId == R.id.SHARE) {
-            //Display display = getWindowManager().getDefaultDisplay();
-            //int width = display.getWidth();  // deprecated
-            //int height = display.getHeight();  // deprecated
             ShareHelper share = new ShareHelper(this, _selectedItem_id);
             share.share();
-            //Intent sendIntent = new Intent();
-            //sendIntent.setAction(Intent.ACTION_SEND);
-            //sendIntent.putExtra(Intent.EXTRA_TEXT, message);
-            //sendIntent.putExtra(Intent.EXTRA_STREAM, wish_item.getFullsizePicUri());
-            //sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
-            //sendIntent.setType("text/plain");
-            //sendIntent.setType("*/*");
-            //List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(sendIntent, 0);
-            //startActivity(sendIntent);
-            //Intent chooserIntent = Intent.createChooser(sendIntent, "Share using");
-            //List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(chooserIntent, 0);
-            //for (ResolveInfo info : resInfo) {
-            //Log.d(LOG_TAG, "packageName " + info.activityInfo.packageName.toLowerCase());
-            //Log.d(LOG_TAG, "name        " + info.activityInfo.name.toLowerCase());
-            //}
-            //startActivity(Intent.createChooser(sendIntent, "Share using"));
             return true;
         } else if (itemId == R.id.COMPLETE) {
             WishItem wish_item = WishItemManager.getInstance().getItemById(_selectedItem_id);
@@ -654,17 +579,10 @@ public class WishList extends ActivityBase implements
 
                         dialog.dismiss();
                         populateItems(_nameQuery, _where);
-
-                        // This is a HACK to fix the bug:
-                        // If we have scrolled to the middle of the staggered view, and then sort,
-                        // the items will be positioned incorrectly. Calling resetToTop() will somehow refresh the
-                        // the view and layout the items correctly.
-                        _staggeredView.resetToTop();
                     }
                 });
 
                 dialog = sortBuilder.create();
-                //dialog.setOnShowListener(new DialogOnShowListener(this));
                 break;
 
             case DIALOG_FILTER:
@@ -693,17 +611,10 @@ public class WishList extends ActivityBase implements
 
                         dialog.dismiss();
                         populateItems(null, _where);
-
-                        // This is a HACK to fix the bug:
-                        // If we have scrolled to the middle of the staggered view, and then filter wish by completed,
-                        // the items will be positioned incorrectly. Calling resetToTop() will somehow refresh the
-                        // the view and layout the items correctly.
-                        _staggeredView.resetToTop();
                     }
                 });
 
                 dialog = optionBuilder.create();
-                //dialog.setOnShowListener(new DialogOnShowListener(this));
                 break;
             default:
                 dialog = null;
@@ -726,10 +637,10 @@ public class WishList extends ActivityBase implements
 
         // save the position of the currently selected item in the list
         if (_view.val() == Options.View.LIST) {
-            savedInstanceState.putInt(SELECTED_INDEX_KEY, _listView.getSelectedItemPosition());
+            //savedInstanceState.putInt(SELECTED_INDEX_KEY, _listView.getSelectedItemPosition());
         }
         else {
-            savedInstanceState.putInt(SELECTED_INDEX_KEY, _gridView.getSelectedItemPosition());
+            //savedInstanceState.putInt(SELECTED_INDEX_KEY, _gridView.getSelectedItemPosition());
         }
         savedInstanceState.putString("newfullsizePhotoPath", _newfullsizePhotoPath);
         savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
@@ -749,8 +660,8 @@ public class WishList extends ActivityBase implements
             _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
         }
 
-        _listView.setSelection(pos);
-        _gridView.setSelection(pos);
+        //_listView.setSelection(pos);
+        //_gridView.setSelection(pos);
 
         updateView();
     }
@@ -775,15 +686,6 @@ public class WishList extends ActivityBase implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-//		if (scanResult != null) {
-//			Context context = getApplicationContext();
-//			CharSequence text = scanResult.getContents();
-//			int duration = Toast.LENGTH_SHORT;
-//			Toast toast = Toast.makeText(context, text, duration);
-//			toast.show();
-//		}
-
         switch (requestCode) {
             case EDIT_ITEM: {
                 if (resultCode == Activity.RESULT_OK) {
@@ -825,12 +727,6 @@ public class WishList extends ActivityBase implements
 
                     if (_tag.val() != null) {
                         _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tag.val());
-
-                        // This is a HACK to fix the bug:
-                        // If we have scrolled to the middle of the staggered view, and then filter wish by tag,
-                        // the items will be positioned incorrectly. Calling resetToTop() will somehow refresh the
-                        // the view and layout the items correctly.
-                        _staggeredView.resetToTop();
                     }
                 }
                 break;
@@ -1005,7 +901,7 @@ public class WishList extends ActivityBase implements
         // set profile image in the header
         final File profileImageFile = new File(getFilesDir(), Profile.profileImageName());
         final Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
-        final ImageView profileImageView = (ImageView) mNavigationView.findViewById(R.id.profile_image);
+        final ImageView profileImageView = (ImageView) mNavigationViewHeader.findViewById(R.id.profile_image);
         if (bitmap != null) {
             profileImageView.setImageBitmap(bitmap);
         }
@@ -1015,8 +911,8 @@ public class WishList extends ActivityBase implements
         // Setup NavigationView
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-        final View header = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
-        mHeaderLayout = (RelativeLayout) header.findViewById(R.id.drawer_header_layout);
+        mNavigationViewHeader = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
+        mHeaderLayout = (RelativeLayout) mNavigationViewHeader.findViewById(R.id.drawer_header_layout);
         final ParseUser currentUser = ParseUser.getCurrentUser();
         mHeaderLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1053,8 +949,11 @@ public class WishList extends ActivityBase implements
                         startActivityForResult(editItem, ADD_ITEM);
                         return true;
                     case R.id.list_view: {
+                        if (_view.val() == Options.View.LIST) {
+                            return true;
+                        }
+                        switchToListView();
                         _view.setVal(Options.View.LIST);
-                        populateItems(_nameQuery, _where);
                         _view.save();
 
                         Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
@@ -1063,8 +962,11 @@ public class WishList extends ActivityBase implements
                         return true;
                     }
                     case R.id.grid_view:
+                        if (_view.val() == Options.View.GRID) {
+                            return true;
+                        }
+                        switchToStaggeredView();
                         _view.setVal(Options.View.GRID);
-                        populateItems(_nameQuery, _where);
                         _view.save();
 
                         Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
@@ -1131,65 +1033,17 @@ public class WishList extends ActivityBase implements
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    @Override
-    public void onScrollStateChanged(final AbsListView view, final int scrollState) {
-        //       Log.d("wishlist", "onScrollStateChanged:" + scrollState);
-    }
-
-    @Override
-    public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
-        if (_swipeRefreshLayout == null) {
-            return;
-        }
-
-        boolean enable = false;
-        if (_view.val() == Options.View.LIST) {
-            if (_listView != null && _listView.getChildCount() > 0) {
-                // check if the first item of the list is visible
-                boolean firstItemVisible = _listView.getFirstVisiblePosition() == 0;
-                // check if the top of the first item is visible
-                boolean topOfFirstItemVisible = _listView.getChildAt(0).getTop() >= 0;
-                // enabling or disabling the refresh layout
-                enable = firstItemVisible && topOfFirstItemVisible;
-            }
-        } else {
-            if (_staggeredView != null && _staggeredView.getChildCount() > 0) {
-                // check if the first item of the list is visible
-                boolean firstItemVisible = _staggeredView.getFirstVisiblePosition() == 0;
-                // check if the top of the first item is visible
-                boolean topOfFirstItemVisible = _staggeredView.getChildAt(0).getTop() >= 0;
-                // enabling or disabling the refresh layout
-                enable = firstItemVisible && topOfFirstItemVisible;
-            }
-        }
-        _swipeRefreshLayout.setEnabled(enable);
-        //    Log.d("wishlist", "onScroll firstVisibleItem:" + firstVisibleItem +
-        //            " visibleItemCount:" + visibleItemCount +
-        //            " totalItemCount:" + totalItemCount);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, android.view.View view, int position, long id) {
-        // Create an intent to show the item detail.
-        // Pass the item_id along so the next activity can use it to
-        // retrieve the info. about the item from database
-        Intent i = new Intent(WishList.this, MyWishDetail.class);
-        i.putExtra("item_id", id);
-        i.putExtra("position", position);
-        startActivityForResult(i, ITEM_DETAILS);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, android.view.View view, int position, long id)
-    {
-        _selectedItem_id = id;
-        if (_view.val() == Options.View.LIST) {
-            _listView.showContextMenu();
-        } else {
-            _staggeredView.showContextMenu();
-        }
-        return true;
-    }
+//    @Override
+//    public boolean onItemLongClick(AdapterView<?> parent, android.view.View view, int position, long id)
+//    {
+//        _selectedItem_id = id;
+//        if (_view.val() == Options.View.LIST) {
+//            _listView.showContextMenu();
+//        } else {
+//            _staggeredView.showContextMenu();
+//        }
+//        return true;
+//    }
 
     public void onSyncWishChanged() {
         Log.d(TAG, "onSyncWishChanged");
@@ -1199,5 +1053,13 @@ public class WishList extends ActivityBase implements
     public void onDownloadWishDone() {
         Log.d(TAG, "onDownloadWishDone");
         _swipeRefreshLayout.setRefreshing(false);
+    }
+
+    public void onWishTapped(WishItem item) {
+        Log.d(TAG, "onWishTapped");
+        Intent i = new Intent(WishList.this, MyWishDetail.class);
+        i.putExtra("item_id", item.getId());
+        i.putExtra("position", 0);
+        startActivityForResult(i, ITEM_DETAILS);
     }
 }

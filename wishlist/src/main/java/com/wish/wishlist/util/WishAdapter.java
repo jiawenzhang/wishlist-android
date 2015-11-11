@@ -44,6 +44,11 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) { return null; }
 
+    public void setWishList(final List<WishItem> wishList) {
+        mWishList = wishList;
+        notifyDataSetChanged();
+    }
+
     public void add(int position, final WishItem item) {
         mWishList.add(position, item);
         notifyItemInserted(position);
