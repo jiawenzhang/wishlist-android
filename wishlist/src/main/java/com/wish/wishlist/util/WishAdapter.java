@@ -7,7 +7,6 @@ package com.wish.wishlist.util;
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
-import com.parse.ParseObject;
 import com.wish.wishlist.model.WishItem;
 
 import java.util.List;

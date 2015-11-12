@@ -2,6 +2,7 @@ package com.wish.wishlist.activity;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,6 +48,9 @@ import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.ProfileChangeEvent;
+import com.wish.wishlist.model.ItemNameComparator;
+import com.wish.wishlist.model.ItemPriceComparator;
+import com.wish.wishlist.model.ItemTimeComparator;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
@@ -298,7 +302,10 @@ public class WishList extends ActivityBase implements
         } else {
             mWishlist = WishItemManager.getInstance().searchItems(searchName, _sort.toString());
         }
+        itemListChanged();
+    }
 
+    private void itemListChanged() {
         updateView();
         updateDrawerList();
         updateActionBarTitle();
@@ -570,15 +577,18 @@ public class WishList extends ActivityBase implements
                     public void onClick(DialogInterface dialog, int item) {
                         if (sortOption[item].equals(BY_NAME)) {
                             _sort.setVal(Options.Sort.NAME);
+                            Collections.sort(mWishlist, new ItemNameComparator());
                         } else if (sortOption[item].equals(BY_TIME)) {
                             _sort.setVal(Options.Sort.UPDATED_TIME);
+                            Collections.sort(mWishlist, new ItemTimeComparator());
                         } else {
                             _sort.setVal(Options.Sort.PRICE);
+                            Collections.sort(mWishlist, new ItemPriceComparator());
                         }
                         _sort.save();
 
                         dialog.dismiss();
-                        populateItems(_nameQuery, _where);
+                        itemListChanged();
                     }
                 });
 
