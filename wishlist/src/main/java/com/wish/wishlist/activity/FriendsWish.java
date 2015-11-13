@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.bignerdranch.android.multiselector.MultiSelector;
 import com.parse.ParseObject;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.WishLoader;
@@ -32,6 +33,7 @@ public class FriendsWish extends ActivityBase implements
 
     protected RecyclerView.LayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
+    private MultiSelector mMultiSelector = new MultiSelector();
     private WishAdapterList mWishAdapterList;
     private WishAdapterGrid mWishAdapterGrid;
     private List<WishItem> mWishlist;
@@ -74,10 +76,10 @@ public class FriendsWish extends ActivityBase implements
         // the items in the grid layout will be displaced the second time setAdapter is called.
         // Using swapAdapter and passing false as the removeAndRecycleExistingViews flag will avoid this
         if (mListView) {
-            mWishAdapterList = new WishAdapterList(mWishlist, this);
+            mWishAdapterList = new WishAdapterList(mWishlist, this, mMultiSelector);
             mRecyclerView.swapAdapter(mWishAdapterList, false);
         } else {
-            mWishAdapterGrid = new WishAdapterGrid(mWishlist, this);
+            mWishAdapterGrid = new WishAdapterGrid(mWishlist, this, mMultiSelector);
             mRecyclerView.swapAdapter(mWishAdapterGrid, false);
         }
     }
@@ -103,7 +105,7 @@ public class FriendsWish extends ActivityBase implements
         if (id == R.id.menu_list) {
             mRecyclerView.setLayoutManager(mLinearLayoutManager);
             if (mWishAdapterList == null) {
-                mWishAdapterList = new WishAdapterList(mWishlist, this);
+                mWishAdapterList = new WishAdapterList(mWishlist, this, mMultiSelector);
             }
             mRecyclerView.swapAdapter(mWishAdapterList, false);
             mListView = true;
@@ -111,7 +113,7 @@ public class FriendsWish extends ActivityBase implements
         } else if (id == R.id.menu_grid) {
             mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
             if (mWishAdapterGrid == null) {
-                mWishAdapterGrid = new WishAdapterGrid(mWishlist, this);
+                mWishAdapterGrid = new WishAdapterGrid(mWishlist, this, mMultiSelector);
             }
             mRecyclerView.swapAdapter(mWishAdapterGrid, false);
             mListView = false;

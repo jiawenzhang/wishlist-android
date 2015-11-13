@@ -254,6 +254,7 @@
         <item name="colorControlActivated">@color/wishlist_yellow_color</item>
         <item name="colorControlHighlight">@color/wishlist_yellow_color</item>
         <!---->
+        <item name="windowActionModeOverlay">true</item>
 
         <!-- The rest of your attributes -->
     </style>

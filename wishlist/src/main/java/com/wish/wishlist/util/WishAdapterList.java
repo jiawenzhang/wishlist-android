@@ -9,12 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bignerdranch.android.multiselector.MultiSelector;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
@@ -25,39 +24,35 @@ import java.util.List;
 public class WishAdapterList extends WishAdapter {
     private static final String TAG = "WishAdapter";
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends ItemSwappingHolder {
         public TextView txtName;
         public TextView txtPrice;
         public TextView txtStore;
         public TextView txtAddress;
         public ImageView imgComplete;
         public ImageView imgPhoto;
-        public LinearLayout rootLayout;
 
-        public ViewHolder(View v) {
-            super(v);
-            txtName = (TextView) v.findViewById(R.id.txtName);
-            txtPrice = (TextView) v.findViewById(R.id.txtPrice);
-            txtStore = (TextView) v.findViewById(R.id.txtStore);
-            txtAddress = (TextView) v.findViewById(R.id.txtAddress);
-            imgComplete = (ImageView) v.findViewById(R.id.checkmark_complete);
-            imgPhoto = (ImageView) v.findViewById(R.id.imgPhoto);
-            rootLayout = (LinearLayout) v.findViewById(R.id.wish_root_layout);
+        public ViewHolder(View itemView, MultiSelector multiSelector) {
+            super(itemView, multiSelector);
+            txtName = (TextView) itemView.findViewById(R.id.txtName);
+            txtPrice = (TextView) itemView.findViewById(R.id.txtPrice);
+            txtStore = (TextView) itemView.findViewById(R.id.txtStore);
+            txtAddress = (TextView) itemView.findViewById(R.id.txtAddress);
+            imgComplete = (ImageView) itemView.findViewById(R.id.checkmark_complete);
+            imgPhoto = (ImageView) itemView.findViewById(R.id.imgPhoto);
         }
     }
 
-    public WishAdapterList(List<WishItem> wishList, Activity fromActivity) {
-        super(wishList);
-        setWishTapListener(fromActivity);
+    public WishAdapterList(List<WishItem> wishList, Activity fromActivity, MultiSelector ms) {
+        super(wishList, fromActivity, ms);
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public WishAdapterList.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+    public WishAdapterList.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wishitem_single, parent, false);
         // set the view's size, margins, padding and layout parameters
-        return new ViewHolder(v);
+        return new ViewHolder(v, mMultiSelector);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -120,14 +115,5 @@ public class WishAdapterList extends WishAdapter {
         } else {
             holder.imgComplete.setVisibility(View.GONE);
         }
-
-        holder.rootLayout.setClickable(true);
-        holder.rootLayout.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "wish clicked");
-                onWishTapped(wish);
-            }
-        });
     }
 }

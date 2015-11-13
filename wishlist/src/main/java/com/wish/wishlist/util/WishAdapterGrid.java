@@ -12,13 +12,12 @@ import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bignerdranch.android.multiselector.MultiSelector;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
@@ -32,26 +31,24 @@ public class WishAdapterGrid extends WishAdapter {
     private int mScreenWidth;
     private static final String TAG = "WishAdapter";
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends ItemSwappingHolder {
         public TextView txtName;
         public TextView txtPrice;
         public ImageView imgComplete;
         public ImageView imgPhoto;
-        public LinearLayout rootLayout;
 
-        public ViewHolder(View v) {
-            super(v);
+        public ViewHolder(View v, MultiSelector multiSelector) {
+            super(v, multiSelector);
             txtName = (TextView) v.findViewById(R.id.txtName);
             txtPrice = (TextView) v.findViewById(R.id.txtPrice);
             imgComplete = (ImageView) v.findViewById(R.id.checkmark_complete);
             imgPhoto = (ImageView) v.findViewById(R.id.imgPhoto);
-            rootLayout = (LinearLayout) v.findViewById(R.id.wish_root_layout);
         }
     }
 
-    public WishAdapterGrid(final List<WishItem> wishList, Activity fromActivity) {
-        super(wishList);
-        setWishTapListener(fromActivity);
+    public WishAdapterGrid(final List<WishItem> wishList, Activity fromActivity, MultiSelector ms) {
+        super(wishList, fromActivity, ms);
+
         final Display display = ((WindowManager) WishlistApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -61,11 +58,10 @@ public class WishAdapterGrid extends WishAdapter {
 
     // Create new views (invoked by the layout manager)
     @Override
-    public WishAdapterGrid.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+    public WishAdapterGrid.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wishitem_grid, parent, false);
         // set the view's size, margins, padding and layout parameters
-        return new ViewHolder(v);
+        return new ViewHolder(v, mMultiSelector);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -106,14 +102,5 @@ public class WishAdapterGrid extends WishAdapter {
         } else {
             holder.imgComplete.setVisibility(View.GONE);
         }
-
-        holder.rootLayout.setClickable(true);
-        holder.rootLayout.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "wish tapped");
-                onWishTapped(wish);
-            }
-        });
     }
 }

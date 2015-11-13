@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -40,6 +41,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.support.design.widget.NavigationView;
+
+import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
+import com.bignerdranch.android.multiselector.MultiSelector;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -81,7 +85,8 @@ import com.wish.wishlist.widgets.ItemDecoration;
 public class WishList extends ActivityBase implements
         SyncAgent.OnSyncWishChangedListener,
         SyncAgent.OnDownloadWishDoneListener,
-        WishAdapter.onWishTapListener {
+        WishAdapter.onWishTapListener,
+        WishAdapter.onWishLongTapListener {
     static final private int DIALOG_MAIN = 0;
     static final private int DIALOG_FILTER = 1;
     static final private int DIALOG_SORT = 2;
@@ -117,6 +122,8 @@ public class WishList extends ActivityBase implements
     private Menu _menu;
     private ArrayList<Long> _itemIds = new ArrayList<>();
     private long _selectedItem_id;
+    private MultiSelector mMultiSelector = new MultiSelector();
+    private ActionMode.Callback mActionMode;
     protected RecyclerView mRecyclerView;
     protected LinearLayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
@@ -189,8 +196,7 @@ public class WishList extends ActivityBase implements
 
             Log.d(WishList.LOG_TAG, "_newfullsizePhotoPath " + _newfullsizePhotoPath);
             Log.d(WishList.LOG_TAG, "_fullsizePhotoPath " + _fullsizePhotoPath);
-        }
-        else{
+        } else{
             Log.d(WishList.LOG_TAG, "savedInstanceState == null");
         }
 
@@ -234,6 +240,49 @@ public class WishList extends ActivityBase implements
 
         // Fixme use dp and covert to px
         mRecyclerView.addItemDecoration(new ItemDecoration(10 /*px*/));
+
+
+        // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
+        // multiple items for an action
+        mActionMode = new ModalMultiSelectorCallback(mMultiSelector) {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                super.onCreateActionMode(actionMode, menu);
+                getMenuInflater().inflate(R.menu.menu_main_action, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                mMultiSelector.clearSelections();
+                ArrayList<Long> itemIds;
+                if (_view.val() == Options.View.LIST) {
+                    itemIds = mWishAdapterList.selectedItemIds();
+                    mWishAdapterList.clearSelectedItemIds();
+                } else {
+                    itemIds = mWishAdapterGrid.selectedItemIds();
+                    mWishAdapterGrid.clearSelectedItemIds();
+                }
+                Log.d(TAG, "selected item ids: " + itemIds.toString());
+
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_delete:
+                        Log.d(TAG, "delete");
+                        return true;
+                    case R.id.menu_map:
+                        Log.d(TAG, "map");
+                        return true;
+                    case R.id.menu_tag:
+                        Log.d(TAG, "tag");
+                        return true;
+                    case R.id.menu_complete:
+                        Log.d(TAG, "complete");
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        };
 
         handleIntent(getIntent());
     }
@@ -339,7 +388,7 @@ public class WishList extends ActivityBase implements
     private void updateStaggeredView() {
         mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
         if (mWishAdapterGrid == null) {
-            mWishAdapterGrid = new WishAdapterGrid(mWishlist, this);
+            mWishAdapterGrid = new WishAdapterGrid(mWishlist, this, mMultiSelector);
             mRecyclerView.setAdapter(mWishAdapterGrid);
         } else {
             mWishAdapterGrid.setWishList(mWishlist);
@@ -350,7 +399,7 @@ public class WishList extends ActivityBase implements
         mRecyclerView.setAdapter(null);
         mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
         if (mWishAdapterGrid == null) {
-            mWishAdapterGrid = new WishAdapterGrid(mWishlist, this);
+            mWishAdapterGrid = new WishAdapterGrid(mWishlist, this, mMultiSelector);
         } else {
             mWishAdapterGrid.setWishList(mWishlist);
         }
@@ -360,7 +409,7 @@ public class WishList extends ActivityBase implements
     private void updateListView() {
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         if (mWishAdapterList == null) {
-            mWishAdapterList = new WishAdapterList(mWishlist, this);
+            mWishAdapterList = new WishAdapterList(mWishlist, this, mMultiSelector);
             mRecyclerView.setAdapter(mWishAdapterList);
         } else {
             mWishAdapterList.setWishList(mWishlist);
@@ -371,7 +420,7 @@ public class WishList extends ActivityBase implements
         mRecyclerView.setAdapter(null);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         if (mWishAdapterList == null) {
-            mWishAdapterList = new WishAdapterList(mWishlist, this);
+            mWishAdapterList = new WishAdapterList(mWishlist, this, mMultiSelector);
         } else {
             mWishAdapterList.setWishList(mWishlist);
         }
@@ -1071,5 +1120,10 @@ public class WishList extends ActivityBase implements
         i.putExtra("item_id", item.getId());
         i.putExtra("position", 0);
         startActivityForResult(i, ITEM_DETAILS);
+    }
+
+    public void onWishLongTapped() {
+        Log.d(TAG, "onWishLongTap");
+        startSupportActionMode(mActionMode);
     }
 }

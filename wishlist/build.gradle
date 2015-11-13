@@ -71,6 +71,7 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:1.3.0'
     compile 'com.path:android-priority-jobqueue:1.1.2'
     compile 'com.squareup:otto:1.3.8'
+    compile 'com.bignerdranch.android:recyclerview-multiselect:+'
 
     compile 'com.parse.bolts:bolts-android:1.2.0'
     compile fileTree(dir: '../third-party/Parse', include: 'ParseCrashReporting-*.jar')
