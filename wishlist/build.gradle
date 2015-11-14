@@ -61,6 +61,7 @@ android {
 }
 
 dependencies {
+    compile 'org.apache.commons:commons-lang3:3.4'
     compile project(':third-party:facebook-android-sdk:facebook')
     compile project(':third-party:TokenAutoComplete:library')
     compile project(':third-party:AndroidStaggeredGrid:library')

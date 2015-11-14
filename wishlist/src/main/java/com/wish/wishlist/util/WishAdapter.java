@@ -159,6 +159,10 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return new ArrayList(mSelectedItemIds);
     }
 
+    public void setSelectedItemIds(List<Long> itemIds) {
+        mSelectedItemIds = new HashSet<>(itemIds);
+    }
+
     public void clearSelectedItemIds() {
         mSelectedItemIds.clear();
     }

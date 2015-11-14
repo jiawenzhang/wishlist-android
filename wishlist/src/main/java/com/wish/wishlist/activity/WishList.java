@@ -65,6 +65,8 @@ import com.wish.wishlist.util.camera.CameraManager;
 import com.wish.wishlist.util.sync.SyncAgent;
 import com.wish.wishlist.widgets.ItemDecoration;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /***
  * WishList.java is responsible for displaying wish items in either list or grid
  * view and providing access to functions of manipulating items such as adding,
@@ -104,6 +106,7 @@ public class WishList extends ActivityBase implements
 
     private static final String TAG = "wishlist";
     private static final String MULTI_SELECT_STATE = "multi_select_state";
+    private static final String SELECTED_ITEM_IDS = "selected_item_ids";
 
     private Options.View _view = new Options.View(Options.View.LIST);
     private Options.Status _status = new Options.Status(Options.Status.ALL);
@@ -148,12 +151,7 @@ public class WishList extends ActivityBase implements
 
         @Override
         public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-            ArrayList<Long> itemIds;
-            if (_view.val() == Options.View.LIST) {
-                itemIds = mWishAdapterList.selectedItemIds();
-            } else {
-                itemIds = mWishAdapterGrid.selectedItemIds();
-            }
+            ArrayList<Long> itemIds = selectedItemIds();
             Log.d(TAG, "selected item ids: " + itemIds.toString());
             actionMode.finish();
 
@@ -310,11 +308,10 @@ public class WishList extends ActivityBase implements
 
         // restore multi-select state when activity is re-created due to, for example, screen orientation
         if (mMultiSelector != null) {
-            Bundle bundle = savedInstanceState;
-            if (bundle != null) {
-                mMultiSelector.restoreSelectionStates(bundle.getBundle(MULTI_SELECT_STATE));
+            // restore selected item state
+            if (savedInstanceState != null) {
+                mMultiSelector.restoreSelectionStates(savedInstanceState.getBundle(MULTI_SELECT_STATE));
             }
-
             if (mMultiSelector.isSelectable()) {
                 if (mActionModeCallback != null) {
                     mActionModeCallback.setClearOnPrepare(false);
@@ -699,6 +696,11 @@ public class WishList extends ActivityBase implements
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         // save the multi-select state, so we can restore them
         savedInstanceState.putBundle(MULTI_SELECT_STATE, mMultiSelector.saveSelectionStates());
+        long[] itemIds = new long[selectedItemIds().size()];
+        for (int i=0; i< selectedItemIds().size(); i++) {
+            itemIds[i] = selectedItemIds().get(i);
+        }
+        savedInstanceState.putLongArray(SELECTED_ITEM_IDS, itemIds);
         // save the position of the currently selected item in the list
         if (_view.val() == Options.View.LIST) {
             //savedInstanceState.putInt(SELECTED_INDEX_KEY, _listView.getSelectedItemPosition());
@@ -714,15 +716,22 @@ public class WishList extends ActivityBase implements
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState == null) {
+            return;
+        }
+
+        // restore selected items
+        long[] itemIds = savedInstanceState.getLongArray(SELECTED_ITEM_IDS);
+        Long[] itemIdsLong = ArrayUtils.toObject(itemIds);
+        setSelectedItemIds(java.util.Arrays.asList(itemIdsLong));
+
         // restore the current selected item in the list
         int pos = -1;
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(SELECTED_INDEX_KEY)) {
-                pos = savedInstanceState.getInt(SELECTED_INDEX_KEY, -1);
-            }
-            _newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
-            _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
+        if (savedInstanceState.containsKey(SELECTED_INDEX_KEY)) {
+            pos = savedInstanceState.getInt(SELECTED_INDEX_KEY, -1);
         }
+        _newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
+        _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
 
         //_listView.setSelection(pos);
         //_gridView.setSelection(pos);
@@ -1108,6 +1117,22 @@ public class WishList extends ActivityBase implements
 //        }
 //        return true;
 //    }
+
+    private ArrayList<Long> selectedItemIds() {
+        if (_view.val() == Options.View.LIST) {
+            return mWishAdapterList.selectedItemIds();
+        } else {
+            return mWishAdapterGrid.selectedItemIds();
+        }
+    }
+
+    private void setSelectedItemIds(List<Long> itemIds) {
+        if (_view.val() == Options.View.LIST) {
+            mWishAdapterList.setSelectedItemIds(itemIds);
+        } else {
+            mWishAdapterGrid.setSelectedItemIds(itemIds);
+        }
+    }
 
     public void onSyncWishChanged() {
         Log.d(TAG, "onSyncWishChanged");
