@@ -123,6 +123,7 @@ public class WishList extends ActivityBase implements
     private MultiSelector mMultiSelector = new MultiSelector();
     // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
     // multiple items for an action
+    private ActionMode mActionMode;
     private ModalMultiSelectorCallback mActionModeCallback = new ModalMultiSelectorCallback(mMultiSelector) {
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
@@ -313,7 +314,7 @@ public class WishList extends ActivityBase implements
             if (mMultiSelector.isSelectable()) {
                 if (mActionModeCallback != null) {
                     mActionModeCallback.setClearOnPrepare(false);
-                    startSupportActionMode(mActionModeCallback);
+                    mActionMode = startSupportActionMode(mActionModeCallback);
                 }
             }
         }
@@ -1067,6 +1068,9 @@ public class WishList extends ActivityBase implements
                 mDrawerLayout.requestFocus();
                 super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                if (mActionMode != null) {
+                    mActionMode.finish();
+                }
             }
         };
 
@@ -1137,6 +1141,6 @@ public class WishList extends ActivityBase implements
 
     public void onWishLongTapped() {
         Log.d(TAG, "onWishLongTap");
-        startSupportActionMode(mActionModeCallback);
+        mActionMode = startSupportActionMode(mActionModeCallback);
     }
 }
