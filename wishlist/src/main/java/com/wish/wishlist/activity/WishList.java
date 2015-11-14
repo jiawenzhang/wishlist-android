@@ -103,6 +103,7 @@ public class WishList extends ActivityBase implements
     private static final int TAKE_PICTURE = 5;
 
     private static final String TAG = "wishlist";
+    private static final String MULTI_SELECT_STATE = "multi_select_state";
 
     private Options.View _view = new Options.View(Options.View.LIST);
     private Options.Status _status = new Options.Status(Options.Status.ALL);
@@ -119,8 +120,77 @@ public class WishList extends ActivityBase implements
     private Menu _menu;
     private ArrayList<Long> _itemIds = new ArrayList<>();
     private MultiSelector mMultiSelector = new MultiSelector();
-    private ActionMode.Callback mActionModeCallback;
-    private ActionMode mActionMode;
+    // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
+    // multiple items for an action
+    private ModalMultiSelectorCallback mActionModeCallback = new ModalMultiSelectorCallback(mMultiSelector) {
+        @Override
+        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+            super.onCreateActionMode(actionMode, menu);
+            getMenuInflater().inflate(R.menu.menu_main_action, menu);
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            super.onDestroyActionMode(mode);
+            if (_view.val() == Options.View.LIST) {
+                mWishAdapterList.clearSelectedItemIds();
+
+                // notifyDataSetChanged will fix a bug in recyclerview-multiselect lib, where the selected item's state does
+                // not get cleared when the action mode is finished.
+                mWishAdapterList.notifyDataSetChanged();
+            } else {
+                mWishAdapterGrid.clearSelectedItemIds();
+                mWishAdapterGrid.notifyDataSetChanged();
+            }
+            mMultiSelector.clearSelections();
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+            ArrayList<Long> itemIds;
+            if (_view.val() == Options.View.LIST) {
+                itemIds = mWishAdapterList.selectedItemIds();
+            } else {
+                itemIds = mWishAdapterGrid.selectedItemIds();
+            }
+            Log.d(TAG, "selected item ids: " + itemIds.toString());
+            actionMode.finish();
+
+            switch (menuItem.getItemId()) {
+                case R.id.menu_tag:
+                    Log.d(TAG, "tag");
+                    Intent intent = new Intent(WishList.this, AddTag.class);
+                    long[] ids = new long[itemIds.size()];
+                    for (int i = 0; i < itemIds.size() ; i++) {
+                        ids[i] = itemIds.get(i);
+                    }
+                    intent.putExtra(AddTag.ITEM_ID_ARRAY, (ids));
+                    startActivityForResult(intent, ADD_TAG);
+                    return true;
+                case R.id.menu_share:
+                    Log.d(TAG, "share");
+                    //ShareHelper share = new ShareHelper(this, _selectedItem_id);
+                    //share.share();
+                    return true;
+                case R.id.menu_delete:
+                    Log.d(TAG, "delete");
+                    deleteItems(itemIds);
+                    return true;
+                case R.id.menu_complete:
+                    Log.d(TAG, "complete");
+                    markItemComplete(itemIds, 1);
+                    return true;
+                case R.id.menu_incomplete:
+                    Log.d(TAG, "incomplete");
+                    markItemComplete(itemIds, 0);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    };
+
     protected RecyclerView mRecyclerView;
     protected LinearLayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
@@ -238,64 +308,20 @@ public class WishList extends ActivityBase implements
         // Fixme use dp and covert to px
         mRecyclerView.addItemDecoration(new ItemDecoration(10 /*px*/));
 
-
-        // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
-        // multiple items for an action
-        mActionModeCallback = new ModalMultiSelectorCallback(mMultiSelector) {
-            @Override
-            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-                super.onCreateActionMode(actionMode, menu);
-                getMenuInflater().inflate(R.menu.menu_main_action, menu);
-                return true;
+        // restore multi-select state when activity is re-created due to, for example, screen orientation
+        if (mMultiSelector != null) {
+            Bundle bundle = savedInstanceState;
+            if (bundle != null) {
+                mMultiSelector.restoreSelectionStates(bundle.getBundle(MULTI_SELECT_STATE));
             }
 
-            @Override
-            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                mActionMode.finish();
-                mMultiSelector.clearSelections();
-                ArrayList<Long> itemIds;
-                if (_view.val() == Options.View.LIST) {
-                    itemIds = mWishAdapterList.selectedItemIds();
-                    mWishAdapterList.clearSelectedItemIds();
-                } else {
-                    itemIds = mWishAdapterGrid.selectedItemIds();
-                    mWishAdapterGrid.clearSelectedItemIds();
-                }
-                Log.d(TAG, "selected item ids: " + itemIds.toString());
-
-                switch (menuItem.getItemId()) {
-                    case R.id.menu_tag:
-                        Log.d(TAG, "tag");
-                        Intent intent = new Intent(WishList.this, AddTag.class);
-                        long[] ids = new long[itemIds.size()];
-                        for (int i = 0; i < itemIds.size() ; i++) {
-                            ids[i] = itemIds.get(i);
-                        }
-                        intent.putExtra(AddTag.ITEM_ID_ARRAY, (ids));
-                        startActivityForResult(intent, ADD_TAG);
-                        return true;
-                    case R.id.menu_share:
-                        Log.d(TAG, "share");
-                        //ShareHelper share = new ShareHelper(this, _selectedItem_id);
-                        //share.share();
-                        return true;
-                    case R.id.menu_delete:
-                        Log.d(TAG, "delete");
-                        deleteItems(itemIds);
-                        return true;
-                    case R.id.menu_complete:
-                        Log.d(TAG, "complete");
-                        markItemComplete(itemIds, 1);
-                        return true;
-                    case R.id.menu_incomplete:
-                        Log.d(TAG, "incomplete");
-                        markItemComplete(itemIds, 0);
-                        return true;
-                    default:
-                        return false;
+            if (mMultiSelector.isSelectable()) {
+                if (mActionModeCallback != null) {
+                    mActionModeCallback.setClearOnPrepare(false);
+                    startSupportActionMode(mActionModeCallback);
                 }
             }
-        };
+        }
 
         handleIntent(getIntent());
     }
@@ -671,7 +697,8 @@ public class WishList extends ActivityBase implements
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
-
+        // save the multi-select state, so we can restore them
+        savedInstanceState.putBundle(MULTI_SELECT_STATE, mMultiSelector.saveSelectionStates());
         // save the position of the currently selected item in the list
         if (_view.val() == Options.View.LIST) {
             //savedInstanceState.putInt(SELECTED_INDEX_KEY, _listView.getSelectedItemPosition());
@@ -1102,6 +1129,6 @@ public class WishList extends ActivityBase implements
 
     public void onWishLongTapped() {
         Log.d(TAG, "onWishLongTap");
-        mActionMode = startSupportActionMode(mActionModeCallback);
+        startSupportActionMode(mActionModeCallback);
     }
 }
