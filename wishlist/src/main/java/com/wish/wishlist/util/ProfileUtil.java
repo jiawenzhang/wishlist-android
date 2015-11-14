@@ -2,8 +2,11 @@ package com.wish.wishlist.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.wish.wishlist.WishlistApplication;
@@ -93,5 +96,18 @@ public class ProfileUtil {
             return null;
         }
         return BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
+    }
+
+    public static Drawable generateProfileImage() {
+        if (ParseUser.getCurrentUser() == null) {
+            return null;
+        }
+
+        // generate color based on a key (same key returns the same color), useful for list/grid views
+        ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
+        int color = generator.getColor(ParseUser.getCurrentUser().getUsername());
+
+        return TextDrawable.builder()
+                .buildRound(ParseUser.getCurrentUser().getString("name").substring(0,1).toUpperCase(), color);
     }
 }

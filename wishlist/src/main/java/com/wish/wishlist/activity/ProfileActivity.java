@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -67,6 +68,7 @@ public class ProfileActivity extends ActivityBase implements
     private TextView mNameTextView;
     private TextView mEmailTextView;
     private TextView mPasswordTextView;
+    private ImageView mGeneratedProfileImageView;
     protected SwipeRefreshLayout mSwipeRefreshLayout;
 
     private ProgressDialog mProgressDialog = null;
@@ -115,7 +117,7 @@ public class ProfileActivity extends ActivityBase implements
         });
 
         ProfileUtil.downloadProfileImageIfNotExists();
-        setProfileImage();
+
         ImageView profileImage = (ImageView) findViewById(R.id.profile_image);
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +125,16 @@ public class ProfileActivity extends ActivityBase implements
                 startActivityForResult(getPickImageChooserIntent(), CHOOSE_IMAGE);
             }
         });
+
+        mGeneratedProfileImageView = (ImageView) findViewById(R.id.generated_profile_image);
+        mGeneratedProfileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(getPickImageChooserIntent(), CHOOSE_IMAGE);
+            }
+        });
+
+        setProfileImage();
 
         TextView wish_count = (TextView) findViewById(R.id.wish_count);
         int count = ItemDBManager.getItemsCount();
@@ -323,9 +335,19 @@ public class ProfileActivity extends ActivityBase implements
 
     private void setProfileImage() {
         Bitmap bitmap = ProfileUtil.profileImageBitmap();
+        ImageView profileImageView = (ImageView) findViewById(R.id.profile_image);
         if (bitmap != null) {
-            ImageView profileImageView = (ImageView) findViewById(R.id.profile_image);
             profileImageView.setImageBitmap(bitmap);
+            profileImageView.setVisibility(View.VISIBLE);
+            mGeneratedProfileImageView.setVisibility(View.GONE);
+            return;
+        }
+
+        Drawable generatedProfileImage = ProfileUtil.generateProfileImage();
+        if (generatedProfileImage != null) {
+            mGeneratedProfileImageView.setImageDrawable(generatedProfileImage);
+            mGeneratedProfileImageView.setVisibility(View.VISIBLE);
+            profileImageView.setVisibility(View.GONE);
         }
     }
 
@@ -383,7 +405,7 @@ public class ProfileActivity extends ActivityBase implements
         allIntents.remove(mainIntent);
 
         // Create a chooser from the main intent
-        Intent chooserIntent = Intent.createChooser(mainIntent, "Select source");
+        Intent chooserIntent = Intent.createChooser(mainIntent, "Change profile photo");
 
         // Add all other intents
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, allIntents.toArray(new Parcelable[allIntents.size()]));
@@ -448,6 +470,10 @@ public class ProfileActivity extends ActivityBase implements
             mEmailTextView.setText(mUser.getEmail());
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.name) {
             mNameTextView.setText(mUser.getString("name"));
+            if (mGeneratedProfileImageView.getVisibility() == View.VISIBLE) {
+                // re-generate default profile image because it is based on name
+                setProfileImage();
+            }
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.image) {
             setProfileImage();
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.all) {

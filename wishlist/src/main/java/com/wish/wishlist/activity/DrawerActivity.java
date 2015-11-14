@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -40,6 +41,7 @@ public abstract class DrawerActivity extends ActivityBase {
     protected View mNavigationViewHeader;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected RelativeLayout mHeaderLayout;
+    private ImageView mGeneratedProfileImageView;
     protected Object mBusEventListener;
 
     protected abstract void setContentView();
@@ -114,6 +116,10 @@ public abstract class DrawerActivity extends ActivityBase {
             setupUserEmail();
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.name) {
             setupUserName();
+            if (mGeneratedProfileImageView.getVisibility() == View.VISIBLE) {
+                // re-generate default profile image as it is based on name
+                setupProfileImage();
+            }
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.image) {
             setupProfileImage();
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.all) {
@@ -146,9 +152,22 @@ public abstract class DrawerActivity extends ActivityBase {
     private void setupProfileImage() {
         // set profile image in the header
         final Bitmap bitmap = ProfileUtil.profileImageBitmap();
+        ImageView profileImageView = (ImageView) mNavigationViewHeader.findViewById(R.id.profile_image);
         if (bitmap != null) {
-            final ImageView profileImageView = (ImageView) mNavigationViewHeader.findViewById(R.id.profile_image);
             profileImageView.setImageBitmap(bitmap);
+            profileImageView.setVisibility(View.VISIBLE);
+            mGeneratedProfileImageView.setVisibility(View.GONE);
+            return;
+        }
+
+        Drawable generatedProfileImage = ProfileUtil.generateProfileImage();
+        if (generatedProfileImage != null) {
+            mGeneratedProfileImageView.setImageDrawable(generatedProfileImage);
+            mGeneratedProfileImageView.setVisibility(View.VISIBLE);
+            profileImageView.setVisibility(View.GONE);
+        } else {
+            mGeneratedProfileImageView.setVisibility(View.GONE);
+            profileImageView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -169,6 +188,7 @@ public abstract class DrawerActivity extends ActivityBase {
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
         if (getResources().getBoolean(R.bool.enable_account)) {
             mNavigationViewHeader = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
+            mGeneratedProfileImageView = (ImageView) mNavigationViewHeader.findViewById(R.id.generated_profile_image);
             mHeaderLayout = (RelativeLayout) mNavigationViewHeader.findViewById(R.id.drawer_header_layout);
             mHeaderLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
