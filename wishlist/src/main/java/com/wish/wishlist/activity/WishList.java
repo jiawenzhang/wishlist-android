@@ -90,8 +90,6 @@ public class WishList extends ActivityBase implements
     static final private int DIALOG_FILTER = 1;
     static final private int DIALOG_SORT = 2;
     static final private int POST_ITEM = 3;
-    private static final String SELECTED_INDEX_KEY = "SELECTED_INDEX_KEY";
-
 
     private java.util.Map _where = new HashMap<>();
     private String _nameQuery = null;
@@ -701,13 +699,6 @@ public class WishList extends ActivityBase implements
             itemIds[i] = selectedItemIds().get(i);
         }
         savedInstanceState.putLongArray(SELECTED_ITEM_IDS, itemIds);
-        // save the position of the currently selected item in the list
-        if (_view.val() == Options.View.LIST) {
-            //savedInstanceState.putInt(SELECTED_INDEX_KEY, _listView.getSelectedItemPosition());
-        }
-        else {
-            //savedInstanceState.putInt(SELECTED_INDEX_KEY, _gridView.getSelectedItemPosition());
-        }
         savedInstanceState.putString("newfullsizePhotoPath", _newfullsizePhotoPath);
         savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
         super.onSaveInstanceState(savedInstanceState);
@@ -725,16 +716,8 @@ public class WishList extends ActivityBase implements
         Long[] itemIdsLong = ArrayUtils.toObject(itemIds);
         setSelectedItemIds(java.util.Arrays.asList(itemIdsLong));
 
-        // restore the current selected item in the list
-        int pos = -1;
-        if (savedInstanceState.containsKey(SELECTED_INDEX_KEY)) {
-            pos = savedInstanceState.getInt(SELECTED_INDEX_KEY, -1);
-        }
         _newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
         _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
-
-        //_listView.setSelection(pos);
-        //_gridView.setSelection(pos);
 
         updateView();
     }
