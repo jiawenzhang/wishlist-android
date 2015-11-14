@@ -119,7 +119,8 @@ public class WishList extends ActivityBase implements
     private Menu _menu;
     private ArrayList<Long> _itemIds = new ArrayList<>();
     private MultiSelector mMultiSelector = new MultiSelector();
-    private ActionMode.Callback mActionMode;
+    private ActionMode.Callback mActionModeCallback;
+    private ActionMode mActionMode;
     protected RecyclerView mRecyclerView;
     protected LinearLayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
@@ -240,7 +241,7 @@ public class WishList extends ActivityBase implements
 
         // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
         // multiple items for an action
-        mActionMode = new ModalMultiSelectorCallback(mMultiSelector) {
+        mActionModeCallback = new ModalMultiSelectorCallback(mMultiSelector) {
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 super.onCreateActionMode(actionMode, menu);
@@ -250,6 +251,7 @@ public class WishList extends ActivityBase implements
 
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                mActionMode.finish();
                 mMultiSelector.clearSelections();
                 ArrayList<Long> itemIds;
                 if (_view.val() == Options.View.LIST) {
@@ -1100,6 +1102,6 @@ public class WishList extends ActivityBase implements
 
     public void onWishLongTapped() {
         Log.d(TAG, "onWishLongTap");
-        startSupportActionMode(mActionMode);
+        mActionMode = startSupportActionMode(mActionModeCallback);
     }
 }
