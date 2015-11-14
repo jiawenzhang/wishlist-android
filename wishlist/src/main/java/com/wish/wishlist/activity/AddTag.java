@@ -43,10 +43,10 @@ public class AddTag extends ActivityBase implements TokenCompleteTextView.TokenL
     ArrayAdapter<String> adapter;
 
     TagListAdapter tagsAdapter = null;
-    protected final static String ITEM_ID = "item_id";
-    protected Set<String> currentTags = new HashSet<>();
+    protected final static String ITEM_ID_ARRAY = "item_id_array";
+    protected Set<String> mCurrentTags = new HashSet<>();
 
-    protected long mItem_id;
+    protected long[] mItem_ids;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,12 +83,14 @@ public class AddTag extends ActivityBase implements TokenCompleteTextView.TokenL
             completionView.setPrefix(PREFIX);
         }
 
-        mItem_id = getIntent().getLongExtra(ITEM_ID, -1);
-        if (savedInstanceState == null) { // make sure on screen orientation, we don't add the same tags again to the view
-            ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItem_id);
+        mItem_ids = getIntent().getLongArrayExtra(ITEM_ID_ARRAY);
+        if (savedInstanceState == null && mItem_ids.length == 1) {
+            // make sure on screen orientation, we don't add the same tags again to the view
+            // Fixme: we disabled the screen rotation in AddTag view, test this when we re-enable it
+            ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItem_ids[0]);
             for (String tag : tags) {
                 completionView.addObject(tag);
-                currentTags.add(tag);
+                mCurrentTags.add(tag);
             }
         }
         showTags();
@@ -97,7 +99,7 @@ public class AddTag extends ActivityBase implements TokenCompleteTextView.TokenL
     private void showTags() {
         ArrayList<String> tagList = new ArrayList<>();
         for (String tag : TagDBManager.instance().getAllTags()) {
-            if (!currentTags.contains(tag)) {
+            if (!mCurrentTags.contains(tag)) {
                 tagList.add(tag);
             }
         }
@@ -168,15 +170,31 @@ public class AddTag extends ActivityBase implements TokenCompleteTextView.TokenL
         //Get the text after the last token in the view. This text has not been tokenized, but it should be regarded as a tag
         String lastTag = completionView.getText().toString().replaceFirst(PREFIX, "").replace(",", "").trim();
         if (!lastTag.isEmpty()) {
-            currentTags.add(lastTag);
+            mCurrentTags.add(lastTag);
         }
-        ArrayList<String> tags = new ArrayList<>();
-        tags.addAll(currentTags);
-        TagItemDBManager.instance().Update_item_tags(mItem_id, tags);
 
-        WishItem wish = WishItemManager.getInstance().getItemById(mItem_id);
-        wish.setUpdatedTime(System.currentTimeMillis());
-        wish.save();
+        if (mItem_ids.length == 1) {
+            // We only have one wish, mCurrentTags should overwrite the existing tags in the wish
+            ArrayList<String> tags = new ArrayList<>();
+            tags.addAll(mCurrentTags);
+            TagItemDBManager.instance().Update_item_tags(mItem_ids[0], tags);
+
+            WishItem wish = WishItemManager.getInstance().getItemById(mItem_ids[0]);
+            wish.setUpdatedTime(System.currentTimeMillis());
+            wish.save();
+        } else {
+            // We have multiple wishes, mCurrentTags are new tags we should add to the wishes (existing tags remain)
+            for (long item_id : mItem_ids) {
+                ArrayList<String> existingTagList = TagItemDBManager.instance().tags_of_item(item_id);
+                HashSet<String> tagSet = new HashSet<>(existingTagList);
+                tagSet.addAll(mCurrentTags);
+                TagItemDBManager.instance().Update_item_tags(item_id, new ArrayList<>(tagSet));
+
+                WishItem wish = WishItemManager.getInstance().getItemById(item_id);
+                wish.setUpdatedTime(System.currentTimeMillis());
+                wish.save();
+            }
+        }
 
         Intent resultIntent = new Intent();
         setResult(RESULT_OK, resultIntent);
@@ -269,13 +287,13 @@ public class AddTag extends ActivityBase implements TokenCompleteTextView.TokenL
 
     @Override
     public void onTokenAdded(Object token) {
-        currentTags.add((String) token);
+        mCurrentTags.add((String) token);
         showTags();
     }
 
     @Override
     public void onTokenRemoved(Object token) {
-        currentTags.remove(token);
+        mCurrentTags.remove(token);
         showTags();
     }
 }

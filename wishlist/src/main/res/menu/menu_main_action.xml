@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/menu_delete"
-        android:title="delete"
-        android:icon="@drawable/ic_action_trash_white"
-        app:showAsAction="ifRoom"
-        />
-    <item android:id="@+id/menu_map"
-          android:title="map"
-          android:icon="@drawable/ic_action_map_white"
-          app:showAsAction="ifRoom"
-        />
     <item android:id="@+id/menu_tag"
-          android:title="tag"
+          android:title="Tag"
           android:icon="@drawable/ic_action_tag"
           app:showAsAction="ifRoom"
         />
+    <item android:id="@+id/menu_share"
+          android:title="Share"
+          android:icon="@drawable/ic_action_share_white"
+          app:showAsAction="ifRoom"
+        />
+    <item android:id="@+id/menu_delete"
+        android:title="Delete"
+        android:icon="@drawable/ic_action_trash_white"
+        app:showAsAction="ifRoom"
+        />
     <item android:id="@+id/menu_complete"
-          android:title="complete"
-          android:icon="@drawable/ic_checkmark"
+          android:title="Mark complete"
+          app:showAsAction="ifRoom"
+        />
+    <item android:id="@+id/menu_incomplete"
+          android:title="Mark incomplete"
           app:showAsAction="ifRoom"
         />
 </menu>

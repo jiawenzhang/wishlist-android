@@ -3,6 +3,7 @@ package com.wish.wishlist.model;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -31,7 +32,7 @@ import android.preference.PreferenceManager;
 import org.json.JSONObject;
 
 
-public class WishItem implements Parcelable {
+public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<WishItem> {
     private static final String TAG = "WishItem";
     public static final int PUBLIC = 0;
     public static final int PRIVATE = 1;
@@ -514,6 +515,26 @@ public class WishItem implements Parcelable {
         }
         setFullsizePicPath(null);
         saveToLocal();
+    }
+
+    @Override
+    public int compareTo(WishItem w)
+    {
+        if (getId() != -1) {
+            return Long.valueOf(getId()).compareTo(Long.valueOf(w.getId()));
+        } else {
+            return getObjectId().compareTo(w.getObjectId());
+        }
+    }
+
+    @Override
+    public int compare(WishItem w1, WishItem w2)
+    {
+        if (w1.getId() != -1 && w2.getId() != -1) {
+            return Long.valueOf(w1.getId()).compareTo(Long.valueOf(w2.getId()));
+        } else {
+            return w1.getObjectId().compareTo(w2.getObjectId());
+        }
     }
 
     /****************** everything below here is for implementing Parcelable *********************/

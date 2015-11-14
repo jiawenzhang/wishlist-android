@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import android.app.Activity;
@@ -26,8 +27,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,7 +37,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.support.v7.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.support.design.widget.NavigationView;
 
@@ -64,7 +62,6 @@ import com.wish.wishlist.util.WishAdapter;
 import com.wish.wishlist.util.WishAdapterGrid;
 import com.wish.wishlist.util.WishAdapterList;
 import com.wish.wishlist.util.camera.CameraManager;
-import com.wish.wishlist.util.social.ShareHelper;
 import com.wish.wishlist.util.sync.SyncAgent;
 import com.wish.wishlist.widgets.ItemDecoration;
 
@@ -121,7 +118,6 @@ public class WishList extends ActivityBase implements
     private MenuItem _menuSearch;
     private Menu _menu;
     private ArrayList<Long> _itemIds = new ArrayList<>();
-    private long _selectedItem_id;
     private MultiSelector mMultiSelector = new MultiSelector();
     private ActionMode.Callback mActionMode;
     protected RecyclerView mRecyclerView;
@@ -266,17 +262,32 @@ public class WishList extends ActivityBase implements
                 Log.d(TAG, "selected item ids: " + itemIds.toString());
 
                 switch (menuItem.getItemId()) {
-                    case R.id.menu_delete:
-                        Log.d(TAG, "delete");
-                        return true;
-                    case R.id.menu_map:
-                        Log.d(TAG, "map");
-                        return true;
                     case R.id.menu_tag:
                         Log.d(TAG, "tag");
+                        Intent intent = new Intent(WishList.this, AddTag.class);
+                        long[] ids = new long[itemIds.size()];
+                        for (int i = 0; i < itemIds.size() ; i++) {
+                            ids[i] = itemIds.get(i);
+                        }
+                        intent.putExtra(AddTag.ITEM_ID_ARRAY, (ids));
+                        startActivityForResult(intent, ADD_TAG);
+                        return true;
+                    case R.id.menu_share:
+                        Log.d(TAG, "share");
+                        //ShareHelper share = new ShareHelper(this, _selectedItem_id);
+                        //share.share();
+                        return true;
+                    case R.id.menu_delete:
+                        Log.d(TAG, "delete");
+                        deleteItems(itemIds);
                         return true;
                     case R.id.menu_complete:
                         Log.d(TAG, "complete");
+                        markItemComplete(itemIds, 1);
+                        return true;
+                    case R.id.menu_incomplete:
+                        Log.d(TAG, "incomplete");
+                        markItemComplete(itemIds, 0);
                         return true;
                     default:
                         return false;
@@ -427,15 +438,66 @@ public class WishList extends ActivityBase implements
         mRecyclerView.setAdapter(mWishAdapterList);
     }
 
-    private void deleteItem(long item_id){
-        _selectedItem_id = item_id;
+    private void markItemComplete(final List<Long> item_ids, int complete) {
+        HashSet<Long/*item_id*/> changed = new HashSet<>();
+        for (long item_id : item_ids) {
+            WishItem wish_item = WishItemManager.getInstance().getItemById(item_id);
+            String label = "Complete";
+            if (complete == 0) {
+                label = "InProgress";
+            }
+            if (wish_item.getComplete() != complete) {
+                changed.add(item_id);
+                wish_item.setComplete(complete);
+                Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
+                t.send(new HitBuilders.EventBuilder()
+                        .setCategory("Wish")
+                        .setAction("ChangeStatus")
+                        .setLabel(label)
+                        .build());
+            }
+            wish_item.setUpdatedTime(System.currentTimeMillis());
+            wish_item.setSyncedToServer(false);
+            wish_item.save();
+
+        }
+        for (int i = 0; i < mWishlist.size(); i++) {
+            WishItem item = mWishlist.get(i);
+            if (changed.contains(item.getId())) {
+                item.setComplete(complete);
+                if (mWishAdapterList != null) {
+                    mWishAdapterList.notifyItemChanged(i, item);
+                }
+                if (mWishAdapterGrid != null) {
+                    mWishAdapterGrid.notifyItemChanged(i, item);
+                }
+            }
+        }
+    }
+
+    private void deleteItems(final List<Long> item_ids) {
+        final String message;
+        if (item_ids.size() == 1) {
+            message = "Delete the wish?";
+        } else {
+            message = "Delete " + item_ids.size() + " wishes?";
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-        builder.setMessage("Delete the wish?");
+        builder.setMessage(message);
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                WishItemManager.getInstance().deleteItemById(_selectedItem_id);
-                updateView();
+                for (long item_id : item_ids) {
+                    WishItemManager.getInstance().deleteItemById(item_id);
+                }
+                if (_view.val() == Options.View.LIST) {
+                    mWishAdapterList.removeByItemIds(item_ids);
+                } else if (_view.val() == Options.View.GRID) {
+                    mWishAdapterGrid.removeByItemIds(item_ids);
+                }
+
+                //Fixme: need to show make a wish view if there is no wish left
             }
         });
         builder.setNegativeButton("No",
@@ -484,25 +546,6 @@ public class WishList extends ActivityBase implements
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, android.view.View v,
-                                    ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_item_context, menu);
-
-        WishItem wish_item = WishItemManager.getInstance().getItemById(_selectedItem_id);
-        int complete = wish_item.getComplete();
-        MenuItem mi = menu.findItem(R.id.COMPLETE);
-        if (complete == 1) {
-            mi.setTitle("Mark as incomplete");
-        } else {
-            mi.setTitle("Mark as complete");
-        }
-        return;
-    }
-
-    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         return true;
@@ -533,73 +576,6 @@ public class WishList extends ActivityBase implements
         }
         return false;
     }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        super.onContextItemSelected(item);
-
-        long itemId = item.getItemId();
-        if (itemId == R.id.REMOVE) {
-            deleteItem(_selectedItem_id);
-            return true;
-        }
-        else if (itemId == R.id.EDIT) {
-            Intent editItem = new Intent(this, EditItem.class);
-            editItem.putExtra("item_id", _selectedItem_id);
-            startActivityForResult(editItem, EDIT_ITEM);
-            return true;
-        }
-        //	else if (itemId == R.id.POST): {
-        //		Intent snsIntent = new Intent(this, WishItemPostToSNS.class);
-        //		snsIntent.putExtra("wishItem", "test");
-        //		startActivityForResult(snsIntent, POST_ITEM);
-        //		return true;
-        //	}
-        else if (itemId == R.id.MARK) {
-            WishItem wishItem = WishItemManager.getInstance().getItemById(_selectedItem_id);
-            if (wishItem.getLatitude() == Double.MIN_VALUE && wishItem.getLongitude() == Double.MIN_VALUE) {
-                Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
-                toast.show();
-            } else {
-                Intent mapIntent = new Intent(this, Map.class);
-                mapIntent.putExtra("type", "markOne");
-                mapIntent.putExtra("id", _selectedItem_id);
-                startActivity(mapIntent);
-            }
-            return true;
-        } else if (itemId == R.id.SHARE) {
-            ShareHelper share = new ShareHelper(this, _selectedItem_id);
-            share.share();
-            return true;
-        } else if (itemId == R.id.COMPLETE) {
-            WishItem wish_item = WishItemManager.getInstance().getItemById(_selectedItem_id);
-            if (wish_item.getComplete() == 1) {
-                wish_item.setComplete(0);
-                Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                t.send(new HitBuilders.EventBuilder()
-                        .setCategory("Wish")
-                        .setAction("ChangeStatus")
-                        .setLabel("InProgress")
-                        .build());
-            } else {
-                wish_item.setComplete(1);
-                Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                t.send(new HitBuilders.EventBuilder()
-                        .setCategory("Wish")
-                        .setAction("ChangeStatus")
-                        .setLabel("Complete")
-                        .build());
-            }
-            wish_item.setUpdatedTime(System.currentTimeMillis());
-            wish_item.setSyncedToServer(false);
-            wish_item.save();
-            updateView();
-        } else if (itemId == R.id.TAG) {
-            Intent i = new Intent(WishList.this, AddTag.class);
-            i.putExtra(AddTag.ITEM_ID, _selectedItem_id);
-            startActivityForResult(i, ADD_TAG);
-        }
-        return false; }
 
     @Override
     protected Dialog onCreateDialog(int id) {

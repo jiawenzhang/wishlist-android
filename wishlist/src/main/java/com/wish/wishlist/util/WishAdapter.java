@@ -137,6 +137,18 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyItemRemoved(position);
     }
 
+    public void removeByItemIds(List<Long> item_ids) {
+        final int size = mWishList.size();
+        for(int i = size - 1; i >= 0; i--) {
+            final long item_id = mWishList.get(i).getId();
+            if (item_ids.contains(item_id)) {
+                mWishList.remove(i);
+                notifyItemRemoved(i);
+                item_ids.remove(item_id);
+            }
+        }
+    }
+
     public void removeAll() {
         int size = mWishList.size();
         mWishList.clear();

@@ -18,7 +18,7 @@ public class AddTagFromEditItem extends AddTag {
         if (tags != null) {
             for (String tag : tags) {
                 completionView.addObject(tag);
-                currentTags.add(tag);
+                mCurrentTags.add(tag);
             }
         }
     }
@@ -27,10 +27,10 @@ public class AddTagFromEditItem extends AddTag {
         //Get the text after the last token in the view. This text has not been tokenized, but it should be regarded as a tag
         String lastTag = completionView.getText().toString().replaceFirst(PREFIX, "").replace(",", "").trim();
         if (!lastTag.isEmpty()) {
-            currentTags.add(lastTag);
+            mCurrentTags.add(lastTag);
         }
         ArrayList<String> tags = new ArrayList<String>();
-        tags.addAll(currentTags);
+        tags.addAll(mCurrentTags);
 
         //send the tags back to the EditItemInfo activity and close this activity
         Intent resultIntent = new Intent();
