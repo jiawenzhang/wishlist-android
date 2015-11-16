@@ -16,7 +16,6 @@ import com.facebook.SessionState;
 import com.facebook.widget.LoginButton;
 import com.facebook.widget.LoginButton.OnErrorListener;
 import com.facebook.FacebookException;
-import com.facebook.*;
 
 import com.wish.wishlist.R;
 
@@ -49,7 +48,7 @@ public class Login extends Activity {
         authButton.setOnErrorListener(new OnErrorListener() {
             @Override
             public void onError(FacebookException error) {
-                Log.i(WishList.LOG_TAG, "Error " + error.getMessage());
+                Log.i(MyWish.LOG_TAG, "Error " + error.getMessage());
             }
         });
 
@@ -65,27 +64,27 @@ public class Login extends Activity {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         Log.i(TAG, "onSessionStateChange");
         if (state.isOpened()) {
-            Log.i(WishList.LOG_TAG, "Logged in...");
+            Log.i(MyWish.LOG_TAG, "Logged in...");
             Login.this.finish();
             //	Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
             //		@Override
             //		public void onCompleted(GraphUser user,Response response) {
             //			if (user != null) {
-            //				Log.i(WishList.LOG_TAG,"User ID "+ user.getId());
-            //				Log.i(WishList.LOG_TAG,"Email "+ user.asMap().get("email"));
+            //				Log.i(MyWish.LOG_TAG,"User ID "+ user.getId());
+            //				Log.i(MyWish.LOG_TAG,"Email "+ user.asMap().get("email"));
             //			}
             //		}
             //	});
         }
         else if (state.isClosed()) {
-            Log.i(WishList.LOG_TAG, "Logged out...");
+            Log.i(MyWish.LOG_TAG, "Logged out...");
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.i(WishList.LOG_TAG, "onResume");
+        Log.i(MyWish.LOG_TAG, "onResume");
         // For scenarios where the main activity is launched and user
         // session is not null, the session state change notification
         // may not be triggered. Trigger it if it's open/closed.

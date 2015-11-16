@@ -4,8 +4,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import com.wish.wishlist.R;
-import com.wish.wishlist.activity.WishList;
-import com.wish.wishlist.util.DialogOnShowListener;
 
 import java.io.IOException;
 import android.app.Dialog;

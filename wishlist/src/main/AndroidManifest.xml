@@ -116,7 +116,7 @@
         -->
         <!-- The default activity of the app.  Can also display search results. -->
         <activity
-            android:name=".activity.WishList"
+            android:name=".activity.MyWish"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/Theme.WishlistTheme" >

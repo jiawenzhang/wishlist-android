@@ -3,7 +3,6 @@ package com.wish.wishlist.activity;
 import android.app.Activity;
 import android.support.v7.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -28,7 +27,6 @@ import java.util.List;
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.util.DialogOnShowListener;
 
 
 public class FacebookPost extends Activity {
@@ -40,7 +38,7 @@ public class FacebookPost extends Activity {
         String getId();
     }
 
-    private static final String TAG = WishList.LOG_TAG;
+    private static final String TAG = "FacebookPost";
 
     private static final String wishUrl = "http://samples.ogp.me/320819528045680";
     private static final String POST_ACTION_PATH = "me/beans_wishlist:make";
@@ -595,7 +593,7 @@ public class FacebookPost extends Activity {
         //authButton.setOnErrorListener(new OnErrorListener() {
         //	@Override
         //	public void onError(FacebookException error) {
-        //		Log.i(WishList.LOG_TAG, "Error " + error.getMessage());
+        //		Log.i(TAG, "Error " + error.getMessage());
         //	}
         //});
         //authButton.setSessionStatusCallback(callback);

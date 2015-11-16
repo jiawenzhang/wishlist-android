@@ -55,7 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /***
- * WishList.java is responsible for displaying wish items in either list or grid
+ * WishBaseActivity is responsible for displaying wish items in either list or grid
  * view and providing access to functions of manipulating items such as adding,
  * deleting and editing items, sorting items, searching items, viewing item
  * detailed info. and etc.

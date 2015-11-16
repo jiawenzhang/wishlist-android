@@ -37,7 +37,7 @@ import java.util.Locale;
  * navigating to the previous and next item, respectively.
  *
  * the order of the items during swiping is the order of the items displayed in
- * the WishList activity
+ * the MyWish activity
  */
 
 public class MyWishDetail extends WishDetail implements TokenCompleteTextView.TokenListener {
@@ -60,7 +60,7 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
         super.onCreate(savedInstanceState);
 
         // Remember the id of the item user clicked
-        // in the previous activity (WishList.java)
+        // in the previous activity (MyWish.java)
         Intent i = getIntent();
         mItemId = i.getLongExtra("item_id", -1);
         _position = i.getIntExtra("position", 0);
@@ -325,13 +325,13 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
     /***
      * called when the "return" button is clicked
      * it closes the WishDetail activity and starts
-     * the WishList activity
+     * the MyWish activity
      */
 //	@Override
 //	public boolean onKeyDown(int keyCode, KeyEvent event) {
 //		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
 //			// do something on back.
-//			startActivity(new Intent(WishDetail.this, WishList.class));
+//			startActivity(new Intent(WishDetail.this, MyWish.class));
 //			WishDetail.this.finish();
 //
 //			return true;

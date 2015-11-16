@@ -10,7 +10,6 @@ import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -22,7 +21,6 @@ import com.wish.wishlist.db.LocationDBManager;
 import com.wish.wishlist.db.StoreDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.util.DialogOnShowListener;
 import com.wish.wishlist.util.ImageManager;
 
 import java.util.ArrayList;
@@ -107,9 +105,9 @@ public class Splash extends Activity {
                 editor.putInt(VERSION_KEY, currentVersionNumber);
                 editor.commit();
                 //startActivity(new Intent(getApplication(), NewFeatureFragmentActivity.class));
-                //startActivity(new Intent(getApplication(), WishList.class));
+                //startActivity(new Intent(getApplication(), MyWish.class));
             } else {
-                //startActivity(new Intent(getApplication(), WishList.class));
+                //startActivity(new Intent(getApplication(), MyWish.class));
             }
 
             Intent intent = new Intent(getApplication(), UserLoginActivity.class);
@@ -131,7 +129,7 @@ public class Splash extends Activity {
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.dismiss();
-                    startActivity(new Intent(getApplication(), WishList.class));
+                    startActivity(new Intent(getApplication(), MyWish.class));
                     Splash.this.finish();
                 }
             });

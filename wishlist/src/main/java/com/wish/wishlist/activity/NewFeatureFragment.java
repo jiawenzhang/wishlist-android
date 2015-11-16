@@ -40,7 +40,7 @@ public final class NewFeatureFragment extends Fragment {
             final Button button = (Button) v.findViewById(R.id.newFeatureStartButton);
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), WishList.class));
+                    startActivity(new Intent(getActivity(), MyWish.class));
                     getActivity().finish();
                 }
             });
@@ -69,7 +69,7 @@ public final class NewFeatureFragment extends Fragment {
                     button.setVisibility(View.VISIBLE);
                     button.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
-                            startActivity(new Intent(getActivity(), WishList.class));
+                            startActivity(new Intent(getActivity(), MyWish.class));
                             getActivity().finish();
                         }
                     });
@@ -94,7 +94,7 @@ public final class NewFeatureFragment extends Fragment {
                     button.setVisibility(View.VISIBLE);
                     button.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
-                            startActivity(new Intent(getActivity(), WishList.class));
+                            startActivity(new Intent(getActivity(), MyWish.class));
                             getActivity().finish();
                         }
                     });

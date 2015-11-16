@@ -24,7 +24,6 @@ import android.widget.Button;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 
-import com.bignerdranch.android.multiselector.MultiSelector;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
@@ -37,7 +36,7 @@ import com.wish.wishlist.util.camera.CameraManager;
 import com.wish.wishlist.util.sync.SyncAgent;
 
 /***
- * WishList.java is responsible for displaying wish items in either list or grid
+ * MyWish.java is responsible for displaying wish items in either list or grid
  * view and providing access to functions of manipulating items such as adding,
  * deleting and editing items, sorting items, searching items, viewing item
  * detailed info. and etc.
@@ -50,11 +49,11 @@ import com.wish.wishlist.util.sync.SyncAgent;
  * sorting items is via "SELECT ... ORDER BY" query to the database
  *
  */
-public class WishList extends WishBaseActivity implements
+public class MyWish extends WishBaseActivity implements
         SyncAgent.OnSyncWishChangedListener,
         SyncAgent.OnDownloadWishDoneListener {
 
-    public static final String TAG = "WishList";
+    public static final String TAG = "MyWish";
 
     private static final int EDIT_ITEM = 0;
     private static final int ADD_ITEM = 1;
@@ -87,21 +86,21 @@ public class WishList extends WishBaseActivity implements
         mAddNewButton = (Button) findViewById(R.id.addNewWishButton);
         mAddNewButton.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
-                Intent editItem = new Intent(WishList.this, EditItem.class);
+                Intent editItem = new Intent(MyWish.this, EditItem.class);
                 startActivityForResult(editItem, ADD_ITEM);
             }
         });
 
         if (savedInstanceState != null) {
-            Log.d(WishList.TAG, "savedInstanceState != null");
+            Log.d(MyWish.TAG, "savedInstanceState != null");
             // restore the current selected item in the list
             mNewfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
             mFullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
 
-            Log.d(WishList.TAG, "mNewfullsizePhotoPath " + mNewfullsizePhotoPath);
-            Log.d(WishList.TAG, "mFullsizePhotoPath " + mFullsizePhotoPath);
+            Log.d(MyWish.TAG, "mNewfullsizePhotoPath " + mNewfullsizePhotoPath);
+            Log.d(MyWish.TAG, "mFullsizePhotoPath " + mFullsizePhotoPath);
         } else{
-            Log.d(WishList.TAG, "savedInstanceState == null");
+            Log.d(MyWish.TAG, "savedInstanceState == null");
         }
 
         SyncAgent.getInstance().register(this);
@@ -137,7 +136,7 @@ public class WishList extends WishBaseActivity implements
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 super.onCreateActionMode(actionMode, menu);
-                getMenuInflater().inflate(R.menu.menu_main_action, menu);
+                getMenuInflater().inflate(R.menu.menu_my_wish_action, menu);
                 return true;
             }
 
@@ -161,7 +160,7 @@ public class WishList extends WishBaseActivity implements
                 switch (menuItem.getItemId()) {
                     case R.id.menu_tag:
                         Log.d(TAG, "tag");
-                        Intent intent = new Intent(WishList.this, AddTag.class);
+                        Intent intent = new Intent(MyWish.this, AddTag.class);
                         long[] ids = new long[itemIds.size()];
                         for (int i = 0; i < itemIds.size() ; i++) {
                             ids[i] = itemIds.get(i);
@@ -231,7 +230,7 @@ public class WishList extends WishBaseActivity implements
 
     @Override
     protected void setContentView() {
-        setContentView(R.layout.main);
+        setContentView(R.layout.my_wish);
         setupActionBar(R.id.main_toolbar);
     }
 
@@ -360,7 +359,7 @@ public class WishList extends WishBaseActivity implements
         } else if (itemId == R.id.menu_status) {
             showDialog(DIALOG_FILTER);
         } else if (itemId == R.id.menu_tags) {
-            Intent i = new Intent(WishList.this, FindTag.class);
+            Intent i = new Intent(MyWish.this, FindTag.class);
             startActivityForResult(i, FIND_TAG);
         }
         return false;
@@ -445,7 +444,7 @@ public class WishList extends WishBaseActivity implements
                     }
 
                     if (id != -1) {
-                        Intent i = new Intent(WishList.this, MyWishDetail.class);
+                        Intent i = new Intent(MyWish.this, MyWishDetail.class);
                         i.putExtra("item_id", id);
                         startActivityForResult(i, ITEM_DETAILS);
                     }
@@ -471,7 +470,7 @@ public class WishList extends WishBaseActivity implements
             }
             case TAKE_PICTURE: {
                 if (resultCode == RESULT_OK) {
-                    Log.d(WishList.TAG, "TAKE_PICTURE: RESULT_OK");
+                    Log.d(MyWish.TAG, "TAKE_PICTURE: RESULT_OK");
                     Log.d("TAKE PICTURE", "_new " + mNewfullsizePhotoPath);
                     mFullsizePhotoPath = String.valueOf(mNewfullsizePhotoPath);
                     mNewfullsizePhotoPath = null;
@@ -490,7 +489,7 @@ public class WishList extends WishBaseActivity implements
                             .build());
                     startActivityForResult(i, EDIT_ITEM);
                 } else {
-                    Log.d(WishList.TAG, "TAKE_PICTURE: not RESULT_OK");
+                    Log.d(MyWish.TAG, "TAKE_PICTURE: not RESULT_OK");
                 }
                 break;
             }
@@ -584,7 +583,7 @@ public class WishList extends WishBaseActivity implements
 
     public void onWishTapped(WishItem item) {
         Log.d(TAG, "onWishTapped");
-        Intent i = new Intent(WishList.this, MyWishDetail.class);
+        Intent i = new Intent(MyWish.this, MyWishDetail.class);
         i.putExtra("item_id", item.getId());
         i.putExtra("position", 0);
         startActivityForResult(i, ITEM_DETAILS);

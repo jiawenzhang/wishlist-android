@@ -85,7 +85,7 @@ public class UserLoginActivity extends Activity {
         Log.d(TAG, "installation id: " + installation.getInstallationId());
 
         if (mFromSplash) {
-            startActivity(new Intent(this, WishList.class));
+            startActivity(new Intent(this, MyWish.class));
         } else {
             // from Settings->Profile
             startActivity(new Intent(getApplication(), Profile.class));
