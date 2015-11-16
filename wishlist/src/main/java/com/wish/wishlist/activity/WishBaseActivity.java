@@ -23,7 +23,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -139,11 +138,11 @@ public class WishBaseActivity extends ActivityBase implements
         }
     };
 
+    protected List<WishItem> mWishlist = new ArrayList<>();
     protected RecyclerView mRecyclerView;
     protected LinearLayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     protected WishAdapter mWishAdapter;
-    protected List<WishItem> mWishlist;
     protected DrawerLayout mDrawerLayout;
     protected NavigationView mNavigationView;
     protected View mNavigationViewHeader;
@@ -318,8 +317,6 @@ public class WishBaseActivity extends ActivityBase implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
         _menu = menu;
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);

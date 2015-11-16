@@ -11,8 +11,6 @@ import com.wish.wishlist.friend.WishLoader;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.WishAdapter;
-import com.wish.wishlist.util.WishAdapterGrid;
-import com.wish.wishlist.util.WishAdapterList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,18 +64,32 @@ public class FriendsWish extends WishBaseActivity implements
         // the items in the grid layout will be displaced the second time setAdapter is called.
         // Using swapAdapter and passing false as the removeAndRecycleExistingViews flag will avoid this
 
-        if (mWishAdapter != null) {
-            mWishAdapter.setWishList(mWishlist);
-        } else {
-            if (_view.val() == Options.View.LIST) {
-                mWishAdapter = new WishAdapterList(mWishlist, this, mMultiSelector);
-                mRecyclerView.setLayoutManager(mLinearLayoutManager);
-            } else {
-                mWishAdapter = new WishAdapterGrid(mWishlist, this, mMultiSelector);
-                mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        updateWishView();
+    }
+
+    @Override
+    protected void reloadItems(String searchName, java.util.Map where) {
+        if (searchName == null) {
+            // Get all of the rows from the Item table
+            // Keep track of the TextViews added in list lstTable
+            if (where.get("complete") != null) {
+                int complete = Integer.parseInt((String) where.get("complete"));
+                ArrayList<WishItem> filtered_wishList = new ArrayList<>();
+                for (WishItem item : mWishlist) {
+                    if (item.getComplete() == complete) {
+                        filtered_wishList.add(item);
+                    }
+                }
+                //Fixme: sort wish
+                mWishlist = filtered_wishList;
             }
-            mRecyclerView.swapAdapter(mWishAdapter, true);
+        } else {
+            //Fixme: search wish
         }
+
+        updateWishView();
+        updateDrawerList();
+        updateActionBarTitle();
     }
 
     private List<WishItem> fromParseObjects(final List<ParseObject> parseWishList) {
@@ -92,7 +104,7 @@ public class FriendsWish extends WishBaseActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_friends_wish, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     public void onWishTapped(WishItem item) {

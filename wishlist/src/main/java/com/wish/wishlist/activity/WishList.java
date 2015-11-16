@@ -195,6 +195,12 @@ public class WishList extends WishBaseActivity implements
         updateWishView();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_my_wish, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
     /***
      * display the items in either list or grid view sorted by "sortBy"
      *
