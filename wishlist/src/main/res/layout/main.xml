@@ -24,73 +24,7 @@
             android:id="@+id/main_toolbar"
             />
 
-        <EditText
-            android:id="@+id/mySearchText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="" android:visibility="gone"
-            android:hint="@string/search_wish_hint"
-            />
-
-        <ViewFlipper
-            android:id="@+id/myFlipper"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/wish_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                android:scrollbars="vertical" />
-
-            <RelativeLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
-
-                <Button
-                    android:id="@+id/addNewWishButton"
-                    android:layout_width="205dp"
-                    android:layout_height="44dp"
-                    android:gravity="center"
-                    android:layout_margin="25dp"
-                    android:bottomRightRadius="10dp"
-                    android:bottomLeftRadius="10dp"
-                    android:topLeftRadius="10dp"
-                    android:topRightRadius="10dp"
-                    android:text="Make your first wish"
-                    android:textSize="16.0sp"
-                    android:clickable="true"
-                    android:textColor="@color/grey"
-                    android:background="@drawable/dotted_button"
-                    android:layout_centerInParent="true"
-                    />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
-
-                <TextView
-                    android:id="@+id/noWishText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/grey"
-                    android:text="No matching wishes"
-                    android:textSize="16.0sp"
-                    android:gravity="center"
-                    android:layout_centerInParent="true"
-                    />
-            </RelativeLayout>
-
-            <!-- default listSelector in android 10 has a left/right margins, while in android >10 has no margins,
-                 set to null will remove these margins and make it consistent over different android version -->
-
-        </ViewFlipper>
+        <include layout="@layout/wish_flipper"/>
     </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 

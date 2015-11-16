@@ -20,7 +20,7 @@ import android.webkit.WebViewClient;
 import android.util.Log;
 
 public class ReleaseNotesView {
-	private static final String TAG = WishList.LOG_TAG;
+	private static final String TAG = "ReleaseNotesView";
 	static final private String releaseNotesXml = "release_notes"; 
 	static final private String css =
 				"<style type=\"text/css\">"
