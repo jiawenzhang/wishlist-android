@@ -39,21 +39,16 @@ public class FriendsWish extends WishBaseActivity implements
             _viewFlipper.setDisplayedChild(WISH_VIEW);
         }
 
-        handleIntent(getIntent());
+        Intent i = getIntent();
+        mFriendId = i.getStringExtra(Friends.FRIEND_ID);
+        WishLoader.getInstance().setGotWishesListener(this);
+        WishLoader.getInstance().fetchWishes(mFriendId);
     }
 
     @Override
     protected void setContentView() {
         setContentView(R.layout.activity_friends_wish);
         setupActionBar(R.id.friends_wish_toolbar);
-    }
-
-    @Override
-    protected void initializeWishView() {
-        Intent i = getIntent();
-        mFriendId = i.getStringExtra(Friends.FRIEND_ID);
-        WishLoader.getInstance().setGotWishesListener(this);
-        WishLoader.getInstance().fetchWishes(mFriendId);
     }
 
     public void onGotWishes(String friendId, List<ParseObject> wishList) {
@@ -69,22 +64,18 @@ public class FriendsWish extends WishBaseActivity implements
 
     @Override
     protected void reloadItems(String searchName, java.util.Map where) {
-        if (searchName == null) {
-            // Get all of the rows from the Item table
-            // Keep track of the TextViews added in list lstTable
-            if (where.get("complete") != null) {
-                int complete = Integer.parseInt((String) where.get("complete"));
-                ArrayList<WishItem> filtered_wishList = new ArrayList<>();
-                for (WishItem item : mWishlist) {
-                    if (item.getComplete() == complete) {
-                        filtered_wishList.add(item);
-                    }
+        // Get all of the rows from the Item table
+        // Keep track of the TextViews added in list lstTable
+        if (where.get("complete") != null) {
+            int complete = Integer.parseInt((String) where.get("complete"));
+            ArrayList<WishItem> filtered_wishList = new ArrayList<>();
+            for (WishItem item : mWishlist) {
+                if (item.getComplete() == complete) {
+                    filtered_wishList.add(item);
                 }
-                //Fixme: sort wish
-                mWishlist = filtered_wishList;
             }
-        } else {
-            //Fixme: search wish
+            //Fixme: sort wish
+            mWishlist = filtered_wishList;
         }
 
         updateWishView();
