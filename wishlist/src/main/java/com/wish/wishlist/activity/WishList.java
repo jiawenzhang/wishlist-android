@@ -24,6 +24,7 @@ import android.widget.Button;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 
+import com.bignerdranch.android.multiselector.MultiSelector;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
@@ -70,64 +71,8 @@ public class WishList extends WishBaseActivity implements
     private String mNameQuery = null;
     private Button mAddNewButton;
     private ArrayList<Long> mItemIds = new ArrayList<>();
-    private ModalMultiSelectorCallback mActionModeCallback = new ModalMultiSelectorCallback(mMultiSelector) {
-        @Override
-        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-            super.onCreateActionMode(actionMode, menu);
-            getMenuInflater().inflate(R.menu.menu_main_action, menu);
-            return true;
-        }
 
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            super.onDestroyActionMode(mode);
-            mWishAdapter.clearSelectedItemIds();
 
-            // notifyDataSetChanged will fix a bug in recyclerview-multiselect lib, where the selected item's state does
-            // not get cleared when the action mode is finished.
-            mWishAdapter.notifyDataSetChanged();
-            mMultiSelector.clearSelections();
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-            ArrayList<Long> itemIds = selectedItemIds();
-            Log.d(TAG, "selected item ids: " + itemIds.toString());
-            actionMode.finish();
-
-            switch (menuItem.getItemId()) {
-                case R.id.menu_tag:
-                    Log.d(TAG, "tag");
-                    Intent intent = new Intent(WishList.this, AddTag.class);
-                    long[] ids = new long[itemIds.size()];
-                    for (int i = 0; i < itemIds.size() ; i++) {
-                        ids[i] = itemIds.get(i);
-                    }
-                    intent.putExtra(AddTag.ITEM_ID_ARRAY, (ids));
-                    startActivityForResult(intent, ADD_TAG);
-                    return true;
-                case R.id.menu_share:
-                    Log.d(TAG, "share");
-                    //ShareHelper share = new ShareHelper(this, _selectedItem_id);
-                    //share.share();
-                    return true;
-                case R.id.menu_delete:
-                    Log.d(TAG, "delete");
-                    deleteItems(itemIds);
-                    return true;
-                case R.id.menu_complete:
-                    Log.d(TAG, "complete");
-                    markItemComplete(itemIds, 1);
-                    return true;
-                case R.id.menu_incomplete:
-                    Log.d(TAG, "incomplete");
-                    markItemComplete(itemIds, 0);
-                    return true;
-                default:
-                    return false;
-            }
-        }
-    };
 
     /** Called when the activity is first created. */
     @Override
@@ -185,6 +130,67 @@ public class WishList extends WishBaseActivity implements
         });
 
         handleIntent(getIntent());
+    }
+
+    protected ModalMultiSelectorCallback createActionModeCallback() {
+        return new ModalMultiSelectorCallback(mMultiSelector) {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                super.onCreateActionMode(actionMode, menu);
+                getMenuInflater().inflate(R.menu.menu_main_action, menu);
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                super.onDestroyActionMode(mode);
+                mWishAdapter.clearSelectedItemIds();
+
+                // notifyDataSetChanged will fix a bug in recyclerview-multiselect lib, where the selected item's state does
+                // not get cleared when the action mode is finished.
+                mWishAdapter.notifyDataSetChanged();
+                mMultiSelector.clearSelections();
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                ArrayList<Long> itemIds = selectedItemIds();
+                Log.d(TAG, "selected item ids: " + itemIds.toString());
+                actionMode.finish();
+
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_tag:
+                        Log.d(TAG, "tag");
+                        Intent intent = new Intent(WishList.this, AddTag.class);
+                        long[] ids = new long[itemIds.size()];
+                        for (int i = 0; i < itemIds.size() ; i++) {
+                            ids[i] = itemIds.get(i);
+                        }
+                        intent.putExtra(AddTag.ITEM_ID_ARRAY, (ids));
+                        startActivityForResult(intent, ADD_TAG);
+                        return true;
+                    case R.id.menu_share:
+                        Log.d(TAG, "share");
+                        //ShareHelper share = new ShareHelper(this, _selectedItem_id);
+                        //share.share();
+                        return true;
+                    case R.id.menu_delete:
+                        Log.d(TAG, "delete");
+                        deleteItems(itemIds);
+                        return true;
+                    case R.id.menu_complete:
+                        Log.d(TAG, "complete");
+                        markItemComplete(itemIds, 1);
+                        return true;
+                    case R.id.menu_incomplete:
+                        Log.d(TAG, "incomplete");
+                        markItemComplete(itemIds, 0);
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        };
     }
 
     @Override

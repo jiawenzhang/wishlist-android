@@ -2,10 +2,12 @@ package com.wish.wishlist.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.parse.ParseObject;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.WishLoader;
@@ -44,6 +46,49 @@ public class FriendsWish extends WishBaseActivity implements
         mFriendId = i.getStringExtra(Friends.FRIEND_ID);
         WishLoader.getInstance().setGotWishesListener(this);
         WishLoader.getInstance().fetchWishes(mFriendId);
+    }
+
+    @Override
+    protected ModalMultiSelectorCallback createActionModeCallback() {
+        return new ModalMultiSelectorCallback(mMultiSelector) {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                super.onCreateActionMode(actionMode, menu);
+                getMenuInflater().inflate(R.menu.menu_friends_wish_action, menu);
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                super.onDestroyActionMode(mode);
+                mWishAdapter.clearSelectedItemIds();
+
+                // notifyDataSetChanged will fix a bug in recyclerview-multiselect lib, where the selected item's state does
+                // not get cleared when the action mode is finished.
+                mWishAdapter.notifyDataSetChanged();
+                mMultiSelector.clearSelections();
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                ArrayList<Long> itemIds = selectedItemIds();
+                Log.d(TAG, "selected item ids: " + itemIds.toString());
+                actionMode.finish();
+
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_share:
+                        Log.d(TAG, "share");
+                        //ShareHelper share = new ShareHelper(this, _selectedItem_id);
+                        //share.share();
+                        return true;
+                    case R.id.menu_save:
+                        Log.d(TAG, "save");
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        };
     }
 
     @Override

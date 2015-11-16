@@ -95,42 +95,7 @@ public abstract class WishBaseActivity extends ActivityBase implements
     // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
     // multiple items for an action
     protected ActionMode mActionMode;
-    protected ModalMultiSelectorCallback mActionModeCallback = new ModalMultiSelectorCallback(mMultiSelector) {
-        @Override
-        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-            super.onCreateActionMode(actionMode, menu);
-            getMenuInflater().inflate(R.menu.menu_main_action, menu);
-            return true;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            super.onDestroyActionMode(mode);
-            mWishAdapter.clearSelectedItemIds();
-
-            // notifyDataSetChanged will fix a bug in recyclerview-multiselect lib, where the selected item's state does
-            // not get cleared when the action mode is finished.
-            mWishAdapter.notifyDataSetChanged();
-            mMultiSelector.clearSelections();
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-            ArrayList<Long> itemIds = selectedItemIds();
-            Log.d(TAG, "selected item ids: " + itemIds.toString());
-            actionMode.finish();
-
-            switch (menuItem.getItemId()) {
-                case R.id.menu_share:
-                    Log.d(TAG, "share");
-                    //ShareHelper share = new ShareHelper(this, _selectedItem_id);
-                    //share.share();
-                    return true;
-                default:
-                    return false;
-            }
-        }
-    };
+    protected ModalMultiSelectorCallback mActionModeCallback;
 
     protected List<WishItem> mWishlist = new ArrayList<>();
     protected RecyclerView mRecyclerView;
@@ -199,6 +164,7 @@ public abstract class WishBaseActivity extends ActivityBase implements
         // Fixme use dp and covert to px
         mRecyclerView.addItemDecoration(new ItemDecoration(10 /*px*/));
 
+        mActionModeCallback = createActionModeCallback();
         // restore multi-select state when activity is re-created due to, for example, screen orientation
         if (mMultiSelector != null) {
             // restore selected item state
@@ -213,6 +179,8 @@ public abstract class WishBaseActivity extends ActivityBase implements
             }
         }
     }
+
+    protected abstract ModalMultiSelectorCallback createActionModeCallback();
 
     protected abstract void setContentView();
 
