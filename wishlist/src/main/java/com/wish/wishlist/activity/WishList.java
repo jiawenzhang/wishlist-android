@@ -53,7 +53,6 @@ public class WishList extends WishBaseActivity implements
         SyncAgent.OnSyncWishChangedListener,
         SyncAgent.OnDownloadWishDoneListener {
 
-    //private java.util.Map _where = new HashMap<>();
     public static final String TAG = "WishList";
 
     private static final int EDIT_ITEM = 0;
@@ -63,13 +62,14 @@ public class WishList extends WishBaseActivity implements
     private static final int ITEM_DETAILS = 4;
     private static final int TAKE_PICTURE = 5;
 
-    private Options.Tag _tag = new Options.Tag(null);
+    private Options.Tag mTag = new Options.Tag(null);
 
-    private String _fullsizePhotoPath = null;
-    private String _newfullsizePhotoPath = null;
+    private String mFullsizePhotoPath = null;
+    private String mNewfullsizePhotoPath = null;
 
-    private Button _addNew;
-    private ArrayList<Long> _itemIds = new ArrayList<>();
+    private String mNameQuery = null;
+    private Button mAddNewButton;
+    private ArrayList<Long> mItemIds = new ArrayList<>();
     private ModalMultiSelectorCallback mActionModeCallback = new ModalMultiSelectorCallback(mMultiSelector) {
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
@@ -134,13 +134,13 @@ public class WishList extends WishBaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        _tag.read();
-        if (_tag.val() != null) {
-            _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tag.val());
+        mTag.read();
+        if (mTag.val() != null) {
+            mItemIds = TagItemDBManager.instance().ItemIds_by_tag(mTag.val());
         }
 
-        _addNew = (Button) findViewById(R.id.addNewWishButton);
-        _addNew.setOnClickListener(new android.view.View.OnClickListener() {
+        mAddNewButton = (Button) findViewById(R.id.addNewWishButton);
+        mAddNewButton.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
                 Intent editItem = new Intent(WishList.this, EditItem.class);
                 startActivityForResult(editItem, ADD_ITEM);
@@ -150,11 +150,11 @@ public class WishList extends WishBaseActivity implements
         if (savedInstanceState != null) {
             Log.d(WishList.TAG, "savedInstanceState != null");
             // restore the current selected item in the list
-            _newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
-            _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
+            mNewfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
+            mFullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
 
-            Log.d(WishList.TAG, "_newfullsizePhotoPath " + _newfullsizePhotoPath);
-            Log.d(WishList.TAG, "_fullsizePhotoPath " + _fullsizePhotoPath);
+            Log.d(WishList.TAG, "mNewfullsizePhotoPath " + mNewfullsizePhotoPath);
+            Log.d(WishList.TAG, "mFullsizePhotoPath " + mFullsizePhotoPath);
         } else{
             Log.d(WishList.TAG, "savedInstanceState == null");
         }
@@ -188,15 +188,45 @@ public class WishList extends WishBaseActivity implements
     }
 
     @Override
-    protected void setContentView() {
-        setContentView(R.layout.main);
-        setupActionBar(R.id.main_toolbar);
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    protected void handleIntent(Intent intent) {
+        // check if the activity is started from search
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            MenuItemCompat.collapseActionView(_menuSearch);
+            // activity is started from search, get the search query and
+            // displayed the searched items
+            mNameQuery = intent.getStringExtra(SearchManager.QUERY);
+            MenuItem tagItem =  _menu.findItem(R.id.menu_tags);
+            MenuItemCompat.collapseActionView(tagItem);
+
+            MenuItem statusItem = _menu.findItem(R.id.menu_status);
+            MenuItemCompat.collapseActionView(statusItem);
+        } else {
+            // activity is not started from search
+            // display all the items
+
+            mWishlist = WishItemManager.getInstance().getItems(_sort.toString(), _where, mItemIds);
+            updateWishView();
+        }
     }
 
     @Override
-    protected void initializeWishView() {
-        mWishlist = WishItemManager.getInstance().getItems(_sort.toString(), _where, _itemIds);
-        updateWishView();
+    protected void updateWishView() {
+        if (mWishlist.isEmpty() && (!_where.isEmpty() || !mItemIds.isEmpty() || mNameQuery != null)) {
+            // no matching wishes text
+            _viewFlipper.setDisplayedChild(NO_MATCHING_WISH_VIEW);
+            return;
+        }
+        super.updateWishView();
+    }
+
+    @Override
+    protected void setContentView() {
+        setContentView(R.layout.main);
+        setupActionBar(R.id.main_toolbar);
     }
 
     @Override
@@ -223,7 +253,7 @@ public class WishList extends WishBaseActivity implements
         if (searchName == null) {
             // Get all of the rows from the Item table
             // Keep track of the TextViews added in list lstTable
-            mWishlist = WishItemManager.getInstance().getItems(_sort.toString(), where, _itemIds);
+            mWishlist = WishItemManager.getInstance().getItems(_sort.toString(), where, mItemIds);
         } else {
             mWishlist = WishItemManager.getInstance().searchItems(searchName, _sort.toString());
         }
@@ -300,7 +330,7 @@ public class WishList extends WishBaseActivity implements
 
     private void dispatchTakePictureIntent() {
         CameraManager c = new CameraManager();
-        _newfullsizePhotoPath = c.getPhotoPath();
+        mNewfullsizePhotoPath = c.getPhotoPath();
         startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
     }
 
@@ -331,9 +361,32 @@ public class WishList extends WishBaseActivity implements
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // When we navigate to another activity and navigate back to the wishlist activity, the wishes could have been changed,
+        // so we need to reload the list.
+
+        // Examples:
+        // 1. tap a wish to open wishitemdetail view -> edit the wish and save it, or delete the wish -> tap back button
+        // 2. add a new wish -> done -> show wishitemdetail -> back
+        // 3. filter by tag -> findtag view -> tap a tag
+        // ...
+
+        // If we search a wish by name, onResume will also be called.
+
+
+        // If we are still in this activity but are changing the list by interacting with a dialog like sort, status, we need to
+        // explicitly reload the list, as in these cases, onResume won't be called.
+
+        reloadItems(mNameQuery, _where);
+        updateDrawerList();
+        updateActionBarTitle();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("newfullsizePhotoPath", _newfullsizePhotoPath);
-        savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
+        savedInstanceState.putString("newfullsizePhotoPath", mNewfullsizePhotoPath);
+        savedInstanceState.putString("fullsizePhotoPath", mFullsizePhotoPath);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -343,19 +396,19 @@ public class WishList extends WishBaseActivity implements
             return;
         }
 
-        _newfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
-        _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
+        mNewfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
+        mFullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
         super.onRestoreInstanceState(savedInstanceState);
     }
 
     private void updateItemIdsForTag() {
         // If the current wishlist is filtered by tag "T", and there is an item "A" in this list
         // we then enter the AddTag view for item "A" and delete the tag "T" from A. When we come back to
-        // this list, we need to update _itemIds to exclude "A" so "A" will not show up in this list.
-        if (_tag.val() != null) {
-            _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tag.val());
-            if (_itemIds.isEmpty()) {
-                _tag.setVal(null);
+        // this list, we need to update mItemIds to exclude "A" so "A" will not show up in this list.
+        if (mTag.val() != null) {
+            mItemIds = TagItemDBManager.instance().ItemIds_by_tag(mTag.val());
+            if (mItemIds.isEmpty()) {
+                mTag.setVal(null);
             }
         }
     }
@@ -395,11 +448,11 @@ public class WishList extends WishBaseActivity implements
             }
             case FIND_TAG: {
                 if (resultCode == Activity.RESULT_OK) {
-                    _tag.setVal(data.getStringExtra("tag"));
-                    _tag.save();
+                    mTag.setVal(data.getStringExtra("tag"));
+                    mTag.save();
 
-                    if (_tag.val() != null) {
-                        _itemIds = TagItemDBManager.instance().ItemIds_by_tag(_tag.val());
+                    if (mTag.val() != null) {
+                        mItemIds = TagItemDBManager.instance().ItemIds_by_tag(mTag.val());
                     }
                 }
                 break;
@@ -413,13 +466,13 @@ public class WishList extends WishBaseActivity implements
             case TAKE_PICTURE: {
                 if (resultCode == RESULT_OK) {
                     Log.d(WishList.TAG, "TAKE_PICTURE: RESULT_OK");
-                    Log.d("TAKE PICTURE", "_new " + _newfullsizePhotoPath);
-                    _fullsizePhotoPath = String.valueOf(_newfullsizePhotoPath);
-                    _newfullsizePhotoPath = null;
+                    Log.d("TAKE PICTURE", "_new " + mNewfullsizePhotoPath);
+                    mFullsizePhotoPath = String.valueOf(mNewfullsizePhotoPath);
+                    mNewfullsizePhotoPath = null;
                     Intent i = new Intent(this, EditItem.class);
-                    i.putExtra(EditItem.FULLSIZE_PHOTO_PATH, _fullsizePhotoPath);
-                    if (_fullsizePhotoPath != null) {
-                        Log.v("photo path", _fullsizePhotoPath);
+                    i.putExtra(EditItem.FULLSIZE_PHOTO_PATH, mFullsizePhotoPath);
+                    if (mFullsizePhotoPath != null) {
+                        Log.v("photo path", mFullsizePhotoPath);
                     } else {
                         Log.v("photo path", "null");
                     }
@@ -441,11 +494,11 @@ public class WishList extends WishBaseActivity implements
     @Override
     protected Boolean goBack()
     {
-        if (_nameQuery != null) {
+        if (mNameQuery != null) {
             // We tap back on search results view, show all wishes
-            _nameQuery = null;
-            _tag.setVal(null);
-            _itemIds.clear();
+            mNameQuery = null;
+            mTag.setVal(null);
+            mItemIds.clear();
             _status.setVal(Options.Status.ALL);
             _where.clear();
 
@@ -458,10 +511,10 @@ public class WishList extends WishBaseActivity implements
             reloadItems(null, _where);
             return true;
         }
-        if (_tag.val() != null || _status.val() != Options.Status.ALL) {
+        if (mTag.val() != null || _status.val() != Options.Status.ALL) {
             //the wishes are currently filtered by tag or status, tapping back button now should clean up the filter and show all wishes
-            _tag.setVal(null);
-            _itemIds.clear();
+            mTag.setVal(null);
+            mItemIds.clear();
 
             _status.setVal(Options.Status.ALL);
             // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
@@ -470,7 +523,7 @@ public class WishList extends WishBaseActivity implements
 
             _where.clear();
 
-            _tag.save();
+            mTag.save();
             _status.save();
 
             reloadItems(null, _where);
@@ -492,9 +545,30 @@ public class WishList extends WishBaseActivity implements
         return false;
     }
 
+    @Override
+    protected void updateActionBarTitle() {
+        if (mNameQuery != null) {
+            // we are showing search results
+            getSupportActionBar().setTitle("Search: " + mNameQuery);
+            getSupportActionBar().setSubtitle(null);
+            return;
+        }
+        super.updateActionBarTitle();
+    }
+
+    @Override
+    protected void updateDrawerList() {
+        MenuItem item = mNavigationView.getMenu().findItem(R.id.all_wishes);
+        if (!mItemIds.isEmpty() || _status.val() != Options.Status.ALL || mNameQuery != null) {
+            item.setVisible(true);
+        } else {
+            item.setVisible(false);
+        }
+    }
+
     public void onSyncWishChanged() {
         Log.d(TAG, "onSyncWishChanged");
-        reloadItems(_nameQuery, _where);
+        reloadItems(mNameQuery, _where);
     }
 
     public void onDownloadWishDone() {
@@ -508,10 +582,5 @@ public class WishList extends WishBaseActivity implements
         i.putExtra("item_id", item.getId());
         i.putExtra("position", 0);
         startActivityForResult(i, ITEM_DETAILS);
-    }
-
-    public void onWishLongTapped() {
-        Log.d(TAG, "onWishLongTap");
-        mActionMode = startSupportActionMode(mActionModeCallback);
     }
 }

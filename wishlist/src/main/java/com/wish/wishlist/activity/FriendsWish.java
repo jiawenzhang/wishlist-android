@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import com.parse.ParseObject;
 import com.wish.wishlist.R;
@@ -60,12 +61,48 @@ public class FriendsWish extends WishBaseActivity implements
         // Using swapAdapter and passing false as the removeAndRecycleExistingViews flag will avoid this
 
         updateWishView();
+        updateDrawerList();
+        updateActionBarTitle();
+    }
+
+    @Override
+    protected void updateDrawerList() {
+        MenuItem item = mNavigationView.getMenu().findItem(R.id.all_wishes);
+        if ( _status.val() != Options.Status.ALL) {
+            item.setVisible(true);
+        } else {
+            item.setVisible(false);
+        }
+    }
+
+    @Override
+    protected Boolean goBack()
+    {
+        if (_status.val() != Options.Status.ALL) {
+            //the wishes are currently filtered status, tapping back button now should clean up the filter and show all wishes
+            _status.setVal(Options.Status.ALL);
+            // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
+            // next time it is opened.
+            removeDialog(DIALOG_FILTER);
+            _status.save();
+            _where.clear();
+            reloadItems(null, _where);
+        } else {
+            //we are already showing all the wishes, tapping back button should close the list view
+            finish();
+        }
+        return true;
     }
 
     @Override
     protected void reloadItems(String searchName, java.util.Map where) {
         // Get all of the rows from the Item table
         // Keep track of the TextViews added in list lstTable
+        if (where == null || where.isEmpty()) {
+            // load all wishes
+            WishLoader.getInstance().fetchWishes(mFriendId);
+            return;
+        }
         if (where.get("complete") != null) {
             int complete = Integer.parseInt((String) where.get("complete"));
             ArrayList<WishItem> filtered_wishList = new ArrayList<>();
