@@ -31,15 +31,15 @@ public class FriendsWish extends WishBaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        _swipeRefreshLayout.setEnabled(false);
+        mSwipeRefreshLayout.setEnabled(false);
 
-        if (_view.val() == Options.View.LIST) {
+        if (mView.val() == Options.View.LIST) {
             mRecyclerView.setLayoutManager(mLinearLayoutManager);
         } else {
             mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
         }
-        if (_viewFlipper.getDisplayedChild() != WISH_VIEW) {
-            _viewFlipper.setDisplayedChild(WISH_VIEW);
+        if (mViewFlipper.getDisplayedChild() != WISH_VIEW) {
+            mViewFlipper.setDisplayedChild(WISH_VIEW);
         }
 
         MenuItem item = mNavigationView.getMenu().findItem(R.id.Add);
@@ -116,7 +116,7 @@ public class FriendsWish extends WishBaseActivity implements
     @Override
     protected void updateDrawerList() {
         MenuItem item = mNavigationView.getMenu().findItem(R.id.all_wishes);
-        if ( _status.val() != Options.Status.ALL) {
+        if ( mStatus.val() != Options.Status.ALL) {
             item.setVisible(true);
         } else {
             item.setVisible(false);
@@ -126,15 +126,15 @@ public class FriendsWish extends WishBaseActivity implements
     @Override
     protected Boolean goBack()
     {
-        if (_status.val() != Options.Status.ALL) {
+        if (mStatus.val() != Options.Status.ALL) {
             //the wishes are currently filtered status, tapping back button now should clean up the filter and show all wishes
-            _status.setVal(Options.Status.ALL);
+            mStatus.setVal(Options.Status.ALL);
             // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
             // next time it is opened.
             removeDialog(DIALOG_FILTER);
-            _status.save();
-            _where.clear();
-            reloadItems(null, _where);
+            mStatus.save();
+            mWhere.clear();
+            reloadItems(null, mWhere);
         } else {
             //we are already showing all the wishes, tapping back button should close the list view
             finish();

@@ -71,26 +71,25 @@ import java.util.List;
 public abstract class WishBaseActivity extends ActivityBase implements
         WishAdapter.onWishTapListener,
         WishAdapter.onWishLongTapListener {
+    public static final String TAG = "WishBaseActivity";
+
     static final protected int DIALOG_MAIN = 0;
     static final protected int DIALOG_FILTER = 1;
     static final protected int DIALOG_SORT = 2;
-
-    protected java.util.Map _where = new HashMap<>();
-    public static final String TAG = "WishBaseActivity";
-
     private static final int ITEM_DETAILS = 4;
+
+    protected java.util.Map mWhere = new HashMap<>();
 
     protected static final String MULTI_SELECT_STATE = "multi_select_state";
     protected static final String SELECTED_ITEM_IDS = "selected_item_ids";
 
-    protected Options.View _view = new Options.View(Options.View.LIST);
-    protected Options.Status _status = new Options.Status(Options.Status.ALL);
-    protected Options.Sort _sort = new Options.Sort(Options.Sort.NAME);
+    protected Options.View mView = new Options.View(Options.View.LIST);
+    protected Options.Status mStatus = new Options.Status(Options.Status.ALL);
+    protected Options.Sort mSort = new Options.Sort(Options.Sort.NAME);
 
-    protected ViewFlipper _viewFlipper;
-    protected SwipeRefreshLayout _swipeRefreshLayout;
-    protected MenuItem _menuSearch;
-    protected Menu _menu;
+    protected ViewFlipper mViewFlipper;
+    protected SwipeRefreshLayout mSwipeRefreshLayout;
+    protected Menu mMenu;
     protected MultiSelector mMultiSelector = new MultiSelector();
     // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
     // multiple items for an action
@@ -124,32 +123,32 @@ public abstract class WishBaseActivity extends ActivityBase implements
         updateActionBarTitle();
         setupNavigationDrawer();
 
-        _view.read();
+        mView.read();
         Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        if (_view.val() == Options.View.LIST) {
+        if (mView.val() == Options.View.LIST) {
             t.setScreenName("ListView");
         } else {
             t.setScreenName("GridView");
         }
         t.send(new HitBuilders.AppViewBuilder().build());
 
-        _status.read();
-        if (_status.val() == Options.Status.ALL) {
-            _where.clear();
-        } else if(_status.val() == Options.Status.COMPLETED) {
-            _where.put("complete", "1");
-        } else if(_status.val() == Options.Status.IN_PROGRESS) {
-            _where.put("complete", "0");
+        mStatus.read();
+        if (mStatus.val() == Options.Status.ALL) {
+            mWhere.clear();
+        } else if(mStatus.val() == Options.Status.COMPLETED) {
+            mWhere.put("complete", "1");
+        } else if(mStatus.val() == Options.Status.IN_PROGRESS) {
+            mWhere.put("complete", "0");
         }
 
-        _sort.read();
+        mSort.read();
 
         // Get the intent, verify the action and get the query
-        _viewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
+        mViewFlipper = (ViewFlipper) findViewById(R.id.myFlipper);
 
-        _swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         // sets the colors used in the refresh animation
-        //_swipeRefreshLayout.setColorSchemeResources(R.color.blue_bright, R.color.green_light,
+        //mSwipeRefreshLayout.setColorSchemeResources(R.color.blue_bright, R.color.green_light,
         //R.color.orange_light, R.color.red_light);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.wish_recycler_view);
@@ -198,14 +197,14 @@ public abstract class WishBaseActivity extends ActivityBase implements
     protected void updateWishView() {
         if (mWishlist.isEmpty()) {
             // make a new wish button
-            _viewFlipper.setDisplayedChild(MAKE_A_WISH_VIEW);
+            mViewFlipper.setDisplayedChild(MAKE_A_WISH_VIEW);
             return;
         }
 
         if (mWishAdapter != null) {
             mWishAdapter.setWishList(mWishlist);
         } else {
-            if (_view.val() == Options.View.LIST) {
+            if (mView.val() == Options.View.LIST) {
                 mWishAdapter = new WishAdapterList(mWishlist, this, mMultiSelector);
                 mRecyclerView.setLayoutManager(mLinearLayoutManager);
             } else {
@@ -214,13 +213,13 @@ public abstract class WishBaseActivity extends ActivityBase implements
             }
             mRecyclerView.swapAdapter(mWishAdapter, true);
         }
-        if (_viewFlipper.getDisplayedChild() != WISH_VIEW) {
-            _viewFlipper.setDisplayedChild(WISH_VIEW);
+        if (mViewFlipper.getDisplayedChild() != WISH_VIEW) {
+            mViewFlipper.setDisplayedChild(WISH_VIEW);
         }
     }
 
     protected void switchView(int viewOption) {
-        if (_view.val() == viewOption) {
+        if (mView.val() == viewOption) {
             return;
         }
         mRecyclerView.invalidate();
@@ -236,8 +235,8 @@ public abstract class WishBaseActivity extends ActivityBase implements
             screenView = "GridView";
         }
         mRecyclerView.swapAdapter(mWishAdapter, true);
-        _view.setVal(viewOption);
-        _view.save();
+        mView.setVal(viewOption);
+        mView.save();
 
         Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         t.setScreenName(screenView);
@@ -247,7 +246,7 @@ public abstract class WishBaseActivity extends ActivityBase implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        _menu = menu;
+        mMenu = menu;
 
         return true;
     }
@@ -294,23 +293,23 @@ public abstract class WishBaseActivity extends ActivityBase implements
                 sortBuilder.setTitle("Sort wishes");
 
                 int j = 0;// 0 is by name
-                if (_sort.val() == Options.Sort.UPDATED_TIME) {
+                if (mSort.val() == Options.Sort.UPDATED_TIME) {
                     j = 1;
-                } else if (_sort.val() == Options.Sort.PRICE) {
+                } else if (mSort.val() == Options.Sort.PRICE) {
                     j = 2;
                 } sortBuilder.setSingleChoiceItems(sortOption, j, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         if (sortOption[item].equals(BY_NAME)) {
-                            _sort.setVal(Options.Sort.NAME);
+                            mSort.setVal(Options.Sort.NAME);
                             Collections.sort(mWishlist, new ItemNameComparator());
                         } else if (sortOption[item].equals(BY_TIME)) {
-                            _sort.setVal(Options.Sort.UPDATED_TIME);
+                            mSort.setVal(Options.Sort.UPDATED_TIME);
                             Collections.sort(mWishlist, new ItemTimeComparator());
                         } else {
-                            _sort.setVal(Options.Sort.PRICE);
+                            mSort.setVal(Options.Sort.PRICE);
                             Collections.sort(mWishlist, new ItemPriceComparator());
                         }
-                        _sort.save();
+                        mSort.save();
                         mWishAdapter.notifyDataSetChanged();
 
                         dialog.dismiss();
@@ -329,22 +328,22 @@ public abstract class WishBaseActivity extends ActivityBase implements
                 AlertDialog.Builder optionBuilder = new AlertDialog.Builder(WishBaseActivity.this, R.style.AppCompatAlertDialogStyle);
                 optionBuilder.setTitle("Wish status");
 
-                optionBuilder.setSingleChoiceItems(options, _status.val(), new DialogInterface.OnClickListener() {
+                optionBuilder.setSingleChoiceItems(options, mStatus.val(), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         if (options[item].equals(BY_ALL)) {
-                            _where.clear();
-                            _status.setVal(Options.Status.ALL);
+                            mWhere.clear();
+                            mStatus.setVal(Options.Status.ALL);
                         } else if (options[item].equals(BY_COMPLETED)) {
-                            _where.put("complete", "1");
-                            _status.setVal(Options.Status.COMPLETED);
+                            mWhere.put("complete", "1");
+                            mStatus.setVal(Options.Status.COMPLETED);
                         } else {
-                            _where.put("complete", "0");
-                            _status.setVal(Options.Status.IN_PROGRESS);
+                            mWhere.put("complete", "0");
+                            mStatus.setVal(Options.Status.IN_PROGRESS);
                         }
-                        _status.save();
+                        mStatus.save();
 
                         dialog.dismiss();
-                        reloadItems(null, _where);
+                        reloadItems(null, mWhere);
                     }
                 });
 
@@ -404,9 +403,9 @@ public abstract class WishBaseActivity extends ActivityBase implements
     }
 
     protected void updateActionBarTitle() {
-        if (_status.val() == Options.Status.COMPLETED) {
+        if (mStatus.val() == Options.Status.COMPLETED) {
             getSupportActionBar().setSubtitle("Completed");
-        } else if (_status.val() == Options.Status.IN_PROGRESS) {
+        } else if (mStatus.val() == Options.Status.IN_PROGRESS) {
             getSupportActionBar().setSubtitle("In progress");
         } else {
             getSupportActionBar().setSubtitle(null);

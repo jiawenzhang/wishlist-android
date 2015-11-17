@@ -70,7 +70,7 @@ public class MyWish extends WishBaseActivity implements
     private String mNameQuery = null;
     private Button mAddNewButton;
     private ArrayList<Long> mItemIds = new ArrayList<>();
-
+    private MenuItem mMenuSearch;
 
 
     /** Called when the activity is first created. */
@@ -111,15 +111,15 @@ public class MyWish extends WishBaseActivity implements
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 int topRowVerticalPosition =
                         (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
-                _swipeRefreshLayout.setEnabled(topRowVerticalPosition >= 0);
+                mSwipeRefreshLayout.setEnabled(topRowVerticalPosition >= 0);
             }
         });
 
         // the refresh listener. this would be called when the layout is pulled down
-        _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                _swipeRefreshLayout.setRefreshing(true);
+                mSwipeRefreshLayout.setRefreshing(true);
                 Log.e(TAG, "refresh");
                 SyncAgent.getInstance().sync();
                 // TODO : request data here
@@ -200,29 +200,29 @@ public class MyWish extends WishBaseActivity implements
     protected void handleIntent(Intent intent) {
         // check if the activity is started from search
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            MenuItemCompat.collapseActionView(_menuSearch);
+            MenuItemCompat.collapseActionView(mMenuSearch);
             // activity is started from search, get the search query and
             // displayed the searched items
             mNameQuery = intent.getStringExtra(SearchManager.QUERY);
-            MenuItem tagItem =  _menu.findItem(R.id.menu_tags);
+            MenuItem tagItem =  mMenu.findItem(R.id.menu_tags);
             MenuItemCompat.collapseActionView(tagItem);
 
-            MenuItem statusItem = _menu.findItem(R.id.menu_status);
+            MenuItem statusItem = mMenu.findItem(R.id.menu_status);
             MenuItemCompat.collapseActionView(statusItem);
         } else {
             // activity is not started from search
             // display all the items
 
-            mWishlist = WishItemManager.getInstance().getItems(_sort.toString(), _where, mItemIds);
+            mWishlist = WishItemManager.getInstance().getItems(mSort.toString(), mWhere, mItemIds);
             updateWishView();
         }
     }
 
     @Override
     protected void updateWishView() {
-        if (mWishlist.isEmpty() && (!_where.isEmpty() || !mItemIds.isEmpty() || mNameQuery != null)) {
+        if (mWishlist.isEmpty() && (!mWhere.isEmpty() || !mItemIds.isEmpty() || mNameQuery != null)) {
             // no matching wishes text
-            _viewFlipper.setDisplayedChild(NO_MATCHING_WISH_VIEW);
+            mViewFlipper.setDisplayedChild(NO_MATCHING_WISH_VIEW);
             return;
         }
         super.updateWishView();
@@ -239,8 +239,8 @@ public class MyWish extends WishBaseActivity implements
         getMenuInflater().inflate(R.menu.menu_my_wish, menu);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        _menuSearch = menu.findItem(R.id.menu_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(_menuSearch);
+        mMenuSearch = menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(mMenuSearch);
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
@@ -258,9 +258,9 @@ public class MyWish extends WishBaseActivity implements
         if (searchName == null) {
             // Get all of the rows from the Item table
             // Keep track of the TextViews added in list lstTable
-            mWishlist = WishItemManager.getInstance().getItems(_sort.toString(), where, mItemIds);
+            mWishlist = WishItemManager.getInstance().getItems(mSort.toString(), where, mItemIds);
         } else {
-            mWishlist = WishItemManager.getInstance().searchItems(searchName, _sort.toString());
+            mWishlist = WishItemManager.getInstance().searchItems(searchName, mSort.toString());
         }
         updateWishView();
         updateDrawerList();
@@ -383,7 +383,7 @@ public class MyWish extends WishBaseActivity implements
         // If we are still in this activity but are changing the list by interacting with a dialog like sort, status, we need to
         // explicitly reload the list, as in these cases, onResume won't be called.
 
-        reloadItems(mNameQuery, _where);
+        reloadItems(mNameQuery, mWhere);
         updateDrawerList();
         updateActionBarTitle();
     }
@@ -504,34 +504,34 @@ public class MyWish extends WishBaseActivity implements
             mNameQuery = null;
             mTag.setVal(null);
             mItemIds.clear();
-            _status.setVal(Options.Status.ALL);
-            _where.clear();
+            mStatus.setVal(Options.Status.ALL);
+            mWhere.clear();
 
-            MenuItem tagItem =  _menu.findItem(R.id.menu_tags);
+            MenuItem tagItem =  mMenu.findItem(R.id.menu_tags);
             tagItem.setVisible(true);
 
-            MenuItem statusItem = _menu.findItem(R.id.menu_status);
+            MenuItem statusItem = mMenu.findItem(R.id.menu_status);
             statusItem.setVisible(true);
 
-            reloadItems(null, _where);
+            reloadItems(null, mWhere);
             return true;
         }
-        if (mTag.val() != null || _status.val() != Options.Status.ALL) {
+        if (mTag.val() != null || mStatus.val() != Options.Status.ALL) {
             //the wishes are currently filtered by tag or status, tapping back button now should clean up the filter and show all wishes
             mTag.setVal(null);
             mItemIds.clear();
 
-            _status.setVal(Options.Status.ALL);
+            mStatus.setVal(Options.Status.ALL);
             // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
             // next time it is opened.
             removeDialog(DIALOG_FILTER);
 
-            _where.clear();
+            mWhere.clear();
 
             mTag.save();
-            _status.save();
+            mStatus.save();
 
-            reloadItems(null, _where);
+            reloadItems(null, mWhere);
         } else {
             //we are already showing all the wishes, tapping back button should close the list view
             finish();
@@ -564,7 +564,7 @@ public class MyWish extends WishBaseActivity implements
     @Override
     protected void updateDrawerList() {
         MenuItem item = mNavigationView.getMenu().findItem(R.id.all_wishes);
-        if (!mItemIds.isEmpty() || _status.val() != Options.Status.ALL || mNameQuery != null) {
+        if (!mItemIds.isEmpty() || mStatus.val() != Options.Status.ALL || mNameQuery != null) {
             item.setVisible(true);
         } else {
             item.setVisible(false);
@@ -573,12 +573,12 @@ public class MyWish extends WishBaseActivity implements
 
     public void onSyncWishChanged() {
         Log.d(TAG, "onSyncWishChanged");
-        reloadItems(mNameQuery, _where);
+        reloadItems(mNameQuery, mWhere);
     }
 
     public void onDownloadWishDone() {
         Log.d(TAG, "onDownloadWishDone");
-        _swipeRefreshLayout.setRefreshing(false);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     public void onWishTapped(WishItem item) {
