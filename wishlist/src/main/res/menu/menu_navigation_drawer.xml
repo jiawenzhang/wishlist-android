@@ -32,12 +32,6 @@
             android:icon="@drawable/ic_action_user"
             android:title="Friends" />
         <item
-            android:id="@+id/notifications"
-            android:checked="false"
-            android:visible="false"
-            android:icon="@drawable/ic_action_flag"
-            android:title="Notifications" />
-        <item
             android:id="@+id/settings"
             android:checked="false"
             android:icon="@drawable/ic_action_gear"

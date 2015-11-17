@@ -588,4 +588,10 @@ public class MyWish extends WishBaseActivity implements
         i.putExtra("position", 0);
         startActivityForResult(i, ITEM_DETAILS);
     }
+
+    protected boolean onTapAdd() {
+        Intent editItem = new Intent(MyWish.this, EditItem.class);
+        startActivityForResult(editItem, ADD_ITEM);
+        return true;
+    }
 }

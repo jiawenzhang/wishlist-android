@@ -42,6 +42,9 @@ public class FriendsWish extends WishBaseActivity implements
             _viewFlipper.setDisplayedChild(WISH_VIEW);
         }
 
+        MenuItem item = mNavigationView.getMenu().findItem(R.id.Add);
+        item.setVisible(false);
+
         Intent i = getIntent();
         mFriendId = i.getStringExtra(Friends.FRIEND_ID);
         WishLoader.getInstance().setGotWishesListener(this);

@@ -447,6 +447,8 @@ public abstract class WishBaseActivity extends ActivityBase implements
         }
     }
 
+    protected boolean onTapAdd() { return true; }
+
     protected void setupNavigationDrawer() {
         // Setup NavigationView
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -481,6 +483,8 @@ public abstract class WishBaseActivity extends ActivityBase implements
 
                 //Check to see which item was being clicked and perform appropriate action
                 switch (menuItem.getItemId()){
+                    case R.id.Add:
+                        return onTapAdd();
                     case R.id.all_wishes:
                         goBack();
                         return true;
@@ -503,10 +507,6 @@ public abstract class WishBaseActivity extends ActivityBase implements
                     case R.id.friends:
                         final Intent friendsIntent = new Intent(getApplicationContext(), Friends.class);
                         startActivity(friendsIntent);
-                        return true;
-                    case R.id.notifications:
-                        final Intent friendRequestIntent = new Intent(getApplicationContext(), FriendRequest.class);
-                        startActivity(friendRequestIntent);
                         return true;
                     default:
                         return true;
