@@ -3,14 +3,8 @@ package com.wish.wishlist.activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,22 +14,14 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.parse.ParseUser;
-import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
-import com.wish.wishlist.event.EventBus;
-import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.model.ItemNameComparator;
 import com.wish.wishlist.model.ItemPriceComparator;
 import com.wish.wishlist.model.ItemTimeComparator;
@@ -48,7 +34,6 @@ import com.wish.wishlist.widgets.ItemDecoration;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -68,7 +53,7 @@ import java.util.List;
  * sorting items is via "SELECT ... ORDER BY" query to the database
  *
  */
-public abstract class WishBaseActivity extends ActivityBase implements
+public abstract class WishBaseActivity extends DrawerActivity implements
         WishAdapter.onWishTapListener,
         WishAdapter.onWishLongTapListener {
     public static final String TAG = "WishBaseActivity";
@@ -91,8 +76,6 @@ public abstract class WishBaseActivity extends ActivityBase implements
     protected SwipeRefreshLayout mSwipeRefreshLayout;
     protected Menu mMenu;
     protected MultiSelector mMultiSelector = new MultiSelector();
-    // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
-    // multiple items for an action
     protected ActionMode mActionMode;
     protected ModalMultiSelectorCallback mActionModeCallback;
 
@@ -101,11 +84,6 @@ public abstract class WishBaseActivity extends ActivityBase implements
     protected LinearLayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     protected WishAdapter mWishAdapter;
-    protected DrawerLayout mDrawerLayout;
-    protected NavigationView mNavigationView;
-    protected View mNavigationViewHeader;
-    protected ActionBarDrawerToggle mDrawerToggle;
-    protected RelativeLayout mHeaderLayout;
 
     protected static final int WISH_VIEW = 0;
     protected static final int MAKE_A_WISH_VIEW = 1;
@@ -116,12 +94,8 @@ public abstract class WishBaseActivity extends ActivityBase implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Listen for profile change events
-        EventBus.getInstance().register(this);
 
-        setContentView();
         updateActionBarTitle();
-        setupNavigationDrawer();
 
         mView.read();
         Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
@@ -163,7 +137,10 @@ public abstract class WishBaseActivity extends ActivityBase implements
         // Fixme use dp and covert to px
         mRecyclerView.addItemDecoration(new ItemDecoration(10 /*px*/));
 
+        // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
+        // multiple items for an action
         mActionModeCallback = createActionModeCallback();
+
         // restore multi-select state when activity is re-created due to, for example, screen orientation
         if (mMultiSelector != null) {
             // restore selected item state
@@ -218,9 +195,9 @@ public abstract class WishBaseActivity extends ActivityBase implements
         }
     }
 
-    protected void switchView(int viewOption) {
+    protected boolean switchView(int viewOption) {
         if (mView.val() == viewOption) {
-            return;
+            return true;
         }
         mRecyclerView.invalidate();
         mRecyclerView.setAdapter(null);
@@ -241,6 +218,7 @@ public abstract class WishBaseActivity extends ActivityBase implements
         Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         t.setScreenName(screenView);
         t.send(new HitBuilders.AppViewBuilder().build());
+        return true;
     }
 
     @Override
@@ -380,16 +358,7 @@ public abstract class WishBaseActivity extends ActivityBase implements
         setSelectedItemIds(java.util.Arrays.asList(itemIdsLong));
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getInstance().unregister(this);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {}
-
-    protected abstract Boolean goBack();
+    protected abstract boolean goBack();
 
     /***
      * called when the "return" button is clicked
@@ -413,145 +382,7 @@ public abstract class WishBaseActivity extends ActivityBase implements
     }
 
     protected abstract void updateDrawerList();
-
-    @Subscribe
-    public void profileChanged(ProfileChangeEvent event) {
-        Log.d(TAG, "profileChanged " + event.type.toString());
-        if (event.type == ProfileChangeEvent.ProfileChangeType.email) {
-            setupUserEmail();
-        } else if (event.type == ProfileChangeEvent.ProfileChangeType.name) {
-            setupUserName();
-        } else if (event.type == ProfileChangeEvent.ProfileChangeType.image) {
-            setupProfileImage();
-        }
-    }
-
-    private void setupUserEmail() {
-        TextView emailTextView = (TextView) mHeaderLayout.findViewById(R.id.email);
-        emailTextView.setText(ParseUser.getCurrentUser().getEmail());
-    }
-
-    private void setupUserName() {
-        TextView nameTextView = (TextView) mHeaderLayout.findViewById(R.id.username);
-        nameTextView.setText(ParseUser.getCurrentUser().getString("name"));
-    }
-
-    private void setupProfileImage() {
-        // set profile image in the header
-        final File profileImageFile = new File(getFilesDir(), Profile.profileImageName());
-        final Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
-        final ImageView profileImageView = (ImageView) mNavigationViewHeader.findViewById(R.id.profile_image);
-        if (bitmap != null) {
-            profileImageView.setImageBitmap(bitmap);
-        }
-    }
-
     protected boolean onTapAdd() { return true; }
-
-    protected void setupNavigationDrawer() {
-        // Setup NavigationView
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-        mNavigationViewHeader = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
-        mHeaderLayout = (RelativeLayout) mNavigationViewHeader.findViewById(R.id.drawer_header_layout);
-        final ParseUser currentUser = ParseUser.getCurrentUser();
-        mHeaderLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentUser != null) {
-                    startActivity(new Intent(getApplication(), Profile.class));
-                } else {
-                    startActivity(new Intent(getApplication(), UserLoginActivity.class));
-                }
-            }
-        });
-
-        if (currentUser != null) {
-            setupUserName();
-            setupUserEmail();
-        }
-        setupProfileImage();
-
-        updateDrawerList();
-        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            // This method will trigger on item Click of navigation menu
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                //Closing drawer on item click
-                mDrawerLayout.closeDrawers();
-
-                //Check to see which item was being clicked and perform appropriate action
-                switch (menuItem.getItemId()){
-                    case R.id.Add:
-                        return onTapAdd();
-                    case R.id.all_wishes:
-                        goBack();
-                        return true;
-                    case R.id.list_view: {
-                        switchView(Options.View.LIST);
-                        return true;
-                    }
-                    case R.id.grid_view:
-                        switchView(Options.View.GRID);
-                        return true;
-                    case R.id.map_view:
-                        Intent mapIntent = new Intent(WishBaseActivity.this, Map.class);
-                        mapIntent.putExtra("type", "markAll");
-                        startActivity(mapIntent);
-                        return true;
-                    case R.id.settings:
-                        Intent prefIntent = new Intent(getApplicationContext(), WishListPreference.class);
-                        startActivity(prefIntent);
-                        return true;
-                    case R.id.friends:
-                        final Intent friendsIntent = new Intent(getApplicationContext(), Friends.class);
-                        startActivity(friendsIntent);
-                        return true;
-                    default:
-                        return true;
-                }
-            }
-        });
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close) {
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-            /** Called when a drawer has settled in a completely closed state. */
-                super.onDrawerClosed(drawerView);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-            /** Called when a drawer has settled in a completely open state. */
-                mDrawerLayout.requestFocus();
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-                if (mActionMode != null) {
-                    mActionMode.finish();
-                }
-            }
-        };
-
-        // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        // Calling sync state is needed or the hamburger icon wont show up
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
 
     protected ArrayList<Long> selectedItemIds() {
         return mWishAdapter.selectedItemIds();
@@ -572,5 +403,11 @@ public abstract class WishBaseActivity extends ActivityBase implements
     public void onWishLongTapped() {
         Log.d(TAG, "onWishLongTap");
         mActionMode = startSupportActionMode(mActionModeCallback);
+    }
+
+    protected void drawerOpened() {
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
     }
 }

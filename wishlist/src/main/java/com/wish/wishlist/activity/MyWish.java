@@ -231,7 +231,7 @@ public class MyWish extends WishBaseActivity implements
     @Override
     protected void setContentView() {
         setContentView(R.layout.my_wish);
-        setupActionBar(R.id.main_toolbar);
+        setupActionBar(R.id.my_wish_toolbar);
     }
 
     @Override
@@ -341,28 +341,31 @@ public class MyWish extends WishBaseActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
+        if (super.onOptionsItemSelected(item)) {
             return true;
         }
-        super.onOptionsItemSelected(item);
 
-        long itemId = item.getItemId();
-        if (itemId == R.id.menu_search) {
+        switch (item.getItemId()) {
             //do nothing here, the search view is already configured in onCreateOptionsMenu()
-            return true;
-        } else if (itemId == R.id.menu_add) {
-            // let user generate a wish item
-            dispatchTakePictureIntent();
-            return true;
-        } else if(itemId == R.id.menu_sort) {
-            showDialog(DIALOG_SORT);
-        } else if (itemId == R.id.menu_status) {
-            showDialog(DIALOG_FILTER);
-        } else if (itemId == R.id.menu_tags) {
-            Intent i = new Intent(MyWish.this, FindTag.class);
-            startActivityForResult(i, FIND_TAG);
+            case R.id.menu_search:
+                return true;
+            case R.id.menu_add:
+                // let user generate a wish item
+                dispatchTakePictureIntent();
+                return true;
+            case R.id.menu_sort:
+                showDialog(DIALOG_SORT);
+                return true;
+            case R.id.menu_status:
+                showDialog(DIALOG_FILTER);
+                return true;
+            case R.id.menu_tags:
+                Intent i = new Intent(MyWish.this, FindTag.class);
+                startActivityForResult(i, FIND_TAG);
+                return true;
+            default:
+                return false;
         }
-        return false;
     }
 
     @Override
@@ -497,7 +500,7 @@ public class MyWish extends WishBaseActivity implements
     }
 
     @Override
-    protected Boolean goBack()
+    protected boolean goBack()
     {
         if (mNameQuery != null) {
             // We tap back on search results view, show all wishes

@@ -25,8 +25,17 @@ public class Friends extends FriendsBase implements
     final static String TAG = "Friends";
     private FriendAdapter mFriendAdapter;
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void prepareDrawerList() {
+        mNavigationView.getMenu().findItem(R.id.Add).setVisible(false);
+        mNavigationView.getMenu().findItem(R.id.all_wishes).setVisible(false);
+        mNavigationView.getMenu().findItem(R.id.list_view).setVisible(false);
+        mNavigationView.getMenu().findItem(R.id.grid_view).setVisible(false);
     }
 
     protected void loadView() {
@@ -47,6 +56,9 @@ public class Friends extends FriendsBase implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
         int id = item.getItemId();
         if (id == R.id.menu_add_friends) {
             final Intent findFriendIntent = new Intent(this, FindFriends.class);

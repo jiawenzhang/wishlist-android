@@ -42,14 +42,18 @@ public class FriendsWish extends WishBaseActivity implements
             mViewFlipper.setDisplayedChild(WISH_VIEW);
         }
 
-        MenuItem item = mNavigationView.getMenu().findItem(R.id.Add);
-        item.setVisible(false);
 
         Intent i = getIntent();
         mFriendId = i.getStringExtra(Friends.FRIEND_ID);
         WishLoader.getInstance().setGotWishesListener(this);
         WishLoader.getInstance().fetchWishes(mFriendId);
     }
+
+    @Override
+    protected void prepareDrawerList() {
+        mNavigationView.getMenu().findItem(R.id.Add).setVisible(false);
+    }
+
 
     @Override
     protected ModalMultiSelectorCallback createActionModeCallback() {
@@ -124,7 +128,7 @@ public class FriendsWish extends WishBaseActivity implements
     }
 
     @Override
-    protected Boolean goBack()
+    protected boolean goBack()
     {
         if (mStatus.val() != Options.Status.ALL) {
             //the wishes are currently filtered status, tapping back button now should clean up the filter and show all wishes

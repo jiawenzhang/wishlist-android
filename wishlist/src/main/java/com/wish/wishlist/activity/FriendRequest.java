@@ -21,6 +21,7 @@ public class FriendRequest extends FriendsBase implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        disableDrawer();
     }
 
     @Override
