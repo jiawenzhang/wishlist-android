@@ -274,6 +274,8 @@
 
     <style name="Wishlist.Dark.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="actionMenuTextAppearance">@style/Wishlist.actionMenuTextSize</item>
+        <item name="actionModeBackground">@color/wishlist_yellow_color</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
     <!--<item name="actionMenuTextColor">@color/black</item>-->
 
