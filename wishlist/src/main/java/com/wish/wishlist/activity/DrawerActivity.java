@@ -197,7 +197,6 @@ public abstract class DrawerActivity extends ActivityBase {
             @Override
             public void onDrawerOpened(View drawerView) {
             /** Called when a drawer has settled in a completely open state. */
-                mDrawerLayout.requestFocus();
                 super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
                 drawerOpened();

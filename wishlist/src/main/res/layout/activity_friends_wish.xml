@@ -104,15 +104,9 @@
         </android.support.design.widget.CoordinatorLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"
-        android:layout_height="match_parent"
-        android:layout_width="wrap_content"
-        android:layout_gravity="start"
-        app:menu="@menu/menu_navigation_drawer"
-        app:itemIconTint="@drawable/drawer_item"
-        app:itemTextColor="@drawable/drawer_item"
+        style="@style/NavigationView"
         />
     <!--app:headerLayout="@layout/navigation_drawer_header"-->
     <!--android:background="@color/primary_material_dark"-->
