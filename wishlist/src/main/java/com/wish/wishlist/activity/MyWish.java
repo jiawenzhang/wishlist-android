@@ -131,6 +131,11 @@ public class MyWish extends WishBaseActivity implements
         handleIntent(getIntent());
     }
 
+    @Override
+    protected void prepareDrawerList() {
+        mNavigationView.getMenu().findItem(R.id.my_wish).setVisible(false);
+    }
+
     protected ModalMultiSelectorCallback createActionModeCallback() {
         return new ModalMultiSelectorCallback(mMultiSelector) {
             @Override

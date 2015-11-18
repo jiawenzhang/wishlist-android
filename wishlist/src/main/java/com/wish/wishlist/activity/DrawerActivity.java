@@ -158,6 +158,11 @@ public abstract class DrawerActivity extends ActivityBase {
                         return onTapAdd();
                     case R.id.all_wishes:
                         return goBack();
+                    case R.id.my_wish:
+                        Intent intent = new Intent(getApplicationContext(), MyWish.class);
+                        startActivity(intent);
+                        finish();
+                        return true;
                     case R.id.list_view:
                         return switchView(Options.View.LIST);
                     case R.id.grid_view:
