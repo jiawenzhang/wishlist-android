@@ -32,10 +32,16 @@ public class Friends extends FriendsBase implements
 
     @Override
     protected void prepareDrawerList() {
-        mNavigationView.getMenu().findItem(R.id.Add).setVisible(false);
+        mNavigationView.getMenu().findItem(R.id.Add).setTitle("Add friend");
         mNavigationView.getMenu().findItem(R.id.all_wishes).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.list_view).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.grid_view).setVisible(false);
+    }
+
+    protected boolean onTapAdd() {
+        final Intent findFriendIntent = new Intent(this, FindFriends.class);
+        startActivity(findFriendIntent);
+        return true;
     }
 
     protected void loadView() {
