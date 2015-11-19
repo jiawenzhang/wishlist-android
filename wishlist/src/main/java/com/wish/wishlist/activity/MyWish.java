@@ -109,9 +109,7 @@ public class MyWish extends WishBaseActivity implements
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                int topRowVerticalPosition =
-                        (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
-                mSwipeRefreshLayout.setEnabled(topRowVerticalPosition >= 0);
+                mSwipeRefreshLayout.setEnabled(topRowVerticalPosition() >= 0 && mActionMode == null);
             }
         });
 
@@ -136,12 +134,17 @@ public class MyWish extends WishBaseActivity implements
         mNavigationView.getMenu().findItem(R.id.my_wish).setVisible(false);
     }
 
+    private int topRowVerticalPosition() {
+        return (mRecyclerView == null || mRecyclerView.getChildCount() == 0) ? 0 : mRecyclerView.getChildAt(0).getTop();
+    }
+
     protected ModalMultiSelectorCallback createActionModeCallback() {
         return new ModalMultiSelectorCallback(mMultiSelector) {
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 super.onCreateActionMode(actionMode, menu);
                 getMenuInflater().inflate(R.menu.menu_my_wish_action, menu);
+                mSwipeRefreshLayout.setEnabled(false);
                 return true;
             }
 
@@ -154,6 +157,10 @@ public class MyWish extends WishBaseActivity implements
                 // not get cleared when the action mode is finished.
                 mWishAdapter.notifyDataSetChanged();
                 mMultiSelector.clearSelections();
+                mActionMode = null;
+                if (topRowVerticalPosition() >= 0) {
+                    mSwipeRefreshLayout.setEnabled(true);
+                }
             }
 
             @Override

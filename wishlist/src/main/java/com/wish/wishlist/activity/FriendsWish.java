@@ -73,7 +73,7 @@ public class FriendsWish extends WishBaseActivity implements
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
         //The Refresh must be only active when the offset is zero :
-        mSwipeRefreshLayout.setEnabled(i == 0);
+        mSwipeRefreshLayout.setEnabled(i == 0 && mActionMode == null);
     }
 
     @Override
@@ -96,6 +96,7 @@ public class FriendsWish extends WishBaseActivity implements
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 super.onCreateActionMode(actionMode, menu);
                 getMenuInflater().inflate(R.menu.menu_friends_wish_action, menu);
+                mSwipeRefreshLayout.setEnabled(false);
                 return true;
             }
 
@@ -108,6 +109,7 @@ public class FriendsWish extends WishBaseActivity implements
                 // not get cleared when the action mode is finished.
                 mWishAdapter.notifyDataSetChanged();
                 mMultiSelector.clearSelections();
+                mActionMode = null;
             }
 
             @Override
