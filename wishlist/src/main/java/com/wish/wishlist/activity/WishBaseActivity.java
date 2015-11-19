@@ -94,7 +94,6 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         updateActionBarTitle();
 
         mView.read();

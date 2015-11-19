@@ -2,6 +2,8 @@ package com.wish.wishlist.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.Menu;
@@ -20,10 +22,12 @@ import java.util.List;
 
 public class FriendsWish extends WishBaseActivity implements
         WishLoader.onGotWishesListener,
-        WishAdapter.onWishTapListener {
+        WishAdapter.onWishTapListener,
+        AppBarLayout.OnOffsetChangedListener {
 
     final static String TAG = "FriendsWish";
     final static String ITEM = "Item";
+    private AppBarLayout mAppBarLayout;
 
     private String mFriendId;
 
@@ -32,6 +36,18 @@ public class FriendsWish extends WishBaseActivity implements
         super.onCreate(savedInstanceState);
 
         mSwipeRefreshLayout.setEnabled(false);
+        // the refresh listener. this would be called when the layout is pulled down
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.e(TAG, "refresh");
+                mSwipeRefreshLayout.setRefreshing(true);
+                WishLoader.getInstance().fetchWishes(mFriendId);
+                // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation
+                // this is triggered in onGotWishes in this activity
+            }
+        });
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
         if (mView.val() == Options.View.LIST) {
             mRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -52,6 +68,24 @@ public class FriendsWish extends WishBaseActivity implements
     @Override
     protected void prepareDrawerList() {
         mNavigationView.getMenu().findItem(R.id.Add).setVisible(false);
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+        //The Refresh must be only active when the offset is zero :
+        mSwipeRefreshLayout.setEnabled(i == 0);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mAppBarLayout.addOnOffsetChangedListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mAppBarLayout.removeOnOffsetChangedListener(this);
     }
 
 
@@ -106,6 +140,7 @@ public class FriendsWish extends WishBaseActivity implements
 
     public void onGotWishes(String friendId, List<ParseObject> wishList) {
         Log.d(TAG, "got " + wishList.size() + " wishes from friendId " + friendId);
+        mSwipeRefreshLayout.setRefreshing(false);
         mWishlist = fromParseObjects(wishList);
 
         // onGotWishes can be call twice, one from cached data and another from network, if we use setAdapter here,
