@@ -42,7 +42,6 @@ public abstract class DrawerActivity extends ActivityBase {
     protected boolean onTapAdd() { return true; }
     protected boolean switchView(int viewType) { return true; }
     protected void drawerOpened() {}
-    protected void updateDrawerList() {}
     protected boolean goBack() { return true; }
 
     /** Called when the activity is first created. */
@@ -144,7 +143,6 @@ public abstract class DrawerActivity extends ActivityBase {
         }
         setupProfileImage();
 
-        updateDrawerList();
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             // This method will trigger on item Click of navigation menu
             @Override

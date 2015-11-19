@@ -13,10 +13,12 @@ import com.wish.wishlist.db.ItemDBManager;
 public class Options {
     public String _key;
     public int _val;
+    protected int _defaultVal;
 
     Options(String key, int val) {
         _key = key;
         _val = val;
+        _defaultVal = 0;
     }
 
     static SharedPreferences pref() {
@@ -33,7 +35,7 @@ public class Options {
     }
 
     public void read() {
-        _val = pref().getInt(_key, 0);
+        _val = pref().getInt(_key, _defaultVal);
     }
 
     public void save() {
@@ -60,12 +62,26 @@ public class Options {
      */
 
     public static class Status extends Options {
-        public static final String KEY = "statusOption";
         public static final int ALL = 0;
         public static final int COMPLETED = 1;
         public static final int IN_PROGRESS = 2;
 
-        public Status(int val) {
+        public Status(String key, int val) {
+            super(key, val);
+            _defaultVal = ALL;
+        }
+    }
+
+    public static class MyWishStatus extends Status {
+        public static final String KEY = "myWishStatusOption";
+        public MyWishStatus(int val) {
+            super(KEY, val);
+        }
+    }
+
+    public static class FriendWishStatus extends Status {
+        public static final String KEY = "friendWishStatusOption";
+        public FriendWishStatus(int val) {
             super(KEY, val);
         }
     }
@@ -116,6 +132,7 @@ public class Options {
 
         public Sort(String key, int val) {
             super(key, val);
+            _defaultVal = UPDATED_TIME;
         }
 
         public String toString() {

@@ -69,7 +69,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected static final String SELECTED_ITEM_IDS = "selected_item_ids";
 
     protected Options.View mView = new Options.View(Options.View.LIST);
-    protected Options.Status mStatus = new Options.Status(Options.Status.ALL);
+    protected Options.Status mStatus;
     protected Options.Sort mSort;
 
     protected ViewFlipper mViewFlipper;
@@ -93,11 +93,8 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        updateActionBarTitle();
-
-        mView.read();
         Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
+        mView.read();
         if (mView.val() == Options.View.LIST) {
             t.setScreenName("ListView");
         } else {
@@ -105,6 +102,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         }
         t.send(new HitBuilders.AppViewBuilder().build());
 
+        mStatus = createStatus();
         mStatus.read();
         if (mStatus.val() == Options.Status.ALL) {
             mWhere.clear();
@@ -113,6 +111,9 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         } else if(mStatus.val() == Options.Status.IN_PROGRESS) {
             mWhere.put("complete", "0");
         }
+
+        updateActionBarTitle();
+        updateDrawerList();
 
         mSort = createSort();
         mSort.read();
@@ -156,6 +157,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         }
     }
 
+    protected abstract Options.Status createStatus();
     protected abstract Options.Sort createSort();
     protected abstract ModalMultiSelectorCallback createActionModeCallback();
 

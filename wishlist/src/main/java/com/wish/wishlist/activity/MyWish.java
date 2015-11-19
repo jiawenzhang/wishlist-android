@@ -130,6 +130,11 @@ public class MyWish extends WishBaseActivity implements
     }
 
     @Override
+    protected Options.Status createStatus() {
+        return new Options.MyWishStatus(Options.Status.ALL);
+    }
+
+    @Override
     protected Options.Sort createSort() {
         return new Options.MyWishSort(Options.Sort.NAME);
     }
@@ -584,7 +589,7 @@ public class MyWish extends WishBaseActivity implements
     @Override
     protected void updateDrawerList() {
         MenuItem item = mNavigationView.getMenu().findItem(R.id.all_wishes);
-        if (!mItemIds.isEmpty() || mStatus.val() != Options.Status.ALL || mNameQuery != null) {
+        if (!mItemIds.isEmpty() || (mStatus != null && mStatus.val() != Options.Status.ALL) || mNameQuery != null) {
             item.setVisible(true);
         } else {
             item.setVisible(false);

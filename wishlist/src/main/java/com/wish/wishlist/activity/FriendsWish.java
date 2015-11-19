@@ -3,6 +3,7 @@ package com.wish.wishlist.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
@@ -35,6 +36,7 @@ public class FriendsWish extends WishBaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         mSwipeRefreshLayout.setEnabled(false);
         // the refresh listener. this would be called when the layout is pulled down
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -47,7 +49,6 @@ public class FriendsWish extends WishBaseActivity implements
                 // this is triggered in onGotWishes in this activity
             }
         });
-        mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
         if (mView.val() == Options.View.LIST) {
             mRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -63,6 +64,11 @@ public class FriendsWish extends WishBaseActivity implements
         mFriendId = i.getStringExtra(Friends.FRIEND_ID);
         WishLoader.getInstance().setGotWishesListener(this);
         WishLoader.getInstance().fetchWishes(mFriendId);
+    }
+
+    @Override
+    protected Options.Status createStatus() {
+        return new Options.FriendWishStatus(Options.Status.ALL);
     }
 
     @Override
@@ -149,12 +155,22 @@ public class FriendsWish extends WishBaseActivity implements
         Log.d(TAG, "got " + wishList.size() + " wishes from friendId " + friendId);
         mSwipeRefreshLayout.setRefreshing(false);
         mWishlist = fromParseObjects(wishList);
+
+        if (mWhere != null && mWhere.get("complete") != null) {
+            int complete = Integer.parseInt((String) mWhere.get("complete"));
+            ArrayList<WishItem> filtered_wishList = new ArrayList<>();
+            for (WishItem item : mWishlist) {
+                if (item.getComplete() == complete) {
+                    filtered_wishList.add(item);
+                }
+            }
+            mWishlist = filtered_wishList;
+        }
         sortWishes(mSort.val());
 
         // onGotWishes can be call twice, one from cached data and another from network, if we use setAdapter here,
         // the items in the grid layout will be displaced the second time setAdapter is called.
         // Using swapAdapter and passing false as the removeAndRecycleExistingViews flag will avoid this
-
         updateWishView();
         updateDrawerList();
         updateActionBarTitle();
@@ -163,7 +179,7 @@ public class FriendsWish extends WishBaseActivity implements
     @Override
     protected void updateDrawerList() {
         MenuItem item = mNavigationView.getMenu().findItem(R.id.all_wishes);
-        if ( mStatus.val() != Options.Status.ALL) {
+        if (mStatus.val() != Options.Status.ALL) {
             item.setVisible(true);
         } else {
             item.setVisible(false);
@@ -191,28 +207,7 @@ public class FriendsWish extends WishBaseActivity implements
 
     @Override
     protected void reloadItems(String searchName, java.util.Map where) {
-        // Get all of the rows from the Item table
-        // Keep track of the TextViews added in list lstTable
-        if (where == null || where.isEmpty()) {
-            // load all wishes
-            WishLoader.getInstance().fetchWishes(mFriendId);
-            return;
-        }
-        if (where.get("complete") != null) {
-            int complete = Integer.parseInt((String) where.get("complete"));
-            ArrayList<WishItem> filtered_wishList = new ArrayList<>();
-            for (WishItem item : mWishlist) {
-                if (item.getComplete() == complete) {
-                    filtered_wishList.add(item);
-                }
-            }
-            //Fixme: sort wish
-            mWishlist = filtered_wishList;
-        }
-
-        updateWishView();
-        updateDrawerList();
-        updateActionBarTitle();
+        WishLoader.getInstance().fetchWishes(mFriendId);
     }
 
     private List<WishItem> fromParseObjects(final List<ParseObject> parseWishList) {
