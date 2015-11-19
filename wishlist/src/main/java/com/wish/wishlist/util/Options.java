@@ -108,15 +108,14 @@ public class Options {
      */
 
     public static class Sort extends Options {
-        public static final String KEY = "sortOption";
         public static final int ID = 0;
         public static final int NAME = 1;
         public static final int UPDATED_TIME = 2;
         public static final int PRICE = 3;
         public static final int PRIORITY = 4;
 
-        public Sort(int val) {
-            super(KEY, val);
+        public Sort(String key, int val) {
+            super(key, val);
         }
 
         public String toString() {
@@ -134,6 +133,20 @@ public class Options {
                 default:
                     return null;
             }
+        }
+    }
+
+    public static class MyWishSort extends Sort {
+        public static final String KEY = "myWishSort";
+        public MyWishSort(int val) {
+            super(KEY, val);
+        }
+    }
+
+    public static class FriendWishSort extends Sort {
+        public static final String KEY = "friendWishSort";
+        public FriendWishSort(int val) {
+            super(KEY, val);
         }
     }
 }

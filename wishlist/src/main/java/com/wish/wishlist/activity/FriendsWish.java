@@ -66,6 +66,11 @@ public class FriendsWish extends WishBaseActivity implements
     }
 
     @Override
+    protected Options.Sort createSort() {
+        return new Options.FriendWishSort(Options.Sort.NAME);
+    }
+
+    @Override
     protected void prepareDrawerList() {
         mNavigationView.getMenu().findItem(R.id.Add).setVisible(false);
     }
@@ -144,6 +149,7 @@ public class FriendsWish extends WishBaseActivity implements
         Log.d(TAG, "got " + wishList.size() + " wishes from friendId " + friendId);
         mSwipeRefreshLayout.setRefreshing(false);
         mWishlist = fromParseObjects(wishList);
+        sortWishes(mSort.val());
 
         // onGotWishes can be call twice, one from cached data and another from network, if we use setAdapter here,
         // the items in the grid layout will be displaced the second time setAdapter is called.

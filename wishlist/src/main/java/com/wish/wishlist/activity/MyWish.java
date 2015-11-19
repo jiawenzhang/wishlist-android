@@ -130,6 +130,11 @@ public class MyWish extends WishBaseActivity implements
     }
 
     @Override
+    protected Options.Sort createSort() {
+        return new Options.MyWishSort(Options.Sort.NAME);
+    }
+
+    @Override
     protected void prepareDrawerList() {
         mNavigationView.getMenu().findItem(R.id.my_wish).setVisible(false);
     }

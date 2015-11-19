@@ -70,7 +70,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
 
     protected Options.View mView = new Options.View(Options.View.LIST);
     protected Options.Status mStatus = new Options.Status(Options.Status.ALL);
-    protected Options.Sort mSort = new Options.Sort(Options.Sort.NAME);
+    protected Options.Sort mSort;
 
     protected ViewFlipper mViewFlipper;
     protected SwipeRefreshLayout mSwipeRefreshLayout;
@@ -114,6 +114,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
             mWhere.put("complete", "0");
         }
 
+        mSort = createSort();
         mSort.read();
 
         // Get the intent, verify the action and get the query
@@ -155,6 +156,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         }
     }
 
+    protected abstract Options.Sort createSort();
     protected abstract ModalMultiSelectorCallback createActionModeCallback();
 
     protected abstract void setContentView();
@@ -253,6 +255,22 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         return false;
     }
 
+    protected void sortWishes(int option) {
+        switch (option) {
+            case Options.Sort.NAME:
+                Collections.sort(mWishlist, new ItemNameComparator());
+                return;
+            case Options.Sort.PRICE:
+                Collections.sort(mWishlist, new ItemPriceComparator());
+                return;
+            case Options.Sort.UPDATED_TIME:
+                Collections.sort(mWishlist, new ItemTimeComparator());
+                return;
+            default:
+                return;
+        }
+    }
+
     @Override
     protected Dialog onCreateDialog(int id) {
         AlertDialog dialog;
@@ -278,15 +296,13 @@ public abstract class WishBaseActivity extends DrawerActivity implements
                     public void onClick(DialogInterface dialog, int item) {
                         if (sortOption[item].equals(BY_NAME)) {
                             mSort.setVal(Options.Sort.NAME);
-                            Collections.sort(mWishlist, new ItemNameComparator());
                         } else if (sortOption[item].equals(BY_TIME)) {
                             mSort.setVal(Options.Sort.UPDATED_TIME);
-                            Collections.sort(mWishlist, new ItemTimeComparator());
                         } else {
                             mSort.setVal(Options.Sort.PRICE);
-                            Collections.sort(mWishlist, new ItemPriceComparator());
                         }
                         mSort.save();
+                        sortWishes(mSort.val());
                         mWishAdapter.notifyDataSetChanged();
 
                         dialog.dismiss();
