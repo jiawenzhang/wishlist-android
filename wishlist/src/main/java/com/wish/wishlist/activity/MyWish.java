@@ -161,7 +161,7 @@ public class MyWish extends WishBaseActivity implements
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 super.onDestroyActionMode(mode);
-                mWishAdapter.clearSelectedItemIds();
+                mSelectedItemIds.clear();
 
                 // notifyDataSetChanged will fix a bug in recyclerview-multiselect lib, where the selected item's state does
                 // not get cleared when the action mode is finished.

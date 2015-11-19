@@ -20,50 +20,6 @@ import java.util.List;
 
 public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public class ItemSwappingHolder extends SwappingHolder implements View.OnClickListener, View.OnLongClickListener {
-        public ItemSwappingHolder(View itemView, MultiSelector multiSelector) {
-            super(itemView, multiSelector);
-
-            itemView.setOnClickListener(this);
-            itemView.setLongClickable(true);
-            itemView.setOnLongClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            // remember which item is selected
-            final WishItem item = mWishList.get(getAdapterPosition());
-            final long itemId =  item.getId();
-            if (mMultiSelector.tapSelection(this)) {
-                // Selection mode is on, so tapSelection() toggled item selection.
-                Log.d(TAG, "selection mode wish clicked");
-                if (mSelectedItemIds.contains(itemId)) {
-                    mSelectedItemIds.remove(itemId);
-                } else {
-                    mSelectedItemIds.add(itemId);
-                }
-            } else {
-                // Selection mode is off; handle normal item click here.
-                Log.d(TAG, "normal, wish clicked");
-                onWishTapped(item);
-            }
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            Log.d(TAG, "onLongClick");
-            clearSelectedItemIds();
-            final WishItem selectedItem = mWishList.get(getAdapterPosition());
-            mSelectedItemIds.add(selectedItem.getId());
-            onWishLongTapped();
-            mMultiSelector.setSelected(this, true);
-            return true;
-        }
-    }
-
-    protected MultiSelector mMultiSelector;
-    private HashSet<Long> mSelectedItemIds = new HashSet();
-
     /****************** WishTapListener ************************/
     onWishTapListener mWishTapListener;
     public interface onWishTapListener {
@@ -100,6 +56,60 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
     /***********************************************************/
 
+    /****************** WishSelectedListener ************************/
+    onWishSelectedListener mWishSelectedListener;
+    public interface onWishSelectedListener {
+        void onWishSelected(long itemId);
+    }
+
+    protected void onWishSelected(long itemId) {
+        if (mWishSelectedListener != null) {
+            mWishSelectedListener.onWishSelected(itemId);
+        }
+    }
+
+    public void setWishSelectedListener(Activity a) {
+        mWishSelectedListener = (onWishSelectedListener) a;
+    }
+    /***********************************************************/
+
+    public class ItemSwappingHolder extends SwappingHolder implements View.OnClickListener, View.OnLongClickListener {
+        public ItemSwappingHolder(View itemView, MultiSelector multiSelector) {
+            super(itemView, multiSelector);
+
+            itemView.setOnClickListener(this);
+            itemView.setLongClickable(true);
+            itemView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            // remember which item is selected
+            final WishItem item = mWishList.get(getAdapterPosition());
+            final long itemId =  item.getId();
+            if (mMultiSelector.tapSelection(this)) {
+                Log.d(TAG, "selection mode wish clicked");
+                onWishSelected(itemId);
+                // Selection mode is on, so tapSelection() toggled item selection.
+            } else {
+                // Selection mode is off; handle normal item click here.
+                Log.d(TAG, "normal, wish clicked");
+                onWishTapped(item);
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            Log.d(TAG, "onLongClick");
+            final WishItem selectedItem = mWishList.get(getAdapterPosition());
+            onWishLongTapped();
+            onWishSelected(selectedItem.getId());
+            mMultiSelector.setSelected(this, true);
+            return true;
+        }
+    }
+
+    protected MultiSelector mMultiSelector;
     protected List<WishItem> mWishList;
     private static final String TAG = "WishAdapter";
 
@@ -108,6 +118,7 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mMultiSelector = ms;
         setWishTapListener(fromActivity);
         setWishLongTapListener(fromActivity);
+        setWishSelectedListener(fromActivity);
     }
 
     @Override
@@ -153,17 +164,5 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         int size = mWishList.size();
         mWishList.clear();
         notifyItemRangeRemoved(0, size);
-    }
-
-    public ArrayList<Long> selectedItemIds() {
-        return new ArrayList(mSelectedItemIds);
-    }
-
-    public void setSelectedItemIds(List<Long> itemIds) {
-        mSelectedItemIds = new HashSet<>(itemIds);
-    }
-
-    public void clearSelectedItemIds() {
-        mSelectedItemIds.clear();
     }
 }

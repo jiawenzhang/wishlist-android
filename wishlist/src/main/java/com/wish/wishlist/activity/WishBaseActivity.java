@@ -37,6 +37,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /***
@@ -55,7 +56,8 @@ import java.util.List;
  */
 public abstract class WishBaseActivity extends DrawerActivity implements
         WishAdapter.onWishTapListener,
-        WishAdapter.onWishLongTapListener {
+        WishAdapter.onWishLongTapListener,
+        WishAdapter.onWishSelectedListener {
     public static final String TAG = "WishBaseActivity";
 
     static final protected int DIALOG_MAIN = 0;
@@ -84,6 +86,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected LinearLayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     protected WishAdapter mWishAdapter;
+    protected HashSet<Long> mSelectedItemIds = new HashSet();
 
     protected static final int WISH_VIEW = 0;
     protected static final int MAKE_A_WISH_VIEW = 1;
@@ -402,11 +405,11 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected boolean onTapAdd() { return true; }
 
     protected ArrayList<Long> selectedItemIds() {
-        return mWishAdapter.selectedItemIds();
+        return new ArrayList<>(mSelectedItemIds);
     }
 
     protected void setSelectedItemIds(List<Long> itemIds) {
-        mWishAdapter.setSelectedItemIds(itemIds);
+        mSelectedItemIds = new HashSet<>(itemIds);
     }
 
     public void onWishTapped(WishItem item) {
@@ -420,6 +423,16 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     public void onWishLongTapped() {
         Log.d(TAG, "onWishLongTap");
         mActionMode = startSupportActionMode(mActionModeCallback);
+        mSelectedItemIds.clear();
+    }
+
+    public void onWishSelected(long itemId) {
+        Log.d(TAG, "onWishLongSelected");
+        if (mSelectedItemIds.contains(itemId)) {
+            mSelectedItemIds.remove(itemId);
+        } else {
+            mSelectedItemIds.add(itemId);
+        }
     }
 
     protected void drawerOpened() {
