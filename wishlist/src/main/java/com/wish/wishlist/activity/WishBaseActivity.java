@@ -3,6 +3,7 @@ package com.wish.wishlist.activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -136,7 +137,14 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         //mRecyclerView.setHasFixedSize(true);
 
         mLinearLayoutManager = new LinearLayoutManager(this);
-        mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        int gridColumns;
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            gridColumns = 2;
+        } else {
+            gridColumns = 3;
+        }
+        mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(gridColumns, StaggeredGridLayoutManager.VERTICAL);
 
         // Fixme use dp and covert to px
         mRecyclerView.addItemDecoration(new ItemDecoration(10 /*px*/));
