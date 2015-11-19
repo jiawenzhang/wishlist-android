@@ -36,6 +36,7 @@ public class Friends extends FriendsBase implements
         mNavigationView.getMenu().findItem(R.id.all_wishes).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.list_view).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.grid_view).setVisible(false);
+        mNavigationView.getMenu().findItem(R.id.map_view).setVisible(false);
     }
 
     protected boolean onTapAdd() {
