@@ -14,8 +14,6 @@ import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;
 import com.wish.wishlist.model.WishItem;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

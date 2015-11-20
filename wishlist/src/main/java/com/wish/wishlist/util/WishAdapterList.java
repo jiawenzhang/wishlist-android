@@ -17,7 +17,9 @@ import com.bignerdranch.android.multiselector.MultiSelector;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.camera.PhotoFileCreater;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -63,16 +65,25 @@ public class WishAdapterList extends WishAdapter {
         final WishAdapterList.ViewHolder holder = (WishAdapterList.ViewHolder) vh;
         final WishItem wish = mWishList.get(position);
 
-        final String photoWebURL = wish.getPicURL();
-        final String photoParseURL = wish.getPicParseURL();
-        if (photoWebURL != null) {
+        final String photo_path = wish.getFullsizePicPath();
+        if (photo_path != null) {
+            // we are loading my wish
+            String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(photo_path);
+            Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).fit().centerCrop().into(holder.imgPhoto);
             holder.imgPhoto.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).fit().centerCrop().into(holder.imgPhoto);
-        } else if (photoParseURL != null) {
-            holder.imgPhoto.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).fit().centerCrop().into(holder.imgPhoto);
         } else {
-            holder.imgPhoto.setVisibility(View.GONE);
+            // we are loading friend wish
+            final String photoWebURL = wish.getPicURL();
+            final String photoParseURL = wish.getPicParseURL();
+            if (photoWebURL != null) {
+                holder.imgPhoto.setVisibility(View.VISIBLE);
+                Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).fit().centerCrop().into(holder.imgPhoto);
+            } else if (photoParseURL != null) {
+                holder.imgPhoto.setVisibility(View.VISIBLE);
+                Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).fit().centerCrop().into(holder.imgPhoto);
+            } else {
+                holder.imgPhoto.setVisibility(View.GONE);
+            }
         }
 
         holder.txtName.setText(wish.getName());

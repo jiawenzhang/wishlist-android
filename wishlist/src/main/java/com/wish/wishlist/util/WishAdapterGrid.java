@@ -6,6 +6,7 @@ package com.wish.wishlist.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,7 +23,9 @@ import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.camera.PhotoFileCreater;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -72,16 +75,42 @@ public class WishAdapterGrid extends WishAdapter {
         final WishAdapterGrid.ViewHolder holder = (WishAdapterGrid.ViewHolder) vh;
         final WishItem wish = mWishList.get(position);
 
-        final String photoWebURL = wish.getPicURL();
-        final String photoParseURL = wish.getPicParseURL();
-        if (photoWebURL != null) {
+        final String photo_path = wish.getFullsizePicPath();
+        if (photo_path != null) {
+            // we are loading my wish, and it has a fullsize photo on disk
+
+            // decode the original image into one with width about half the screen width, keep the aspect ratio
+            // this will avoid loading the original image into memory, which could be very slow if the image is large.
+            Display display = ((WindowManager) holder.imgPhoto.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+
+            // First decode with inJustDecodeBounds=true to check dimensions
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(photo_path, options);
+            final float ratio = (float) options.outHeight / (float) options.outWidth;
+
+            int width = size.x / 2;
+            int height = (int) (width * ratio);
+
+            String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(photo_path);
             holder.imgPhoto.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).resize(mScreenWidth, 0).into(holder.imgPhoto);
-        } else if (photoParseURL != null) {
-            holder.imgPhoto.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).resize(mScreenWidth, 0).into(holder.imgPhoto);
+            Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(width, height).into(holder.imgPhoto);
         } else {
-            holder.imgPhoto.setVisibility(View.GONE);
+            // we are loading friend wish
+
+            final String photoWebURL = wish.getPicURL();
+            final String photoParseURL = wish.getPicParseURL();
+            if (photoWebURL != null) {
+                holder.imgPhoto.setVisibility(View.VISIBLE);
+                Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).resize(mScreenWidth, 0).into(holder.imgPhoto);
+            } else if (photoParseURL != null) {
+                holder.imgPhoto.setVisibility(View.VISIBLE);
+                Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).resize(mScreenWidth, 0).into(holder.imgPhoto);
+            } else {
+                holder.imgPhoto.setVisibility(View.GONE);
+            }
         }
 
         holder.txtName.setText(wish.getName());
