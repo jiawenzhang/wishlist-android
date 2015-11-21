@@ -33,8 +33,6 @@ import com.wish.wishlist.util.WishAdapterGrid;
 import com.wish.wishlist.util.WishAdapterList;
 import com.wish.wishlist.widgets.ItemDecoration;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -69,7 +67,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected java.util.Map mWhere = new HashMap<>();
 
     protected static final String MULTI_SELECT_STATE = "multi_select_state";
-    protected static final String SELECTED_ITEM_IDS = "selected_item_ids";
+    protected static final String SELECTED_ITEM_KEYS = "selected_item_keys";
 
     protected Options.View mView = new Options.View(Options.View.LIST);
     protected Options.Status mStatus;
@@ -87,7 +85,10 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected LinearLayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     protected WishAdapter mWishAdapter;
-    protected HashSet<Long> mSelectedItemIds = new HashSet();
+
+    // for friend's wish, we use the Parse object id as the key
+    // for my wish, we use the id (converted to string) as the key
+    protected HashSet<String> mSelectedItemKeys = new HashSet();
 
     protected static final int WISH_VIEW = 0;
     protected static final int MAKE_A_WISH_VIEW = 1;
@@ -365,11 +366,11 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         // save the multi-select state, so we can restore them
         savedInstanceState.putBundle(MULTI_SELECT_STATE, mMultiSelector.saveSelectionStates());
-        long[] itemIds = new long[selectedItemIds().size()];
-        for (int i=0; i< selectedItemIds().size(); i++) {
-            itemIds[i] = selectedItemIds().get(i);
+        String[] itemKeys = new String[selectedItemKeys().size()];
+        for (int i = 0; i< selectedItemKeys().size(); i++) {
+            itemKeys[i] = selectedItemKeys().get(i);
         }
-        savedInstanceState.putLongArray(SELECTED_ITEM_IDS, itemIds);
+        savedInstanceState.putStringArray(SELECTED_ITEM_KEYS, itemKeys);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -381,9 +382,8 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         }
 
         // restore selected items
-        long[] itemIds = savedInstanceState.getLongArray(SELECTED_ITEM_IDS);
-        Long[] itemIdsLong = ArrayUtils.toObject(itemIds);
-        setSelectedItemIds(java.util.Arrays.asList(itemIdsLong));
+        String[] itemKeys = savedInstanceState.getStringArray(SELECTED_ITEM_KEYS);
+        setSelectedItemKeys(java.util.Arrays.asList(itemKeys));
     }
 
     protected abstract boolean goBack();
@@ -412,12 +412,12 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected abstract void updateDrawerList();
     protected boolean onTapAdd() { return true; }
 
-    protected ArrayList<Long> selectedItemIds() {
-        return new ArrayList<>(mSelectedItemIds);
+    protected ArrayList<String> selectedItemKeys() {
+        return new ArrayList<>(mSelectedItemKeys);
     }
 
-    protected void setSelectedItemIds(List<Long> itemIds) {
-        mSelectedItemIds = new HashSet<>(itemIds);
+    protected void setSelectedItemKeys(List<String> itemKeys) {
+        mSelectedItemKeys = new HashSet<>(itemKeys);
     }
 
     public void onWishTapped(WishItem item) {
@@ -431,15 +431,15 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     public void onWishLongTapped() {
         Log.d(TAG, "onWishLongTap");
         mActionMode = startSupportActionMode(mActionModeCallback);
-        mSelectedItemIds.clear();
+        mSelectedItemKeys.clear();
     }
 
-    public void onWishSelected(long itemId) {
+    public void onWishSelected(String itemKey) {
         Log.d(TAG, "onWishLongSelected");
-        if (mSelectedItemIds.contains(itemId)) {
-            mSelectedItemIds.remove(itemId);
+        if (mSelectedItemKeys.contains(itemKey)) {
+            mSelectedItemKeys.remove(itemKey);
         } else {
-            mSelectedItemIds.add(itemId);
+            mSelectedItemKeys.add(itemKey);
         }
     }
 

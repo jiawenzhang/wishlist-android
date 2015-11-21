@@ -90,6 +90,13 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         return _id;
     }
 
+    public String getKey() {
+        if (_id == -1) {
+            return _object_id;
+        }
+        return String.valueOf(_id);
+    }
+
     public String getObjectId() {
         return _object_id;
     }
@@ -400,6 +407,7 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
 
     public long saveToLocal()
     {
+        Log.d(TAG, "saveToLocal");
         ItemDBManager manager = new ItemDBManager();
         if (_id == -1) { // new item
             _id = manager.addItem(_object_id, _access, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,

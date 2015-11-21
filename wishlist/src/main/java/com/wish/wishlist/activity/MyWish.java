@@ -35,6 +35,8 @@ import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.camera.CameraManager;
 import com.wish.wishlist.util.sync.SyncAgent;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /***
  * MyWish.java is responsible for displaying wish items in either list or grid
  * view and providing access to functions of manipulating items such as adding,
@@ -161,7 +163,7 @@ public class MyWish extends WishBaseActivity implements
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 super.onDestroyActionMode(mode);
-                mSelectedItemIds.clear();
+                mSelectedItemKeys.clear();
 
                 // notifyDataSetChanged will fix a bug in recyclerview-multiselect lib, where the selected item's state does
                 // not get cleared when the action mode is finished.
@@ -175,18 +177,21 @@ public class MyWish extends WishBaseActivity implements
 
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                ArrayList<Long> itemIds = selectedItemIds();
-                Log.d(TAG, "selected item ids: " + itemIds.toString());
+                ArrayList<String> itemKeys = selectedItemKeys();
+                Log.d(TAG, "selected item ids: " + itemKeys.toString());
                 actionMode.finish();
+
+                long[] ids = new long[itemKeys.size()];
+                for (int i = 0; i < itemKeys.size() ; i++) {
+                    ids[i] = Long.valueOf(itemKeys.get(i));
+                }
+                Long[] longObjects = ArrayUtils.toObject(ids);
+                List<Long> idList = java.util.Arrays.asList(longObjects);
 
                 switch (menuItem.getItemId()) {
                     case R.id.menu_tag:
                         Log.d(TAG, "tag");
                         Intent intent = new Intent(MyWish.this, AddTag.class);
-                        long[] ids = new long[itemIds.size()];
-                        for (int i = 0; i < itemIds.size() ; i++) {
-                            ids[i] = itemIds.get(i);
-                        }
                         intent.putExtra(AddTag.ITEM_ID_ARRAY, (ids));
                         startActivityForResult(intent, ADD_TAG);
                         return true;
@@ -197,15 +202,15 @@ public class MyWish extends WishBaseActivity implements
                         return true;
                     case R.id.menu_delete:
                         Log.d(TAG, "delete");
-                        deleteItems(itemIds);
+                        deleteItems(idList);
                         return true;
                     case R.id.menu_complete:
                         Log.d(TAG, "complete");
-                        markItemComplete(itemIds, 1);
+                        markItemComplete(idList, 1);
                         return true;
                     case R.id.menu_incomplete:
                         Log.d(TAG, "incomplete");
-                        markItemComplete(itemIds, 0);
+                        markItemComplete(idList, 0);
                         return true;
                     default:
                         return false;

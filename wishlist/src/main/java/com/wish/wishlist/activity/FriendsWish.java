@@ -1,14 +1,16 @@
 package com.wish.wishlist.activity;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.parse.ParseObject;
@@ -17,6 +19,7 @@ import com.wish.wishlist.friend.WishLoader;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.WishAdapter;
+import com.wish.wishlist.util.WishImageDownloader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +27,14 @@ import java.util.List;
 public class FriendsWish extends WishBaseActivity implements
         WishLoader.onGotWishesListener,
         WishAdapter.onWishTapListener,
-        AppBarLayout.OnOffsetChangedListener {
+        AppBarLayout.OnOffsetChangedListener,
+        WishImageDownloader.onWishImageDownloadDoneListener {
 
     final static String TAG = "FriendsWish";
     final static String ITEM = "Item";
     private AppBarLayout mAppBarLayout;
+    private WishImageDownloader mWishImageDownloader;
+    private ProgressDialog mProgressDialog = null;
 
     private String mFriendId;
 
@@ -114,7 +120,7 @@ public class FriendsWish extends WishBaseActivity implements
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 super.onDestroyActionMode(mode);
-                mSelectedItemIds.clear();
+                mSelectedItemKeys.clear();
 
                 // notifyDataSetChanged will fix a bug in recyclerview-multiselect lib, where the selected item's state does
                 // not get cleared when the action mode is finished.
@@ -125,8 +131,8 @@ public class FriendsWish extends WishBaseActivity implements
 
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                ArrayList<Long> itemIds = selectedItemIds();
-                Log.d(TAG, "selected item ids: " + itemIds.toString());
+                ArrayList<String> itemKeys = selectedItemKeys();
+                Log.d(TAG, "selected item keys: " + itemKeys.toString());
                 actionMode.finish();
 
                 switch (menuItem.getItemId()) {
@@ -137,12 +143,51 @@ public class FriendsWish extends WishBaseActivity implements
                         return true;
                     case R.id.menu_save:
                         Log.d(TAG, "save");
+                        saveWishes(itemKeys);
                         return true;
                     default:
                         return false;
                 }
             }
         };
+    }
+
+    private void showProgressDialog(final String text) {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(text);
+        mProgressDialog.setCancelable(true);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                Log.d(TAG, text + " canceled");
+                Toast.makeText(FriendsWish.this, "Failed to save wish", Toast.LENGTH_LONG).show();
+            }
+        });
+        mProgressDialog.show();
+    }
+
+    private void saveWishes(List<String> wishKeyList) {
+        showProgressDialog("Saving...");
+        Log.d(TAG, "saving " + wishKeyList.size() + " wishes to my own wishlist");
+        List<WishItem> items = new ArrayList<>();
+        for (final WishItem item : mWishlist) {
+            if (wishKeyList.contains(item.getKey())) {
+                items.add(item);
+            }
+        }
+        mWishImageDownloader = new WishImageDownloader();
+        mWishImageDownloader.setWishImageDownloadDoneListener(this);
+        mWishImageDownloader.download(items);
+    }
+
+    public void onWishImageDownloadDone(boolean success) {
+        Log.d(TAG, "wishes image download all done");
+        if (success) {
+            Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Failed, check network", Toast.LENGTH_LONG).show();
+        }
+        mProgressDialog.dismiss();
     }
 
     @Override

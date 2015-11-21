@@ -57,12 +57,12 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /****************** WishSelectedListener ************************/
     onWishSelectedListener mWishSelectedListener;
     public interface onWishSelectedListener {
-        void onWishSelected(long itemId);
+        void onWishSelected(String itemKey);
     }
 
-    protected void onWishSelected(long itemId) {
+    protected void onWishSelected(String itemKey) {
         if (mWishSelectedListener != null) {
-            mWishSelectedListener.onWishSelected(itemId);
+            mWishSelectedListener.onWishSelected(itemKey);
         }
     }
 
@@ -84,10 +84,9 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public void onClick(View v) {
             // remember which item is selected
             final WishItem item = mWishList.get(getAdapterPosition());
-            final long itemId =  item.getId();
             if (mMultiSelector.tapSelection(this)) {
                 Log.d(TAG, "selection mode wish clicked");
-                onWishSelected(itemId);
+                onWishSelected(item.getKey());
                 // Selection mode is on, so tapSelection() toggled item selection.
             } else {
                 // Selection mode is off; handle normal item click here.
@@ -101,7 +100,7 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             Log.d(TAG, "onLongClick");
             final WishItem selectedItem = mWishList.get(getAdapterPosition());
             onWishLongTapped();
-            onWishSelected(selectedItem.getId());
+            onWishSelected(selectedItem.getKey());
             mMultiSelector.setSelected(this, true);
             return true;
         }
@@ -153,7 +152,6 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (item_ids.contains(item_id)) {
                 mWishList.remove(i);
                 notifyItemRemoved(i);
-                item_ids.remove(item_id);
             }
         }
     }
