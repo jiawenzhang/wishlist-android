@@ -172,7 +172,7 @@ public class Map extends Activity {
             public void onInfoWindowClick(Marker marker) {
                 Intent intent = new Intent(Map.this, MyWishDetail.class);
                 WishItem item = mMarkerItemMap.get(marker);
-                intent.putExtra("item_id", item.getId());
+                intent.putExtra(WishDetail.ITEM, item);
                 startActivityForResult(intent, ITEM_DETAILS);
             }
         });
@@ -180,7 +180,7 @@ public class Map extends Activity {
 
     boolean markAllItems()
     {
-        // Read all item location from db
+        // Read all items that have location from db
         ItemDBManager mItemDBManager = new ItemDBManager();
         ArrayList<Long> ids = mItemDBManager.getItemsWithLocation();
 

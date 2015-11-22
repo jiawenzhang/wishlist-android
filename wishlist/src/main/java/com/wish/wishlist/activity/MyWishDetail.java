@@ -16,7 +16,6 @@ import com.squareup.picasso.Picasso;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagItemDBManager;
-import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 
 import java.io.File;
@@ -37,18 +36,10 @@ import java.util.Locale;
 public class MyWishDetail extends WishDetail implements TokenCompleteTextView.TokenListener {
     private static final int EDIT_ITEM = 0;
 
-    private long mItemId = -1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Remember the id of the item user clicked
-        // in the previous activity (MyWish.java)
-        Intent i = getIntent();
-        mItemId = i.getLongExtra("item_id", -1);
-
-        mItem = WishItemManager.getInstance().getItemById(mItemId);
         double lat = mItem.getLatitude();
         double lng = mItem.getLongitude();
         String address = mItem.getAddress();
@@ -73,7 +64,7 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
             mItem.save();
         }
 
-        showItemInfo(mItem);
+        showItemInfo();
 
         if (savedInstanceState == null) {
             // if screen is oriented, savedInstanceStat != null,
@@ -108,7 +99,7 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
     }
 
     void addTags() {
-        ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItemId);
+        ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItem.getId());
         mTagsView.removeAllObject();
         for (String tag : tags) {
             mTagsView.addObject(tag);
@@ -121,9 +112,9 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
                 false).setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        WishItemManager.getInstance().deleteItemById(mItemId);
+                        WishItemManager.getInstance().deleteItemById(mItem.getId());
                         Intent intent = new Intent();
-                        intent.putExtra("id", mItemId);
+                        intent.putExtra("id", mItem.getId());
                         setResult(RESULT_OK, intent);
                         MyWishDetail.this.finish();
                     }
@@ -139,7 +130,7 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
 
     private void editItem() {
         Intent i = new Intent(MyWishDetail.this, EditItem.class);
-        i.putExtra("item_id", mItemId);
+        i.putExtra("item_id", mItem.getId());
         startActivityForResult(i, EDIT_ITEM);
     }
 
@@ -150,8 +141,8 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
                     if (data != null) {
                         long id = data.getLongExtra("itemID", -1);
                         if (id != -1) {
-                            WishItem item = WishItemManager.getInstance().getItemById(id);
-                            showItemInfo(item);
+                            mItem = WishItemManager.getInstance().getItemById(id);
+                            showItemInfo();
                             addTags();
                         }
                     }

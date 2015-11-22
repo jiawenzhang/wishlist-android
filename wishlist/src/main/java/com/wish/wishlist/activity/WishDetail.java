@@ -19,6 +19,8 @@ import com.wish.wishlist.util.social.ShareHelper;
 
 public class WishDetail extends ActivityBase {
 
+    public final static String ITEM = "Item";
+
     protected ImageView mPhotoView;
     private TextView mNameView;
     private TextView mDescrpView;
@@ -59,25 +61,28 @@ public class WishDetail extends ActivityBase {
         };
         mTagsView.setOnTouchListener(otl);
         mTagsView.setCursorVisible(false);
+
+        Intent i = getIntent();
+        mItem = i.getParcelableExtra(ITEM);
     }
 
     protected void showPhoto() {}
 
-    protected void showItemInfo(WishItem item) {
+    protected void showItemInfo() {
         showPhoto();
 
-        String dateTimeStr = item.getUpdatedTimeStr();
+        String dateTimeStr = mItem.getUpdatedTimeStr();
         String dateTimeStrNew = DateTimeFormatter.getInstance().getDateTimeString(dateTimeStr);
 
-        mNameView.setText(item.getName());
-        if (item.getComplete() == 1) {
+        mNameView.setText(mItem.getName());
+        if (mItem.getComplete() == 1) {
             final ImageView completeImage = (ImageView) findViewById(R.id.item_checkmark_complete);
             completeImage.setVisibility(View.VISIBLE);
         }
         mDateView.setText(dateTimeStrNew);
 
         // format the price
-        String priceStr = item.getPriceAsString();
+        String priceStr = mItem.getPriceAsString();
         if (priceStr != null) {
             mPriceView.setText(WishItem.priceStringWithCurrency(priceStr));
             mPriceView.setVisibility(View.VISIBLE);
@@ -87,7 +92,7 @@ public class WishDetail extends ActivityBase {
         }
 
         //used as a note
-        String descrptStr = item.getDesc();
+        String descrptStr = mItem.getDesc();
         if (!descrptStr.equals("")) {
             mDescrpView.setText(descrptStr);
             mDescrpView.setVisibility(View.VISIBLE);
@@ -96,7 +101,7 @@ public class WishDetail extends ActivityBase {
             mDescrpView.setVisibility(View.GONE);
         }
 
-        String storeName = item.getStoreName();
+        String storeName = mItem.getStoreName();
         if (!storeName.equals("")) {
             mStoreView.setText(storeName);
             mStoreView.setVisibility(View.VISIBLE);
@@ -105,7 +110,7 @@ public class WishDetail extends ActivityBase {
             mStoreView.setVisibility(View.GONE);
         }
 
-        String address = item.getAddress();
+        String address = mItem.getAddress();
         if (!address.equals("unknown") && !address.equals("")) {
             mLocationView.setText(address);
             mLocationView.setVisibility(View.VISIBLE);
@@ -114,9 +119,9 @@ public class WishDetail extends ActivityBase {
             mLocationView.setVisibility(View.GONE);
         }
 
-        String link = item.getLink();
+        String link = mItem.getLink();
         if (link != null && !link.isEmpty()) {
-            String url = item.getLink();
+            String url = mItem.getLink();
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "http://" + url;
             }

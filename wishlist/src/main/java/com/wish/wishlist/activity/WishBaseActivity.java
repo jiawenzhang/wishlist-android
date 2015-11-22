@@ -423,8 +423,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     public void onWishTapped(WishItem item) {
         Log.d(TAG, "onWishTapped");
         Intent i = new Intent(WishBaseActivity.this, MyWishDetail.class);
-        i.putExtra("item_id", item.getId());
-        i.putExtra("position", 0);
+        i.putExtra(WishDetail.ITEM, item);
         startActivityForResult(i, ITEM_DETAILS);
     }
 

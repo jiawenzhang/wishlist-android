@@ -474,8 +474,9 @@ public class MyWish extends WishBaseActivity implements
                     }
 
                     if (id != -1) {
+                        WishItem item = WishItemManager.getInstance().getItemById(id);
                         Intent i = new Intent(MyWish.this, MyWishDetail.class);
-                        i.putExtra("item_id", id);
+                        i.putExtra(WishDetail.ITEM, item);
                         startActivityForResult(i, ITEM_DETAILS);
                     }
                 } else {}
@@ -614,8 +615,7 @@ public class MyWish extends WishBaseActivity implements
     public void onWishTapped(WishItem item) {
         Log.d(TAG, "onWishTapped");
         Intent i = new Intent(MyWish.this, MyWishDetail.class);
-        i.putExtra("item_id", item.getId());
-        i.putExtra("position", 0);
+        i.putExtra(WishDetail.ITEM, item);
         startActivityForResult(i, ITEM_DETAILS);
     }
 

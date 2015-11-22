@@ -2,7 +2,6 @@ package com.wish.wishlist.activity;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -28,9 +27,7 @@ public class FriendWishDetail extends WishDetail implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent i = getIntent();
-        mItem = i.getParcelableExtra(FriendsWish.ITEM);
-        showItemInfo(mItem);
+        showItemInfo();
 
 //        final View imageFrame = findViewById(R.id.imagePhotoDetailFrame);
 //        imageFrame.setOnClickListener(new View.OnClickListener() {
