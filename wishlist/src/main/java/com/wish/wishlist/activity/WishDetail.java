@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
@@ -140,8 +141,20 @@ public class WishDetail extends ActivityBase {
         return super.onOptionsItemSelected(menuItem);
     }
 
-    protected void shareItem(){
+    protected void shareItem() {
         ShareHelper share = new ShareHelper(this, mItem.getId());
         share.share();
+    }
+
+    protected void showOnMap() {
+        if (mItem.getLatitude() == Double.MIN_VALUE && mItem.getLongitude() == Double.MIN_VALUE) {
+            Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
+            toast.show();
+        } else {
+            Intent mapIntent = new Intent(this, Map.class);
+            mapIntent.putExtra(Map.TYPE, Map.MARK_ONE);
+            mapIntent.putExtra(Map.ITEM, mItem);
+            startActivity(mapIntent);
+        }
     }
 }

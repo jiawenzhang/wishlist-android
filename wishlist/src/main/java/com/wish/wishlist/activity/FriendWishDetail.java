@@ -83,6 +83,7 @@ public class FriendWishDetail extends WishDetail implements
                 return true;
             case R.id.map:
                 Log.d(TAG, "map");
+                showOnMap();
                 return true;
             default:
                 return super.onOptionsItemSelected(menuItem);

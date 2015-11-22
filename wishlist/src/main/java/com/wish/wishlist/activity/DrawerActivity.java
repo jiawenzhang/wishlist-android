@@ -167,7 +167,7 @@ public abstract class DrawerActivity extends ActivityBase {
                         return switchView(Options.View.GRID);
                     case R.id.map_view:
                         Intent mapIntent = new Intent(DrawerActivity.this, Map.class);
-                        mapIntent.putExtra("type", "markAll");
+                        mapIntent.putExtra(Map.TYPE, Map.MARK_ALL);
                         startActivity(mapIntent);
                         return true;
                     case R.id.settings:

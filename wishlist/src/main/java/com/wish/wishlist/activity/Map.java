@@ -40,9 +40,15 @@ import com.wish.wishlist.util.camera.PhotoFileCreater;
 public class Map extends Activity {
     private GoogleMap mGoogleMap;
     private HashMap<Marker, WishItem> mMarkerItemMap = new HashMap<>();
-    private boolean mMarkOne;
+    private int mMarkType;
     private static final int ITEM_DETAILS = 0;
     LatLngBounds mBounds;
+    public final static String ITEM = "Item";
+    public final static String TYPE = "Type";
+
+    public final static int MARK_ONE = 0;
+    public final static int MARK_ALL = 1;
+
     private static final String TAG = "Map";
 
     private class MarkerCallback implements Callback {
@@ -103,11 +109,10 @@ public class Map extends Activity {
 
         mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         Intent i = getIntent();
-        if (i.getStringExtra("type").equals("markOne")){
-            mMarkOne = true;
+        mMarkType = i.getIntExtra(TYPE, 0);
+        if (mMarkType == MARK_ONE){
             markOneItem();
-        } else if (i.getStringExtra("type").equals("markAll")) {
-            mMarkOne = false;
+        } else if (mMarkType == MARK_ALL) {
             if (markAllItems()) {
                 mGoogleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                     @Override
@@ -158,7 +163,7 @@ public class Map extends Activity {
             }
         });
 
-        if (mMarkOne) {
+        if (mMarkType == MARK_ONE) {
             // when we mark single wish on map, we disable tapping on pin to show detail view
             return;
         }
@@ -233,8 +238,7 @@ public class Map extends Activity {
         // Read the item we are displaying from the intent, along with the
         // parameters used to set up the map
         Intent i = getIntent();
-        final long id = i.getLongExtra("id", -1);
-        final WishItem item = WishItemManager.getInstance().getItemById(id);
+        final WishItem item = i.getParcelableExtra(ITEM);
         if (item == null) {
             finish();
             return;

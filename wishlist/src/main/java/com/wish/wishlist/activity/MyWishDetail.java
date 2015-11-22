@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.tokenautocomplete.TokenCompleteTextView;
@@ -116,7 +115,6 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
         }
     }
 
-
     private void deleteItem() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
         builder.setMessage("Discard the wish?").setCancelable(
@@ -181,17 +179,7 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
             shareItem();
             return true;
         } else if (itemId == R.id.menu_item_detail_map) {
-            WishItem wishItem = WishItemManager.getInstance().getItemById(mItemId);
-
-            if (wishItem.getLatitude() == Double.MIN_VALUE && wishItem.getLongitude() == Double.MIN_VALUE) {
-                Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
-                toast.show();
-            } else {
-                Intent mapIntent = new Intent(this, Map.class);
-                mapIntent.putExtra("type", "markOne");
-                mapIntent.putExtra("id", mItemId);
-                startActivity(mapIntent);
-            }
+            showOnMap();
             return true;
         } else if (itemId == R.id.menu_item_detail_delete) {
             deleteItem();
