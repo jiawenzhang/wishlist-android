@@ -23,7 +23,6 @@ import com.wish.wishlist.db.ItemDBManager.ItemsCursor;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.util.social.ShareHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -232,11 +231,6 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
         startActivityForResult(i, EDIT_ITEM);
     }
 
-    private void shareItem(){
-        ShareHelper share = new ShareHelper(this, mItemId);
-        share.share();
-    }
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case EDIT_ITEM: {
@@ -344,7 +338,7 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_item_detail, menu);
+        inflater.inflate(R.menu.menu_my_wish_detail, menu);
         return true;
     }
 

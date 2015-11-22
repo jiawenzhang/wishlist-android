@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.DateTimeFormatter;
+import com.wish.wishlist.util.social.ShareHelper;
 
 public class WishDetail extends ActivityBase {
 
@@ -137,5 +138,10 @@ public class WishDetail extends ActivityBase {
             return true;
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    protected void shareItem(){
+        ShareHelper share = new ShareHelper(this, mItem.getId());
+        share.share();
     }
 }
