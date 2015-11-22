@@ -162,21 +162,22 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        long itemId = menuItem.getItemId();
-        if (itemId == R.id.menu_item_detail_edit) {
-            editItem();
-            return true;
-        } else if (itemId == R.id.menu_item_detail_share) {
-            shareItem();
-            return true;
-        } else if (itemId == R.id.menu_item_detail_map) {
-            showOnMap();
-            return true;
-        } else if (itemId == R.id.menu_item_detail_delete) {
-            deleteItem();
-            return true;
+        switch (menuItem.getItemId()) {
+            case R.id.menu_item_detail_edit:
+                editItem();
+                return true;
+            case R.id.menu_item_detail_share:
+                shareItem();
+                return true;
+            case R.id.menu_item_detail_map:
+                showOnMap();
+                return true;
+            case R.id.menu_item_detail_delete:
+                deleteItem();
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
         }
-        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override
