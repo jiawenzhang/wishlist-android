@@ -17,7 +17,7 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.DateTimeFormatter;
 import com.wish.wishlist.util.social.ShareHelper;
 
-public class WishDetail extends ActivityBase {
+public abstract class WishDetail extends ActivityBase {
 
     public final static String ITEM = "Item";
 
@@ -31,6 +31,8 @@ public class WishDetail extends ActivityBase {
     private TextView mLinkView;
     protected TagsCompletionView mTagsView;
     protected WishItem mItem;
+
+    protected abstract boolean myWish();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +88,7 @@ public class WishDetail extends ActivityBase {
         if (priceStr != null) {
             mPriceView.setText(WishItem.priceStringWithCurrency(priceStr));
             mPriceView.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             mPriceView.setVisibility(View.GONE);
         }
 
@@ -96,8 +97,7 @@ public class WishDetail extends ActivityBase {
         if (!descrptStr.equals("")) {
             mDescrpView.setText(descrptStr);
             mDescrpView.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             mDescrpView.setVisibility(View.GONE);
         }
 
@@ -105,8 +105,7 @@ public class WishDetail extends ActivityBase {
         if (!storeName.equals("")) {
             mStoreView.setText(storeName);
             mStoreView.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             mStoreView.setVisibility(View.GONE);
         }
 
@@ -114,8 +113,7 @@ public class WishDetail extends ActivityBase {
         if (!address.equals("unknown") && !address.equals("")) {
             mLocationView.setText(address);
             mLocationView.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             mLocationView.setVisibility(View.GONE);
         }
 
@@ -156,9 +154,10 @@ public class WishDetail extends ActivityBase {
             Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
             toast.show();
         } else {
-            Intent mapIntent = new Intent(this, Map.class);
-            mapIntent.putExtra(Map.TYPE, Map.MARK_ONE);
-            mapIntent.putExtra(Map.ITEM, mItem);
+            Intent mapIntent = new Intent(this, MapActivity.class);
+            mapIntent.putExtra(MapActivity.TYPE, MapActivity.MARK_ONE);
+            mapIntent.putExtra(MapActivity.ITEM, mItem);
+            mapIntent.putExtra(MapActivity.MY_WISH, myWish());
             startActivity(mapIntent);
         }
     }

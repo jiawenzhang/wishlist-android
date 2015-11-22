@@ -7,6 +7,7 @@ import android.os.Bundle;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.content.Intent;
 import android.util.Log;
@@ -33,18 +34,22 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.WishlistApplication;
 
 import com.wish.wishlist.R;
+import com.wish.wishlist.friend.WishLoader;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.camera.PhotoFileCreater;
 
-public class Map extends Activity {
+public class MapActivity extends Activity {
     private GoogleMap mGoogleMap;
     private HashMap<Marker, WishItem> mMarkerItemMap = new HashMap<>();
     private int mMarkType;
+    private boolean mMyWish;
     private static final int ITEM_DETAILS = 0;
     LatLngBounds mBounds;
     public final static String ITEM = "Item";
     public final static String TYPE = "Type";
+    public final static String MY_WISH = "MyWish";
+    public final static String FRIEND_ID = "FriendId";
 
     public final static int MARK_ONE = 0;
     public final static int MARK_ALL = 1;
@@ -110,6 +115,7 @@ public class Map extends Activity {
         mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         Intent i = getIntent();
         mMarkType = i.getIntExtra(TYPE, 0);
+        mMyWish = i.getBooleanExtra(MY_WISH, true);
         if (mMarkType == MARK_ONE){
             markOneItem();
         } else if (mMarkType == MARK_ALL) {
@@ -147,18 +153,38 @@ public class Map extends Activity {
                 // we need to refresh the InfoWindow when loading image is complete. the callback object's onSuccess is called
                 // when Picasso finishes loading the image, and that's when we can refresh the InfoWindow.
                 WishItem item = mMarkerItemMap.get(marker);
-                if (item.getFullsizePicPath() == null) {
-                    thumb.setVisibility(View.GONE);
-                } else {
-                    MarkerCallback callback = new MarkerCallback(marker);
-                    thumb.setTag(callback);
-                    String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(item.getFullsizePicPath());
-                    Picasso.with(Map.this).load(new File(thumb_path)).resize(200, 200).centerCrop().into(thumb, callback);
-                }
 
                 TextView name = (TextView) v.findViewById(R.id.map_name);
                 name.setText(item.getName());
 
+                if (item.getFullsizePicPath() != null) {
+                    // we are showing my wishes
+                    MarkerCallback callback = new MarkerCallback(marker);
+                    thumb.setTag(callback);
+                    String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(item.getFullsizePicPath());
+                    Picasso.with(MapActivity.this).load(new File(thumb_path)).resize(200, 200).centerCrop().into(thumb, callback);
+                    return v;
+                }
+
+                // we are showing friend's wish
+                final String webPicURL = item.getPicURL();
+                final String parsePicURL = item.getPicParseURL();
+                if (webPicURL == null && parsePicURL == null) {
+                    thumb.setVisibility(View.GONE);
+                    return v;
+                }
+
+                final String picURL;
+                if (webPicURL != null) {
+                    // try to use pic from internet first
+                    picURL = webPicURL;
+                } else {
+                    picURL = parsePicURL;
+                }
+
+                MarkerCallback callback = new MarkerCallback(marker);
+                thumb.setTag(callback);
+                Picasso.with(MapActivity.this).load(picURL).resize(200, 200).centerCrop().into(thumb, callback);
                 return v;
             }
         });
@@ -170,7 +196,12 @@ public class Map extends Activity {
         mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(Map.this, MyWishDetail.class);
+                Intent intent;
+                if (mMyWish) {
+                    intent = new Intent(MapActivity.this, MyWishDetail.class);
+                } else {
+                    intent = new Intent(MapActivity.this, FriendWishDetail.class);
+                }
                 WishItem item = mMarkerItemMap.get(marker);
                 intent.putExtra(WishDetail.ITEM, item);
                 startActivityForResult(intent, ITEM_DETAILS);
@@ -181,10 +212,27 @@ public class Map extends Activity {
     boolean markAllItems()
     {
         // Read all items that have location from db
-        ItemDBManager mItemDBManager = new ItemDBManager();
-        ArrayList<Long> ids = mItemDBManager.getItemsWithLocation();
+        final String friendId = getIntent().getStringExtra(FRIEND_ID);
+        List<WishItem> items_to_show = new ArrayList<>();
+        if (friendId == null) {
+            // show my wishes
+            ItemDBManager mItemDBManager = new ItemDBManager();
+            ArrayList<Long> ids = mItemDBManager.getItemsWithLocation();
 
-        if (ids.isEmpty()) {
+            for (final long id : ids) {
+                items_to_show.add(WishItemManager.getInstance().getItemById(id));
+            }
+        } else {
+            // show friend's wishes
+            List<WishItem> items = WishLoader.getInstance().getWishes(friendId);
+            for (WishItem item : items) {
+                if (item.getLatitude() != Double.MIN_VALUE && item.getLongitude() != Double.MAX_VALUE) {
+                    items_to_show.add(item);
+                }
+            }
+        }
+
+        if (items_to_show.isEmpty()) {
             Log.d(TAG, "no wishes with location");
             Toast toast = Toast.makeText(this, "No wish available on map", Toast.LENGTH_SHORT);
             toast.show();
@@ -192,7 +240,7 @@ public class Map extends Activity {
             return false;
         }
 
-        mBounds = addMarkers(ids);//map view is invoked from main menu->map
+        mBounds = addMarkers(items_to_show);//map view is invoked from main menu->map
         setInfoWindowAdapter();
         return true;
     }
@@ -214,10 +262,9 @@ public class Map extends Activity {
         mGoogleMap.setOnCameraChangeListener(null);
     }
 
-    private LatLngBounds addMarkers(ArrayList<Long> ids) {
+    private LatLngBounds addMarkers(List<WishItem> items) {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (Long id : ids) {
-            final WishItem item = WishItemManager.getInstance().getItemById(id);
+        for (WishItem item : items) {
             final double lat = item.getLatitude();
             final double lng = item.getLongitude();
             final LatLng point = new LatLng(lat, lng);

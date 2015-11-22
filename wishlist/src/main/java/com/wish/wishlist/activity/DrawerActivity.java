@@ -41,6 +41,7 @@ public abstract class DrawerActivity extends ActivityBase {
     protected void prepareDrawerList() {}
     protected boolean onTapAdd() { return true; }
     protected boolean switchView(int viewType) { return true; }
+    protected boolean mapView() { return true; }
     protected void drawerOpened() {}
     protected boolean goBack() { return true; }
 
@@ -166,10 +167,7 @@ public abstract class DrawerActivity extends ActivityBase {
                     case R.id.grid_view:
                         return switchView(Options.View.GRID);
                     case R.id.map_view:
-                        Intent mapIntent = new Intent(DrawerActivity.this, Map.class);
-                        mapIntent.putExtra(Map.TYPE, Map.MARK_ALL);
-                        startActivity(mapIntent);
-                        return true;
+                        return mapView();
                     case R.id.settings:
                         Intent prefIntent = new Intent(getApplicationContext(), WishListPreference.class);
                         startActivity(prefIntent);

@@ -73,7 +73,9 @@ public class FriendWishDetail extends WishDetail implements
                 showProgressDialog("Saving...");
                 mWishImageDownloader = new WishImageDownloader();
                 mWishImageDownloader.setWishImageDownloadDoneListener(this);
-                mWishImageDownloader.download(new ArrayList<WishItem>() {{ add(mItem); }} );
+                mWishImageDownloader.download(new ArrayList<WishItem>() {{
+                    add(mItem);
+                }});
                 return true;
             case R.id.share:
                 Log.d(TAG, "share");
@@ -110,4 +112,7 @@ public class FriendWishDetail extends WishDetail implements
         }
         mProgressDialog.dismiss();
     }
+
+    @Override
+    protected boolean myWish() { return false; }
 }

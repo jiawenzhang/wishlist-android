@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
-import com.parse.ParseObject;
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.WishLoader;
 import com.wish.wishlist.model.WishItem;
@@ -196,10 +195,10 @@ public class FriendsWish extends WishBaseActivity implements
         setupActionBar(R.id.friends_wish_toolbar);
     }
 
-    public void onGotWishes(String friendId, List<ParseObject> wishList) {
+    public void onGotWishes(String friendId, List<WishItem> wishList) {
         Log.d(TAG, "got " + wishList.size() + " wishes from friendId " + friendId);
         mSwipeRefreshLayout.setRefreshing(false);
-        mWishlist = fromParseObjects(wishList);
+        mWishlist = wishList;
 
         if (mWhere != null && mWhere.get("complete") != null) {
             int complete = Integer.parseInt((String) mWhere.get("complete"));
@@ -255,14 +254,6 @@ public class FriendsWish extends WishBaseActivity implements
         WishLoader.getInstance().fetchWishes(mFriendId);
     }
 
-    private List<WishItem> fromParseObjects(final List<ParseObject> parseWishList) {
-        List<WishItem> wishList = new ArrayList<>();
-        for (final ParseObject object : parseWishList) {
-            wishList.add(WishItem.fromParseObject(object, -1));
-        }
-        return wishList;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -275,5 +266,15 @@ public class FriendsWish extends WishBaseActivity implements
         Intent i = new Intent(this, FriendWishDetail.class);
         i.putExtra(ITEM, item);
         startActivity(i);
+    }
+
+    @Override
+    protected boolean mapView() {
+        Intent mapIntent = new Intent(this, MapActivity.class);
+        mapIntent.putExtra(MapActivity.TYPE, MapActivity.MARK_ALL);
+        mapIntent.putExtra(MapActivity.FRIEND_ID, mFriendId);
+        mapIntent.putExtra(MapActivity.MY_WISH, false);
+        startActivity(mapIntent);
+        return true;
     }
 }

@@ -220,7 +220,7 @@
         <!-- </activity> -->
 
         <activity
-            android:name=".activity.Map"
+            android:name=".activity.MapActivity"
             android:label="Map"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>

@@ -185,4 +185,7 @@ public class MyWishDetail extends WishDetail implements TokenCompleteTextView.To
 
     @Override
     public void onTokenRemoved(Object token) {}
+
+    @Override
+    protected boolean myWish() { return true; }
 }

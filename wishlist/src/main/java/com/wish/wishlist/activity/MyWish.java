@@ -624,4 +624,13 @@ public class MyWish extends WishBaseActivity implements
         startActivityForResult(editItem, ADD_ITEM);
         return true;
     }
+
+    @Override
+    protected boolean mapView() {
+        Intent mapIntent = new Intent(this, MapActivity.class);
+        mapIntent.putExtra(MapActivity.TYPE, MapActivity.MARK_ALL);
+        mapIntent.putExtra(MapActivity.MY_WISH, true);
+        startActivity(mapIntent);
+        return true;
+    }
 }
