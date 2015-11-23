@@ -311,7 +311,10 @@ public abstract class WishBaseActivity extends DrawerActivity implements
                         }
                         mSort.save();
                         sortWishes(mSort.val());
-                        mWishAdapter.notifyDataSetChanged();
+                        if (mWishAdapter != null) {
+                            // mWishAdapter is null if we have no wishes
+                            mWishAdapter.notifyDataSetChanged();
+                        }
 
                         dialog.dismiss();
                     }
