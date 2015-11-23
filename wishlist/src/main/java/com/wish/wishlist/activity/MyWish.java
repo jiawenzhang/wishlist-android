@@ -252,6 +252,11 @@ public class MyWish extends WishBaseActivity implements
             mViewFlipper.setDisplayedChild(NO_MATCHING_WISH_VIEW);
             return;
         }
+        if (mWishlist.isEmpty()) {
+            // make a new wish button
+            mViewFlipper.setDisplayedChild(MAKE_A_WISH_VIEW);
+            return;
+        }
         super.updateWishView();
     }
 

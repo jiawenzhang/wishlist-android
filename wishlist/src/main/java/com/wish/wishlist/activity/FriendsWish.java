@@ -10,6 +10,7 @@ import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
@@ -218,6 +219,18 @@ public class FriendsWish extends WishBaseActivity implements
         updateWishView();
         updateDrawerList();
         updateActionBarTitle();
+    }
+
+    @Override
+    protected void updateWishView() {
+        if (mWishlist.isEmpty()) {
+            // no matching wishes text
+            mViewFlipper.setDisplayedChild(NO_MATCHING_WISH_VIEW);
+            TextView txtView = (TextView) mViewFlipper.findViewById(R.id.noWishText);
+            txtView.setText("No wish found");
+            return;
+        }
+        super.updateWishView();
     }
 
     @Override

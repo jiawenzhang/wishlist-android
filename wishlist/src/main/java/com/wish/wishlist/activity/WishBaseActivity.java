@@ -187,12 +187,6 @@ public abstract class WishBaseActivity extends DrawerActivity implements
      * update either list view or grid view according view option
      */
     protected void updateWishView() {
-        if (mWishlist.isEmpty()) {
-            // make a new wish button
-            mViewFlipper.setDisplayedChild(MAKE_A_WISH_VIEW);
-            return;
-        }
-
         if (mWishAdapter != null) {
             mWishAdapter.setWishList(mWishlist);
         } else {
