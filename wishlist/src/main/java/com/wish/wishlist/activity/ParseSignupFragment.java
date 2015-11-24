@@ -23,13 +23,16 @@ package com.wish.wishlist.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.InputType;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -102,6 +105,13 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
         emailField.setVisibility(View.GONE);
       }
     }
+
+    String privacyUrl = "http://beanswishlist.com/privacy.html";
+    String termsUrl = "http://beanswishlist.com/privacy.html";
+    String text = "By signing up, you agree to our <a href=\"" + termsUrl + "\">Terms</a> & <a href=\"" + privacyUrl + "\">Privacy Policy</a>";
+    TextView terms = (TextView) v.findViewById(R.id.txt_terms_privacy);
+    terms.setText(Html.fromHtml(text));
+    terms.setMovementMethod(LinkMovementMethod.getInstance());
 
     if (config.getParseSignupSubmitButtonText() != null) {
       createAccountButton.setText(config.getParseSignupSubmitButtonText());

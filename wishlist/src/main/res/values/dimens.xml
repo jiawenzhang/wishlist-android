@@ -16,6 +16,7 @@
     <dimen name="title_imageButtonHeight">50dip</dimen>
     <dimen name="title_backLogo_width">70dip</dimen>
     <dimen name="title_wish_back_width">100dip</dimen>
+    <dimen name="text_size_smaller">12sp</dimen>
     <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_medium">18sp</dimen>
     <dimen name="text_size_large">22sp</dimen>

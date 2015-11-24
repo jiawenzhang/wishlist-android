@@ -22,4 +22,13 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.5" />
 
+    <TextView
+        android:id="@+id/txt_terms_privacy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/less_dark_grey"
+        android:textSize="@dimen/text_size_smaller"
+        android:text="By signing up, you agree to our Terms and Privacy Policy"/>
+
 </LinearLayout>
