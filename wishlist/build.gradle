@@ -62,7 +62,7 @@ android {
 
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
-    compile project(':third-party:facebook-android-sdk:facebook')
+    //compile project(':third-party:facebook-android-sdk:facebook')
     compile project(':third-party:TokenAutoComplete:library')
     compile project(':third-party:AndroidStaggeredGrid:library')
     compile 'com.squareup.picasso:picasso:2.5.2'
@@ -74,9 +74,13 @@ dependencies {
     compile 'com.squareup:otto:1.3.8'
     compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
 
-    compile 'com.parse.bolts:bolts-android:1.2.0'
-    compile fileTree(dir: '../third-party/Parse', include: 'ParseCrashReporting-*.jar')
-    compile project(':third-party:ParseUI-Android:ParseLoginUI')
+    compile 'com.parse.bolts:bolts-android:1.3.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
+    compile files("$rootProject.projectDir/third-party/Parse/ParseFacebookUtilsV4-1.10.3.jar")
+    compile files("$rootProject.projectDir/third-party/Parse/ParseTwitterUtils-1.10.3.jar")
+    //compile fileTree(dir: '../third-party/Parse', include: 'ParseCrashReporting-*.jar')
+    compile fileTree(dir: '../third-party/Parse', include: 'Parse-1.11.0.jar')
+    //compile project(':third-party:ParseUI-Android:ParseLoginUI')
 
     compile 'com.android.support:recyclerview-v7:23.1.0'
     compile 'com.android.support:cardview-v7:23.1.0'

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
@@ -11,7 +12,7 @@ import java.util.HashMap;
 
 import com.parse.Parse;
 import com.parse.ParseACL;
-import com.parse.ParseCrashReporting;
+//import com.parse.ParseCrashReporting;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
 import com.path.android.jobqueue.JobManager;
@@ -41,7 +42,7 @@ public class WishlistApplication extends Application {
         mContext = getApplicationContext();
 
         // Initialize Crash Reporting.
-        ParseCrashReporting.enable(this);
+        //ParseCrashReporting.enable(this);
 
         // Enable Local Datastore.
         //Parse.enableLocalDatastore(this);
@@ -67,6 +68,7 @@ public class WishlistApplication extends Application {
         // defaultACL.setPublicReadAccess(true);
         ParseACL.setDefaultACL(defaultACL, true);
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
         ParseFacebookUtils.initialize(this);
 
         configJobManager();

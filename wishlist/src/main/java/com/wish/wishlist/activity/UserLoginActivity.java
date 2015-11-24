@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.parse.ParseUser;
-import com.parse.ui.ParseLoginBuilder;
+//import com.parse.ui.ParseLoginBuilder;
 import com.wish.wishlist.R;
 
 import java.util.Arrays;
@@ -48,8 +48,6 @@ public class UserLoginActivity extends Activity {
                 .setFacebookLoginEnabled(true)
                 .setFacebookLoginButtonText("Facebook")
                 .setFacebookLoginPermissions(Arrays.asList("user_status", "read_stream"))
-                .setTwitterLoginEnabled(true)
-                .setTwitterLoginButtontext("Twitter")
                 .build();
         startActivityForResult(parseLoginIntent, LOGIN_REQUEST);
     }
