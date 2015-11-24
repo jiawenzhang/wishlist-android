@@ -38,15 +38,13 @@ public class UserLoginActivity extends Activity {
         ParseLoginBuilder builder = new ParseLoginBuilder(
                 UserLoginActivity.this);
         Intent parseLoginIntent = builder.setParseLoginEnabled(true)
-                .setAppLogo(R.drawable.splash_logo)
                 .setParseLoginButtonText("Login")
-                .setParseSignupButtonText("Register")
+                .setParseSignupButtonText("Sign up")
                 .setParseLoginHelpText("Forgot password?")
                 .setParseLoginInvalidCredentialsToastText("You email and/or password is not correct")
                 .setParseLoginEmailAsUsername(true)
-                .setParseSignupSubmitButtonText("Submit registration")
+                .setParseSignupSubmitButtonText("Sign up")
                 .setFacebookLoginEnabled(true)
-                .setFacebookLoginButtonText("Facebook")
                 .setFacebookLoginPermissions(Arrays.asList("user_status", "read_stream"))
                 .build();
         startActivityForResult(parseLoginIntent, LOGIN_REQUEST);
