@@ -12,9 +12,9 @@
         android:gravity="center"
         android:text="@string/com_parse_ui_login_help_instructions" />
 
-    <EditText
+    <com.wish.wishlist.widgets.ClearableEditText
+        style="@style/LoginUI.EditText"
         android:id="@+id/login_help_email_input"
-        style="@style/ParseLoginUI.EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/com_parse_ui_xlarge_vertical_spacing"

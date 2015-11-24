@@ -4,49 +4,49 @@
     android:gravity="center"
     android:orientation="vertical"    >
 
-    <EditText
+    <com.wish.wishlist.widgets.ClearableEditText
+        style="@style/LoginUI.EditText"
         android:id="@+id/signup_username_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/ParseLoginUI.EditText"
-        android:hint="@string/com_parse_ui_username_input_hint"></EditText>
+        android:hint="@string/com_parse_ui_username_input_hint"/>
 
-    <EditText
+    <com.wish.wishlist.widgets.ClearableEditText
+        style="@style/LoginUI.EditText"
         android:id="@+id/signup_password_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/ParseLoginUI.EditText"
         android:layout_marginTop="@dimen/com_parse_ui_small_vertical_spacing"
         android:fontFamily="sans-serif"
         android:hint="@string/com_parse_ui_password_input_hint"
         android:inputType="textPassword"
         android:selectAllOnFocus="true" />
 
-    <EditText
+    <com.wish.wishlist.widgets.ClearableEditText
+        style="@style/LoginUI.EditText"
         android:id="@+id/signup_confirm_password_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/ParseLoginUI.EditText"
         android:layout_marginTop="@dimen/com_parse_ui_small_vertical_spacing"
         android:fontFamily="sans-serif"
         android:hint="@string/com_parse_ui_confirm_password_input_hint"
         android:inputType="textPassword"
         android:selectAllOnFocus="true" />
 
-    <EditText
+    <com.wish.wishlist.widgets.ClearableEditText
+        style="@style/LoginUI.EditText"
         android:id="@+id/signup_email_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/ParseLoginUI.EditText"
         android:layout_marginTop="@dimen/com_parse_ui_small_vertical_spacing"
         android:hint="@string/com_parse_ui_email_input_hint"
         android:inputType="textEmailAddress" />
 
-    <EditText
+    <com.wish.wishlist.widgets.ClearableEditText
+        style="@style/LoginUI.EditText"
         android:id="@+id/signup_name_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/ParseLoginUI.EditText"
         android:layout_marginTop="@dimen/com_parse_ui_small_vertical_spacing"
         android:hint="@string/com_parse_ui_name_input_hint"
         android:inputType="textPersonName" />

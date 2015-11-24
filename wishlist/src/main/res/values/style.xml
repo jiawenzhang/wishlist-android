@@ -346,12 +346,15 @@
     </style>
 
     <style name="ParseLoginUI.TextView" parent="@android:style/Widget.TextView">
-        <item name="android:textColor">@color/com_parse_ui_parse_login_display_text</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 
-    <style name="ParseLoginUI.EditText" parent="@android:style/Widget.EditText">
+    <style name="LoginUI.EditText" parent="Widget.AppCompat.EditText">
         <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/less_dark_grey</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 
 </resources>
