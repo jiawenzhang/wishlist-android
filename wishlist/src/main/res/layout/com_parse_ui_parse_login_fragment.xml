@@ -28,7 +28,7 @@
         <include layout="@layout/com_parse_ui_parse_login_third_party_section" />
 
         <Button
-            android:id="@+id/parse_login_help"
+            android:id="@+id/parse_login_skip"
             style="@style/ParseLoginUI.HelpButton"
             android:textColor="@color/login_skip_button_label_selector"
             android:layout_marginTop="@dimen/com_parse_ui_vertical_spacing"

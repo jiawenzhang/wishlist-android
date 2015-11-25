@@ -37,13 +37,6 @@ import android.view.Window;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.wish.wishlist.R;
-//import com.parse.ui.ParseLoginBuilder;
-//import com.parse.ui.ParseLoginConfig;
-//import com.parse.ui.ParseLoginFragment;
-//import com.parse.ui.ParseLoginHelpFragment;
-//import com.parse.ui.ParseOnLoadingListener;
-//import com.parse.ui.ParseOnLoginSuccessListener;
-//import com.parse.ui.ParseSignupFragment;
 
 /**
  * Encapsulates the Parse login flow. The user can log in by username/password,
@@ -79,9 +72,10 @@ import com.wish.wishlist.R;
 public class ParseLoginActivity extends FragmentActivity implements
     ParseLoginFragment.ParseLoginFragmentListener,
     ParseLoginHelpFragment.ParseOnLoginHelpSuccessListener,
-    ParseOnLoginSuccessListener, ParseOnLoadingListener {
+    ParseOnLoginSuccessListener, ParseOnLoginSkipListener, ParseOnLoadingListener {
 
   public static final String LOG_TAG = "ParseLoginActivity";
+  public static final int RESULT_LOGIN_SKIP = 200;
 
   // All login UI fragment transactions will happen within this parent layout element.
   // Change this if you are modifying this code to be hosted in your own activity.
@@ -173,6 +167,12 @@ public class ParseLoginActivity extends FragmentActivity implements
     // RESULT_OK.
     // You can change this implementation if you want a different behavior.
     setResult(RESULT_OK);
+    finish();
+  }
+
+  @Override
+  public void onLoginSkip() {
+    setResult(RESULT_LOGIN_SKIP);
     finish();
   }
 

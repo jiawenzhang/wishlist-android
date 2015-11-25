@@ -100,11 +100,13 @@ public abstract class DrawerActivity extends ActivityBase {
 
     private void setupProfileImage() {
         // set profile image in the header
-        final File profileImageFile = new File(getFilesDir(), Profile.profileImageName());
-        final Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
-        final ImageView profileImageView = (ImageView) mNavigationViewHeader.findViewById(R.id.profile_image);
-        if (bitmap != null) {
-            profileImageView.setImageBitmap(bitmap);
+        if (Profile.profileImageName() != null) {
+            final File profileImageFile = new File(getFilesDir(), Profile.profileImageName());
+            final Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
+            final ImageView profileImageView = (ImageView) mNavigationViewHeader.findViewById(R.id.profile_image);
+            if (bitmap != null) {
+                profileImageView.setImageBitmap(bitmap);
+            }
         }
     }
 

@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.parse.ParseUser;
-//import com.parse.ui.ParseLoginBuilder;
-import com.wish.wishlist.R;
 
 import java.util.Arrays;
 
@@ -57,7 +55,7 @@ public class UserLoginActivity extends Activity {
                     onLogin();
                 }
             }
-        } else if (resultCode == RESULT_CANCELED){
+        } else if (resultCode == RESULT_CANCELED) {
             Log.e(TAG, "Login canceled");
             if (mFromSplash) {
                 // Show Android home screen
@@ -67,7 +65,20 @@ public class UserLoginActivity extends Activity {
                 startActivity(intent);
             }
             finish();
+        } else if (resultCode == ParseLoginActivity.RESULT_LOGIN_SKIP) {
+            onLoginSkip();
         }
+    }
+
+    private void onLoginSkip() {
+        Log.d(TAG, "login skip");
+        if (mFromSplash) {
+            startActivity(new Intent(this, MyWish.class));
+        } else {
+            // from Settings->Profile
+            startActivity(new Intent(getApplication(), Profile.class));
+        }
+        finish();
     }
 
     private void onLogin() {

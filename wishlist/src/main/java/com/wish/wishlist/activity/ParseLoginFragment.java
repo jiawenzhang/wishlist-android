@@ -45,10 +45,6 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.twitter.Twitter;
 import com.wish.wishlist.R;
-//import com.parse.ui.ParseLoginConfig;
-//import com.parse.ui.ParseLoginFragmentBase;
-//import com.parse.ui.ParseOnLoadingListener;
-//import com.parse.ui.ParseOnLoginSuccessListener;
 
 import org.json.JSONObject;
 
@@ -76,8 +72,10 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
   private Button parseSignupButton;
   private Button facebookLoginButton;
   private Button twitterLoginButton;
+  private Button parseLoginSkipButton;
   private ParseLoginFragmentListener loginFragmentListener;
   private ParseOnLoginSuccessListener onLoginSuccessListener;
+  private ParseOnLoginSkipListener onLoginSkipListener;
 
   private ParseLoginConfig config;
 
@@ -107,6 +105,7 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
     parseSignupButton = (Button) v.findViewById(R.id.parse_signup_button);
     facebookLoginButton = (Button) v.findViewById(R.id.facebook_login);
     twitterLoginButton = (Button) v.findViewById(R.id.twitter_login);
+    parseLoginSkipButton = (Button) v.findViewById(R.id.parse_login_skip);
 
     if (allowParseLoginAndSignup()) {
       setUpParseLoginAndSignup();
@@ -136,6 +135,13 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
     } else {
       throw new IllegalArgumentException(
           "Activity must implemement ParseOnLoginSuccessListener");
+    }
+
+    if (activity instanceof ParseOnLoginSkipListener) {
+      onLoginSkipListener = (ParseOnLoginSkipListener) activity;
+    } else {
+      throw new IllegalArgumentException(
+              "Activity must implemement ParseOnLoginSkipListener");
     }
 
     if (activity instanceof ParseOnLoadingListener) {
@@ -224,6 +230,13 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
         String password = passwordField.getText().toString();
 
         loginFragmentListener.onSignUpClicked(username, password);
+      }
+    });
+
+    parseLoginSkipButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        onLoginSkipListener.onLoginSkip();
       }
     });
 
@@ -428,6 +441,10 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
 
   private void loginSuccess() {
     onLoginSuccessListener.onLoginSuccess();
+  }
+
+  private void loginSkip() {
+    onLoginSkipListener.onLoginSkip();
   }
 
 }
