@@ -316,11 +316,13 @@
             android:name=".activity.UserLoginActivity"
             android:label="app_name"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
             android:name=".activity.ParseLoginActivity"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
