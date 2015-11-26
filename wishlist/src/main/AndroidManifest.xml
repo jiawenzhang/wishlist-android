@@ -81,7 +81,7 @@
         <uses-library android:name="com.google.android.maps" />
 
         <activity
-            android:name=".activity.Splash"
+            android:name=".activity.SplashActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
 
@@ -112,7 +112,7 @@
         -->
         <!-- The default activity of the app.  Can also display search results. -->
         <activity
-            android:name=".activity.MyWish"
+            android:name=".wish.MyWishActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/Theme.WishlistTheme" >
@@ -142,7 +142,7 @@
                 android:resource="@xml/search_wish_searchable" />
         </activity>
         <activity
-            android:name=".activity.EditItem"
+            android:name=".wish.EditWishActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
 
@@ -176,32 +176,32 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.WishListPreference"
+            android:name=".activity.PreferenceActivity"
             android:label="Settings"
             android:theme="@style/Theme.WishlistTheme" >
 
         </activity>
         <activity
-            android:name=".activity.MyWishDetail"
+            android:name=".wish.MyWishDetailActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.FriendWishDetail"
+            android:name=".wish.FriendWishDetailActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.FullscreenPhoto"
+            android:name=".activity.FullscreenPhotoActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.WishItemPostToSNS"
+            android:name=".activity.PostToSNSActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name=".activity.FacebookPost"
+            android:name=".activity.FacebookPostActivity"
             android:label="@string/app_name" >
         </activity>
 
@@ -221,48 +221,48 @@
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.FindTag"
+            android:name=".tag.FindTagActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.AddTag"
+            android:name=".tag.AddTagActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
             <!-- TagsCompletionView crashes on screen orientation, this is a workaround -->
         </activity>
         <activity
-            android:name=".activity.AddTagFromEditItem"
+            android:name=".tag.AddTagFromEditActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.NewFeatureFragmentActivity"
+            android:name=".feature.NewFeatureFragmentActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.Profile"
+            android:name=".activity.ProfileActivity"
             android:label="Profile"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.Cropper"
+            android:name=".activity.CropperActivity"
             android:label=""
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
 
         <activity
-            android:name=".activity.Friends"
+            android:name=".friend.FriendsActivity"
             android:label="Friends"
             android:launchMode="singleTask"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.FindFriends"
+            android:name=".friend.FindFriendsActivity"
             android:label=""
             android:launchMode="singleTask"
             android:theme="@style/Theme.WishlistTheme" >
@@ -278,13 +278,13 @@
                 android:resource="@xml/search_people_searchable" />
         </activity>
         <activity
-            android:name=".activity.FriendRequest"
+            android:name=".friend.FriendRequestActivity"
             android:label="Friend request"
             android:launchMode="singleTask"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.FriendsWish"
+            android:name=".wish.FriendsWishActivity"
             android:label=""
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
@@ -313,14 +313,14 @@
             android:value="AIzaSyDXt7pwa4cvJA2O62kjTftAMVR17JjwrEc" />
 
         <activity
-            android:name=".activity.UserLoginActivity"
+            android:name=".login.UserLoginActivity"
             android:label="app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".activity.ParseLoginActivity"
+            android:name=".login.ParseLoginActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
@@ -351,7 +351,7 @@
         </receiver>
         <!-- <receiver android:name="com.parse.ParsePushBroadcastReceiver" -->
         <receiver
-            android:name=".util.sync.PushBroadcastReceiver"
+            android:name=".sync.PushBroadcastReceiver"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />

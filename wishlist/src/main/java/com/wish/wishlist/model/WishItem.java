@@ -23,9 +23,9 @@ import com.parse.ParseUser;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
-import com.wish.wishlist.util.ImageManager;
-import com.wish.wishlist.util.camera.PhotoFileCreater;
-import com.wish.wishlist.util.sync.SyncAgent;
+import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.image.PhotoFileCreater;
+import com.wish.wishlist.sync.SyncAgent;
 
 import android.preference.PreferenceManager;
 

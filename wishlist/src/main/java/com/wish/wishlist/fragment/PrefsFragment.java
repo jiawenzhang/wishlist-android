@@ -9,14 +9,13 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.app.DialogFragment;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
-import com.wish.wishlist.activity.NewFeatureFragmentActivity;
-import com.wish.wishlist.activity.Profile;
-import com.wish.wishlist.activity.UserLoginActivity;
+import com.wish.wishlist.feature.NewFeatureFragmentActivity;
+import com.wish.wishlist.activity.ProfileActivity;
+import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.view.ReleaseNotesView;
 
 /**
@@ -39,7 +38,7 @@ public class PrefsFragment extends PreferenceFragment implements
             public boolean onPreferenceClick(Preference preference) {
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 if (currentUser != null) {
-                    startActivity(new Intent(getActivity(), Profile.class));
+                    startActivity(new Intent(getActivity(), ProfileActivity.class));
                 } else {
                     startActivity(new Intent(getActivity(), UserLoginActivity.class));
                 }

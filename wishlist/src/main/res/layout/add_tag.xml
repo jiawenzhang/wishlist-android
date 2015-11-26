@@ -9,7 +9,7 @@
              android:id="@+id/add_tag_toolbar"
         />
 
-    <com.wish.wishlist.activity.TagsCompletionView
+    <com.wish.wishlist.tag.TagsCompletionView
         android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
         android:textSize="@dimen/text_size_medium"
         android:nextFocusDown="@+id/editText">
         <requestFocus />
-    </com.wish.wishlist.activity.TagsCompletionView>
+    </com.wish.wishlist.tag.TagsCompletionView>
 
     <ListView
         android:id="@+id/taglist"

@@ -25,19 +25,19 @@ public class FriendRequestCache extends FriendListCache {
         if (mFriendRequestList == null) {
             mFriendRequestList = new ArrayList<>();
             mFriendRequestList.add(request);
-            Log.d(TAG, "FriendRequest added");
+            Log.d(TAG, "FriendRequestActivity added");
             return;
         }
 
         // Fixme: iterate the whole list is not efficient
         for (final FriendRequestMeta meta : mFriendRequestList) {
             if (meta.objectId.equals(request.objectId) && meta.fromMe == request.fromMe) {
-                Log.d(TAG, "FriendRequest already exists, ignore");
+                Log.d(TAG, "FriendRequestActivity already exists, ignore");
                 return;
             }
         }
         mFriendRequestList.add(request);
-        Log.d(TAG, "FriendRequest added");
+        Log.d(TAG, "FriendRequestActivity added");
     }
 
     public void removeFriendRequest(final String friendId) {

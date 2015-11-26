@@ -16,7 +16,7 @@ import android.os.Handler;
 import android.util.Log;
 
 public class PositionManager extends Observable {
-	static final String LOG_TAG = "MyWish";
+	static final String LOG_TAG = "MyWishActivity";
 	private Context context;
 	private LocationManager _locationManager;
 	private Location _currentBestLocation = null;

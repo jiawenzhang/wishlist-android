@@ -115,7 +115,7 @@
                 <!-- we merely reuse the TagsCompletionView for
                 displaying tags nicely, we do not allow any editing here -->
                 <!-- background = #0000000 remove bottom line -->
-                <com.wish.wishlist.activity.TagsCompletionView
+                <com.wish.wishlist.tag.TagsCompletionView
                     android:id="@+id/ItemTagsView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                     android:background="#00000000"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="@dimen/text_size_medium" >
-                </com.wish.wishlist.activity.TagsCompletionView>
+                </com.wish.wishlist.tag.TagsCompletionView>
 
                 <!-- white space at the bottom -->
                 <TextView

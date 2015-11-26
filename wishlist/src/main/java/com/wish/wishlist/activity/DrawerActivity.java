@@ -20,7 +20,10 @@ import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.ProfileChangeEvent;
+import com.wish.wishlist.friend.FriendsActivity;
+import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Options;
+import com.wish.wishlist.wish.MyWishActivity;
 
 import java.io.File;
 
@@ -100,8 +103,8 @@ public abstract class DrawerActivity extends ActivityBase {
 
     private void setupProfileImage() {
         // set profile image in the header
-        if (Profile.profileImageName() != null) {
-            final File profileImageFile = new File(getFilesDir(), Profile.profileImageName());
+        if (ProfileActivity.profileImageName() != null) {
+            final File profileImageFile = new File(getFilesDir(), ProfileActivity.profileImageName());
             final Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
             final ImageView profileImageView = (ImageView) mNavigationViewHeader.findViewById(R.id.profile_image);
             if (bitmap != null) {
@@ -133,7 +136,7 @@ public abstract class DrawerActivity extends ActivityBase {
             @Override
             public void onClick(View v) {
                 if (currentUser != null) {
-                    startActivity(new Intent(getApplication(), Profile.class));
+                    startActivity(new Intent(getApplication(), ProfileActivity.class));
                 } else {
                     startActivity(new Intent(getApplication(), UserLoginActivity.class));
                 }
@@ -160,7 +163,7 @@ public abstract class DrawerActivity extends ActivityBase {
                     case R.id.all_wishes:
                         return goBack();
                     case R.id.my_wish:
-                        Intent intent = new Intent(getApplicationContext(), MyWish.class);
+                        Intent intent = new Intent(getApplicationContext(), MyWishActivity.class);
                         startActivity(intent);
                         finish();
                         return true;
@@ -171,11 +174,11 @@ public abstract class DrawerActivity extends ActivityBase {
                     case R.id.map_view:
                         return mapView();
                     case R.id.settings:
-                        Intent prefIntent = new Intent(getApplicationContext(), WishListPreference.class);
+                        Intent prefIntent = new Intent(getApplicationContext(), PreferenceActivity.class);
                         startActivity(prefIntent);
                         return true;
                     case R.id.friends:
-                        final Intent friendsIntent = new Intent(getApplicationContext(), Friends.class);
+                        final Intent friendsIntent = new Intent(getApplicationContext(), FriendsActivity.class);
                         startActivity(friendsIntent);
                         return true;
                     default:

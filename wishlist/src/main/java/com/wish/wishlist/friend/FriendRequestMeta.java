@@ -1,7 +1,5 @@
 package com.wish.wishlist.friend;
 
-import com.wish.wishlist.util.UserAdapter;
-
 /**
  * Created by jiawen on 15-11-01.
  */

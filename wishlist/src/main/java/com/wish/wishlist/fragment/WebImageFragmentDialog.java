@@ -18,7 +18,7 @@ import android.widget.ImageView;
 
 import com.etsy.android.grid.StaggeredGridView;
 import com.wish.wishlist.R;
-import com.wish.wishlist.WebImageAdapter;
+import com.wish.wishlist.util.WebImageAdapter;
 import com.wish.wishlist.activity.WebImage;
 
 import java.util.ArrayList;

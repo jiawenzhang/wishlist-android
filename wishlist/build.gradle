@@ -13,9 +13,8 @@ android {
     sourceSets {
         main {
             java {
-                exclude '**/FacebookPost.java'
-                exclude '**/WishItemPostToSNS.java'
-                exclude '**/Login.java'
+                exclude '**/FacebookPostActivity.java'
+                exclude '**/PostToSNSActivity.java'
             }
         }
     }

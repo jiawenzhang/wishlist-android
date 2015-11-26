@@ -33,13 +33,13 @@ public class FriendManager {
     private FriendManager() {}
 
     final static String TAG = "FriendManager";
-    final static String FRIEND_REQUEST = "FriendRequest";
+    final static String FRIEND_REQUEST = "FriendRequestActivity";
 
     /******************* Parse Cloud Functions *************************/
     final static String REMOVE_FRIEND = "removeFriend";
     final static String SET_FRIEND_REQUEST_STATUS = "setFriendRequestStatus";
 
-    /******************* FriendRequest status *************************/
+    /******************* FriendRequestActivity status *************************/
     final static int REQUESTED = 0;
     final static int ACCEPTED = 1;
     final static int REJECTED = 2;
@@ -178,10 +178,10 @@ public class FriendManager {
         ParseCloud.callFunctionInBackground(SET_FRIEND_REQUEST_STATUS, params, new FunctionCallback<Map<String, Object>>() {
             public void done(Map<String, Object> mapObject, ParseException e) {
                 if (e == null) {
-                    Log.d(TAG, "Save FriendRequest success");
+                    Log.d(TAG, "Save FriendRequestActivity success");
                     onSetFriendRequestStatusResult(from, to, status, true);
                 } else {
-                    Log.e(TAG, "Save FriendRequest failed " + e.toString());
+                    Log.e(TAG, "Save FriendRequestActivity failed " + e.toString());
                     onSetFriendRequestStatusResult(from, to, status, false);
                 }
             }
@@ -256,12 +256,12 @@ public class FriendManager {
                         }
                     }
                 });
-                // FriendRequest will be removed from cache in FriendRequestAdapter remove(friendId)
+                // FriendRequestActivity will be removed from cache in FriendRequestAdapter remove(friendId)
                 onAcceptFriendResult(from, success);
                 break;
 
             case REJECTED:
-                // FriendRequest will be removed from cache in FriendRequestAdapter remove(friendId)
+                // FriendRequestActivity will be removed from cache in FriendRequestAdapter remove(friendId)
                 onRejectFriendResult(from, success);
                 break;
         }
@@ -291,7 +291,7 @@ public class FriendManager {
     {
         // fetch form cache first, then from network
         if (FriendRequestCache.getInstance().valid()) {
-            Log.d(TAG, "Got cached FriendRequest");
+            Log.d(TAG, "Got cached FriendRequestActivity");
             onGotFriendRequest();
         }
 
@@ -318,9 +318,9 @@ public class FriendManager {
                         onGotFriendRequest();
                         return;
                     }
-                    Log.d(TAG, "Got " + friendRequestList.size() + " FriendRequest");
+                    Log.d(TAG, "Got " + friendRequestList.size() + " FriendRequestActivity");
 
-                    // a friendId can be linked to two FriendRequest, one to the friend and one from the friend.
+                    // a friendId can be linked to two FriendRequestActivity, one to the friend and one from the friend.
                     final HashMap<String /*friendId*/, HashSet<Boolean>> friendRequestMeta = new HashMap<>();
                     String friendId;
                     for (final ParseObject friendRequest : friendRequestList) {
