@@ -85,7 +85,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
     String username = (String) args.getString(USERNAME);
     String password = (String) args.getString(PASSWORD);
 
-    View v = inflater.inflate(R.layout.com_parse_ui_parse_signup_fragment,
+    View v = inflater.inflate(R.layout.signup_fragment,
         parent, false);
     usernameField = (EditText) v.findViewById(R.id.signup_username_input);
     passwordField = (EditText) v.findViewById(R.id.signup_password_input);

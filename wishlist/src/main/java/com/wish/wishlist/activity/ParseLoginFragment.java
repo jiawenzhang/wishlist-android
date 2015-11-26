@@ -30,7 +30,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -95,7 +94,7 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
                            Bundle savedInstanceState) {
     config = ParseLoginConfig.fromBundle(getArguments(), getActivity());
 
-    View v = inflater.inflate(R.layout.com_parse_ui_parse_login_fragment,
+    View v = inflater.inflate(R.layout.login_fragment,
         parent, false);
     parseLogin = v.findViewById(R.id.parse_login);
     usernameField = (EditText) v.findViewById(R.id.login_username_input);

@@ -66,7 +66,7 @@ public class ParseLoginHelpFragment extends ParseLoginFragmentBase implements On
                            Bundle savedInstanceState) {
     config = ParseLoginConfig.fromBundle(getArguments(), getActivity());
 
-    View v = inflater.inflate(R.layout.com_parse_ui_parse_login_help_fragment,
+    View v = inflater.inflate(R.layout.login_help_fragment,
         parent, false);
     instructionsTextView = (TextView) v
         .findViewById(R.id.login_help_instructions);

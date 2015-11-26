@@ -24,8 +24,6 @@ package com.wish.wishlist.activity;
 import android.content.Context;
 import android.content.Intent;
 
-//import com.parse.ui.ParseLoginConfig;
-
 import java.util.Collection;
 
 public class ParseLoginBuilder {

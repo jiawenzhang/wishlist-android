@@ -323,9 +323,7 @@
     <style name="ParseLoginUI.Button" parent="@android:style/Widget.Button">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
-        <item name="android:background">
-            @drawable/com_parse_ui_parse_login_button_background_selector
-        </item>
+        <item name="android:background">@drawable/login_button_background_selector</item>
         <item name="android:textColor">@color/com_parse_ui_parse_login_display_text</item>
         <item name="android:textSize">18sp</item>
     </style>

@@ -11,7 +11,7 @@
     android:orientation="vertical">
 
     <include
-        layout="@layout/com_parse_ui_parse_login_app_logo"
+        layout="@layout/login_app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0.5" />
@@ -23,9 +23,9 @@
         android:gravity="bottom"
         android:orientation="vertical">
 
-        <include layout="@layout/com_parse_ui_parse_login_form" />
+        <include layout="@layout/login_form" />
 
-        <include layout="@layout/com_parse_ui_parse_login_third_party_section" />
+        <include layout="@layout/login_third_party_section" />
 
         <Button
             android:id="@+id/parse_login_skip"
