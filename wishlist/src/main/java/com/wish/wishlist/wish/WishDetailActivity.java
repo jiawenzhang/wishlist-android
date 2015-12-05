@@ -148,7 +148,9 @@ public abstract class WishDetailActivity extends ActivityBase {
     }
 
     protected void shareItem() {
-        ShareHelper share = new ShareHelper(this, mItem.getId());
+        long[] itemIds = new long[1];
+        itemIds[0] = mItem.getId();
+        ShareHelper share = new ShareHelper(this, itemIds);
         share.share();
     }
 

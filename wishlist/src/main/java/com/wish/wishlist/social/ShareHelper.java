@@ -7,15 +7,15 @@ import android.app.DialogFragment;
 
 public class ShareHelper {
 	Context _ctx;
-	long _itemId;
+	long[] mItemIds;
 
-public ShareHelper(Context ctx, long itemId) {
+public ShareHelper(Context ctx, long[] itemIds) {
 	_ctx = ctx;
-	_itemId = itemId;
+	mItemIds = itemIds;
 }
 
 public void share() {
-    DialogFragment newFragment = ShareAppDialogFragment.newInstance(_itemId, _ctx);
+    DialogFragment newFragment = ShareAppDialogFragment.newInstance(mItemIds, _ctx);
     FragmentManager m = ((Activity) _ctx).getFragmentManager();
     newFragment.show(m, "dialog");
 }

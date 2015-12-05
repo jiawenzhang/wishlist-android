@@ -32,6 +32,7 @@ import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.social.ShareHelper;
 import com.wish.wishlist.tag.AddTagActivity;
 import com.wish.wishlist.tag.FindTagActivity;
 import com.wish.wishlist.util.Options;
@@ -200,8 +201,8 @@ public class MyWishActivity extends WishBaseActivity implements
                         return true;
                     case R.id.menu_share:
                         Log.d(TAG, "share");
-                        //ShareHelper share = new ShareHelper(this, _selectedItem_id);
-                        //share.share();
+                        ShareHelper share = new ShareHelper(MyWishActivity.this, ids);
+                        share.share();
                         return true;
                     case R.id.menu_delete:
                         Log.d(TAG, "delete");

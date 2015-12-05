@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,8 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,16 +35,17 @@ import java.util.List;
  */
 
 public class ShareAppDialogFragment extends DialogFragment {
-    static long _itemId;
-    static Context _ctx;
+    static final String TAG = "ShareAppDialogFragment";
+    static long[] mItemIds;
+    static Context mCtx;
 
     /**
      * Create a new instance of MyDialogFragment, providing "num"
      * as an argument.
      */
-    static ShareAppDialogFragment newInstance(long itemId, Context context) {
-        _itemId = itemId;
-        _ctx = context;
+    static ShareAppDialogFragment newInstance(long[] itemIds, Context context) {
+        mItemIds = itemIds;
+        mCtx = context;
         return new ShareAppDialogFragment();
     }
 
@@ -80,30 +85,51 @@ public class ShareAppDialogFragment extends DialogFragment {
                 ResolveInfo info = (ResolveInfo) adapter.getItem(position);
                 if (info.activityInfo.packageName.contains("facebook")) {
                     if (!isNetworkOnline()) {
-                        Toast.makeText(_ctx, "Network not available", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mCtx, "Network not available", Toast.LENGTH_LONG).show();
                         return;
                     }
                     // Fixme: need to fix for facebook sdk 4.6
-                    //Intent facebookPostIntent = new Intent(_ctx, FacebookPostActivity.class);
+                    //Intent facebookPostIntent = new Intent(mCtx, FacebookPostActivity.class);
                     //facebookPostIntent.putExtra("itemId", _itemId);
-                    //((Activity) _ctx).startActivityForResult(facebookPostIntent, 1);
+                    //((Activity) mCtx).startActivityForResult(facebookPostIntent, 1);
 
-                    // Intent snsIntent = new Intent(_ctx, PostToSNSActivity.class);
+                    // Intent snsIntent = new Intent(mCtx, PostToSNSActivity.class);
                     // snsIntent.putExtra("itemId", _itemId);
-                    // ((Activity)_ctx).startActivityForResult(snsIntent, 1);
-                    //new PostToFacebookDialog(_ctx, _message).show();
+                    // ((Activity)mCtx).startActivityForResult(snsIntent, 1);
+                    //new PostToFacebookDialog(mCtx, _message).show();
                 } else {
-                    WishItem item = WishItemManager.getInstance().getItemById(_itemId);
-                    String message = item.getShareMessage(false);
+                    // Fixme: share to text message does not work
+
+                    String text = "a wish";
+                    if (mItemIds.length > 1) {
+                        text = mItemIds.length + " wishes";
+                    }
+
+                    String message = "Shared " + text + " from Beans Wishlist\n\n";
+                    ArrayList<Uri> imageUris = new ArrayList<>();
+                    for (long item_id : mItemIds) {
+                        WishItem item = WishItemManager.getInstance().getItemById(item_id);
+                        message += (item.getName() + "\n\n");
+
+                        String path = item.getFullsizePicPath();
+                        if (path != null && !path.isEmpty()) {
+                            Uri uri = Uri.fromFile(new File(item.getFullsizePicPath()));
+                            Log.e(TAG, uri.toString());
+                            imageUris.add(uri);
+                        }
+                    }
+
                     Intent intent = new Intent(android.content.Intent.ACTION_SEND);
                     intent.setClassName(info.activityInfo.packageName, info.activityInfo.name);
                     intent.setType("*/*");
+                    intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+
                     //intent.putExtra(Intent.EXTRA_SUBJECT, _subject);
                     intent.putExtra(Intent.EXTRA_TEXT, message);
-                    intent.putExtra(Intent.EXTRA_STREAM, item.getFullsizePicUri());
-                    ((Activity) _ctx).startActivity(intent);
+                    intent.putExtra(Intent.EXTRA_STREAM, imageUris);
+                    mCtx.startActivity(intent);
                 }
-                Tracker t = ((WishlistApplication) ((Activity) _ctx).getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
+                Tracker t = ((WishlistApplication) ((Activity) mCtx).getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                 t.send(new HitBuilders.EventBuilder()
                         .setCategory("Social")
                         .setAction("ShareWish")
@@ -129,7 +155,7 @@ public class ShareAppDialogFragment extends DialogFragment {
     public boolean isNetworkOnline() {
         boolean status = false;
         try {
-            ConnectivityManager cm = (ConnectivityManager) _ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = (ConnectivityManager) mCtx.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo netInfo = cm.getNetworkInfo(0);
             if (netInfo != null && netInfo.getState() == NetworkInfo.State.CONNECTED) {
                 status = true;
