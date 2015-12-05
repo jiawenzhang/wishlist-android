@@ -38,6 +38,7 @@ public abstract class DrawerActivity extends ActivityBase {
     protected View mNavigationViewHeader;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected RelativeLayout mHeaderLayout;
+    protected Object mBusEventListener;
 
     protected abstract void setContentView();
 
@@ -53,8 +54,19 @@ public abstract class DrawerActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Otto EventBust cannot delivere events to a base class, workaround is to create
+        // an Object and let it listen to the events and forward to the base class, see
+        // https://github.com/square/otto/issues/26
+        mBusEventListener = new Object() {
+            @Subscribe
+            public void profileChanged(ProfileChangeEvent event) {
+                Log.d(TAG, "profileChanged " + event.type.toString());
+                DrawerActivity.this.profileChanged(event);
+            }
+        };
+
         // Listen for profile change events
-        EventBus.getInstance().register(this);
+        EventBus.getInstance().register(mBusEventListener);
 
         setContentView();
 
@@ -67,7 +79,7 @@ public abstract class DrawerActivity extends ActivityBase {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getInstance().unregister(this);
+        EventBus.getInstance().unregister(mBusEventListener);
     }
 
     @Override
@@ -79,14 +91,17 @@ public abstract class DrawerActivity extends ActivityBase {
         return false;
     }
 
-    @Subscribe
-    public void profileChanged(ProfileChangeEvent event) {
+    protected void profileChanged(ProfileChangeEvent event) {
         Log.d(TAG, "profileChanged " + event.type.toString());
         if (event.type == ProfileChangeEvent.ProfileChangeType.email) {
             setupUserEmail();
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.name) {
             setupUserName();
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.image) {
+            setupProfileImage();
+        } else if (event.type == ProfileChangeEvent.ProfileChangeType.all) {
+            setupUserEmail();
+            setupUserName();
             setupProfileImage();
         }
     }
@@ -131,11 +146,10 @@ public abstract class DrawerActivity extends ActivityBase {
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
         mNavigationViewHeader = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
         mHeaderLayout = (RelativeLayout) mNavigationViewHeader.findViewById(R.id.drawer_header_layout);
-        final ParseUser currentUser = ParseUser.getCurrentUser();
         mHeaderLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentUser != null) {
+                if (ParseUser.getCurrentUser() != null) {
                     startActivity(new Intent(getApplication(), ProfileActivity.class));
                 } else {
                     startActivity(new Intent(getApplication(), UserLoginActivity.class));
@@ -143,7 +157,7 @@ public abstract class DrawerActivity extends ActivityBase {
             }
         });
 
-        if (currentUser != null) {
+        if (ParseUser.getCurrentUser() != null) {
             setupUserName();
             setupUserEmail();
         }

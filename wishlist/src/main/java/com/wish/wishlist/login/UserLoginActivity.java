@@ -10,6 +10,8 @@ import android.util.Log;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.wish.wishlist.activity.ProfileActivity;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.wish.MyWishActivity;
 
 import java.util.Arrays;
@@ -23,7 +25,7 @@ public class UserLoginActivity extends Activity {
 
     private final static String TAG = "UserLoginActivity";
     private static final int LOGIN_REQUEST = 0;
-    private boolean mFromSplash;
+    private boolean mFromSplash = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +106,8 @@ public class UserLoginActivity extends Activity {
         if (mFromSplash) {
             startActivity(new Intent(this, MyWishActivity.class));
         } else {
-            // from Settings->ProfileActivity
+            // event will notify navigation drawer to update username, email and profile image
+            EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.all));
             startActivity(new Intent(getApplication(), ProfileActivity.class));
         }
         finish();

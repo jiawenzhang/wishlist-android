@@ -343,7 +343,7 @@ public class ProfileActivity extends ActivityBase implements
     @Override
     public void onNameChanged(String name) {
         Log.d(TAG, "name changed to: " + name);
-        if (!name.equals(mUser.getEmail())) {
+        if (!name.equals(mUser.getString("name"))) {
             mUser.put("name", name);
             mUser.saveEventually();
             mNameTextView.setText(name);
@@ -354,7 +354,7 @@ public class ProfileActivity extends ActivityBase implements
     @Override
     public void onEmailChanged(String email) {
         Log.d(TAG, "email changed to: " + email);
-        if (!email.equals(mUser.getString("name"))) {
+        if (!email.equals(mUser.getEmail())) {
             mUser.setEmail(email);
             mUser.saveEventually();
             mEmailTextView.setText(email);
