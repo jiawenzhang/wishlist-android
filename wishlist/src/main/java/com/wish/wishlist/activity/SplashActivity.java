@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.DBAdapter;
 import com.wish.wishlist.WishlistApplication;
@@ -108,9 +109,14 @@ public class SplashActivity extends Activity {
             //startActivity(new Intent(getApplication(), MyWishActivity.class));
         }
 
-        Intent intent = new Intent(getApplication(), UserLoginActivity.class);
-        intent.putExtra(UserLoginActivity.FROM_SPLASH, true);
-        startActivity(intent);
+        if (ParseUser.getCurrentUser() == null) {
+            // User is logged in
+            Intent intent = new Intent(getApplication(), UserLoginActivity.class);
+            intent.putExtra(UserLoginActivity.FROM_SPLASH, true);
+            startActivity(intent);
+        } else {
+            startActivity(new Intent(getApplication(), MyWishActivity.class));
+        }
 
         SplashActivity.this.finish();
     }
