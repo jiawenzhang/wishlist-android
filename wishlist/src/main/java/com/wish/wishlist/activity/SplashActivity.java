@@ -110,7 +110,7 @@ public class SplashActivity extends Activity {
         }
 
         if (ParseUser.getCurrentUser() == null) {
-            // User is logged in
+            // User is not logged in
             Intent intent = new Intent(getApplication(), UserLoginActivity.class);
             intent.putExtra(UserLoginActivity.FROM_SPLASH, true);
             startActivity(intent);

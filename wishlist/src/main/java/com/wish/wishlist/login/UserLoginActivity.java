@@ -1,5 +1,6 @@
 package com.wish.wishlist.login;
 
+import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import android.app.Activity;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.wish.MyWishActivity;
 
@@ -29,12 +31,6 @@ public class UserLoginActivity extends Activity {
 
         Intent intent = getIntent();
         mFromSplash = intent.getBooleanExtra(FROM_SPLASH, false);
-
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null) {
-            onLogin();
-            return;
-        }
 
         ParseLoginBuilder builder = new ParseLoginBuilder(
                 UserLoginActivity.this);
@@ -88,11 +84,22 @@ public class UserLoginActivity extends Activity {
         Log.d(TAG, "login success");
         ParseUser currentUser = ParseUser.getCurrentUser();
         Log.d(TAG, "You are logged in as " + currentUser.getEmail() + " " + currentUser.getString("name"));
-        ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+
+        // Installation is used to identify self devices for push notification
+        // so self device can sync wishes from Parse
+        final ParseInstallation installation = ParseInstallation.getCurrentInstallation();
         installation.put("user", ParseUser.getCurrentUser());
-        installation.saveInBackground();
-        Log.d(TAG, "installation saved");
-        Log.d(TAG, "installation id: " + installation.getInstallationId());
+        installation.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "installation saved");
+                    Log.d(TAG, "installation id: " + installation.getInstallationId());
+                } else {
+                    Log.e(TAG, e.toString());
+                }
+            }
+        });
 
         if (mFromSplash) {
             startActivity(new Intent(this, MyWishActivity.class));
