@@ -187,8 +187,13 @@ public class ProfileActivity extends ActivityBase implements
                 return true;
             case R.id.menu_profile_logout:
                 mUser.logOut();
-                finish();
-                return true;
+
+                // re-launch the app
+                Intent i = getBaseContext().getPackageManager()
+                        .getLaunchIntentForPackage(getBaseContext().getPackageName() );
+
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(i);
             default:
                 return super.onOptionsItemSelected(item);
         }
