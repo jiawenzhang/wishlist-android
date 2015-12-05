@@ -49,6 +49,9 @@
             <include android:id="@+id/profile_email"
                      layout="@layout/profile_item"/>
 
+            <include android:id="@+id/profile_change_password"
+                     layout="@layout/profile_item"/>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

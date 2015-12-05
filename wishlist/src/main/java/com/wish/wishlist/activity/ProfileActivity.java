@@ -1,7 +1,9 @@
 package com.wish.wishlist.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -12,6 +14,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,9 +22,12 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.parse.RequestPasswordResetCallback;
 import com.path.android.jobqueue.JobManager;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
@@ -37,6 +43,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.wish.wishlist.R.style.AppCompatAlertDialogStyle;
+
 public class ProfileActivity extends ActivityBase implements
         EmailFragmentDialog.onEmailChangedListener,
         NameFragmentDialog.onNameChangedListener {
@@ -47,8 +55,11 @@ public class ProfileActivity extends ActivityBase implements
     private static final int CHOOSE_IMAGE = 1;
     private static final int PROFILE_IMAGE = 2;
 
-    private TextView mEmailTextView;
     private TextView mNameTextView;
+    private TextView mEmailTextView;
+    private TextView mPasswordTextView;
+
+    private ProgressDialog mProgressDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +85,14 @@ public class ProfileActivity extends ActivityBase implements
         FrameLayout profile_username = (FrameLayout) findViewById(R.id.profile_username);
         FrameLayout profile_name = (FrameLayout) findViewById(R.id.profile_name);
         FrameLayout profile_email = (FrameLayout) findViewById(R.id.profile_email);
+        FrameLayout profile_change_password = (FrameLayout) findViewById(R.id.profile_change_password);
 
         if (ParseFacebookUtils.isLinked(mUser)) {
             Log.d(TAG, "user linked to facebook");
             // when user logs in via Facebook, username is an array of characters meaningless to display
             profile_username.setVisibility(View.GONE);
+            // user logs in via Facebook does not have a password
+            profile_change_password.setVisibility(View.GONE);
         } else {
             profile_username.setVisibility(View.VISIBLE);
             ((TextView) profile_username.findViewById(R.id.title)).setText("Username");
@@ -104,6 +118,54 @@ public class ProfileActivity extends ActivityBase implements
             public void onClick(android.view.View v) {
                 DialogFragment newFragment = new EmailFragmentDialog();
                 newFragment.show(getFragmentManager(), "dialog");
+            }
+        });
+
+        ((TextView) profile_change_password.findViewById(R.id.title)).setText("Change password");
+        mPasswordTextView = ((TextView) profile_change_password.findViewById(R.id.value));
+        mPasswordTextView.setVisibility(View.GONE);
+
+        profile_change_password.setOnClickListener(new android.view.View.OnClickListener() {
+            public void onClick(android.view.View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this, AppCompatAlertDialogStyle);
+                String message = "An email will be sent to " + ParseUser.getCurrentUser().getUsername() + " for instructions to reset password";
+                builder.setMessage(message);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mProgressDialog = new ProgressDialog(ProfileActivity.this);
+                        mProgressDialog.setMessage("Sending email...");
+                        mProgressDialog.setCancelable(true);
+                        mProgressDialog.setCanceledOnTouchOutside(false);
+                        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            public void onCancel(DialogInterface dialog) {
+                                Toast.makeText(ProfileActivity.this, "Canceled, check network", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        mProgressDialog.show();
+
+                        ParseUser.requestPasswordResetInBackground(mUser.getUsername(), new RequestPasswordResetCallback() {
+                            public void done(ParseException e) {
+                                mProgressDialog.dismiss();
+                                if (e == null) {
+                                    Toast.makeText(ProfileActivity.this, "Email sent", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Log.e(TAG, e.toString());
+                                    Toast.makeText(ProfileActivity.this, "Fail to send email, check network", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                });
+                builder.setNegativeButton("CANCEL",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog dialog;
+                dialog = builder.create();
+                dialog.show();
             }
         });
     }

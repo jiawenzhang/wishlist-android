@@ -13,25 +13,26 @@
                   android:layout_marginBottom="15dp"
                   android:layout_marginLeft="30dp"
                   android:layout_marginRight="30dp"
-                  android:orientation="vertical"
+                  android:orientation="horizontal"
                   android:layout_weight="1"
         >
 
         <TextView android:id="@+id/title"
                   android:layout_height="wrap_content"
                   android:layout_width="wrap_content"
-                  android:textSize="13sp"
-                  android:singleLine="false"
+                  android:textSize="16sp"
+                  android:singleLine="true"
                   android:ellipsize="end"
-                  android:textColor="@color/dark_grey"
+                  android:textColor="@color/medium_grey"
             />
         <TextView android:id="@+id/value"
                   android:layout_height="wrap_content"
                   android:layout_width="wrap_content"
-                  android:textSize="18sp"
-                  android:singleLine="false"
+                  android:textSize="16sp"
+                  android:singleLine="true"
                   android:ellipsize="end"
-                  android:textColor="@color/medium_grey"
+                  android:textColor="@color/dark_grey"
+                  android:paddingLeft="15dp"
                   android:paddingRight="30dp"
             />
     </LinearLayout>
