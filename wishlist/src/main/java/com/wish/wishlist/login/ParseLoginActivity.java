@@ -23,6 +23,7 @@ package com.wish.wishlist.login;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -31,12 +32,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.wish.wishlist.R;
+
+import static com.wish.wishlist.R.style.AppCompatAlertDialogStyle;
 
 /**
  * Encapsulates the Parse login flow. The user can log in by username/password,
@@ -168,6 +173,30 @@ public class ParseLoginActivity extends FragmentActivity implements
     // You can change this implementation if you want a different behavior.
     setResult(RESULT_OK);
     finish();
+  }
+
+  @Override
+  public void onVerifyEmail(String message, boolean fromSignup) {
+    if (fromSignup) {
+      onBackPressed();
+    }
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this, AppCompatAlertDialogStyle);
+    builder.setMessage(message);
+    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int id) {
+      }
+    });
+
+    AlertDialog dialog;
+    dialog = builder.create();
+    dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+      @Override
+      public void onShow(DialogInterface dialog) {
+          ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_NEGATIVE).setVisibility(View.GONE);
+      }
+    });
+    dialog.show();
   }
 
   @Override

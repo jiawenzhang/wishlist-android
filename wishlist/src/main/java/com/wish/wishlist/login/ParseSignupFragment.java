@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.InputType;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,6 +35,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
@@ -57,7 +59,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
   private ParseLoginConfig config;
   private int minPasswordLength;
 
-  private static final String LOG_TAG = "ParseSignupFragment";
+  private static final String TAG = "ParseSignupFragment";
   private static final int DEFAULT_MIN_PASSWORD_LENGTH = 6;
   private static final String USER_OBJECT_NAME_FIELD = "name";
 
@@ -141,7 +143,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
 
   @Override
   public void onClick(View v) {
-    String username = usernameField.getText().toString();
+    final String username = usernameField.getText().toString();
     String password = passwordField.getText().toString();
     String passwordAgain = confirmPasswordField.getText().toString();
 
@@ -180,7 +182,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
     } else if (name != null && name.length() == 0) {
       showToast(R.string.com_parse_ui_no_name_toast);
     } else {
-      ParseUser user = new ParseUser();
+      final ParseUser user = new ParseUser();
 
       // Set standard fields
       user.setUsername(username);
@@ -202,8 +204,13 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
           }
 
           if (e == null) {
-            loadingFinish();
-            signupSuccess();
+            if (user.getBoolean("emailVerified")) {
+              loadingFinish();
+              signupSuccess();
+            } else {
+              String message = "A link has been sent to " + username + ". Please click the link to verify your email before sign in";
+              verifyEmail(message);
+            }
           } else {
             loadingFinish();
             if (e != null) {
@@ -231,10 +238,26 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
 
   @Override
   protected String getLogTag() {
-    return LOG_TAG;
+    return TAG;
   }
 
   private void signupSuccess() {
     onLoginSuccessListener.onLoginSuccess();
+  }
+
+  private void verifyEmail(final String message) {
+    // User successfully sign up, but does not have his email verified,
+    // let's logout the user and ask him to verify the email
+    ParseUser.logOutInBackground(new LogOutCallback() {
+      public void done(ParseException e) {
+        loadingFinish();
+        if (e == null) {
+          onLoginSuccessListener.onVerifyEmail(message, true);
+        } else {
+          showToast("Fail to sign up, please try again");
+          Log.e(TAG, e.toString());
+        }
+      }
+    });
   }
 }

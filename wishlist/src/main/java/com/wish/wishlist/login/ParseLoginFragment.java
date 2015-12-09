@@ -24,6 +24,7 @@ package com.wish.wishlist.login;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +38,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 
 import com.parse.LogInCallback;
+import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseTwitterUtils;
@@ -60,7 +62,7 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
     public void onLoginSuccess();
   }
 
-  private static final String LOG_TAG = "ParseLoginFragment";
+  private static final String TAG = "ParseLoginFragment";
   private static final String USER_OBJECT_NAME_FIELD = "name";
 
   private View parseLogin;
@@ -153,7 +155,7 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
 
   @Override
   protected String getLogTag() {
-    return LOG_TAG;
+    return TAG;
   }
 
   private void setUpParseLoginAndSignup() {
@@ -171,7 +173,7 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
     parseLoginButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-        String username = usernameField.getText().toString();
+        final String username = usernameField.getText().toString();
         String password = passwordField.getText().toString();
 
         if (username.length() == 0) {
@@ -192,8 +194,13 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
               }
 
               if (user != null) {
-                loadingFinish();
-                loginSuccess();
+                if (user.getBoolean("emailVerified")) {
+                  loadingFinish();
+                  loginSuccess();
+                } else {
+                  final String message = "Please check " + username + " to verify your email before sign in";
+                  loginVerifyEmail(message);
+                }
               } else {
                 loadingFinish();
                 if (e != null) {
@@ -347,12 +354,12 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
               if (e != null) {
                 showToast(R.string.com_parse_ui_twitter_login_failed_toast);
                 debugLog(getString(R.string.com_parse_ui_login_warning_twitter_login_failed) +
-                    e.toString());
+                        e.toString());
               }
             } else if (user.isNew()) {
               Twitter twitterUser = ParseTwitterUtils.getTwitter();
               if (twitterUser != null
-                  && twitterUser.getScreenName().length() > 0) {
+                      && twitterUser.getScreenName().length() > 0) {
                 /*
                   To keep this example simple, we put the users' Twitter screen name
                   into the name field of the Parse user object. If you want the user's
@@ -365,8 +372,8 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
                   public void done(ParseException e) {
                     if (e != null) {
                       debugLog(getString(
-                          R.string.com_parse_ui_login_warning_twitter_login_user_update_failed) +
-                          e.toString());
+                              R.string.com_parse_ui_login_warning_twitter_login_user_update_failed) +
+                              e.toString());
                     }
                     loginSuccess();
                   }
@@ -440,6 +447,22 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
 
   private void loginSuccess() {
     onLoginSuccessListener.onLoginSuccess();
+  }
+
+  private void loginVerifyEmail(final String message) {
+    // User successfully login, but does not have his email verified,
+    // let's logout the user and ask him to verify the email
+    ParseUser.logOutInBackground(new LogOutCallback() {
+      public void done(ParseException e) {
+        loadingFinish();
+        if (e == null) {
+          onLoginSuccessListener.onVerifyEmail(message, false);
+        } else {
+          showToast("Fail to log in, please try again");
+          Log.e(TAG, e.toString());
+        }
+      }
+    });
   }
 
   private void loginSkip() {
