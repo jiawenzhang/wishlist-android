@@ -400,6 +400,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         } else if (mStatus.val() == Options.Status.IN_PROGRESS) {
             getSupportActionBar().setSubtitle("In progress");
         } else {
+            getSupportActionBar().setTitle(R.string.app_name);
             getSupportActionBar().setSubtitle(null);
         }
     }
