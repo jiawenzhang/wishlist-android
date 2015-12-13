@@ -30,6 +30,7 @@ import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.tag.AddTagActivity;
 import com.wish.wishlist.tag.AddTagFromEditActivity;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.PositionManager;
@@ -183,6 +184,9 @@ public class EditWishActivity extends ActivityBase
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(EditWishActivity.this, AddTagFromEditActivity.class);
+                long[] ids = new long[1];
+                ids[0] = mItem_id;
+                i.putExtra(AddTagActivity.ITEM_ID_ARRAY, (ids));
                 i.putExtra(AddTagFromEditActivity.TAGS, _tags);
                 startActivityForResult(i, ADD_TAG);
             }

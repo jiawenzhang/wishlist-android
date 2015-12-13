@@ -85,7 +85,15 @@ public class AddTagActivity extends ActivityBase implements TokenCompleteTextVie
         }
 
         mItem_ids = getIntent().getLongArrayExtra(ITEM_ID_ARRAY);
-        if (savedInstanceState == null && mItem_ids.length == 1) {
+        if (savedInstanceState == null) {
+            addTags();
+        }
+
+        showTags();
+    }
+
+    protected void addTags() {
+        if (mItem_ids.length == 1 && mItem_ids[0] != -1) {
             // make sure on screen orientation, we don't add the same tags again to the view
             // Fixme: we disabled the screen rotation in AddTagActivity view, test this when we re-enable it
             ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItem_ids[0]);
@@ -94,7 +102,6 @@ public class AddTagActivity extends ActivityBase implements TokenCompleteTextVie
                 mCurrentTags.add(tag);
             }
         }
-        showTags();
     }
 
     private void showTags() {

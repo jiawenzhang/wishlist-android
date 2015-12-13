@@ -12,8 +12,7 @@ public class AddTagFromEditActivity extends AddTagActivity {
     public final static String TAGS = "tags";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void addTags() {
         ArrayList<String> tags = getIntent().getStringArrayListExtra(TAGS);
         if (tags != null) {
             for (String tag : tags) {
