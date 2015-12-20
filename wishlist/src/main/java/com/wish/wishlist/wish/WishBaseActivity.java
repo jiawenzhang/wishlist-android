@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ViewFlipper;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
@@ -36,6 +38,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import me.kaede.tagview.OnTagClickListener;
+import me.kaede.tagview.Tag;
+import me.kaede.tagview.TagView;
 
 /***
  * WishBaseActivity is responsible for displaying wish items in either list or grid
@@ -86,7 +92,15 @@ public abstract class WishBaseActivity extends DrawerActivity implements
 
     // for friend's wish, we use the Parse object id as the key
     // for my wish, we use the id (converted to string) as the key
-    protected HashSet<String> mSelectedItemKeys = new HashSet();
+    protected HashSet<String> mSelectedItemKeys = new HashSet<>();
+
+    protected TagView mFilterView;
+    enum filterType {
+        name,
+        tag,
+        status
+    }
+    protected HashMap<filterType, Tag> mFilters = new HashMap<>();
 
     protected static final int WISH_VIEW = 0;
     protected static final int MAKE_A_WISH_VIEW = 1;
@@ -105,6 +119,12 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         }
         t.send(new HitBuilders.AppViewBuilder().build());
 
+        mFilterView = (TagView) this.findViewById(R.id.filter_view);
+        mFilterView.setOnTagClickListener(new OnTagClickListener() {
+            @Override
+            public void onTagClick(Tag tag, int position) {}
+        });
+
         mStatus = createStatus();
         mStatus.read();
         if (mStatus.val() == Options.Status.ALL) {
@@ -114,8 +134,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         } else if(mStatus.val() == Options.Status.IN_PROGRESS) {
             mWhere.put("complete", "0");
         }
-
-        updateActionBarTitle();
+        updateFilterViewForStatus();
         updateDrawerList();
 
         mSort = createSort();
@@ -173,13 +192,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
 
     protected abstract void setContentView();
 
-    /***
-     * display the items in either list or grid view sorted by "sortBy"
-     *
-     * @param searchName
-     *            : the item name to match, null for all items
-     */
-    protected abstract void reloadItems(String searchName, java.util.Map where);
+    protected abstract void reloadItems();
 
     /***
      * update either list view or grid view according view option
@@ -343,9 +356,10 @@ public abstract class WishBaseActivity extends DrawerActivity implements
                             mStatus.setVal(Options.Status.IN_PROGRESS);
                         }
                         mStatus.save();
+                        updateFilterViewForStatus();
 
                         dialog.dismiss();
-                        reloadItems(null, mWhere);
+                        reloadItems();
                     }
                 });
 
@@ -394,17 +408,6 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         return false;
     }
 
-    protected void updateActionBarTitle() {
-        if (mStatus.val() == Options.Status.COMPLETED) {
-            getSupportActionBar().setSubtitle("Completed");
-        } else if (mStatus.val() == Options.Status.IN_PROGRESS) {
-            getSupportActionBar().setSubtitle("In progress");
-        } else {
-            getSupportActionBar().setTitle(R.string.app_name);
-            getSupportActionBar().setSubtitle(null);
-        }
-    }
-
     protected abstract void updateDrawerList();
     protected boolean onTapAdd() { return true; }
 
@@ -441,6 +444,50 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected void drawerOpened() {
         if (mActionMode != null) {
             mActionMode.finish();
+        }
+    }
+
+    protected void removeTag(Tag tag)
+    {
+        List<Tag> tags = mFilterView.getTags();
+        for (int i=0; i< tags.size(); i++) {
+            if (tags.get(i) == tag) {
+                mFilterView.remove(i);
+                break;
+            }
+        }
+    }
+
+    protected void updateFilterViewForStatus() {
+        Tag t = mFilters.get(filterType.status);
+        if (t != null) {
+            removeTag(t);
+            mFilters.remove(filterType.status);
+        }
+
+        if (mStatus.val() != mStatus.ALL) {
+            String txt = "";
+            if (mStatus.val() == mStatus.COMPLETED) {
+                txt = "completed";
+            } else if (mStatus.val() == mStatus.IN_PROGRESS) {
+                txt = "in progress";
+            }
+
+            Tag tag = new Tag(txt);
+            tag.isDeletable = true;
+            tag.layoutColor = ContextCompat.getColor(this, R.color.wishlist_yellow_color);
+            mFilterView.addTag(tag);
+            mFilters.put(filterType.status, tag);
+        }
+
+        showHideFilterView();
+    }
+
+    protected void showHideFilterView() {
+        if (mFilterView.getTags().isEmpty()) {
+            mFilterView.setVisibility(View.GONE);
+        } else {
+            mFilterView.setVisibility(View.VISIBLE);
         }
     }
 }

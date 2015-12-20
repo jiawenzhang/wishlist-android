@@ -23,7 +23,7 @@
             android:id="@+id/my_wish_toolbar"
             />
 
-        <include layout="@layout/wish_flipper"/>
+        <include layout="@layout/wish_view"/>
     </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 

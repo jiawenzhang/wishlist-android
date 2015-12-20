@@ -52,9 +52,9 @@ public class WishItemManager {
         return itemList;
     }
 
-    public List<WishItem> getItems(String sortOption, Map<String,String> where, ArrayList<Long> itemIds) {
+    public List<WishItem> getItems(final String nameQuery, String sortOption, Map<String,String> where, ArrayList<Long> itemIds) {
         final ItemDBManager itemDBManager = new ItemDBManager();
-        final ItemsCursor c = itemDBManager.getItems(sortOption, where, itemIds);
+        final ItemsCursor c = itemDBManager.getItems(nameQuery, sortOption, where, itemIds);
         List<WishItem> itemList = new ArrayList<>();
         if (c != null) {
             c.moveToFirst();

@@ -64,6 +64,7 @@ dependencies {
     //compile project(':third-party:facebook-android-sdk:facebook')
     compile project(':third-party:TokenAutoComplete:library')
     compile project(':third-party:AndroidStaggeredGrid:library')
+    compile project(':third-party:Android-Cloud-TagView-Plus:library')
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile files('libs/jsoup-1.8.1.jar')
     compile 'com.viewpagerindicator:library:2.4.1@aar'

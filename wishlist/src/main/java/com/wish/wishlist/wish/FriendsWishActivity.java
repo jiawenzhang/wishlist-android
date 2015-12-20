@@ -23,6 +23,9 @@ import com.wish.wishlist.util.Options;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.kaede.tagview.OnTagDeleteListener;
+import me.kaede.tagview.Tag;
+
 public class FriendsWishActivity extends WishBaseActivity implements
         WishLoader.onGotWishesListener,
         WishAdapter.onWishTapListener,
@@ -40,6 +43,23 @@ public class FriendsWishActivity extends WishBaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mFilterView.setOnTagDeleteListener(new OnTagDeleteListener() {
+            @Override
+            public void onTagDeleted(Tag tag, int position) {
+                Log.d(TAG, "onTagDeleted " + tag.text);
+                if (mFilters.get(filterType.status) != null && mFilters.get(filterType.status) == tag) {
+                    mStatus.setVal(mStatus.ALL);
+                    mStatus.save();
+                    // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
+                    // next time it is opened.
+                    removeDialog(DIALOG_FILTER);
+                    updateFilterViewForStatus();
+                    mWhere.clear();
+                    reloadItems();
+                }
+            }
+        });
 
         mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         mSwipeRefreshLayout.setEnabled(false);
@@ -63,7 +83,6 @@ public class FriendsWishActivity extends WishBaseActivity implements
         if (mViewFlipper.getDisplayedChild() != WISH_VIEW) {
             mViewFlipper.setDisplayedChild(WISH_VIEW);
         }
-
 
         Intent i = getIntent();
         mFriendId = i.getStringExtra(FriendsActivity.FRIEND_ID);
@@ -217,7 +236,6 @@ public class FriendsWishActivity extends WishBaseActivity implements
         // Using swapAdapter and passing false as the removeAndRecycleExistingViews flag will avoid this
         updateWishView();
         updateDrawerList();
-        updateActionBarTitle();
     }
 
     @Override
@@ -253,7 +271,7 @@ public class FriendsWishActivity extends WishBaseActivity implements
             removeDialog(DIALOG_FILTER);
             mStatus.save();
             mWhere.clear();
-            reloadItems(null, mWhere);
+            reloadItems();
         } else {
             //we are already showing all the wishes, tapping back button should close the list view
             finish();
@@ -262,7 +280,7 @@ public class FriendsWishActivity extends WishBaseActivity implements
     }
 
     @Override
-    protected void reloadItems(String searchName, java.util.Map where) {
+    protected void reloadItems() {
         WishLoader.getInstance().fetchWishes(mFriendId);
     }
 

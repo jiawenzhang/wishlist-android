@@ -7,6 +7,7 @@ import java.util.List;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.content.Intent;
@@ -23,6 +24,9 @@ import android.view.MenuItem;
 import android.widget.Button;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
+
+import me.kaede.tagview.OnTagDeleteListener;
+import me.kaede.tagview.Tag;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -78,15 +82,43 @@ public class MyWishActivity extends WishBaseActivity implements
     private ArrayList<Long> mItemIds = new ArrayList<>();
     private MenuItem mMenuSearch;
 
-
     /** Called when the activity is first created. */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mFilterView.setOnTagDeleteListener(new OnTagDeleteListener() {
+            @Override
+            public void onTagDeleted(Tag tag, int position) {
+                Log.d(TAG, "onTagDeleted " + tag.text);
+
+                if (mFilters.get(filterType.name) != null && mFilters.get(filterType.name) == tag) {
+                    mNameQuery = null;
+                    updateFilterView(filterType.name);
+                }
+                if (mFilters.get(filterType.tag) != null && mFilters.get(filterType.tag) == tag) {
+                    mTag.setVal(null);
+                    mTag.save();
+                    mItemIds.clear();
+                    updateFilterView(filterType.tag);
+                }
+                if (mFilters.get(filterType.status) != null && mFilters.get(filterType.status) == tag) {
+                    mStatus.setVal(mStatus.ALL);
+                    mStatus.save();
+                    // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
+                    // next time it is opened.
+                    removeDialog(DIALOG_FILTER);
+                    mWhere.clear();
+                    updateFilterView(filterType.status);
+                }
+                reloadItems();
+            }
+        });
+
         mTag.read();
         if (mTag.val() != null) {
             mItemIds = TagItemDBManager.instance().ItemIds_by_tag(mTag.val());
+            updateFilterView(filterType.tag);
         }
 
         mAddNewButton = (Button) findViewById(R.id.addNewWishButton);
@@ -235,6 +267,7 @@ public class MyWishActivity extends WishBaseActivity implements
             // activity is started from search, get the search query and
             // displayed the searched items
             mNameQuery = intent.getStringExtra(SearchManager.QUERY);
+            updateFilterView(filterType.name);
             MenuItem tagItem =  mMenu.findItem(R.id.menu_tags);
             MenuItemCompat.collapseActionView(tagItem);
 
@@ -243,9 +276,7 @@ public class MyWishActivity extends WishBaseActivity implements
         } else {
             // activity is not started from search
             // display all the items
-
-            mWishlist = WishItemManager.getInstance().getItems(mSort.toString(), mWhere, mItemIds);
-            updateWishView();
+            reloadItems();
         }
     }
 
@@ -285,22 +316,14 @@ public class MyWishActivity extends WishBaseActivity implements
 
     /***
      * display the items in either list or grid view sorted by "sortBy"
-     *
-     * @param searchName
-     *            : the item name to match, null for all items
      */
     @Override
-    protected void reloadItems(String searchName, java.util.Map where) {
-        if (searchName == null) {
-            // Get all of the rows from the Item table
-            // Keep track of the TextViews added in list lstTable
-            mWishlist = WishItemManager.getInstance().getItems(mSort.toString(), where, mItemIds);
-        } else {
-            mWishlist = WishItemManager.getInstance().searchItems(searchName, mSort.toString());
-        }
+    protected void reloadItems() {
+        // Get all of the rows from the Item table
+        // Keep track of the TextViews added in list lstTable
+        mWishlist = WishItemManager.getInstance().getItems(mNameQuery, mSort.toString(), mWhere, mItemIds);
         updateWishView();
         updateDrawerList();
-        updateActionBarTitle();
     }
 
     private void markItemComplete(final List<Long> item_ids, int complete) {
@@ -324,7 +347,6 @@ public class MyWishActivity extends WishBaseActivity implements
             wish_item.setUpdatedTime(System.currentTimeMillis());
             wish_item.setSyncedToServer(false);
             wish_item.save();
-
         }
         for (int i = 0; i < mWishlist.size(); i++) {
             WishItem item = mWishlist.get(i);
@@ -334,6 +356,11 @@ public class MyWishActivity extends WishBaseActivity implements
                     mWishAdapter.notifyItemChanged(i, item);
                 }
             }
+        }
+        if (mStatus.val() != mStatus.ALL) {
+            // if we are filtering by status, the filtered results are changed and
+            // we need to reload the items
+            reloadItems();
         }
     }
 
@@ -407,7 +434,7 @@ public class MyWishActivity extends WishBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        // When we navigate to another activity and navigate back to the wishlist activity, the wishes could have been changed,
+        // When we navigate to another activity and navigate back to the this activity, the wishes could have been changed,
         // so we need to reload the list.
 
         // Examples:
@@ -421,10 +448,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
         // If we are still in this activity but are changing the list by interacting with a dialog like sort, status, we need to
         // explicitly reload the list, as in these cases, onResume won't be called.
-
-        reloadItems(mNameQuery, mWhere);
-        updateDrawerList();
-        updateActionBarTitle();
+        reloadItems();
     }
 
     @Override
@@ -463,12 +487,14 @@ public class MyWishActivity extends WishBaseActivity implements
             case EDIT_ITEM: {
                 if (resultCode == Activity.RESULT_OK) {
                     updateItemIdsForTag();
+                    updateFilterView(filterType.tag);
                 }
                 break;
             }
             case ITEM_DETAILS: {
                 if (resultCode == Activity.RESULT_OK) {
                     updateItemIdsForTag();
+                    updateFilterView(filterType.tag);
                 }
                 break;
             }
@@ -488,7 +514,7 @@ public class MyWishActivity extends WishBaseActivity implements
                         i.putExtra(WishDetailActivity.ITEM, item);
                         startActivityForResult(i, ITEM_DETAILS);
                     }
-                } else {}
+                }
                 break;
             }
             case FIND_TAG: {
@@ -498,6 +524,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
                     if (mTag.val() != null) {
                         mItemIds = TagItemDBManager.instance().ItemIds_by_tag(mTag.val());
+                        updateFilterView(filterType.tag);
                     }
                 }
                 break;
@@ -505,6 +532,7 @@ public class MyWishActivity extends WishBaseActivity implements
             case ADD_TAG: {
                 if (resultCode == Activity.RESULT_OK) {
                     updateItemIdsForTag();
+                    updateFilterView(filterType.tag);
                 }
                 break;
             }
@@ -539,39 +567,25 @@ public class MyWishActivity extends WishBaseActivity implements
     @Override
     protected boolean goBack()
     {
-        if (mNameQuery != null) {
-            // We tap back on search results view, show all wishes
+        if (mNameQuery != null || mTag.val() != null || mStatus.val() != Options.Status.ALL) {
             mNameQuery = null;
-            mTag.setVal(null);
-            mItemIds.clear();
-            mStatus.setVal(Options.Status.ALL);
-            mWhere.clear();
+            updateFilterView(filterType.name);
 
-            MenuItem tagItem =  mMenu.findItem(R.id.menu_tags);
-            tagItem.setVisible(true);
-
-            MenuItem statusItem = mMenu.findItem(R.id.menu_status);
-            statusItem.setVisible(true);
-
-            reloadItems(null, mWhere);
-            return true;
-        }
-        if (mTag.val() != null || mStatus.val() != Options.Status.ALL) {
             //the wishes are currently filtered by tag or status, tapping back button now should clean up the filter and show all wishes
             mTag.setVal(null);
+            mTag.save();
             mItemIds.clear();
+            updateFilterView(filterType.tag);
 
             mStatus.setVal(Options.Status.ALL);
+            mStatus.save();
             // need to remove the status single item choice dialog so it will be re-created and its initial choice will refreshed
             // next time it is opened.
             removeDialog(DIALOG_FILTER);
-
             mWhere.clear();
+            updateFilterView(filterType.status);
 
-            mTag.save();
-            mStatus.save();
-
-            reloadItems(null, mWhere);
+            reloadItems();
         } else {
             //we are already showing all the wishes, tapping back button should close the list view
             finish();
@@ -591,17 +605,6 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     @Override
-    protected void updateActionBarTitle() {
-        if (mNameQuery != null) {
-            // we are showing search results
-            getSupportActionBar().setTitle("Search: " + mNameQuery);
-            getSupportActionBar().setSubtitle(null);
-            return;
-        }
-        super.updateActionBarTitle();
-    }
-
-    @Override
     protected void updateDrawerList() {
         MenuItem item = mNavigationView.getMenu().findItem(R.id.all_wishes);
         if (!mItemIds.isEmpty() || (mStatus != null && mStatus.val() != Options.Status.ALL) || mNameQuery != null) {
@@ -613,7 +616,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
     public void onSyncWishChanged() {
         Log.d(TAG, "onSyncWishChanged");
-        reloadItems(mNameQuery, mWhere);
+        reloadItems();
     }
 
     public void onDownloadWishDone() {
@@ -641,5 +644,42 @@ public class MyWishActivity extends WishBaseActivity implements
         mapIntent.putExtra(MapActivity.MY_WISH, true);
         startActivity(mapIntent);
         return true;
+    }
+
+    private void updateFilterView(final filterType type) {
+        Tag oldTag = mFilters.get(type);
+        if (oldTag != null) {
+            removeTag(oldTag);
+            mFilters.remove(type);
+        }
+
+        Tag tag = null;
+        if (type == filterType.name) {
+            if (mNameQuery != null) {
+                tag = new Tag(mNameQuery);
+            }
+        } else if (type == filterType.tag) {
+            if (mTag.val() != null) {
+                tag = new Tag(mTag.val());
+            }
+        } else if (type == filterType.status) {
+            if (mStatus.val() != mStatus.ALL) {
+                String txt = "";
+                if (mStatus.val() == mStatus.COMPLETED) {
+                    txt = "completed";
+                } else if (mStatus.val() == mStatus.IN_PROGRESS) {
+                    txt = "in progress";
+                }
+                tag = new Tag(txt);
+            }
+        }
+
+        if (tag != null) {
+            tag.isDeletable = true;
+            tag.layoutColor = ContextCompat.getColor(this, R.color.wishlist_yellow_color);
+            mFilterView.addTag(tag);
+            mFilters.put(type, tag);
+        }
+        showHideFilterView();
     }
 }

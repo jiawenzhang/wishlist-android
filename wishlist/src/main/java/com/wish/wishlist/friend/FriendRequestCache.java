@@ -11,7 +11,7 @@ import java.util.ListIterator;
  */
 public class FriendRequestCache extends FriendListCache {
     static final String TAG = "FiendRequestCache";
-    private List<FriendRequestMeta> mFriendRequestList;
+    private List<FriendRequestMeta> mFriendRequestList = null;
 
     private static FriendRequestCache ourInstance = new FriendRequestCache();
 

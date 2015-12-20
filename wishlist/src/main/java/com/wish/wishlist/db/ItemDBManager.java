@@ -212,16 +212,13 @@ public class ItemDBManager extends DBManager {
 		}
 	}
 
-	/**
-	 * Return a sorted ItemsCursor
-	 * 
-	 * @param sortBy
-	 *            the sort criteria
-	 */
-
-	public ItemsCursor getItems(String sortOption, Map<String,String> where, ArrayList<Long> itemIds) {
+	public ItemsCursor getItems(final String nameQuery, String sortOption, final Map<String,String> where, final ArrayList<Long> itemIds) {
 		String sql;
-        String WHERE = "WHERE deleted = 0 ";
+		String WHERE = "WHERE deleted = 0 ";
+		if (nameQuery != null && !nameQuery.isEmpty()) {
+			WHERE += String.format("AND item_name LIKE '%%%s%%' ", nameQuery);
+		}
+
 		if (where == null || where.isEmpty()) {
 		}
 		else {
@@ -299,23 +296,6 @@ public class ItemDBManager extends DBManager {
         return c;
     }
 
-	/**
-	 * Return a sorted ItemsCursor matching the search quest by name
-	 * 
-	 */
-	public ItemsCursor searchItems(String query) {
-		String sql = String.format("SELECT * FROM Item "
-				+ "WHERE item_name LIKE '%%%s%%' AND deleted = 0", query);
-
-		SQLiteDatabase d = DBAdapter.getInstance().db();
-		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
-				new ItemsCursor.Factory(), sql, null, null);
-		if (c != null) {
-			c.moveToFirst();
-		}
-		return c;
-	}
-	
 	/**
 	 * Return a sorted ItemsCursor matching the search quest by name
 	 * ordered by sortBy
