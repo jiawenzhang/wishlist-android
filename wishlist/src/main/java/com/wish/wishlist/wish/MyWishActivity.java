@@ -183,7 +183,10 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     private int topRowVerticalPosition() {
-        return (mRecyclerView == null || mRecyclerView.getChildCount() == 0) ? 0 : mRecyclerView.getChildAt(0).getTop();
+        if (mRecyclerView == null || mRecyclerView.getChildCount() == 0) {
+            return 0;
+        }
+        return mRecyclerView.getChildAt(0).getTop() - ITEM_DECORATION_SPACE;
     }
 
     protected ModalMultiSelectorCallback createActionModeCallback() {

@@ -106,6 +106,8 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected static final int MAKE_A_WISH_VIEW = 1;
     protected static final int NO_MATCHING_WISH_VIEW = 2;
 
+    protected static final int ITEM_DECORATION_SPACE = 10; //px;
+
     /** Called when the activity is first created. */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +167,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(gridColumns, StaggeredGridLayoutManager.VERTICAL);
 
         // Fixme use dp and covert to px
-        mRecyclerView.addItemDecoration(new ItemDecoration(10 /*px*/));
+        mRecyclerView.addItemDecoration(new ItemDecoration(ITEM_DECORATION_SPACE /*px*/));
 
         // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
         // multiple items for an action
