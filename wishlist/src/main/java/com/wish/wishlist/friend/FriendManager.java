@@ -33,7 +33,7 @@ public class FriendManager {
     private FriendManager() {}
 
     final static String TAG = "FriendManager";
-    final static String FRIEND_REQUEST = "FriendRequestActivity";
+    final static String FRIEND_REQUEST = "FriendRequest";
 
     /******************* Parse Cloud Functions *************************/
     final static String REMOVE_FRIEND = "removeFriend";
