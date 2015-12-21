@@ -84,6 +84,7 @@ public abstract class WishDetailActivity extends ActivityBase {
             final ImageView completeImage = (ImageView) findViewById(R.id.item_checkmark_complete);
             completeImage.setVisibility(View.VISIBLE);
         }
+
         mDateView.setText(dateTimeStrNew);
 
         // format the price

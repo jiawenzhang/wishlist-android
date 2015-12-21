@@ -1,22 +1,30 @@
 package com.wish.wishlist.wish;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
-import com.squareup.picasso.Picasso;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
+import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItemManager;
 
 import java.io.File;
@@ -36,6 +44,45 @@ import java.util.Locale;
 
 public class MyWishDetailActivity extends WishDetailActivity implements TokenCompleteTextView.TokenListener {
     private static final int EDIT_ITEM = 0;
+    private static final String TAG = "MyWishDetailActivity";
+    private Point mScreenSize = new Point();
+
+    // workaround to avoid Picasso bug: fit().centerCrop() does not work together when image is large
+    // https://github.com/square/picasso/issues/249
+    // Picasso.with(mPhotoView.getContext()).load(new File(fullsize_picture_str)).fit().centerCrop().into(mPhotoView);
+    private class GetBitmapTask extends AsyncTask<String, Void, Bitmap> {//<param, progress, result>
+        @Override
+        protected Bitmap doInBackground(String... arg) {
+            Bitmap bitmap = null;
+            String fullsize_picture_str = mItem.getFullsizePicPath();
+            if (fullsize_picture_str != null) {
+                File f = new File(fullsize_picture_str);
+                if (f.exists()) {
+                    // First decode with inJustDecodeBounds=true to check dimensions
+                    final BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(fullsize_picture_str, options);
+                    final float ratio = (float) options.outHeight / (float) options.outWidth;
+
+                    int width = mScreenSize.x;
+                    int height = (int) (width * ratio);
+
+                    bitmap = ImageManager.getInstance().decodeSampledBitmapFromFile(fullsize_picture_str, width, height, false);
+                }
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (bitmap == null) {
+                mPhotoView.setVisibility(View.GONE);
+            } else {
+                mPhotoView.setVisibility(View.VISIBLE);
+                mPhotoView.setImageBitmap(bitmap);
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +112,8 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             mItem.save();
         }
 
+        Display display = ((WindowManager) mPhotoView.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        display.getSize(mScreenSize);
         showItemInfo();
 
         if (savedInstanceState == null) {
@@ -90,13 +139,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     @Override
     protected void showPhoto() {
         String fullsize_picture_str = mItem.getFullsizePicPath();
-        if (fullsize_picture_str != null) {
-            Picasso.with(this).load(new File(fullsize_picture_str)).fit().centerCrop().into(mPhotoView);
-            mPhotoView.setVisibility(View.VISIBLE);
-        } else {
-            // user added this item without taking a pic
-            mPhotoView.setVisibility(View.GONE);
-        }
+        new GetBitmapTask().execute(fullsize_picture_str);
     }
 
     void addTags() {
