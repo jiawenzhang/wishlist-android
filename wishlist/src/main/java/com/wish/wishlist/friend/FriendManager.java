@@ -11,6 +11,8 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.FriendListChangeEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -178,10 +180,10 @@ public class FriendManager {
         ParseCloud.callFunctionInBackground(SET_FRIEND_REQUEST_STATUS, params, new FunctionCallback<Map<String, Object>>() {
             public void done(Map<String, Object> mapObject, ParseException e) {
                 if (e == null) {
-                    Log.d(TAG, "Save FriendRequestActivity success");
+                    Log.d(TAG, "Save FriendRequest success");
                     onSetFriendRequestStatusResult(from, to, status, true);
                 } else {
-                    Log.e(TAG, "Save FriendRequestActivity failed " + e.toString());
+                    Log.e(TAG, "Save FriendRequest Activity failed " + e.toString());
                     onSetFriendRequestStatusResult(from, to, status, false);
                 }
             }
@@ -251,17 +253,18 @@ public class FriendManager {
                         if (e == null) {
                             Log.d(TAG, "Found parse user");
                             FriendListCache.getInstance().addFriend(users.get(0));
+                            EventBus.getInstance().post(new FriendListChangeEvent());
                         } else {
                             Log.e(TAG, e.toString());
                         }
                     }
                 });
-                // FriendRequestActivity will be removed from cache in FriendRequestAdapter remove(friendId)
+                // FriendRequest will be removed from cache in FriendRequestAdapter remove(friendId)
                 onAcceptFriendResult(from, success);
                 break;
 
             case REJECTED:
-                // FriendRequestActivity will be removed from cache in FriendRequestAdapter remove(friendId)
+                // FriendRequest will be removed from cache in FriendRequestAdapter remove(friendId)
                 onRejectFriendResult(from, success);
                 break;
         }
@@ -469,6 +472,15 @@ public class FriendManager {
                 }
             }
         });
+    }
+
+    public void fetchFriendsFromCache() {
+        if (FriendListCache.getInstance().valid()) {
+            Log.d(TAG, "Got friends from cache");
+            onGotAllFriends(FriendListCache.getInstance().friends());
+        } else {
+            Log.e(TAG, "Fail to fetch friends, cache invalid");
+        }
     }
 
     public void fetchFriends() {

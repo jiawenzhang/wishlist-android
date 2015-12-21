@@ -8,7 +8,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
+import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.FriendListChangeEvent;
 import com.wish.wishlist.wish.FriendsWishActivity;
 
 import java.util.List;
@@ -27,6 +30,20 @@ public class FriendsActivity extends FriendsBaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // listen for FriendListChangeEvent
+        EventBus.getInstance().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void friendListChangeEvent(FriendListChangeEvent event) {
+        FriendManager.getInstance().fetchFriendsFromCache();
     }
 
     @Override
