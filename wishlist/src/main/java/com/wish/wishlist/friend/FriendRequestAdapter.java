@@ -118,6 +118,8 @@ public class FriendRequestAdapter extends UserAdapter {
                     onAcceptFriend(meta.objectId);
                 }
             });
+            holder_.button1.setVisibility(View.VISIBLE);
+            holder_.button1.setEnabled(true);
 
             holder_.button2.setText("Reject");
             holder_.button2.setOnClickListener(new OnClickListener() {
@@ -127,6 +129,7 @@ public class FriendRequestAdapter extends UserAdapter {
                     onRejectFriend(meta.objectId);
                 }
             });
+            holder_.button2.setEnabled(true);
         }
     }
 }

@@ -5,6 +5,7 @@ package com.wish.wishlist.friend;
  */
 public class FriendRequestMeta extends UserAdapter.UserMeta {
     public Boolean fromMe;
+    public long updatedTime;
 
     public FriendRequestMeta() {}
 
@@ -12,8 +13,10 @@ public class FriendRequestMeta extends UserAdapter.UserMeta {
                              final String name,
                              final String username,
                              final String imageUrl,
-                             boolean fromMe) {
+                             boolean fromMe,
+                             final long updatedTime) {
         super(objectId, name, username, imageUrl);
         this.fromMe = fromMe;
+        this.updatedTime = updatedTime;
     }
 }

@@ -13,10 +13,13 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.FriendListChangeEvent;
+import com.wish.wishlist.model.FriendRequestTimeComparator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -233,6 +236,7 @@ public class FriendManager {
                                 }
                                 meta.imageUrl = imgUrl;
                                 meta.fromMe = true;
+                                meta.updatedTime = System.currentTimeMillis();
                                 FriendRequestCache.getInstance().addFriendRequest(meta);
                             } else {
                                 Log.e(TAG, e.toString());
@@ -317,17 +321,17 @@ public class FriendManager {
                 if (e == null) {
                     if (friendRequestList.isEmpty()) {
                         Log.d(TAG, "No friend request");
-                        FriendRequestCache.getInstance().setFriendRequestList(new ArrayList<FriendRequestMeta>());
+                        FriendRequestCache.getInstance().setFriendRequestList(new LinkedList<FriendRequestMeta>());
                         onGotFriendRequest();
                         return;
                     }
-                    Log.d(TAG, "Got " + friendRequestList.size() + " FriendRequestActivity");
+                    Log.d(TAG, "Got " + friendRequestList.size() + " FriendRequest");
 
-                    // a friendId can be linked to two FriendRequestActivity, one to the friend and one from the friend.
-                    final HashMap<String /*friendId*/, HashSet<Boolean>> friendRequestMeta = new HashMap<>();
-                    String friendId;
+                    // a friendId can be linked to two FriendRequest, one to the friend and one from the friend.
+                    final HashMap<String /*friendId*/, HashMap<Boolean/*fromMe*/, Long/*request time*/>> friendRequestMeta = new HashMap<>();
                     for (final ParseObject friendRequest : friendRequestList) {
                         final boolean fromMe;
+                        final String friendId;
                         if (friendRequest.getString("from").equals(ParseUser.getCurrentUser().getObjectId())) {
                             // request from me
                             friendId = friendRequest.getString("to");
@@ -338,9 +342,9 @@ public class FriendManager {
                             fromMe = false;
                         }
                         if (friendRequestMeta.get(friendId) == null) {
-                            friendRequestMeta.put(friendId, new HashSet<Boolean>() {{ add(fromMe); }} );
+                            friendRequestMeta.put(friendId, new HashMap<Boolean, Long>() {{ put(fromMe, friendRequest.getUpdatedAt().getTime()); }} );
                         } else {
-                            friendRequestMeta.get(friendId).add(fromMe);
+                            friendRequestMeta.get(friendId).put(fromMe, friendRequest.getUpdatedAt().getTime());
                         }
                     }
 
@@ -349,9 +353,9 @@ public class FriendManager {
                     query.findInBackground(new FindCallback<ParseUser>() {
                         public void done(List<ParseUser> users, com.parse.ParseException e) {
                             if (e == null) {
-                                List<FriendRequestMeta> metaList = new ArrayList<>();
+                                LinkedList<FriendRequestMeta> metaList = new LinkedList<>();
                                 for (final ParseUser user : users) {
-                                    for (boolean fromMe: friendRequestMeta.get(user.getObjectId())) {
+                                    for (Map.Entry<Boolean, Long> entry : friendRequestMeta.get(user.getObjectId()).entrySet()) {
                                         FriendRequestMeta meta = new FriendRequestMeta();
                                         meta.objectId = user.getObjectId();
                                         meta.name = user.getString("name");
@@ -362,10 +366,13 @@ public class FriendManager {
                                             imgUrl = parseImage.getUrl();
                                         }
                                         meta.imageUrl = imgUrl;
-                                        meta.fromMe = fromMe;
+                                        meta.fromMe = entry.getKey();
+                                        meta.updatedTime = entry.getValue();
                                         metaList.add(meta);
                                     }
                                 }
+
+                                Collections.sort(metaList, new FriendRequestTimeComparator());
                                 FriendRequestCache.getInstance().setFriendRequestList(metaList);
                                 onGotFriendRequest();
                             } else {

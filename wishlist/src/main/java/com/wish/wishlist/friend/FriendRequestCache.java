@@ -3,6 +3,7 @@ package com.wish.wishlist.friend;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -11,7 +12,7 @@ import java.util.ListIterator;
  */
 public class FriendRequestCache extends FriendListCache {
     static final String TAG = "FiendRequestCache";
-    private List<FriendRequestMeta> mFriendRequestList = null;
+    private LinkedList<FriendRequestMeta> mFriendRequestList = null;
 
     private static FriendRequestCache ourInstance = new FriendRequestCache();
 
@@ -23,21 +24,21 @@ public class FriendRequestCache extends FriendListCache {
 
     public void addFriendRequest(final FriendRequestMeta request) {
         if (mFriendRequestList == null) {
-            mFriendRequestList = new ArrayList<>();
+            mFriendRequestList = new LinkedList<>();
             mFriendRequestList.add(request);
-            Log.d(TAG, "FriendRequestActivity added");
+            Log.d(TAG, "FriendRequest added");
             return;
         }
 
         // Fixme: iterate the whole list is not efficient
         for (final FriendRequestMeta meta : mFriendRequestList) {
             if (meta.objectId.equals(request.objectId) && meta.fromMe == request.fromMe) {
-                Log.d(TAG, "FriendRequestActivity already exists, ignore");
+                Log.d(TAG, "FriendRequest already exists, ignore");
                 return;
             }
         }
-        mFriendRequestList.add(request);
-        Log.d(TAG, "FriendRequestActivity added");
+        mFriendRequestList.addFirst(request);
+        Log.d(TAG, "FriendRequest added");
     }
 
     public void removeFriendRequest(final String friendId) {
@@ -65,7 +66,7 @@ public class FriendRequestCache extends FriendListCache {
         return mFriendRequestList;
     }
 
-    public void setFriendRequestList(final List<FriendRequestMeta> friendRequestList) {
+    public void setFriendRequestList(final LinkedList<FriendRequestMeta> friendRequestList) {
         mFriendRequestList = friendRequestList;
     }
 
