@@ -67,7 +67,7 @@ public class FriendsWishActivity extends WishBaseActivity implements
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.e(TAG, "refresh");
+                Log.d(TAG, "refresh");
                 mSwipeRefreshLayout.setRefreshing(true);
                 WishLoader.getInstance().fetchWishes(mFriendId);
                 // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation

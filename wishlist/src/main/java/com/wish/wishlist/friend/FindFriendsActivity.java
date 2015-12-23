@@ -34,6 +34,7 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         disableDrawer();
+        mSwipeRefreshLayout.setEnabled(false);
 
         handleIntent(getIntent());
     }

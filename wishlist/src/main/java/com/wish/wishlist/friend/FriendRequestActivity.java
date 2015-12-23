@@ -31,12 +31,19 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
         }
     }
 
+    @Override
+    protected void refreshFromNetwork() {
+        FriendManager.getInstance().fetchFriendRequestFromNetwork();
+    }
+
     public void onGotFriendRequest() {
         Log.d(TAG, "onGotFriendRequest");
         mFriendRequestAdapter = new FriendRequestAdapter();
         mFriendRequestAdapter.setAcceptFriendListener(this);
         mFriendRequestAdapter.setRejectFriendListener(this);
         mRecyclerView.swapAdapter(mFriendRequestAdapter, true);
+
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

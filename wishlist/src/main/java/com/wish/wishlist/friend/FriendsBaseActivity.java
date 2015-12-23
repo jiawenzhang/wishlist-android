@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,6 +27,9 @@ public class FriendsBaseActivity extends DrawerActivity {
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected ProgressDialog mProgressDialog = null;
+    protected SwipeRefreshLayout mSwipeRefreshLayout;
+
+    final static int ITEM_DECORATION_SPACE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,42 @@ public class FriendsBaseActivity extends DrawerActivity {
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        // only enable swipe down refresh when the first item in recycler view is visible
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                mSwipeRefreshLayout.setEnabled(topRowVerticalPosition() >= 0);
+            }
+        });
+
+        // the refresh listener. this would be called when the layout is pulled down
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!isNetworkAvailable()) {
+                    Toast.makeText(FriendsBaseActivity.this, "Check network", Toast.LENGTH_LONG).show();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    return;
+                }
+                mSwipeRefreshLayout.setRefreshing(true);
+                Log.d(TAG, "refresh");
+                refreshFromNetwork();
+                // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation
+            }
+        });
+
         loadView();
+    }
+
+    protected void refreshFromNetwork() {}
+
+    private int topRowVerticalPosition() {
+        if (mRecyclerView == null || mRecyclerView.getChildCount() == 0) {
+            return 0;
+        }
+        return mRecyclerView.getChildAt(0).getTop() - ITEM_DECORATION_SPACE;
     }
 
     protected void setContentView() {

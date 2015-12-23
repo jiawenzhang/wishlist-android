@@ -294,14 +294,17 @@ public class FriendManager {
         });
     }
 
-    public void fetchFriendRequest()
-    {
+    public void fetchFriendRequest() {
         // fetch form cache first, then from network
         if (FriendRequestCache.getInstance().valid()) {
             Log.d(TAG, "Got cached FriendRequestActivity");
             onGotFriendRequest();
         }
 
+        fetchFriendRequestFromNetwork();
+    }
+
+    public void fetchFriendRequestFromNetwork() {
         ParseQuery<ParseObject> queryFromMe = ParseQuery.getQuery(FRIEND_REQUEST);
         queryFromMe.whereEqualTo("from", ParseUser.getCurrentUser().getObjectId());
         queryFromMe.whereEqualTo("status", REQUESTED);
@@ -487,6 +490,13 @@ public class FriendManager {
                     if (e.getCode() == com.parse.ParseException.CACHE_MISS) {
                         // we don't have cache yet, pass an empty list
                         gotFriendRequestResults(new ArrayList<ParseObject>(), cachePolicy);
+                    } else {
+                        // fail to get results (network not available), just return the cached friends
+                        if (FriendListCache.getInstance().valid()) {
+                            onGotAllFriends(FriendListCache.getInstance().friends());
+                        } else {
+                            onGotAllFriends(new ArrayList<ParseUser>());
+                        }
                     }
                 }
             }
@@ -500,6 +510,10 @@ public class FriendManager {
         } else {
             Log.e(TAG, "Fail to fetch friends, cache invalid");
         }
+    }
+
+    public void fetchFriendsFromNetwork() {
+        fetchFriends(ParseQuery.CachePolicy.NETWORK_ONLY);
     }
 
     public void fetchFriends() {

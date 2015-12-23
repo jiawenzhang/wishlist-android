@@ -14,6 +14,7 @@ import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.FriendListChangeEvent;
 import com.wish.wishlist.wish.FriendsWishActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FriendsActivity extends FriendsBaseActivity implements
@@ -62,12 +63,23 @@ public class FriendsActivity extends FriendsBaseActivity implements
     }
 
     protected void loadView() {
+        // the friend request button at the top is an element in the adapter, we need to
+        // setup the adapter and the recyclerview here to show it
+        mFriendAdapter = new FriendAdapter(getUserMetaList(new ArrayList<ParseUser>()));
+        mFriendAdapter.setFriendRequestTapListener(this);
+        mRecyclerView.swapAdapter(mFriendAdapter, true);
+
         FriendManager.getInstance().setAllFriendsListener(this);
         FriendManager.getInstance().fetchFriends();
 
         if (!isNetworkAvailable()) {
             Toast.makeText(this, "Check network, friends may be out of date", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    protected void refreshFromNetwork() {
+        FriendManager.getInstance().fetchFriendsFromNetwork();
     }
 
     @Override
@@ -95,12 +107,12 @@ public class FriendsActivity extends FriendsBaseActivity implements
     @Override
     public void onGotAllFriends(final List<ParseUser> friends) {
         Log.d(TAG, "onGotAllFriend " + friends.size());
-
         mFriendAdapter = new FriendAdapter(getUserMetaList(friends));
         mFriendAdapter.setFriendTapListener(this);
         mFriendAdapter.setRemoveFriendListener(this);
         mFriendAdapter.setFriendRequestTapListener(this);
         mRecyclerView.swapAdapter(mFriendAdapter, true);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     public void onFriendTap(final String friendId) {

@@ -156,7 +156,7 @@ public class MyWishActivity extends WishBaseActivity implements
             @Override
             public void onRefresh() {
                 mSwipeRefreshLayout.setRefreshing(true);
-                Log.e(TAG, "refresh");
+                Log.d(TAG, "refresh");
                 SyncAgent.getInstance().sync();
                 // TODO : request data here
                 // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation
