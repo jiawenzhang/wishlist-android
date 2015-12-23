@@ -57,14 +57,14 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
             //MenuItemCompat.collapseActionView(_menuSearch);
             // activity is started from search, get the search query and
             // displayed the searched items
-            final String username = intent.getStringExtra(SearchManager.QUERY);
-            if (username.equals(ParseUser.getCurrentUser().getUsername())) {
+            final String searchQuery = intent.getStringExtra(SearchManager.QUERY);
+            if (searchQuery.equals(ParseUser.getCurrentUser().getUsername())) {
                 Log.e(TAG, "Cannot add self as a friend");
                 return;
             }
             showProgressDialog("Loading...");
             FriendManager.getInstance().setFoundUserListener(this);
-            FriendManager.getInstance().findUser(username);
+            FriendManager.getInstance().findUser(searchQuery);
         } else {
             // activity is not started from search
         }

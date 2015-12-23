@@ -387,12 +387,21 @@ public class FriendManager {
         });
     }
 
-    public void findUser(final String username)
+    public void findUser(final String text)
     {
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        // this is email user name, not display name. email username is unique while display name is not
-        query.whereEqualTo("username", username);
-        query.findInBackground(new FindCallback<ParseUser>() {
+        // text could be username(email) or display name
+        ParseQuery<ParseUser> queryUsername = ParseUser.getQuery();
+        queryUsername.whereStartsWith("username", text);
+
+        ParseQuery<ParseUser> queryName = ParseUser.getQuery();
+        queryName.whereStartsWith("name", text);
+
+        List<ParseQuery<ParseUser>> queries = new ArrayList<>();
+        queries.add(queryUsername);
+        queries.add(queryName);
+
+        ParseQuery<ParseUser> mainQuery = ParseQuery.or(queries);
+        mainQuery.findInBackground(new FindCallback<ParseUser>() {
             public void done(List<ParseUser> users, com.parse.ParseException e) {
                 if (e == null) {
                     onFoundUser(users, true);
