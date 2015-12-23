@@ -18,6 +18,8 @@ import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -28,12 +30,19 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public String username;
         public String imageUrl;
 
-        public UserMeta() {};
+        public UserMeta() {}
         public UserMeta(final String objectId, final String name, final String username, final String imageUrl) {
             this.objectId = objectId;
             this.name = name;
             this.username = username;
             this.imageUrl = imageUrl;
+        }
+    }
+
+    public class UserMetaNameComparator implements Comparator<UserMeta> {
+        @Override
+        public int compare(UserMeta o1, UserMeta o2) {
+            return o1.name.compareTo(o2.name);
         }
     }
 
@@ -63,6 +72,7 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public UserAdapter() {}
     public UserAdapter(List<UserMeta> userData) {
         mUserMetaList = userData;
+        Collections.sort(mUserMetaList, new UserMetaNameComparator());
     }
 
     public void remove(final String userId) {
