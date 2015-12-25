@@ -277,6 +277,7 @@ public class FriendsWishActivity extends WishBaseActivity implements
             removeDialog(DIALOG_FILTER);
             mStatus.save();
             mWhere.clear();
+            updateFilterViewForStatus();
             reloadItems();
         } else {
             //we are already showing all the wishes, tapping back button should close the list view
