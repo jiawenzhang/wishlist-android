@@ -1,5 +1,4 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/shape_rectangle_checked" android:state_checked= "true" />
-    <item android:drawable="@drawable/shape_rectangle" />
-    <!-- This is used when the Navigation Item is checked -->
+    <item android:drawable="@drawable/shape_rectangle_pressed" android:state_pressed= "true" />
+    <!-- This is used when the Navigation Item is pressed -->
 </selector>
