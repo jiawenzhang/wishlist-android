@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,10 +14,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.ViewFlipper;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
@@ -482,14 +484,19 @@ public abstract class WishBaseActivity extends DrawerActivity implements
             mFilters.put(filterType.status, tag);
         }
 
-        showHideFilterView();
+        updateFilterViewMargin();
     }
 
-    protected void showHideFilterView() {
+    protected void updateFilterViewMargin() {
+        // workaround to avoid hide and show mFilterView sometimes does not make the tag to show up
+        RelativeLayout.LayoutParams relativeParams = (RelativeLayout.LayoutParams) mFilterView.getLayoutParams();
         if (mFilterView.getTags().isEmpty()) {
-            mFilterView.setVisibility(View.GONE);
+            relativeParams.topMargin = 0;
         } else {
-            mFilterView.setVisibility(View.VISIBLE);
+            Resources r = getResources();
+            float topMarginPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10/*dp*/, r.getDisplayMetrics());
+            relativeParams.topMargin = (int) topMarginPx;
         }
+        mFilterView.setLayoutParams(relativeParams);
     }
 }

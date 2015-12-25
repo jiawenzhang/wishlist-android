@@ -688,6 +688,6 @@ public class MyWishActivity extends WishBaseActivity implements
             mFilterView.addTag(tag);
             mFilters.put(type, tag);
         }
-        showHideFilterView();
+        updateFilterViewMargin();
     }
 }
