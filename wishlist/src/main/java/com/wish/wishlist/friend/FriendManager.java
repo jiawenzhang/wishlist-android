@@ -45,9 +45,9 @@ public class FriendManager {
     final static String SET_FRIEND_REQUEST_STATUS = "setFriendRequestStatus";
 
     /******************* FriendRequestActivity status *************************/
-    final static int REQUESTED = 0;
-    final static int ACCEPTED = 1;
-    final static int REJECTED = 2;
+    public final static int REQUESTED = 0;
+    public final static int ACCEPTED = 1;
+    public final static int REJECTED = 2;
 
 
     /******************* FoundUserListener  *************************/
