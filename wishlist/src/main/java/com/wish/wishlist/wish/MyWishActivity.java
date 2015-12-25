@@ -22,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 
@@ -39,6 +40,7 @@ import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.social.ShareHelper;
 import com.wish.wishlist.tag.AddTagActivity;
 import com.wish.wishlist.tag.FindTagActivity;
+import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.image.CameraManager;
 import com.wish.wishlist.sync.SyncAgent;
@@ -155,6 +157,11 @@ public class MyWishActivity extends WishBaseActivity implements
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+                    Toast.makeText(MyWishActivity.this, "Check network", Toast.LENGTH_LONG).show();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    return;
+                }
                 mSwipeRefreshLayout.setRefreshing(true);
                 Log.d(TAG, "refresh");
                 SyncAgent.getInstance().sync();

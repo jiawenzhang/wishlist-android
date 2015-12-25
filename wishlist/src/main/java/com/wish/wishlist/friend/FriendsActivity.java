@@ -12,6 +12,7 @@ import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.FriendListChangeEvent;
+import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.wish.FriendsWishActivity;
 
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
         FriendManager.getInstance().setAllFriendsListener(this);
         FriendManager.getInstance().fetchFriends();
 
-        if (!isNetworkAvailable()) {
+        if (!NetworkHelper.getInstance().isNetworkAvailable()) {
             Toast.makeText(this, "Check network, friends may be out of date", Toast.LENGTH_LONG).show();
         }
     }

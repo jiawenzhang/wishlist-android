@@ -16,6 +16,7 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.DrawerActivity;
+import com.wish.wishlist.util.NetworkHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class FriendsBaseActivity extends DrawerActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (!isNetworkAvailable()) {
+                if (!NetworkHelper.getInstance().isNetworkAvailable()) {
                     Toast.makeText(FriendsBaseActivity.this, "Check network", Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                     return;
@@ -132,12 +133,5 @@ public class FriendsBaseActivity extends DrawerActivity {
             Toast.makeText(this, "Check network", Toast.LENGTH_LONG).show();
         }
         mProgressDialog.dismiss();
-    }
-
-    protected boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

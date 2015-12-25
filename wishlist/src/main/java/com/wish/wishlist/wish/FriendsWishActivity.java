@@ -18,6 +18,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FriendsActivity;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 
 import java.util.ArrayList;
@@ -68,6 +69,11 @@ public class FriendsWishActivity extends WishBaseActivity implements
             @Override
             public void onRefresh() {
                 Log.d(TAG, "refresh");
+                if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+                    Toast.makeText(FriendsWishActivity.this, "Check network", Toast.LENGTH_LONG).show();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    return;
+                }
                 mSwipeRefreshLayout.setRefreshing(true);
                 WishLoader.getInstance().fetchWishes(mFriendId);
                 // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation

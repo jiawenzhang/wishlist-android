@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.wish.wishlist.util.NetworkHelper;
+
 
 public class FriendRequestActivity extends FriendsBaseActivity implements
         FriendManager.onFriendRequestListener,
@@ -26,7 +28,7 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
         FriendManager.getInstance().setFriendRequestListener(this);
         FriendManager.getInstance().fetchFriendRequest();
 
-        if (!isNetworkAvailable()) {
+        if (!NetworkHelper.getInstance().isNetworkAvailable()) {
             Toast.makeText(this, "Check network, friend request may be out of date", Toast.LENGTH_LONG).show();
         }
     }
