@@ -33,6 +33,7 @@ import com.wish.wishlist.model.ItemPriceComparator;
 import com.wish.wishlist.model.ItemTimeComparator;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.Options;
+import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.widgets.ItemDecoration;
 
 import java.util.ArrayList;
@@ -493,9 +494,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         if (mFilterView.getTags().isEmpty()) {
             relativeParams.topMargin = 0;
         } else {
-            Resources r = getResources();
-            float topMarginPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10/*dp*/, r.getDisplayMetrics());
-            relativeParams.topMargin = (int) topMarginPx;
+            relativeParams.topMargin = dimension.dp2px(10);
         }
         mFilterView.setLayoutParams(relativeParams);
     }

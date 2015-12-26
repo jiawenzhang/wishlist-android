@@ -5,6 +5,7 @@ package com.wish.wishlist.wish;
  */
 
 import android.app.Activity;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -12,11 +13,17 @@ import android.view.ViewGroup;
 
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;
+import com.squareup.picasso.Transformation;
+import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.NoTransformation;
+import com.wish.wishlist.util.RoundedCornersTransformation;
 
 import java.util.List;
 
-public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    protected Transformation mTransform;
 
     /****************** WishTapListener ************************/
     onWishTapListener mWishTapListener;
@@ -116,6 +123,15 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         setWishTapListener(fromActivity);
         setWishLongTapListener(fromActivity);
         setWishSelectedListener(fromActivity);
+
+        if (Build.VERSION.SDK_INT < 21) {
+            // Image in CardView pre-LOLLIPOP (API 21) does not have rounded corner, so we need to transform the image ourselves to have
+            // round corner
+            int radius = (int) WishlistApplication.getAppContext().getResources().getDimension(R.dimen.radius); // radius is in px
+            mTransform = new RoundedCornersTransformation(radius, 0, cornerType());
+        } else {
+            mTransform = new NoTransformation();
+        }
     }
 
     @Override
@@ -161,4 +177,6 @@ public class WishAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mWishList.clear();
         notifyItemRangeRemoved(0, size);
     }
+
+    protected abstract RoundedCornersTransformation.CornerType cornerType();
 }

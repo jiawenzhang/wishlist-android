@@ -5,6 +5,8 @@ package com.wish.wishlist.wish;
  */
 
 import android.app.Activity;
+import android.os.Build;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,7 @@ import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.image.PhotoFileCreater;
+import com.wish.wishlist.util.RoundedCornersTransformation;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -32,6 +35,7 @@ public class WishAdapterList extends WishAdapter {
         public TextView txtAddress;
         public ImageView imgComplete;
         public ImageView imgPhoto;
+        public CardView cardView;
 
         public ViewHolder(View itemView, MultiSelector multiSelector) {
             super(itemView, multiSelector);
@@ -41,6 +45,7 @@ public class WishAdapterList extends WishAdapter {
             txtAddress = (TextView) itemView.findViewById(R.id.txtAddress);
             imgComplete = (ImageView) itemView.findViewById(R.id.checkmark_complete);
             imgPhoto = (ImageView) itemView.findViewById(R.id.imgPhoto);
+            cardView = (CardView) itemView.findViewById(R.id.wish_list_card);
         }
     }
 
@@ -62,13 +67,19 @@ public class WishAdapterList extends WishAdapter {
         // - get element from your data set at this position
         // - replace the contents of the view with that element
         final WishAdapterList.ViewHolder holder = (WishAdapterList.ViewHolder) vh;
+
+        if (Build.VERSION.SDK_INT < 21) {
+            // to make rounded corner work
+            holder.cardView.setPreventCornerOverlap(false);
+        }
+
         final WishItem wish = mWishList.get(position);
 
         final String photo_path = wish.getFullsizePicPath();
         if (photo_path != null) {
             // we are loading my wish
             String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(photo_path);
-            Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).fit().centerCrop().into(holder.imgPhoto);
+            Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
             holder.imgPhoto.setVisibility(View.VISIBLE);
         } else {
             // we are loading friend wish
@@ -76,10 +87,10 @@ public class WishAdapterList extends WishAdapter {
             final String photoParseURL = wish.getPicParseURL();
             if (photoWebURL != null) {
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).fit().centerCrop().into(holder.imgPhoto);
+                Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
             } else if (photoParseURL != null) {
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).fit().centerCrop().into(holder.imgPhoto);
+                Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
             } else {
                 holder.imgPhoto.setVisibility(View.GONE);
             }
@@ -125,5 +136,9 @@ public class WishAdapterList extends WishAdapter {
         } else {
             holder.imgComplete.setVisibility(View.GONE);
         }
+    }
+
+    protected RoundedCornersTransformation.CornerType cornerType() {
+        return RoundedCornersTransformation.CornerType.RIGHT;
     }
 }

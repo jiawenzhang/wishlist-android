@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.os.Build;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Display;
@@ -24,6 +26,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.image.PhotoFileCreater;
+import com.wish.wishlist.util.RoundedCornersTransformation;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -35,6 +38,7 @@ public class WishAdapterGrid extends WishAdapter {
     private static final String TAG = "WishAdapter";
 
     public class ViewHolder extends ItemSwappingHolder {
+        public CardView cardView;
         public TextView txtName;
         public TextView txtPrice;
         public ImageView imgComplete;
@@ -42,6 +46,7 @@ public class WishAdapterGrid extends WishAdapter {
 
         public ViewHolder(View v, MultiSelector multiSelector) {
             super(v, multiSelector);
+            cardView = (CardView) v.findViewById(R.id.wish_grid_card);
             txtName = (TextView) v.findViewById(R.id.txtName);
             txtPrice = (TextView) v.findViewById(R.id.txtPrice);
             imgComplete = (ImageView) v.findViewById(R.id.checkmark_complete);
@@ -57,6 +62,7 @@ public class WishAdapterGrid extends WishAdapter {
         display.getSize(size);
         mScreenWidth = size.x / 2;
         Log.d(TAG, " screen width " + mScreenWidth);
+
     }
 
     // Create new views (invoked by the layout manager)
@@ -74,6 +80,11 @@ public class WishAdapterGrid extends WishAdapter {
         // - replace the contents of the view with that element
         final WishAdapterGrid.ViewHolder holder = (WishAdapterGrid.ViewHolder) vh;
         final WishItem wish = mWishList.get(position);
+
+        if (Build.VERSION.SDK_INT < 21) {
+            // to make rounded corner work
+            holder.cardView.setPreventCornerOverlap(false);
+        }
 
         final String photo_path = wish.getFullsizePicPath();
         if (photo_path != null) {
@@ -96,7 +107,8 @@ public class WishAdapterGrid extends WishAdapter {
 
             String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(photo_path);
             holder.imgPhoto.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(width, height).into(holder.imgPhoto);
+
+            Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(width, height).transform(mTransform).into(holder.imgPhoto);
         } else {
             // we are loading friend wish
 
@@ -104,10 +116,10 @@ public class WishAdapterGrid extends WishAdapter {
             final String photoParseURL = wish.getPicParseURL();
             if (photoWebURL != null) {
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).resize(mScreenWidth, 0).into(holder.imgPhoto);
+                Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
             } else if (photoParseURL != null) {
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).resize(mScreenWidth, 0).into(holder.imgPhoto);
+                Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
             } else {
                 holder.imgPhoto.setVisibility(View.GONE);
             }
@@ -131,5 +143,9 @@ public class WishAdapterGrid extends WishAdapter {
         } else {
             holder.imgComplete.setVisibility(View.GONE);
         }
+    }
+
+    protected RoundedCornersTransformation.CornerType cornerType() {
+        return RoundedCornersTransformation.CornerType.TOP;
     }
 }

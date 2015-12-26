@@ -11,15 +11,16 @@
         android:id="@+id/wish_list_card"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        card_view:cardCornerRadius="0dp"
+        card_view:cardCornerRadius="@dimen/radius"
         android:foreground="?android:attr/selectableItemBackground"
         >
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                      android:gravity="center_vertical"
-                      android:layout_height="match_parent"
-                      android:layout_width="match_parent"
-                      android:orientation="horizontal">
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -56,51 +57,56 @@
                         android:src="@drawable/ic_checkmark"
                         />
 
-                    <TextView android:id="@+id/txtName"
-                              android:text="Item name"
-                              android:textSize="15sp"
-                              android:singleLine="true"
-                              android:ellipsize="end"
-                              android:layout_width="match_parent"
-                              android:layout_height="wrap_content"
-                              android:layout_weight="1"
-                              android:textColor="@color/dark_grey"/>
+                    <TextView
+                        android:id="@+id/txtName"
+                        android:text="Item name"
+                        android:textSize="15sp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/dark_grey"/>
                 </LinearLayout>
 
-                <TextView android:id="@+id/txtPrice"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:text="$99"
-                          android:textSize="13sp"
-                          android:fontFamily="sans-serif-light"
-                          android:singleLine="true"
-                          android:textColor="@color/medium_grey"/>
+                <TextView
+                    android:id="@+id/txtPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="$99"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif-light"
+                    android:singleLine="true"
+                    android:textColor="@color/medium_grey"/>
                 <!--  		android:layout_weight="1"-->
                 <!--  android:scrollbars="vertical" android:fadingEdge="vertical" -->
                 <!--   			 			android:padding="12dp"  -->
 
-                <TextView android:id="@+id/txtStore" android:visibility="visible"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:text="Item store"
-                          android:textSize="13sp"
-                          android:singleLine="true"
-                          android:ellipsize="end"
-                          android:fontFamily="sans-serif-light"
-                          android:textColor="@color/medium_grey"/>
+                <TextView
+                    android:id="@+id/txtStore" android:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Item store"
+                    android:textSize="13sp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="@color/medium_grey"/>
 
-                <TextView android:id="@+id/txtAddress"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:maxLines="2"
-                          android:text="Item address"
-                          android:textSize="13sp"
-                          android:textColor="@color/medium_grey"/>
+                <TextView
+                    android:id="@+id/txtAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:text="Item address"
+                    android:textSize="13sp"
+                    android:textColor="@color/medium_grey"/>
             </LinearLayout>
 
-            <ImageView android:id="@+id/imgPhoto"
-                       android:layout_height="120dp"
-                       android:layout_width="120dp"
+            <ImageView
+                android:id="@+id/imgPhoto"
+                android:layout_height="match_parent"
+                android:layout_width="120dp"
                 />
         </LinearLayout>
     </android.support.v7.widget.CardView>
