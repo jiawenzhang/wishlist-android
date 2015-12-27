@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,7 +13,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -109,7 +107,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected static final int MAKE_A_WISH_VIEW = 1;
     protected static final int NO_MATCHING_WISH_VIEW = 2;
 
-    protected static final int ITEM_DECORATION_SPACE = 10; //px;
+    protected int mItemSpace; //px
 
     /** Called when the activity is first created. */
     @Override
@@ -167,10 +165,17 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         } else {
             gridColumns = 3;
         }
+
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(gridColumns, StaggeredGridLayoutManager.VERTICAL);
 
-        // Fixme use dp and covert to px
-        mRecyclerView.addItemDecoration(new ItemDecoration(ITEM_DECORATION_SPACE /*px*/));
+        mItemSpace = (int) WishlistApplication.getAppContext().getResources().getDimension(R.dimen.item_decoration_space); // in px
+        if (mItemSpace % 2 != 0) {
+            // odd number, make it even
+            // ItemDecoration will use half mItemSpace for item rect margin
+            mItemSpace--;
+        }
+
+        mRecyclerView.addItemDecoration(new ItemDecoration(mItemSpace));
 
         // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
         // multiple items for an action
@@ -452,8 +457,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         }
     }
 
-    protected void removeTag(Tag tag)
-    {
+    protected void removeTag(Tag tag) {
         List<Tag> tags = mFilterView.getTags();
         for (int i=0; i< tags.size(); i++) {
             if (tags.get(i) == tag) {

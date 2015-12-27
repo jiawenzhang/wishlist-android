@@ -44,5 +44,6 @@
     <dimen name="com_parse_ui_xlarge_vertical_spacing">36dp</dimen>
     <dimen name="com_parse_ui_small_horizontal_spacing">8dp</dimen>
 
-    <dimen name="radius">6dp</dimen>
+    <dimen name="radius">4dp</dimen>
+    <dimen name="item_decoration_space">3dp</dimen>
 </resources>

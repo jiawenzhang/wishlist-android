@@ -191,7 +191,7 @@ public class MyWishActivity extends WishBaseActivity implements
         if (mRecyclerView == null || mRecyclerView.getChildCount() == 0) {
             return 0;
         }
-        return mRecyclerView.getChildAt(0).getTop() - ITEM_DECORATION_SPACE;
+        return mRecyclerView.getChildAt(0).getTop() - (mItemSpace / 2);
     }
 
     protected ModalMultiSelectorCallback createActionModeCallback() {
