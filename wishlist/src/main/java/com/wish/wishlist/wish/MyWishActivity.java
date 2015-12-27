@@ -31,9 +31,12 @@ import me.kaede.tagview.Tag;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.db.TagItemDBManager;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.WishlistApplication;
@@ -88,6 +91,9 @@ public class MyWishActivity extends WishBaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // listen for MyWishChangeEvent
+        EventBus.getInstance().register(this);
 
         mFilterView.setOnTagDeleteListener(new OnTagDeleteListener() {
             @Override
@@ -170,6 +176,17 @@ public class MyWishActivity extends WishBaseActivity implements
         });
 
         handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void myWishChangeEvent(MyWishChangeEvent event) {
+        reloadItems();
     }
 
     @Override
@@ -281,11 +298,8 @@ public class MyWishActivity extends WishBaseActivity implements
 
             MenuItem statusItem = mMenu.findItem(R.id.menu_status);
             MenuItemCompat.collapseActionView(statusItem);
-        } else {
-            // activity is not started from search
-            // display all the items
-            reloadItems();
         }
+        reloadItems();
     }
 
     @Override
@@ -440,26 +454,6 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        // When we navigate to another activity and navigate back to the this activity, the wishes could have been changed,
-        // so we need to reload the list.
-
-        // Examples:
-        // 1. tap a wish to open wishitemdetail view -> edit the wish and save it, or delete the wish -> tap back button
-        // 2. add a new wish -> done -> show wishitemdetail -> back
-        // 3. filter by tag -> findtag view -> tap a tag
-        // ...
-
-        // If we search a wish by name, onResume will also be called.
-
-
-        // If we are still in this activity but are changing the list by interacting with a dialog like sort, status, we need to
-        // explicitly reload the list, as in these cases, onResume won't be called.
-        reloadItems();
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putString("newfullsizePhotoPath", mNewfullsizePhotoPath);
         savedInstanceState.putString("fullsizePhotoPath", mFullsizePhotoPath);
@@ -532,6 +526,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
                     if (mTag.val() != null) {
                         mItemIds = TagItemDBManager.instance().ItemIds_by_tag(mTag.val());
+                        reloadItems();
                         updateFilterView(filterType.tag);
                     }
                 }

@@ -26,6 +26,8 @@ import com.wish.wishlist.activity.ActivityBase;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.activity.WebImage;
 import com.wish.wishlist.db.TagItemDBManager;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
@@ -766,6 +768,8 @@ public class EditWishActivity extends ActivityBase
 
         //save the tags of this item
         TagItemDBManager.instance().Update_item_tags(mItem_id, _tags);
+        EventBus.getInstance().post(new MyWishChangeEvent());
+
         SyncAgent.getInstance().sync();
 
         //close this activity

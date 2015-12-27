@@ -24,6 +24,8 @@ import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItemManager;
 
@@ -152,11 +154,13 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
     private void deleteItem() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-        builder.setMessage("Discard the wish?").setCancelable(
+        builder.setMessage("Delete the wish?").setCancelable(
                 false).setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         WishItemManager.getInstance().deleteItemById(mItem.getId());
+                        EventBus.getInstance().post(new MyWishChangeEvent());
+
                         Intent intent = new Intent();
                         intent.putExtra("id", mItem.getId());
                         setResult(Activity.RESULT_OK, intent);

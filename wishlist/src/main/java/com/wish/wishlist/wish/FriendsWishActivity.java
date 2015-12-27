@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.wish.wishlist.R;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.friend.FriendsActivity;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
@@ -212,6 +214,7 @@ public class FriendsWishActivity extends WishBaseActivity implements
             Toast.makeText(this, "Failed, check network", Toast.LENGTH_LONG).show();
         }
         mProgressDialog.dismiss();
+        EventBus.getInstance().post(new MyWishChangeEvent());
     }
 
     @Override
