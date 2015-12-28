@@ -58,6 +58,10 @@ public class SyncAgent {
     // call sync on app start up
     // how does parse trigger sync on the client? push notification?
     public void sync() {
+        if (ParseUser.getCurrentUser() == null) {
+            Log.d(TAG, "user not login, sync is disabled ");
+            return;
+        }
         // sync from parse
 
         // get from parse the items with updated time > last synced time
