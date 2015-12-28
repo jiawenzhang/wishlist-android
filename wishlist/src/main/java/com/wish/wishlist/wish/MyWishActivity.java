@@ -31,6 +31,7 @@ import me.kaede.tagview.Tag;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.parse.ParseUser;
 import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.MapActivity;
@@ -151,29 +152,33 @@ public class MyWishActivity extends WishBaseActivity implements
 
         SyncAgent.getInstance().register(this);
 
-        // only enable swipe down refresh when the first item in recycler view is visible
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                mSwipeRefreshLayout.setEnabled(topRowVerticalPosition() >= 0 && mActionMode == null);
-            }
-        });
-
-        // the refresh listener. this would be called when the layout is pulled down
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (!NetworkHelper.getInstance().isNetworkAvailable()) {
-                    Toast.makeText(MyWishActivity.this, "Check network", Toast.LENGTH_LONG).show();
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    return;
+        if (refreshEnabled()) {
+            // only enable swipe down refresh when the first item in recycler view is visible
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    mSwipeRefreshLayout.setEnabled(topRowVerticalPosition() >= 0 && mActionMode == null);
                 }
-                mSwipeRefreshLayout.setRefreshing(true);
-                Log.d(TAG, "refresh");
-                SyncAgent.getInstance().sync();
-                // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation
-            }
-        });
+            });
+
+            // the refresh listener. this would be called when the layout is pulled down
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+                        Toast.makeText(MyWishActivity.this, "Check network", Toast.LENGTH_LONG).show();
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        return;
+                    }
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    Log.d(TAG, "refresh");
+                    SyncAgent.getInstance().sync();
+                    // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation
+                }
+            });
+        } else {
+            mSwipeRefreshLayout.setEnabled(false);
+        }
 
         handleIntent(getIntent());
     }
@@ -217,7 +222,9 @@ public class MyWishActivity extends WishBaseActivity implements
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 super.onCreateActionMode(actionMode, menu);
                 getMenuInflater().inflate(R.menu.menu_my_wish_action, menu);
-                mSwipeRefreshLayout.setEnabled(false);
+                if (refreshEnabled()) {
+                    mSwipeRefreshLayout.setEnabled(false);
+                }
                 return true;
             }
 
@@ -231,7 +238,7 @@ public class MyWishActivity extends WishBaseActivity implements
                 mWishAdapter.notifyDataSetChanged();
                 mMultiSelector.clearSelections();
                 mActionMode = null;
-                if (topRowVerticalPosition() >= 0) {
+                if (topRowVerticalPosition() >= 0 && refreshEnabled()) {
                     mSwipeRefreshLayout.setEnabled(true);
                 }
             }
@@ -684,5 +691,9 @@ public class MyWishActivity extends WishBaseActivity implements
             mFilters.put(type, tag);
         }
         updateFilterViewMargin();
+    }
+
+    private Boolean refreshEnabled() {
+        return ParseUser.getCurrentUser() != null;
     }
 }
