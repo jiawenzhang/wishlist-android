@@ -40,6 +40,7 @@ public class WishAdapterGrid extends WishAdapter {
     public class ViewHolder extends ItemSwappingHolder {
         public CardView cardView;
         public TextView txtName;
+        public TextView txtDescription;
         public TextView txtPrice;
         public ImageView imgComplete;
         public ImageView imgPhoto;
@@ -48,6 +49,7 @@ public class WishAdapterGrid extends WishAdapter {
             super(v, multiSelector);
             cardView = (CardView) v.findViewById(R.id.wish_grid_card);
             txtName = (TextView) v.findViewById(R.id.txtName);
+            txtDescription = (TextView) v.findViewById(R.id.txtDescription);
             txtPrice = (TextView) v.findViewById(R.id.txtPrice);
             imgComplete = (ImageView) v.findViewById(R.id.checkmark_complete);
             imgPhoto = (ImageView) v.findViewById(R.id.imgPhoto);
@@ -126,6 +128,14 @@ public class WishAdapterGrid extends WishAdapter {
         }
 
         holder.txtName.setText(wish.getName());
+
+        if (wish.getDesc().isEmpty()) {
+            holder.txtDescription.setVisibility(View.GONE);
+        } else {
+            holder.txtDescription.setText(wish.getDesc());
+            holder.txtDescription.setVisibility(View.VISIBLE);
+        }
+
         final double price = wish.getPrice();
         //we use float.min_value to indicate price is not available
         if (price != Double.MIN_VALUE) {
