@@ -33,15 +33,6 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginLeft="8dp"
                 android:orientation="vertical">
-                <!--		android:background="@xml/selector"  -->
-                <!-- 		android:background="@color/notepad_paper"> -->
-
-                <!-- 		<TextView android:id="@+id/txtName" android:layout_width="fill_parent" -->
-                <!-- 			android:layout_height="fill_parent" android:padding="10dp" -->
-                <!-- 			android:scrollbars="vertical" android:fadingEdge="vertical" -->
-                <!-- 			android:layout_weight="1" -->
-                <!-- 			android:textSize="10sp" -->
-                <!-- 			android:textColor="@color/notepad_text"/> -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -80,12 +71,9 @@
                     android:fontFamily="sans-serif-light"
                     android:singleLine="true"
                     android:textColor="@color/medium_grey"/>
-                <!--  		android:layout_weight="1"-->
-                <!--  android:scrollbars="vertical" android:fadingEdge="vertical" -->
-                <!--   			 			android:padding="12dp"  -->
-
                 <TextView
-                    android:id="@+id/txtStore" android:visibility="visible"
+                    android:id="@+id/txtStore"
+                    android:visibility="visible"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Item store"
@@ -96,12 +84,13 @@
                     android:textColor="@color/medium_grey"/>
 
                 <TextView
-                    android:id="@+id/txtAddress"
+                    android:id="@+id/txtDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="2"
-                    android:text="Item address"
+                    android:text="Item description"
                     android:textSize="13sp"
+                    android:ellipsize="end"
                     android:textColor="@color/medium_grey"/>
             </LinearLayout>
 

@@ -32,7 +32,7 @@ public class WishAdapterList extends WishAdapter {
         public TextView txtName;
         public TextView txtPrice;
         public TextView txtStore;
-        public TextView txtAddress;
+        public TextView txtDescription;
         public ImageView imgComplete;
         public ImageView imgPhoto;
         public CardView cardView;
@@ -42,7 +42,7 @@ public class WishAdapterList extends WishAdapter {
             txtName = (TextView) itemView.findViewById(R.id.txtName);
             txtPrice = (TextView) itemView.findViewById(R.id.txtPrice);
             txtStore = (TextView) itemView.findViewById(R.id.txtStore);
-            txtAddress = (TextView) itemView.findViewById(R.id.txtAddress);
+            txtDescription = (TextView) itemView.findViewById(R.id.txtDescription);
             imgComplete = (ImageView) itemView.findViewById(R.id.checkmark_complete);
             imgPhoto = (ImageView) itemView.findViewById(R.id.imgPhoto);
             cardView = (CardView) itemView.findViewById(R.id.wish_list_card);
@@ -56,7 +56,7 @@ public class WishAdapterList extends WishAdapter {
     // Create new views (invoked by the layout manager)
     @Override
     public WishAdapterList.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wishitem_single, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wishitem_list, parent, false);
         // set the view's size, margins, padding and layout parameters
         return new ViewHolder(v, mMultiSelector);
     }
@@ -110,24 +110,18 @@ public class WishAdapterList extends WishAdapter {
         }
 
         String storeName = wish.getStoreName();
-        boolean hasStoreName = false;
-        if (!storeName.equals("")) {
-            hasStoreName = true;
+        if (!storeName.isEmpty()) {
             holder.txtStore.setText(storeName);
             holder.txtStore.setVisibility(View.VISIBLE);
         } else {
             holder.txtStore.setVisibility(View.GONE);
         }
 
-        String Address = wish.getAddress();
-        if (!Address.equals("unknown") && !Address.equals("")) {
-            if (!hasStoreName) {
-                Address = "At " + Address;
-            }
-            holder.txtAddress.setText(Address);
-            holder.txtAddress.setVisibility(View.VISIBLE);
+        if (!wish.getDesc().isEmpty()) {
+            holder.txtDescription.setText(wish.getDesc());
+            holder.txtDescription.setVisibility(View.VISIBLE);
         } else {
-            holder.txtAddress.setVisibility(View.GONE);
+            holder.txtDescription.setVisibility(View.GONE);
         }
 
         int complete = wish.getComplete();
