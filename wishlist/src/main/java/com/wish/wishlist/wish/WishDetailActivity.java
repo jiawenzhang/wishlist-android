@@ -79,7 +79,7 @@ public abstract class WishDetailActivity extends ActivityBase {
 
         //used as a note
         String descrptStr = mItem.getDesc();
-        if (!descrptStr.equals("")) {
+        if (!descrptStr.isEmpty()) {
             mDescrpView.setText(descrptStr);
             mDescrpView.setVisibility(View.VISIBLE);
         } else {
@@ -87,7 +87,7 @@ public abstract class WishDetailActivity extends ActivityBase {
         }
 
         String storeName = mItem.getStoreName();
-        if (!storeName.equals("")) {
+        if (!storeName.isEmpty()) {
             mStoreView.setText(storeName);
             mStoreView.setVisibility(View.VISIBLE);
         } else {
@@ -95,7 +95,7 @@ public abstract class WishDetailActivity extends ActivityBase {
         }
 
         String address = mItem.getAddress();
-        if (!address.equals("unknown") && !address.equals("")) {
+        if (!address.equals("unknown") && !address.isEmpty()) {
             mLocationView.setText(address);
             mLocationView.setVisibility(View.VISIBLE);
         } else {
