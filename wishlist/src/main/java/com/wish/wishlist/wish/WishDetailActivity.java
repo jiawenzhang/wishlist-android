@@ -5,9 +5,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,7 +14,6 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.activity.ActivityBase;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
-import com.wish.wishlist.tag.TagsCompletionView;
 import com.wish.wishlist.util.DateTimeFormatter;
 import com.wish.wishlist.social.ShareHelper;
 
@@ -32,7 +29,6 @@ public abstract class WishDetailActivity extends ActivityBase {
     private TextView mStoreView;
     private TextView mLocationView;
     private TextView mLinkView;
-    protected TagsCompletionView mTagsView;
     protected WishItem mItem;
 
     protected abstract boolean myWish();
@@ -51,21 +47,6 @@ public abstract class WishDetailActivity extends ActivityBase {
         mStoreView = (TextView) findViewById(R.id.itemStoreDetail);
         mLocationView = (TextView) findViewById(R.id.itemLocationDetail);
         mLinkView = (TextView) findViewById(R.id.itemLink);
-
-        // tagsView will gain focus automatically when the activity starts, and it will trigger the keyboard to
-        // show up if we don't have the following line.
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        mTagsView = (TagsCompletionView) findViewById(R.id.ItemTagsView);
-        View.OnTouchListener otl = new View.OnTouchListener() {
-            public boolean onTouch (View v, MotionEvent event) {
-                return true;
-                // the listener has consumed the event
-                // this is to prevent touch event on the tagsView such as
-                // keyboard pops up, text select, copy/paste etc.
-            }
-        };
-        mTagsView.setOnTouchListener(otl);
-        mTagsView.setCursorVisible(false);
 
         Intent i = getIntent();
         mItem = i.getParcelableExtra(ITEM);

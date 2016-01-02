@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:id="@+id/itemDetail"
               android:orientation="vertical"
               android:layout_width="match_parent"
@@ -10,7 +11,6 @@
              android:id="@+id/item_detail_toolbar"
         />
 
-    <!--android:visibility = "invisible"-->
     <ScrollView android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fillViewport="true">
@@ -22,7 +22,7 @@
                       android:layout_weight="12">
 
             <!-- framelayout is for tap effect -->
-            -<FrameLayout
+            <FrameLayout
             android:id="@+id/imagePhotoDetailFrame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -104,22 +104,20 @@
                 android:paddingLeft="15dp"
                 android:layout_gravity="left"/>
 
-            <!--android:textColorLink="@color/medium_grey"-->
-
-            <!-- we merely reuse the TagsCompletionView for
-            displaying tags nicely, we do not allow any editing here -->
-            <!-- background = #0000000 remove bottom line -->
-            <com.wish.wishlist.tag.TagsCompletionView
-                android:id="@+id/ItemTagsView"
+            <me.kaede.tagview.TagView
+                android:id="@+id/tag_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:background="#00000000"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="@dimen/text_size_medium" >
-            </com.wish.wishlist.tag.TagsCompletionView>
+                app:lineMargin="5dp"
+                app:tagMargin="3dp"
+                app:textPaddingBottom="3dp"
+                app:textPaddingLeft="10dp"
+                app:textPaddingRight="10dp"
+                app:textPaddingTop="3dp">
+            </me.kaede.tagview.TagView>
 
             <!-- white space at the bottom -->
             <TextView

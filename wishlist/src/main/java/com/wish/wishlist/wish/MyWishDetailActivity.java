@@ -11,6 +11,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Display;
@@ -35,6 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import me.kaede.tagview.Tag;
+import me.kaede.tagview.TagView;
+
 /***
  * MyWishDetailActivity displays the detailed info. of an item.
  * It also handles the left/right swipe gesture form user, which correspond to
@@ -48,6 +52,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     private static final int EDIT_ITEM = 0;
     private static final String TAG = "MyWishDetailActivity";
     private Point mScreenSize = new Point();
+    private TagView mTagView;
 
     // workaround to avoid Picasso bug: fit().centerCrop() does not work together when image is large
     // https://github.com/square/picasso/issues/249
@@ -118,6 +123,8 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         display.getSize(mScreenSize);
         showItemInfo();
 
+        mTagView = (TagView) this.findViewById(R.id.tag_view);
+
         if (savedInstanceState == null) {
             // if screen is oriented, savedInstanceStat != null,
             // and don't add tags again on screen orientation
@@ -146,9 +153,11 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
     void addTags() {
         ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItem.getId());
-        mTagsView.removeAllObject();
-        for (String tag : tags) {
-            mTagsView.addObject(tag);
+        mTagView.removeAllTags();
+        for (String tagTxt : tags) {
+            Tag tag = new Tag(tagTxt);
+            tag.layoutColor = ContextCompat.getColor(this, R.color.wishlist_yellow_color);
+            mTagView.addTag(tag);
         }
     }
 
