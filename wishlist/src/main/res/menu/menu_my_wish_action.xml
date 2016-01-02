@@ -3,7 +3,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_tag"
           android:title="Tag"
-          android:icon="@drawable/ic_action_tag"
+          android:icon="@drawable/ic_action_tag_white"
           app:showAsAction="ifRoom"
         />
     <item android:id="@+id/menu_share"
