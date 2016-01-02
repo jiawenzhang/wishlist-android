@@ -71,7 +71,7 @@
             </LinearLayout>
 
             <TextView style="@style/ItemInfoText"
-                      android:id="@+id/itemDesriptDetail"
+                      android:id="@+id/itemDesription"
                       android:textSize="15sp"
                       android:text="item description"/>
 
@@ -84,15 +84,15 @@
 
             <TextView style="@style/ItemInfoText"
                       android:fontFamily="sans-serif-light"
-                      android:id="@+id/itemPriceDetail"/>
+                      android:id="@+id/itemPrice"/>
 
             <TextView style="@style/ItemInfoText"
-                      android:id="@+id/itemStoreDetail"
+                      android:id="@+id/itemStore"
                       android:fontFamily="sans-serif-light"
                       android:text="item store name"/>
 
             <TextView style="@style/ItemInfoText"
-                      android:id="@+id/itemLocationDetail"
+                      android:id="@+id/itemLocation"
                       android:text="item location"/>
 
             <TextView

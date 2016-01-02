@@ -23,7 +23,7 @@ public abstract class WishDetailActivity extends ActivityBase {
 
     protected ImageView mPhotoView;
     private TextView mNameView;
-    private TextView mDescrpView;
+    private TextView mDescriptionView;
     private TextView mDateView;
     private TextView mPriceView;
     private TextView mStoreView;
@@ -41,11 +41,11 @@ public abstract class WishDetailActivity extends ActivityBase {
 
         mPhotoView = (ImageView) findViewById(R.id.imgPhotoDetail);
         mNameView = (TextView) findViewById(R.id.itemNameDetail);
-        mDescrpView = (TextView) findViewById(R.id.itemDesriptDetail);
+        mDescriptionView = (TextView) findViewById(R.id.itemDesription);
         mDateView = (TextView) findViewById(R.id.itemDateDetail);
-        mPriceView = (TextView) findViewById(R.id.itemPriceDetail);
-        mStoreView = (TextView) findViewById(R.id.itemStoreDetail);
-        mLocationView = (TextView) findViewById(R.id.itemLocationDetail);
+        mPriceView = (TextView) findViewById(R.id.itemPrice);
+        mStoreView = (TextView) findViewById(R.id.itemStore);
+        mLocationView = (TextView) findViewById(R.id.itemLocation);
         mLinkView = (TextView) findViewById(R.id.itemLink);
 
         Intent i = getIntent();
@@ -78,12 +78,12 @@ public abstract class WishDetailActivity extends ActivityBase {
         }
 
         //used as a note
-        String descrptStr = mItem.getDesc();
-        if (!descrptStr.isEmpty()) {
-            mDescrpView.setText(descrptStr);
-            mDescrpView.setVisibility(View.VISIBLE);
+        String description = mItem.getDesc();
+        if (!description.isEmpty()) {
+            mDescriptionView.setText(description);
+            mDescriptionView.setVisibility(View.VISIBLE);
         } else {
-            mDescrpView.setVisibility(View.GONE);
+            mDescriptionView.setVisibility(View.GONE);
         }
 
         String storeName = mItem.getStoreName();
