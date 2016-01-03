@@ -113,6 +113,7 @@ public class SplashActivity extends Activity {
             // User is not logged in
             Intent intent = new Intent(getApplication(), UserLoginActivity.class);
             intent.putExtra(UserLoginActivity.FROM_SPLASH, true);
+            intent.putExtra(UserLoginActivity.ALLOW_SKIP, true);
             startActivity(intent);
         } else {
             startActivity(new Intent(getApplication(), MyWishActivity.class));

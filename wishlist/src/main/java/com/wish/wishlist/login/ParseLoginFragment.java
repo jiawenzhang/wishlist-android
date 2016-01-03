@@ -108,6 +108,10 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
     twitterLoginButton = (Button) v.findViewById(R.id.twitter_login);
     parseLoginSkipButton = (Button) v.findViewById(R.id.parse_login_skip);
 
+    if (!allowSkip()) {
+      parseLoginSkipButton.setVisibility(View.GONE);
+    }
+
     if (allowParseLoginAndSignup()) {
       setUpParseLoginAndSignup();
     }
@@ -443,6 +447,10 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
     } else {
       return true;
     }
+  }
+
+  private boolean allowSkip() {
+    return config.parseLoginAllowSkip();
   }
 
   private void loginSuccess() {

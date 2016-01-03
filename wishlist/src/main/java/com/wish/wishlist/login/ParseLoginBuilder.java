@@ -61,6 +61,19 @@ public class ParseLoginBuilder {
   }
 
   /**
+   * Whether to allow skip login,
+   * Default is false.
+   *
+   * @param allow
+   *     Whether to allow user to skip login
+   * @return The caller instance to allow chaining.
+   */
+  public ParseLoginBuilder setParseLoginAllowSkip(boolean allow) {
+    config.setParseLoginAllowSkip(allow);
+    return this;
+  }
+
+  /**
    * Customize the text of the Parse username/password login button.
    *
    * @param text

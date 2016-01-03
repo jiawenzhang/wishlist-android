@@ -40,6 +40,7 @@ import java.util.Set;
 public class ParseLoginConfig {
   public static final String APP_LOGO = "com.parse.ui.ParseLoginActivity.APP_LOGO";
   public static final String PARSE_LOGIN_ENABLED = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ENABLED";
+  public static final String PARSE_LOGIN_ALLOW_SKIP = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ALLOW_SKIP";
   public static final String PARSE_LOGIN_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_BUTTON_TEXT";
   public static final String PARSE_SIGNUP_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_SIGNUP_BUTTON_TEXT";
   public static final String PARSE_LOGIN_HELP_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_HELP_TEXT";
@@ -63,6 +64,7 @@ public class ParseLoginConfig {
   // with options set by activity metadata.
   private Integer appLogo;
   private Boolean parseLoginEnabled;
+  private Boolean parseLoginAllowSkip;
   private CharSequence parseLoginButtonText;
   private CharSequence parseSignupButtonText;
   private CharSequence parseLoginHelpText;
@@ -96,6 +98,18 @@ public class ParseLoginConfig {
 
   public void setParseLoginEnabled(boolean parseLoginEnabled) {
     this.parseLoginEnabled = parseLoginEnabled;
+  }
+
+  public boolean parseLoginAllowSkip() {
+    if (parseLoginAllowSkip != null) {
+      return parseLoginAllowSkip;
+    } else {
+      return false;
+    }
+  }
+
+  public void setParseLoginAllowSkip(boolean allow) {
+    this.parseLoginAllowSkip = allow;
   }
 
   public CharSequence getParseLoginButtonText() {
@@ -242,6 +256,9 @@ public class ParseLoginConfig {
     if (parseLoginEnabled != null) {
       bundle.putBoolean(PARSE_LOGIN_ENABLED, parseLoginEnabled);
     }
+    if (parseLoginAllowSkip != null) {
+      bundle.putBoolean(PARSE_LOGIN_ALLOW_SKIP, parseLoginAllowSkip);
+    }
     if (parseLoginButtonText != null) {
       bundle.putCharSequence(PARSE_LOGIN_BUTTON_TEXT, parseLoginButtonText);
     }
@@ -313,6 +330,9 @@ public class ParseLoginConfig {
 
     if (keys.contains(PARSE_LOGIN_ENABLED)) {
       config.setParseLoginEnabled(bundle.getBoolean(PARSE_LOGIN_ENABLED));
+    }
+    if (keys.contains(PARSE_LOGIN_ALLOW_SKIP)) {
+      config.setParseLoginAllowSkip(bundle.getBoolean(PARSE_LOGIN_ALLOW_SKIP));
     }
     if (keys.contains(PARSE_LOGIN_BUTTON_TEXT)) {
       config.setParseLoginButtonText(bundle.getCharSequence(PARSE_LOGIN_BUTTON_TEXT));

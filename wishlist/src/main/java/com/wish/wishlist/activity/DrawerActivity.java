@@ -1,5 +1,6 @@
 package com.wish.wishlist.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +28,7 @@ import com.wish.wishlist.util.Options;
 import com.wish.wishlist.wish.MyWishActivity;
 
 import java.io.File;
+import static com.wish.wishlist.R.style.AppCompatAlertDialogStyle;
 
 /***
  * Base activity class for all activities that show navigation drawer
@@ -150,9 +153,9 @@ public abstract class DrawerActivity extends ActivityBase {
             @Override
             public void onClick(View v) {
                 if (ParseUser.getCurrentUser() != null) {
-                    startActivity(new Intent(getApplication(), ProfileActivity.class));
+                    startActivity(new Intent(DrawerActivity.this, ProfileActivity.class));
                 } else {
-                    startActivity(new Intent(getApplication(), UserLoginActivity.class));
+                    startActivity(new Intent(DrawerActivity.this, UserLoginActivity.class));
                 }
             }
         });
@@ -192,8 +195,29 @@ public abstract class DrawerActivity extends ActivityBase {
                         startActivity(prefIntent);
                         return true;
                     case R.id.friends:
-                        final Intent friendsIntent = new Intent(getApplicationContext(), FriendsActivity.class);
-                        startActivity(friendsIntent);
+                        if (ParseUser.getCurrentUser() == null) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(DrawerActivity.this, AppCompatAlertDialogStyle);
+                            String message = "Sign up or login to add friends and see their wishes";
+                            builder.setMessage(message);
+                            builder.setPositiveButton("Sign up/login", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    startActivity(new Intent(DrawerActivity.this, UserLoginActivity.class));
+                                }
+                            });
+                            builder.setNegativeButton("CANCEL",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                            AlertDialog dialog;
+                            dialog = builder.create();
+                            dialog.show();
+                        } else {
+                            final Intent friendsIntent = new Intent(getApplicationContext(), FriendsActivity.class);
+                            startActivity(friendsIntent);
+                        }
                         return true;
                     default:
                         return true;

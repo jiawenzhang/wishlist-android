@@ -22,6 +22,7 @@ import java.util.Arrays;
  */
 public class UserLoginActivity extends Activity {
     public final static String FROM_SPLASH = "FROM_SPLASH";
+    public final static String ALLOW_SKIP = "ALLOW_SKIP";
 
     private final static String TAG = "UserLoginActivity";
     private static final int LOGIN_REQUEST = 0;
@@ -33,10 +34,12 @@ public class UserLoginActivity extends Activity {
 
         Intent intent = getIntent();
         mFromSplash = intent.getBooleanExtra(FROM_SPLASH, false);
+        boolean allowSkip = intent.getBooleanExtra(ALLOW_SKIP, false);
 
         ParseLoginBuilder builder = new ParseLoginBuilder(
                 UserLoginActivity.this);
         Intent parseLoginIntent = builder.setParseLoginEnabled(true)
+                .setParseLoginAllowSkip(allowSkip)
                 .setParseLoginButtonText("Login")
                 .setParseSignupButtonText("Sign up")
                 .setParseLoginHelpText("Forgot password?")
