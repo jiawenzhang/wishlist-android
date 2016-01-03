@@ -166,4 +166,17 @@ public class Options {
             super(KEY, val);
         }
     }
+
+    public static class ShowLoginOnStartup extends Options {
+        public static final String KEY = "showLoginOnStartup";
+        public ShowLoginOnStartup(int val) {
+            super(KEY, val);
+            _defaultVal = 1;
+        }
+
+        public ShowLoginOnStartup() {
+            super(KEY, 1);
+            _defaultVal = 1;
+        }
+    }
 }

@@ -37,6 +37,7 @@ import com.wish.wishlist.fragment.NameFragmentDialog;
 import com.wish.wishlist.job.UploadProfileImageJob;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.Options;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -187,6 +188,10 @@ public class ProfileActivity extends ActivityBase implements
                 return true;
             case R.id.menu_profile_logout:
                 mUser.logOut();
+
+                // show login on next app startup
+                Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup(1);
+                showLoginOption.save();
 
                 // re-launch the app
                 Intent i = getBaseContext().getPackageManager()

@@ -23,12 +23,12 @@ import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.Options;
 import com.wish.wishlist.wish.MyWishActivity;
 
 import java.util.ArrayList;
 
 public class SplashActivity extends Activity {
-    private static final String VERSION_KEY = "version_number";
     private static final String TAG = "SplashActivity";
 
     @Override
@@ -50,7 +50,7 @@ public class SplashActivity extends Activity {
         //show the what's new dialog if necessary
         SharedPreferences sharedPref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         int currentVersionNumber = 0;
-        int savedVersionNumber = sharedPref.getInt(VERSION_KEY, 0);
+        int savedVersionNumber = sharedPref.getInt(getString(R.string.version_number), 0);
         try {
             PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
             currentVersionNumber = pi.versionCode;
@@ -101,7 +101,7 @@ public class SplashActivity extends Activity {
             }
 
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putInt(VERSION_KEY, currentVersionNumber);
+            editor.putInt(getString(R.string.version_number), currentVersionNumber);
             editor.commit();
             //startActivity(new Intent(getApplication(), NewFeatureFragmentActivity.class));
             //startActivity(new Intent(getApplication(), MyWishActivity.class));
@@ -109,8 +109,11 @@ public class SplashActivity extends Activity {
             //startActivity(new Intent(getApplication(), MyWishActivity.class));
         }
 
-        if (ParseUser.getCurrentUser() == null) {
-            // User is not logged in
+        Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup();
+        showLoginOption.read();
+        if (ParseUser.getCurrentUser() == null && showLoginOption.val() == 1) {
+            // User is not logged in and he has not skipped login before
+
             Intent intent = new Intent(getApplication(), UserLoginActivity.class);
             intent.putExtra(UserLoginActivity.FROM_SPLASH, true);
             intent.putExtra(UserLoginActivity.ALLOW_SKIP, true);

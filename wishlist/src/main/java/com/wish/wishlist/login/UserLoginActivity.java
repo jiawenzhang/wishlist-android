@@ -3,15 +3,19 @@ package com.wish.wishlist.login;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.wish.wishlist.R;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.ProfileChangeEvent;
+import com.wish.wishlist.util.Options;
 import com.wish.wishlist.wish.MyWishActivity;
 
 import java.util.Arrays;
@@ -77,6 +81,10 @@ public class UserLoginActivity extends Activity {
     private void onLoginSkip() {
         Log.d(TAG, "login skip");
         if (mFromSplash) {
+            // Don't show login again on next startup
+            Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup(0);
+            showLoginOption.save();
+
             startActivity(new Intent(this, MyWishActivity.class));
         } else {
             // from Settings->ProfileActivity
