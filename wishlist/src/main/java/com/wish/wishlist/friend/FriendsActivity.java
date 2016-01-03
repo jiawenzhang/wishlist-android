@@ -26,6 +26,8 @@ public class FriendsActivity extends FriendsBaseActivity implements
         FriendManager.onRemoveFriendResultListener {
 
     public static final String FRIEND_ID = "FRIEND_ID";
+    public static final String FRIEND_NAME = "FRIEND_NAME";
+    public static final String FRIEND_IMAGE_URL = "FRIEND_IMAGE_URL";
     final static String TAG = "FriendsActivity";
     private FriendAdapter mFriendAdapter;
 
@@ -116,11 +118,13 @@ public class FriendsActivity extends FriendsBaseActivity implements
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
-    public void onFriendTap(final String friendId) {
-        Log.d(TAG, "friend with objectId: " + friendId + " tapped");
+    public void onFriendTap(final UserAdapter.UserMeta friendMeta) {
+        Log.d(TAG, "friend with objectId: " + friendMeta.objectId + " tapped");
         // show the friend's wishes
         final Intent friendsWishIntent = new Intent(this, FriendsWishActivity.class);
-        friendsWishIntent.putExtra(FRIEND_ID, friendId);
+        friendsWishIntent.putExtra(FRIEND_ID, friendMeta.objectId);
+        friendsWishIntent.putExtra(FRIEND_NAME, friendMeta.name);
+        friendsWishIntent.putExtra(FRIEND_IMAGE_URL, friendMeta.imageUrl);
         startActivity(friendsWishIntent);
     }
 

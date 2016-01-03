@@ -21,11 +21,11 @@ public class FriendAdapter extends UserAdapter {
     /******************* FriendTapListener *********************/
     private FriendTapListener mFriendTapListener = null;
     public interface FriendTapListener {
-        void onFriendTap(final String friendId);
+        void onFriendTap(final UserMeta friendMeta);
     }
-    protected void onFriendTap(final String friendId) {
+    protected void onFriendTap(final UserMeta friendMeta) {
         if (mFriendTapListener != null) {
-            mFriendTapListener.onFriendTap(friendId);
+            mFriendTapListener.onFriendTap(friendMeta);
         }
     }
     public void setFriendTapListener(final FriendTapListener listener)
@@ -120,7 +120,7 @@ public class FriendAdapter extends UserAdapter {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "friend clicked");
-                onFriendTap(userMeta.objectId);
+                onFriendTap(userMeta);
             }
         });
 

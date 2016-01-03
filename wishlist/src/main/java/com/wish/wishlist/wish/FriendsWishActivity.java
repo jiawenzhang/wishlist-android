@@ -10,10 +10,12 @@ import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
+import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
@@ -93,6 +95,18 @@ public class FriendsWishActivity extends WishBaseActivity implements
         }
 
         Intent i = getIntent();
+        String friendName = i.getStringExtra(FriendsActivity.FRIEND_NAME);
+        TextView friendNameTextView = (TextView) findViewById(R.id.friend_name);
+        friendNameTextView.setText(friendName);
+
+        String friendImageUrl = i.getStringExtra(FriendsActivity.FRIEND_IMAGE_URL);
+        ImageView friendImageView = (ImageView) findViewById(R.id.profile_image);
+        if (friendImageUrl != null) {
+            Picasso.with(friendImageView.getContext()).load(friendImageUrl).fit().into(friendImageView);
+        } else {
+            friendImageView.setImageResource(R.drawable.default_profile_image);
+        }
+
         mFriendId = i.getStringExtra(FriendsActivity.FRIEND_ID);
         WishLoader.getInstance().setGotWishesListener(this);
         WishLoader.getInstance().fetchWishes(mFriendId);
