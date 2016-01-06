@@ -382,7 +382,7 @@ public class MyWishActivity extends WishBaseActivity implements
             if (changed.contains(item.getId())) {
                 item.setComplete(complete);
                 if (mWishAdapter != null) {
-                    mWishAdapter.notifyItemChanged(i, item);
+                    mWishAdapter.notifyItemChanged(i);
                 }
             }
         }
