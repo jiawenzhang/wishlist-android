@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
+              android:layout_height="match_parent"
               android:background="@color/bodyBackground_light_grey">
 
     <me.kaede.tagview.TagView
@@ -22,7 +22,7 @@
     <ViewFlipper
         android:id="@+id/myFlipper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@+id/filter_view"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -60,22 +60,22 @@
                 />
         </RelativeLayout>
 
-        <RelativeLayout
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            >
+            android:fitsSystemWindows="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <TextView
                 android:id="@+id/noWishText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/grey"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"
                 android:text="No matching wishes"
                 android:textSize="16sp"
-                android:gravity="center"
-                android:layout_centerInParent="true"
                 />
-        </RelativeLayout>
+        </android.support.v4.widget.NestedScrollView>
 
         <!-- default listSelector in android 10 has a left/right margins, while in android >10 has no margins,
              set to null will remove these margins and make it consistent over different android version -->
