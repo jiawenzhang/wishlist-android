@@ -79,7 +79,7 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
             case R.id.share:
                 Log.d(TAG, "share");
                 return true;
-            case R.id.map:
+            case R.id.location:
                 Log.d(TAG, "map");
                 showOnMap();
                 return true;

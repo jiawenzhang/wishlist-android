@@ -13,7 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -226,7 +225,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             case R.id.menu_item_detail_share:
                 shareItem();
                 return true;
-            case R.id.menu_item_detail_map:
+            case R.id.menu_item_detail_location:
                 showOnMap();
                 return true;
             case R.id.menu_item_detail_delete:

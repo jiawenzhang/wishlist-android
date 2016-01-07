@@ -14,7 +14,7 @@
         <item
             android:id="@+id/my_wish"
             android:checked="false"
-            android:icon="@drawable/ic_action_cancel"
+            android:icon="@drawable/ic_action_gift_yellow"
             android:title="My wish" />
         <item
             android:id="@+id/list_view"
