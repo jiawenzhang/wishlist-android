@@ -5,7 +5,9 @@ package com.wish.wishlist.wish;
  */
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.image.PhotoFileCreater;
 import com.wish.wishlist.util.RoundedCornersTransformation;
@@ -58,7 +61,10 @@ public class WishAdapterList extends WishAdapter {
     public WishAdapterList.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wishitem_list, parent, false);
         // set the view's size, margins, padding and layout parameters
-        return new ViewHolder(v, mMultiSelector);
+        ViewHolder vh = new ViewHolder(v, mMultiSelector);
+        final Drawable d = ContextCompat.getDrawable(WishlistApplication.getAppContext(), R.drawable.card_foreground_selector);
+        vh.setSelectionModeBackgroundDrawable(d);
+        return vh;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
