@@ -47,12 +47,12 @@
             <ImageView
                 android:id="@+id/staggered_checkmark_complete"
                 android:layout_weight="0.1"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="@dimen/ic_action_size_small"
+                android:layout_height="@dimen/ic_action_size_small"
                 android:layout_marginTop="8dp"
                 android:layout_marginRight="8dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_checkmark"
+                android:src="@drawable/ic_action_check_yellow"
                 android:visibility="visible"
                 />
         </LinearLayout>

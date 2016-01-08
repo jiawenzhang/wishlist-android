@@ -72,6 +72,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -107,7 +108,9 @@ public class EditWishActivity extends ActivityBase
     private EditText _locationEditText;
     private EditText _linkEditText;
     private CheckBox _completeCheckBox;
+    private ImageView _completeImageView;
     private CheckBox _privateCheckBox;
+    private ImageView _privateImageView;
 
     private ImageButton _mapImageButton;
     private ImageButton _cameraImageButton;
@@ -176,8 +179,36 @@ public class EditWishActivity extends ActivityBase
         _storeEditText = (EditText) findViewById(R.id.store);
         _locationEditText = (EditText) findViewById(R.id.location);
         _linkEditText = (EditText) findViewById(R.id.link);
+
+        _completeImageView = (ImageView) findViewById(R.id.completeImageView);
         _completeCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
+        _completeCheckBox.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            _completeImageView.setVisibility(View.VISIBLE);
+                        } else {
+                            _completeImageView.setVisibility(View.GONE);
+                        }
+                    }
+                }
+        );
+
+        _privateImageView = (ImageView) findViewById(R.id.privateImageView);
         _privateCheckBox = (CheckBox) findViewById(R.id.privateCheckBox);
+        _privateCheckBox.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            _privateImageView.setVisibility(View.VISIBLE);
+                        } else {
+                            _privateImageView.setVisibility(View.GONE);
+                        }
+                    }
+                }
+        );
 
         _cameraImageButton = (ImageButton) findViewById(R.id.imageButton_camera);
 

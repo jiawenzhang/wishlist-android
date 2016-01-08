@@ -185,31 +185,61 @@
                     android:imeOptions="flagNoExtractUi"
                     />
 
-                <CheckBox
-                    android:id="@+id/completeCheckBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="Mark as completed"
-                    android:visibility="gone"
-                    android:textSize="@dimen/text_size_medium"
-                    android:textColor="@color/bodyText_dark_grey"
-                    />
-                <CheckBox
-                    android:id="@+id/privateCheckBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="Private"
-                    android:textSize="@dimen/text_size_medium"
-                    android:textColor="@color/bodyText_dark_grey"
-                    />
-                <!--		android:src="@drawable/icon"/> -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <CheckBox
+                        android:id="@+id/completeCheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="Mark as completed"
+                        android:visibility="gone"
+                        android:textSize="@dimen/text_size_medium"
+                        android:textColor="@color/bodyText_dark_grey"
+                        android:layout_centerVertical="true"/>
+                    <ImageView
+                        android:id="@+id/completeImageView"
+                        android:layout_width="@dimen/ic_action_size_medium"
+                        android:layout_height="@dimen/ic_action_size_medium"
+                        android:layout_marginRight="10dp"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/ic_action_check_yellow"
+                        android:layout_centerVertical="true"
+                        android:visibility="gone"
+                        >
+                    </ImageView>
+                </RelativeLayout>
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <CheckBox
+                        android:id="@+id/privateCheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="Private"
+                        android:textSize="@dimen/text_size_medium"
+                        android:textColor="@color/bodyText_dark_grey"
+                        android:layout_centerVertical="true"
+                        />
+                    <ImageView
+                        android:id="@+id/privateImageView"
+                        android:layout_width="@dimen/ic_action_size_medium"
+                        android:layout_height="@dimen/ic_action_size_medium"
+                        android:layout_marginRight="10dp"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/ic_action_lock_yellow"
+                        android:layout_centerVertical="true"
+                        android:visibility="gone"
+                        >
+                    </ImageView>
+                </RelativeLayout>
             </LinearLayout>
         </ScrollView>
 

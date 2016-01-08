@@ -41,13 +41,13 @@
 
                     <ImageView
                         android:id="@+id/checkmark_complete"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="@dimen/ic_action_size_small"
+                        android:layout_height="@dimen/ic_action_size_small"
                         android:layout_marginTop="1dp"
                         android:layout_marginRight="5dp"
                         android:gravity="left|center_horizontal"
                         android:adjustViewBounds="true"
-                        android:src="@drawable/ic_checkmark"
+                        android:src="@drawable/ic_action_check_yellow"
                         />
 
                     <TextView
