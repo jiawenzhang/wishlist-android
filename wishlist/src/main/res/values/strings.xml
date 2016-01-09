@@ -10,6 +10,7 @@
     <string name="share">Share</string>
     <string name="location">Location</string>
     <string name="help">Help</string>
+    <string name="invitations">Invitations</string>
 
     <string name="description_logo">Logo</string>
     <string name="description_back_logo">logo with back arrow</string>

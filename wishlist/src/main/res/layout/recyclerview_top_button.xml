@@ -37,7 +37,7 @@
             android:layout_alignWithParentIfMissing="true"
             android:layout_toRightOf="@id/profile_image"
             android:layout_toEndOf="@id/profile_image"
-            android:text="Friend request"
+            android:text="@string/invitations"
             android:textSize="18sp"
             />
     </RelativeLayout>

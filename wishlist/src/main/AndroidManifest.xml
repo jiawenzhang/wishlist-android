@@ -279,7 +279,7 @@
         </activity>
         <activity
             android:name=".friend.FriendRequestActivity"
-            android:label="Friend request"
+            android:label="@string/invitations"
             android:launchMode="singleTask"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
