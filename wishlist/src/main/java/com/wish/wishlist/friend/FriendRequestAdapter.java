@@ -106,11 +106,13 @@ public class FriendRequestAdapter extends UserAdapter {
         if (meta.fromMe) {
             Log.d(TAG, "request from me");
             holder_.button1.setVisibility(View.GONE);
-            holder_.button2.setText("Pending");
+            // pending
+            holder_.button2.setImageResource(R.drawable.ic_action_friend_added_grey);
             holder_.button2.setEnabled(false);
         } else {
             Log.d(TAG, "request to me");
-            holder_.button1.setText("Accept");
+            // accept
+            holder_.button1.setImageResource(R.drawable.ic_action_add_friend_grey);
             holder_.button1.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -121,7 +123,8 @@ public class FriendRequestAdapter extends UserAdapter {
             holder_.button1.setVisibility(View.VISIBLE);
             holder_.button1.setEnabled(true);
 
-            holder_.button2.setText("Reject");
+            // reject
+            holder_.button2.setImageResource(R.drawable.ic_action_cancel_grey);
             holder_.button2.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {

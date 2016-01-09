@@ -107,7 +107,8 @@ public class FriendAdapter extends UserAdapter {
         final int adjusted_position = position - 1;
         final UserMeta userMeta = mUserMetaList.get(adjusted_position);
         holder_.button1.setVisibility(View.GONE);
-        holder_.button2.setText("Remove");
+        // remove
+        holder_.button2.setImageResource(R.drawable.ic_action_remove_friend_grey);
         holder_.button2.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

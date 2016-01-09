@@ -2,8 +2,8 @@ package com.wish.wishlist.util;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wish.wishlist.R;
@@ -15,12 +15,12 @@ import com.wish.wishlist.R;
 public class TopButtonViewHolder extends RecyclerView.ViewHolder {
     public TextView txtView;
     public ImageView imgProfile;
-    public LinearLayout rootLayout;
+    public FrameLayout rootLayout;
 
     public TopButtonViewHolder(View v) {
         super(v);
         txtView = (TextView) v.findViewById(R.id.txt_view);
         imgProfile = (ImageView) v.findViewById(R.id.profile_image);
-        rootLayout = (LinearLayout) v.findViewById(R.id.recyclerview_top_button_layout);
+        rootLayout = (FrameLayout) v.findViewById(R.id.recyclerview_top_button_layout);
     }
 }

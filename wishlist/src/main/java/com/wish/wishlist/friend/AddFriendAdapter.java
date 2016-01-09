@@ -3,12 +3,16 @@ package com.wish.wishlist.friend;
 /**
  * Created by jiawen on 15-10-05.
  */
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.wish.wishlist.R;
@@ -73,7 +77,7 @@ public class AddFriendAdapter extends UserAdapter {
             }
             case FRIEND: {
                 // set the view's size, margins, padding and layout parameters
-                Button button1 = (Button) friendView.findViewById(R.id.button1);
+                ImageButton button1 = (ImageButton) friendView.findViewById(R.id.button1);
                 button1.setVisibility(View.GONE);
                 setUserProfileLayoutWidth(200, friendView); // make sure one button is fully shown
                 return new ViewHolder(friendView);
@@ -101,7 +105,8 @@ public class AddFriendAdapter extends UserAdapter {
         final int adjusted_position = position - 1;
         ViewHolder holder_ = (ViewHolder) holder;
         final UserMeta userMeta = mUserMetaList.get(adjusted_position);
-        holder_.button2.setText("Add friend");
+        // add friend
+        holder_.button2.setImageResource(R.drawable.ic_action_add_friend_grey);
         holder_.button2.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,6 +117,14 @@ public class AddFriendAdapter extends UserAdapter {
         });
 
         super.onBindViewHolder(holder, adjusted_position);
+    }
+
+    public static void tintButton(@NonNull ImageButton button) {
+        ColorStateList colours = button.getResources()
+                .getColorStateList(R.color.button_color);
+        Drawable d = DrawableCompat.wrap(button.getDrawable());
+        DrawableCompat.setTintList(d, colours);
+        button.setImageDrawable(d);
     }
 
     @Override

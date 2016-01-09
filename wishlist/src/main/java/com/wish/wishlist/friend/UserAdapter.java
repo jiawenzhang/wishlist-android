@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -54,8 +55,8 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public TextView txtName;
         public TextView txtUsername;
         public ImageView imgProfile;
-        public Button button1;
-        public Button button2;
+        public ImageButton button1;
+        public ImageButton button2;
         public LinearLayout userLayout;
 
         public ViewHolder(View v) {
@@ -63,8 +64,8 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             txtName= (TextView) v.findViewById(R.id.name);
             txtUsername = (TextView) v.findViewById(R.id.username);
             imgProfile = (ImageView) v.findViewById(R.id.profile_image);
-            button1 = (Button) v.findViewById(R.id.button1);
-            button2 = (Button) v.findViewById(R.id.button2);
+            button1 = (ImageButton) v.findViewById(R.id.button1);
+            button2 = (ImageButton) v.findViewById(R.id.button2);
             userLayout = (LinearLayout) v.findViewById(R.id.user_root_layout);
         }
     }
