@@ -1,45 +1,50 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/recyclerview_top_button_layout"
-              android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:layout_height="96dp"
-              android:clickable="true"
-              android:background="?android:attr/selectableItemBackground"
-              android:padding="10dp"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/recyclerview_top_button_layout"
+             android:orientation="horizontal"
+             android:layout_width="match_parent"
+             android:layout_height="96dp"
+             android:clickable="true"
+             android:foreground="?android:attr/selectableItemBackground"
+             android:paddingLeft="10dp"
+             android:paddingRight="10dp"
+             android:paddingTop="10dp"
+             android:layout_marginBottom="10dp"
     >
 
     <RelativeLayout
         android:id="@+id/user_profile_layout"
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
+        android:background="@drawable/bottom_border"
         >
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginRight="6dp"
-            android:src="@drawable/default_profile_image"
-            />
+        <RelativeLayout
+            android:id="@+id/imgUsersContainer"
+            android:layout_width="@dimen/profile_image_size"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_action_users_grey"
+                android:layout_centerInParent="true"
+                />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/txt_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
-            android:paddingTop="25dp"
             android:ellipsize="marquee"
             android:singleLine="true"
-            android:layout_alignParentTop="true"
             android:layout_alignWithParentIfMissing="true"
-            android:layout_toRightOf="@id/profile_image"
-            android:layout_toEndOf="@id/profile_image"
+            android:layout_toEndOf="@id/imgUsersContainer"
+            android:layout_toRightOf="@id/imgUsersContainer"
             android:text="@string/invitations"
             android:textSize="18sp"
-            />
+            android:layout_centerVertical="true"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,4 +53,4 @@
             android:src="@drawable/ic_action_right_arrow_grey"
             />
     </RelativeLayout>
-</LinearLayout>
+</FrameLayout>
