@@ -58,7 +58,7 @@
                     android:text="item name"/>
 
                 <ImageView
-                    android:id="@+id/item_checkmark_complete"
+                    android:id="@+id/imgComplete"
                     android:layout_width="@dimen/ic_action_size_medium"
                     android:layout_height="@dimen/ic_action_size_medium"
                     android:gravity="right|center_horizontal"
@@ -66,6 +66,17 @@
                     android:layout_marginRight="15dp"
                     android:adjustViewBounds="true"
                     android:src="@drawable/ic_action_check_yellow"
+                    android:visibility="gone"
+                    />
+                <ImageView
+                    android:id="@+id/imgPrivate"
+                    android:layout_width="@dimen/ic_action_size_medium"
+                    android:layout_height="@dimen/ic_action_size_medium"
+                    android:gravity="right|center_horizontal"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginRight="15dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/ic_action_lock_yellow"
                     android:visibility="gone"
                     />
             </LinearLayout>

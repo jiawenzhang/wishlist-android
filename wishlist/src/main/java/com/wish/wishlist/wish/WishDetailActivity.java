@@ -62,7 +62,7 @@ public abstract class WishDetailActivity extends ActivityBase {
 
         mNameView.setText(mItem.getName());
         if (mItem.getComplete() == 1) {
-            final ImageView completeImage = (ImageView) findViewById(R.id.item_checkmark_complete);
+            final ImageView completeImage = (ImageView) findViewById(R.id.imgComplete);
             completeImage.setVisibility(View.VISIBLE);
         }
 

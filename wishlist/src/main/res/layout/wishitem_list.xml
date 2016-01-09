@@ -40,7 +40,7 @@
                     android:layout_marginBottom="3dp">
 
                     <ImageView
-                        android:id="@+id/checkmark_complete"
+                        android:id="@+id/imgComplete"
                         android:layout_width="@dimen/ic_action_size_small"
                         android:layout_height="@dimen/ic_action_size_small"
                         android:layout_marginTop="1dp"
@@ -48,6 +48,16 @@
                         android:gravity="left|center_horizontal"
                         android:adjustViewBounds="true"
                         android:src="@drawable/ic_action_check_yellow"
+                        />
+                    <ImageView
+                        android:id="@+id/imgPrivate"
+                        android:layout_width="@dimen/ic_action_size_small"
+                        android:layout_height="@dimen/ic_action_size_small"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginRight="5dp"
+                        android:gravity="left|center_horizontal"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ic_action_lock_yellow"
                         />
 
                     <TextView

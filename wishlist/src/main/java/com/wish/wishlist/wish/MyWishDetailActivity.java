@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
@@ -142,6 +143,14 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
                 }
             }
         });
+    }
+
+    protected void showItemInfo() {
+        super.showItemInfo();
+        if (mItem.getAccess() == mItem.PRIVATE) {
+            final ImageView privateImage = (ImageView) findViewById(R.id.imgPrivate);
+            privateImage.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

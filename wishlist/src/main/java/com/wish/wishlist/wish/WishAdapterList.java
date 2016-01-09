@@ -37,6 +37,7 @@ public class WishAdapterList extends WishAdapter {
         public TextView txtStore;
         public TextView txtDescription;
         public ImageView imgComplete;
+        public ImageView imgPrivate;
         public ImageView imgPhoto;
         public CardView cardView;
 
@@ -46,7 +47,8 @@ public class WishAdapterList extends WishAdapter {
             txtPrice = (TextView) itemView.findViewById(R.id.txtPrice);
             txtStore = (TextView) itemView.findViewById(R.id.txtStore);
             txtDescription = (TextView) itemView.findViewById(R.id.txtDescription);
-            imgComplete = (ImageView) itemView.findViewById(R.id.checkmark_complete);
+            imgComplete = (ImageView) itemView.findViewById(R.id.imgComplete);
+            imgPrivate = (ImageView) itemView.findViewById(R.id.imgPrivate);
             imgPhoto = (ImageView) itemView.findViewById(R.id.imgPhoto);
             cardView = (CardView) itemView.findViewById(R.id.wish_list_card);
         }
@@ -135,6 +137,13 @@ public class WishAdapterList extends WishAdapter {
             holder.imgComplete.setVisibility(View.VISIBLE);
         } else {
             holder.imgComplete.setVisibility(View.GONE);
+        }
+
+        int access = wish.getAccess();
+        if (access == wish.PRIVATE) {
+            holder.imgPrivate.setVisibility(View.VISIBLE);
+        } else {
+            holder.imgPrivate.setVisibility(View.GONE);
         }
     }
 

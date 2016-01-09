@@ -42,31 +42,41 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/imgPhoto"
                 >
-
-            <TextView
-                android:id="@+id/txtName"
-                android:text = "item name"
-                android:layout_weight="0.9"
-                android:textSize="12sp"
-                android:ellipsize="end"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:singleLine="true"
-                android:textColor="@color/dark_grey"/>
-            <ImageView
-                android:id="@+id/checkmark_complete"
-                android:layout_weight="0.1"
-                android:layout_width="@dimen/ic_action_size_small"
-                android:layout_height="@dimen/ic_action_size_small"
-                android:layout_marginTop="6dp"
-                android:layout_marginRight="8dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_action_check_yellow"
-                android:visibility="visible"
-                />
+                <TextView
+                    android:id="@+id/txtName"
+                    android:text = "item name"
+                    android:layout_weight="0.8"
+                    android:textSize="12sp"
+                    android:ellipsize="end"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:singleLine="true"
+                    android:textColor="@color/dark_grey"/>
+                <ImageView
+                    android:id="@+id/imgComplete"
+                    android:layout_weight="0.1"
+                    android:layout_width="@dimen/ic_action_size_small"
+                    android:layout_height="@dimen/ic_action_size_small"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="8dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/ic_action_check_yellow"
+                    android:visibility="visible"
+                    />
+                <ImageView
+                    android:id="@+id/imgPrivate"
+                    android:layout_weight="0.1"
+                    android:layout_width="@dimen/ic_action_size_small"
+                    android:layout_height="@dimen/ic_action_size_small"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="8dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/ic_action_lock_yellow"
+                    android:visibility="visible"
+                    />
             </LinearLayout>
 
             <TextView

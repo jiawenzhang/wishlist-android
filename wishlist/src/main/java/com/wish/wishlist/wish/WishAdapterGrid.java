@@ -45,6 +45,7 @@ public class WishAdapterGrid extends WishAdapter {
         public TextView txtDescription;
         public TextView txtPrice;
         public ImageView imgComplete;
+        public ImageView imgPrivate;
         public ImageView imgPhoto;
 
         public ViewHolder(View v, MultiSelector multiSelector) {
@@ -53,7 +54,8 @@ public class WishAdapterGrid extends WishAdapter {
             txtName = (TextView) v.findViewById(R.id.txtName);
             txtDescription = (TextView) v.findViewById(R.id.txtDescription);
             txtPrice = (TextView) v.findViewById(R.id.txtPrice);
-            imgComplete = (ImageView) v.findViewById(R.id.checkmark_complete);
+            imgComplete = (ImageView) v.findViewById(R.id.imgComplete);
+            imgPrivate = (ImageView) v.findViewById(R.id.imgPrivate);
             imgPhoto = (ImageView) v.findViewById(R.id.imgPhoto);
         }
     }
@@ -157,6 +159,13 @@ public class WishAdapterGrid extends WishAdapter {
             holder.imgComplete.setVisibility(View.VISIBLE);
         } else {
             holder.imgComplete.setVisibility(View.GONE);
+        }
+
+        final int access = wish.getAccess();
+        if (access == wish.PRIVATE) {
+            holder.imgPrivate.setVisibility(View.VISIBLE);
+        } else {
+            holder.imgPrivate.setVisibility(View.GONE);
         }
     }
 
