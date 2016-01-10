@@ -27,34 +27,34 @@
             />
 
         <TextView
-            android:id="@+id/username"
-            android:text="Username"
+            android:id="@+id/name"
+            android:text="Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
-            android:paddingTop="25dp"
+            android:paddingTop="20dp"
             android:ellipsize="marquee"
             android:singleLine="true"
             android:layout_alignParentTop="true"
             android:layout_alignWithParentIfMissing="true"
             android:layout_toRightOf="@id/profile_image"
             android:layout_toEndOf="@id/profile_image"
-            android:textSize="12sp"
+            android:textSize="16sp"
             />
 
         <TextView
-            android:id="@+id/name"
-            android:text="Name"
+            android:id="@+id/username"
+            android:text="Username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:singleLine="true"
             android:layout_toRightOf="@id/profile_image"
-            android:layout_below="@id/username"
+            android:layout_below="@id/name"
             android:layout_alignParentBottom="true"
             android:paddingBottom="10dp"
             android:paddingLeft="10dp"
-            android:textSize="16sp"
+            android:textSize="12sp"
             />
     </RelativeLayout>
 
