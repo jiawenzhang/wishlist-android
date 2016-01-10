@@ -12,29 +12,24 @@
         android:id="@+id/user_profile_layout"
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
+        android:layout_weight="1"
         >
-        <!-- layout_width is dynamically set in code depending on how many buttons are shown
-            one button1:  150dp
-            two buttons: 200dp
 
-            This is to make sure buttons are fully shown and the username and name textview is
-            properly ellipsized
-        -->
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
-        android:layout_width="@dimen/profile_image_size"
-        android:layout_height="@dimen/profile_image_size"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginRight="6dp"
-        android:src="@drawable/default_profile_image"
-        />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="@dimen/profile_image_size"
+            android:layout_height="@dimen/profile_image_size"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/default_profile_image"
+            />
 
         <TextView
             android:id="@+id/username"
-            android:layout_width="wrap_content"
+            android:text="Username"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
             android:paddingTop="25dp"
@@ -44,14 +39,13 @@
             android:layout_alignWithParentIfMissing="true"
             android:layout_toRightOf="@id/profile_image"
             android:layout_toEndOf="@id/profile_image"
-            android:text="Username"
             android:textSize="12sp"
             />
 
         <TextView
             android:id="@+id/name"
             android:text="Name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:singleLine="true"
@@ -64,28 +58,23 @@
             />
     </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        >
-
-        <ImageButton
-            android:id="@+id/button2"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@drawable/ic_action_accept_grey"
-            android:background="?attr/selectableItemBackground"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            />
-        <ImageButton
-            android:id="@+id/button1"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_toLeftOf="@+id/button2"
-            android:src="@drawable/ic_action_cancel_grey"
-            android:background="?attr/selectableItemBackground"
-            android:layout_centerInParent="true"
-            />
-    </RelativeLayout>
+    <ImageButton
+        android:id="@+id/button2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_action_accept_grey"
+        android:background="?attr/selectableItemBackground"
+        android:layout_gravity="center_vertical"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        />
+    <ImageButton
+        android:id="@+id/button1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_action_cancel_grey"
+        android:background="?attr/selectableItemBackground"
+        android:layout_gravity="center_vertical"
+        android:layout_centerInParent="true"
+        />
 </LinearLayout>

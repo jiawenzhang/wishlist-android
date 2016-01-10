@@ -79,7 +79,6 @@ public class AddFriendAdapter extends UserAdapter {
                 // set the view's size, margins, padding and layout parameters
                 ImageButton button1 = (ImageButton) friendView.findViewById(R.id.button1);
                 button1.setVisibility(View.GONE);
-                setUserProfileLayoutWidth(200, friendView); // make sure one button is fully shown
                 return new ViewHolder(friendView);
             }
             default: return new ViewHolder(friendView);

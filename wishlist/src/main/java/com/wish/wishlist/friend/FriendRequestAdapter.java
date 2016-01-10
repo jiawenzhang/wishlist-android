@@ -83,7 +83,6 @@ public class FriendRequestAdapter extends UserAdapter {
                                                      int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user, parent, false);
         // set the view's size, margins, padding and layout parameters
-        setUserProfileLayoutWidth(150, v); // make sure two buttons are fully shown
         return new ViewHolder(v);
     }
 

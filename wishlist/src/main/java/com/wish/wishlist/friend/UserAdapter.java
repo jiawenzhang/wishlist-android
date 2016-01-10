@@ -43,6 +43,9 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class UserMetaNameComparator implements Comparator<UserMeta> {
         @Override
         public int compare(UserMeta o1, UserMeta o2) {
+            if (o1.name == null || o2.name == null) {
+                return 0;
+            }
             return o1.name.compareTo(o2.name);
         }
     }
@@ -92,13 +95,6 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // set the view's size, margins, padding and layout parameters
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user, parent, false);
         return new ViewHolder(v);
-    }
-
-    protected void setUserProfileLayoutWidth(final int width_dp, final View v) {
-        RelativeLayout l = (RelativeLayout) v.findViewById(R.id.user_profile_layout);
-        final float scale = WishlistApplication.getAppContext().getResources().getDisplayMetrics().density;
-        final int width_px = (int) (width_dp * scale + 0.5f);
-        l.getLayoutParams().width = width_px;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
