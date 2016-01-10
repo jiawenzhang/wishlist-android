@@ -34,7 +34,7 @@
         <item
             android:id="@+id/friends"
             android:checked="false"
-            android:icon="@drawable/ic_action_user"
+            android:icon="@drawable/ic_action_users_yellow"
             android:title="Friends" />
         <item
             android:id="@+id/settings"
