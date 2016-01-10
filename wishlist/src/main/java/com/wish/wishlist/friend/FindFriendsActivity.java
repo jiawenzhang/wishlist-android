@@ -68,6 +68,11 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
     }
 
     @Override
+    protected boolean swipeEnabled() {
+        return false;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_find_friends, menu);

@@ -48,12 +48,15 @@ public class FriendsBaseActivity extends DrawerActivity {
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         // only enable swipe down refresh when the first item in recycler view is visible
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                mSwipeRefreshLayout.setEnabled(topRowVerticalPosition() >= 0);
-            }
-        });
+
+        if (swipeEnabled()) {
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    mSwipeRefreshLayout.setEnabled(topRowVerticalPosition() >= 0);
+                }
+            });
+        }
 
         // the refresh listener. this would be called when the layout is pulled down
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -72,6 +75,10 @@ public class FriendsBaseActivity extends DrawerActivity {
         });
 
         loadView();
+    }
+
+    protected boolean swipeEnabled() {
+        return true;
     }
 
     protected void refreshFromNetwork() {}
