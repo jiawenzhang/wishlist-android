@@ -179,4 +179,30 @@ public class Options {
             _defaultVal = 1;
         }
     }
+
+    public static class ShowNewFriendNotification extends Options {
+        public static final String KEY = "showNewFriendNotification";
+        public ShowNewFriendNotification(int val) {
+            super(KEY, val);
+            _defaultVal = 0;
+        }
+
+        public ShowNewFriendNotification() {
+            super(KEY, 0);
+            _defaultVal = 0;
+        }
+    }
+
+    public static class ShowNewFriendRequestNotification extends Options {
+        public static final String KEY = "showNewFriendRequestNotification";
+        public ShowNewFriendRequestNotification(int val) {
+            super(KEY, val);
+            _defaultVal = 0;
+        }
+
+        public ShowNewFriendRequestNotification() {
+            super(KEY, 0);
+            _defaultVal = 0;
+        }
+    }
 }

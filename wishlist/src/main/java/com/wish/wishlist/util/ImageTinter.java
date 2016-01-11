@@ -21,10 +21,10 @@ public class ImageTinter {
     private ImageTinter() {
     }
 
-    Drawable tint(int resId) {
+    public Drawable tint(int resId) {
         Drawable drawable = ContextCompat.getDrawable(WishlistApplication.getAppContext(), resId);
         drawable = DrawableCompat.wrap(drawable);
-        DrawableCompat.setTint(drawable, Color.WHITE);
+        DrawableCompat.setTint(drawable, Color.BLACK);
 
         // SRC_IN replace the original color instead of mixing with it
         DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_IN);

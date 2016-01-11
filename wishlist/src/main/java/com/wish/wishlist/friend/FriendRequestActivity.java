@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.wish.wishlist.util.NetworkHelper;
+import com.wish.wishlist.util.VisibleActivityTracker;
 
 
 public class FriendRequestActivity extends FriendsBaseActivity implements
@@ -21,6 +22,18 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         disableDrawer();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        VisibleActivityTracker.getInstance().activityResumed(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VisibleActivityTracker.getInstance().activityPaused();
     }
 
     @Override

@@ -13,6 +13,8 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.FriendListChangeEvent;
 import com.wish.wishlist.util.NetworkHelper;
+import com.wish.wishlist.util.Options;
+import com.wish.wishlist.util.VisibleActivityTracker;
 import com.wish.wishlist.wish.FriendsWishActivity;
 
 import java.util.ArrayList;
@@ -37,6 +39,30 @@ public class FriendsActivity extends FriendsBaseActivity implements
 
         // listen for FriendListChangeEvent
         EventBus.getInstance().register(this);
+        clearRingIcon();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        VisibleActivityTracker.getInstance().activityResumed(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VisibleActivityTracker.getInstance().activityPaused();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        clearRingIcon();
+    }
+
+    private void clearRingIcon() {
+        hideRingIcon();
+        Options.ShowNewFriendNotification showNotification = new Options.ShowNewFriendNotification(0);
+        showNotification.save();
     }
 
     @Override

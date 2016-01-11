@@ -10,8 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.TopButtonViewHolder;
 
 import java.util.List;
@@ -67,6 +71,7 @@ public class FriendAdapter extends UserAdapter {
 
     public FriendAdapter(List<UserMeta> userData) {
         super(userData);
+        EventBus.getInstance().register(this); //listen to ShowNewFriendRequestNotification
     }
 
     private static final String TAG = "FriendAdapter";
@@ -74,6 +79,8 @@ public class FriendAdapter extends UserAdapter {
     // ViewType
     private static final int TOP_BUTTON = 0;
     private static final int FRIEND = 1;
+
+    ImageView mImgRedDot;
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -90,11 +97,21 @@ public class FriendAdapter extends UserAdapter {
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
 
         if (position == 0) {
-            // top friend request button
+            // top button
+            Options.ShowNewFriendRequestNotification showNotification = new Options.ShowNewFriendRequestNotification();
+            showNotification.read();
+            mImgRedDot = ((TopButtonViewHolder) holder).imgRedDot;
+            if (showNotification.val() == 1) {
+                mImgRedDot.setVisibility(View.VISIBLE);
+            }
+
             ((TopButtonViewHolder) holder).rootLayout.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "New friend tapped");
+                    Log.d(TAG, "TopButton tapped");
+                    Options.ShowNewFriendRequestNotification showNotification = new Options.ShowNewFriendRequestNotification(0);
+                    showNotification.save();
+                    mImgRedDot.setVisibility(View.GONE);
                     onFriendRequestTap();
                 }
             });
@@ -152,5 +169,13 @@ public class FriendAdapter extends UserAdapter {
     public int getItemCount() {
         // + 1 is the for the top friend request button
         return mUserMetaList.size() + 1;
+    }
+
+    @Subscribe
+    public void newFriendRequest(com.wish.wishlist.event.ShowNewFriendRequestNotification event) {
+        Log.d(TAG, "newFriendRequest");
+        if (mImgRedDot != null) {
+            mImgRedDot.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -5,7 +5,12 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.parse.ParsePushBroadcastReceiver;
+import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.friend.FriendManager;
+import com.wish.wishlist.friend.FriendRequestActivity;
+import com.wish.wishlist.friend.FriendsActivity;
+import com.wish.wishlist.util.Options;
+import com.wish.wishlist.util.VisibleActivityTracker;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,9 +48,35 @@ public class PushBroadcastReceiver extends ParsePushBroadcastReceiver {
                 if (status == FriendManager.REQUESTED) {
                     Log.d(TAG, "requested");
                     FriendManager.getInstance().fetchFriendRequestFromNetwork();
+
+                    if (FriendRequestActivity.class.isInstance(VisibleActivityTracker.getInstance().visibleActivity())) {
+                        // if FriendRequestActivity is visible, don't show the notification icon, as user already sees the update
+                        return;
+                    }
+                    EventBus.getInstance().post(new com.wish.wishlist.event.ShowNewFriendRequestNotification());
+                    Options.ShowNewFriendRequestNotification showNewFriendRequest = new Options.ShowNewFriendRequestNotification(1);
+                    showNewFriendRequest.save();
+
+                    if (FriendsActivity.class.isInstance(VisibleActivityTracker.getInstance().visibleActivity())) {
+                        // if FriendsActivity is visible, don't show the notification icon, as user already sees the update
+                        Log.e(TAG, "FriendsActivity visible");
+                        return;
+                    }
+                    EventBus.getInstance().post(new com.wish.wishlist.event.ShowNewFriendNotification());
+                    Options.ShowNewFriendNotification showNewFriends = new Options.ShowNewFriendNotification(1);
+                    showNewFriends.save();
                 } else if (status == FriendManager.ACCEPTED) {
                     Log.d(TAG, "accepted");
                     FriendManager.getInstance().fetchFriendsFromNetwork();
+
+                    if (FriendsActivity.class.isInstance(VisibleActivityTracker.getInstance().visibleActivity()) ||
+                            FriendRequestActivity.class.isInstance(VisibleActivityTracker.getInstance().visibleActivity())) {
+                        // if FriendsActivity or FriendRequestActivity is visible, don't show the notification icon, as user already sees the update
+                        return;
+                    }
+                    EventBus.getInstance().post(new com.wish.wishlist.event.ShowNewFriendNotification());
+                    Options.ShowNewFriendNotification showNewFriends = new Options.ShowNewFriendNotification(1);
+                    showNewFriends.save();
                 } else if (status == FriendManager.REJECTED) {
                     Log.d(TAG, "rejected");
                     FriendManager.getInstance().fetchFriendRequestFromNetwork();

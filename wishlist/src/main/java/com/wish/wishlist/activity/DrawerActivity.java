@@ -57,7 +57,7 @@ public abstract class DrawerActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Otto EventBust cannot delivere events to a base class, workaround is to create
+        // Otto EventBust cannot deliver events to a base class, workaround is to create
         // an Object and let it listen to the events and forward to the base class, see
         // https://github.com/square/otto/issues/26
         mBusEventListener = new Object() {
@@ -65,6 +65,12 @@ public abstract class DrawerActivity extends ActivityBase {
             public void profileChanged(ProfileChangeEvent event) {
                 Log.d(TAG, "profileChanged " + event.type.toString());
                 DrawerActivity.this.profileChanged(event);
+            }
+
+            @Subscribe
+            public void showNewFriendNotification(com.wish.wishlist.event.ShowNewFriendNotification event) {
+                Log.d(TAG, "showNewFriendNotification");
+                DrawerActivity.this.showRingIcon();
             }
         };
 
@@ -77,6 +83,12 @@ public abstract class DrawerActivity extends ActivityBase {
 
         // hide different drawer menu options for different activities
         prepareDrawerList();
+
+        Options.ShowNewFriendNotification showNotification = new Options.ShowNewFriendNotification();
+        showNotification.read();
+        if (showNotification.val() == 1) {
+            showRingIcon();
+        }
     }
 
     @Override
@@ -107,6 +119,16 @@ public abstract class DrawerActivity extends ActivityBase {
             setupUserName();
             setupProfileImage();
         }
+    }
+
+    protected void showRingIcon() {
+        MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.friends);
+        menuItem.getActionView().setVisibility(View.VISIBLE);
+    }
+
+    protected void hideRingIcon() {
+        MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.friends);
+        menuItem.getActionView().setVisibility(View.GONE);
     }
 
     private void setupUserEmail() {

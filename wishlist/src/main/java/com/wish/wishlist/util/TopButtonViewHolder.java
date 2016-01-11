@@ -15,12 +15,14 @@ import com.wish.wishlist.R;
 public class TopButtonViewHolder extends RecyclerView.ViewHolder {
     public TextView txtView;
     public ImageView imgProfile;
+    public ImageView imgRedDot;
     public FrameLayout rootLayout;
 
     public TopButtonViewHolder(View v) {
         super(v);
         txtView = (TextView) v.findViewById(R.id.txt_view);
-        imgProfile = (ImageView) v.findViewById(R.id.profile_image);
+        imgProfile = (ImageView) v.findViewById(R.id.usersIcon);
         rootLayout = (FrameLayout) v.findViewById(R.id.recyclerview_top_button_layout);
+        imgRedDot = (ImageView) v.findViewById(R.id.red_dot);
     }
 }

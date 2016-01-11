@@ -22,14 +22,30 @@
             android:id="@+id/imgUsersContainer"
             android:layout_width="@dimen/profile_image_size"
             android:layout_height="match_parent">
-            <ImageView
-                android:id="@+id/profile_image"
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                >
+            <ImageView
+                android:id="@+id/usersIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_action_users_grey"
                 android:layout_centerInParent="true"
                 />
+            <ImageView
+                android:id="@+id/red_dot"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="top|right"
+                android:adjustViewBounds="true"
+                android:visibility="gone"
+                android:src="@drawable/ic_action_circle_red"
+                />
+            </FrameLayout>
         </RelativeLayout>
 
         <TextView
