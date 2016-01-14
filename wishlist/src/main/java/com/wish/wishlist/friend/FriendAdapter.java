@@ -95,7 +95,6 @@ public class FriendAdapter extends UserAdapter {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-
         if (position == 0) {
             // top button
             Options.ShowNewFriendRequestNotification showNotification = new Options.ShowNewFriendRequestNotification();

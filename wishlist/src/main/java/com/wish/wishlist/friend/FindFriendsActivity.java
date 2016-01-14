@@ -1,11 +1,9 @@
 package com.wish.wishlist.friend;
 
-import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -15,7 +13,6 @@ import android.widget.Toast;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
-import com.wish.wishlist.fragment.InviteFriendFragmentDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +20,7 @@ import java.util.List;
 public class FindFriendsActivity extends FriendsBaseActivity implements
         FriendManager.onFoundUserListener,
         FriendManager.onRequestFriendListener,
-        AddFriendAdapter.AddFriendListener,
-        AddFriendAdapter.InviteFriendTapListener {
+        AddFriendAdapter.AddFriendListener {
 
     final static String TAG = "FindFriendsActivity";
     private MenuItem _menuSearch;
@@ -43,7 +39,6 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
         // show the top invite friend button
         mAddFriendAdapter = new AddFriendAdapter(new ArrayList<UserAdapter.UserMeta>());
         mAddFriendAdapter.setAddFriendListener(this);
-        mAddFriendAdapter.setInviteFriendTapListener(this);
         mRecyclerView.swapAdapter(mAddFriendAdapter, true);
     }
 
@@ -116,7 +111,6 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
         }
         mAddFriendAdapter = new AddFriendAdapter(getUserMetaList(users));
         mAddFriendAdapter.setAddFriendListener(this);
-        mAddFriendAdapter.setInviteFriendTapListener(this);
         mRecyclerView.swapAdapter(mAddFriendAdapter, true);
     }
 
@@ -132,14 +126,5 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
     @Override
     public void onRequestFriendResult(final String friendId, final boolean success) {
         handleResult(friendId, success, "Friend request sent", mAddFriendAdapter);
-    }
-
-    @Override
-    public void onInviteFriendTap() {
-        Log.d(TAG, "onInviteFriendTap");
-        final FragmentManager manager = getFragmentManager();
-
-        DialogFragment dialog = new InviteFriendFragmentDialog();
-        dialog.show(manager, "dialog");
     }
 }

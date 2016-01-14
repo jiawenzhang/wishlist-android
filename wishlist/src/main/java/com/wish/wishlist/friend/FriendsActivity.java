@@ -1,5 +1,6 @@
 package com.wish.wishlist.friend;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.FriendListChangeEvent;
+import com.wish.wishlist.fragment.ListDialogFragment;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.VisibleActivityTracker;
@@ -86,8 +88,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
     }
 
     protected boolean onTapAdd() {
-        final Intent findFriendIntent = new Intent(this, FindFriendsActivity.class);
-        startActivity(findFriendIntent);
+        showListDialog();
         return true;
     }
 
@@ -125,8 +126,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
         }
         int id = item.getItemId();
         if (id == R.id.menu_add_friends) {
-            final Intent findFriendIntent = new Intent(this, FindFriendsActivity.class);
-            startActivity(findFriendIntent);
+            showListDialog();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -168,5 +168,11 @@ public class FriendsActivity extends FriendsBaseActivity implements
     public void onFriendRequestTap() {
         final Intent friendRequestIntent = new Intent(getApplicationContext(), FriendRequestActivity.class);
         startActivity(friendRequestIntent);
+    }
+
+    private void showListDialog() {
+        FragmentManager manager = getFragmentManager();
+        ListDialogFragment dialog = new ListDialogFragment();
+        dialog.show(manager, "dialog");
     }
 }
