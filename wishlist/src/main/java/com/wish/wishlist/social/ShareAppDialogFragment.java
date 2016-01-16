@@ -38,6 +38,7 @@ public class ShareAppDialogFragment extends DialogFragment {
     static final String TAG = "ShareAppDialogFragment";
     static long[] mItemIds;
     static Context mCtx;
+    static final Boolean ENABLE_SHARE_TO_FB = false;
 
     /**
      * Create a new instance of MyDialogFragment, providing "num"
@@ -66,12 +67,14 @@ public class ShareAppDialogFragment extends DialogFragment {
         sendIntent.setType("*/*");
         List<ResolveInfo> _activities = getActivity().getPackageManager().queryIntentActivities(sendIntent, 0);
 
-        // Move facebook to the top of the list
-        for (ResolveInfo info : _activities) {
-            if (info.activityInfo.packageName.contains("facebook")) {
-                int i = _activities.indexOf(info);
-                _activities.add(0, _activities.remove(i));
-                break;
+        if (ENABLE_SHARE_TO_FB) {
+            // Move facebook to the top of the list
+            for (ResolveInfo info : _activities) {
+                if (info.activityInfo.packageName.contains("facebook")) {
+                    int i = _activities.indexOf(info);
+                    _activities.add(0, _activities.remove(i));
+                    break;
+                }
             }
         }
 
@@ -83,7 +86,7 @@ public class ShareAppDialogFragment extends DialogFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // do something here
                 ResolveInfo info = (ResolveInfo) adapter.getItem(position);
-                if (info.activityInfo.packageName.contains("facebook")) {
+                if (info.activityInfo.packageName.contains("facebook") && ENABLE_SHARE_TO_FB) {
                     if (!isNetworkOnline()) {
                         Toast.makeText(mCtx, "Network not available", Toast.LENGTH_LONG).show();
                         return;
