@@ -225,18 +225,19 @@ public class FriendManager {
                             if (e == null) {
                                 Log.d(TAG, "Found parse user");
                                 final ParseUser friend = users.get(0);
-                                FriendRequestMeta meta = new FriendRequestMeta();
-                                meta.objectId = friend.getObjectId();
-                                meta.name = friend.getString("name");
-                                meta.username = friend.getUsername();
                                 String imgUrl = null;
                                 final ParseFile parseImage = friend.getParseFile("profileImage");
                                 if (parseImage != null) {
                                     imgUrl = parseImage.getUrl();
                                 }
-                                meta.imageUrl = imgUrl;
-                                meta.fromMe = true;
-                                meta.updatedTime = System.currentTimeMillis();
+                                FriendRequestMeta meta = new FriendRequestMeta(
+                                        friend.getObjectId(),
+                                        friend.getString("name"),
+                                        friend.getString("email"),
+                                        friend.getUsername(),
+                                        imgUrl,
+                                        true,
+                                        System.currentTimeMillis());
                                 FriendRequestCache.getInstance().addFriendRequest(meta);
                             } else {
                                 Log.e(TAG, e.toString());
@@ -359,18 +360,20 @@ public class FriendManager {
                                 LinkedList<FriendRequestMeta> metaList = new LinkedList<>();
                                 for (final ParseUser user : users) {
                                     for (Map.Entry<Boolean, Long> entry : friendRequestMeta.get(user.getObjectId()).entrySet()) {
-                                        FriendRequestMeta meta = new FriendRequestMeta();
-                                        meta.objectId = user.getObjectId();
-                                        meta.name = user.getString("name");
-                                        meta.username = user.getUsername();
                                         String imgUrl = null;
                                         final ParseFile parseImage = user.getParseFile("profileImage");
                                         if (parseImage != null) {
                                             imgUrl = parseImage.getUrl();
                                         }
-                                        meta.imageUrl = imgUrl;
-                                        meta.fromMe = entry.getKey();
-                                        meta.updatedTime = entry.getValue();
+                                        FriendRequestMeta meta = new FriendRequestMeta(
+                                                user.getObjectId(),
+                                                user.getString("name"),
+                                                user.getString("email"),
+                                                user.getUsername(),
+                                                imgUrl,
+                                                entry.getKey(),
+                                                entry.getValue()
+                                        );
                                         metaList.add(meta);
                                     }
                                 }

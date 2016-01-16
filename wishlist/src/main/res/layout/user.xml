@@ -43,8 +43,8 @@
             />
 
         <TextView
-            android:id="@+id/username"
-            android:text="Username"
+            android:id="@+id/email"
+            android:text="Email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"

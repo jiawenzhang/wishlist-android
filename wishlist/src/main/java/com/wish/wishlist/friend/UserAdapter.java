@@ -8,16 +8,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
-import com.wish.wishlist.WishlistApplication;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,13 +25,14 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static class UserMeta {
         public String objectId;
         public String name;
+        public String email;
         public String username;
         public String imageUrl;
 
-        public UserMeta() {}
-        public UserMeta(final String objectId, final String name, final String username, final String imageUrl) {
+        public UserMeta(final String objectId, final String name, final String email, final String username, final String imageUrl) {
             this.objectId = objectId;
             this.name = name;
+            this.email = email;
             this.username = username;
             this.imageUrl = imageUrl;
         }
@@ -56,7 +54,7 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView txtName;
-        public TextView txtUsername;
+        public TextView txtEmail;
         public ImageView imgProfile;
         public ImageButton button1;
         public ImageButton button2;
@@ -65,7 +63,7 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public ViewHolder(View v) {
             super(v);
             txtName= (TextView) v.findViewById(R.id.name);
-            txtUsername = (TextView) v.findViewById(R.id.username);
+            txtEmail = (TextView) v.findViewById(R.id.email);
             imgProfile = (ImageView) v.findViewById(R.id.profile_image);
             button1 = (ImageButton) v.findViewById(R.id.button1);
             button2 = (ImageButton) v.findViewById(R.id.button2);
@@ -110,7 +108,7 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder_.imgProfile.setImageResource(R.drawable.default_profile_image);
         }
         holder_.txtName.setText(userMeta.name);
-        holder_.txtUsername.setText(userMeta.username);
+        holder_.txtEmail.setText(userMeta.email);
     }
 
     // Return the size of your data set (invoked by the layout manager)

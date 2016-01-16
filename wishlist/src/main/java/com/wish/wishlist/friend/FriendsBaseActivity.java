@@ -108,6 +108,7 @@ public class FriendsBaseActivity extends DrawerActivity {
             UserAdapter.UserMeta userMeta = new UserAdapter.UserMeta(
                     user.getObjectId(),
                     user.getString("name"),
+                    user.getEmail(),
                     user.getUsername(),
                     imgUrl);
             userMetaList.add(userMeta);

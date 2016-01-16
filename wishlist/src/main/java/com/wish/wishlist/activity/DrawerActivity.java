@@ -137,7 +137,7 @@ public abstract class DrawerActivity extends ActivityBase {
     }
 
     private void setupUserName() {
-        TextView nameTextView = (TextView) mHeaderLayout.findViewById(R.id.username);
+        TextView nameTextView = (TextView) mHeaderLayout.findViewById(R.id.name);
         nameTextView.setText(ParseUser.getCurrentUser().getString("name"));
     }
 

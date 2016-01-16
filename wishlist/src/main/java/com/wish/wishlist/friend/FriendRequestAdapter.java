@@ -100,7 +100,7 @@ public class FriendRequestAdapter extends UserAdapter {
             holder_.imgProfile.setImageResource(R.drawable.default_profile_image);
         }
         holder_.txtName.setText(meta.name);
-        holder_.txtUsername.setText(meta.username);
+        holder_.txtEmail.setText(meta.email);
 
         if (meta.fromMe) {
             Log.d(TAG, "request from me");
