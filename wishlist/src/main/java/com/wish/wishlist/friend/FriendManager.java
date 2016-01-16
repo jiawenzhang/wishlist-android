@@ -392,18 +392,20 @@ public class FriendManager {
 
     public void findUser(final String text)
     {
-        // text could be username(email) or display name
+        // text could be email or display name
         // exclude self
-        ParseQuery<ParseUser> queryUsername = ParseUser.getQuery();
-        queryUsername.whereStartsWith("username", text);
-        queryUsername.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
+
+        // we cannot query by username, as username for facebook users are random hex
+        ParseQuery<ParseUser> queryEmail = ParseUser.getQuery();
+        queryEmail.whereStartsWith("email", text);
+        queryEmail.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
 
         ParseQuery<ParseUser> queryName = ParseUser.getQuery();
         queryName.whereStartsWith("name", text);
         queryName.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
 
         List<ParseQuery<ParseUser>> queries = new ArrayList<>();
-        queries.add(queryUsername);
+        queries.add(queryEmail);
         queries.add(queryName);
 
         ParseQuery<ParseUser> mainQuery = ParseQuery.or(queries);
