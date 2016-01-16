@@ -24,17 +24,18 @@ public class InviteFriendFragmentDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
-        final int FACEBOOK = 0;
-        final int EMAIL = 1;
-        final int MESSAGE = 2;
-        final int MORE = 3;
-        final String[] mListItems = { "Facebook", "Email", "Message", "More"};
+        //final int FACEBOOK = 0;
+        final int EMAIL = 0;
+        final int MESSAGE = EMAIL + 1;
+        final int MORE = MESSAGE + 1;
+        //final String[] mListItems = { "Facebook", "Email", "Message", "More"};
+        final String[] mListItems = { "Email", "Message", "More"};
         dialogBuilder.setItems(mListItems, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 switch (item) {
-                    case FACEBOOK:
-                        Log.d(TAG, "Facebook");
-                        break;
+                    //case FACEBOOK:
+                    //    Log.d(TAG, "Facebook");
+                    //    break;
                     case EMAIL:
                         Log.d(TAG, "Email");
                         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
