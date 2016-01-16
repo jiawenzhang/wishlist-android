@@ -86,7 +86,7 @@ public class AddFriendAdapter extends UserAdapter {
         for (int position = 0; position < mUserMetaList.size(); position++) {
             if (mUserMetaList.get(position).objectId.equals(userId)) {
                 mUserMetaList.remove(position);
-                notifyItemRemoved(position + 1);
+                notifyItemRemoved(position);
                 break;
             }
         }
