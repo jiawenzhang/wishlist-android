@@ -305,9 +305,9 @@ public class FriendManager {
     }
 
     public void fetchFriendRequestFromNetwork() {
-        ParseQuery<ParseObject> queryFromMe = ParseQuery.getQuery(FRIEND_REQUEST);
-        queryFromMe.whereEqualTo("from", ParseUser.getCurrentUser().getObjectId());
-        queryFromMe.whereEqualTo("status", REQUESTED);
+//        ParseQuery<ParseObject> queryFromMe = ParseQuery.getQuery(FRIEND_REQUEST);
+//        queryFromMe.whereEqualTo("from", ParseUser.getCurrentUser().getObjectId());
+//        queryFromMe.whereEqualTo("status", REQUESTED);
 
         ParseQuery<ParseObject> queryToMe = ParseQuery.getQuery(FRIEND_REQUEST);
         queryToMe.whereEqualTo("to", ParseUser.getCurrentUser().getObjectId());
@@ -315,7 +315,7 @@ public class FriendManager {
 
         List<ParseQuery<ParseObject>> queries = new ArrayList<>();
         queries.add(queryToMe);
-        queries.add(queryFromMe);
+//        queries.add(queryFromMe);
 
         ParseQuery<ParseObject> mainQuery = ParseQuery.or(queries);
 
