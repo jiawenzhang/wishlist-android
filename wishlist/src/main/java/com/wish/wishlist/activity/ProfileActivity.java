@@ -96,6 +96,11 @@ public class ProfileActivity extends ActivityBase implements
             profile_change_password.setVisibility(View.GONE);
         } else {
             profile_username.setVisibility(View.VISIBLE);
+
+            // user's email is username, don't allow user to change it
+            // if user changes email, emailVerified will become false and user cannot login next time unless they
+            // verify the email
+            profile_email.setVisibility(View.GONE);
             ((TextView) profile_username.findViewById(R.id.title)).setText("Username");
             ((TextView) profile_username.findViewById(R.id.value)).setText(mUser.getUsername());
         }
