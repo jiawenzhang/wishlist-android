@@ -1,6 +1,7 @@
 package com.wish.wishlist.wish;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -364,16 +365,16 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     private void setItemAccess(final List<Long> item_ids, int access) {
-        HashSet<Long/*item_id*/> changed = new HashSet<>();
+        HashMap<Long/*item_id*/, WishItem> changed = new HashMap<>();
         for (long item_id : item_ids) {
             WishItem wish_item = WishItemManager.getInstance().getItemById(item_id);
             if (wish_item.getAccess() != access) {
-                changed.add(item_id);
-
                 wish_item.setAccess(access);
                 wish_item.setUpdatedTime(System.currentTimeMillis());
                 wish_item.setSyncedToServer(false);
                 wish_item.saveToLocal();
+
+                changed.put(item_id, wish_item);
             }
         }
         if (changed.size() > 0) {
@@ -381,18 +382,19 @@ public class MyWishActivity extends WishBaseActivity implements
         }
 
         for (int i = 0; i < mWishlist.size(); i++) {
-            WishItem item = mWishlist.get(i);
-            if (changed.contains(item.getId())) {
-                item.setAccess(access);
+            Long item_id = mWishlist.get(i).getId();
+            WishItem changedItem = changed.get(item_id);
+            if (changedItem != null) {
+                mWishlist.set(i, changedItem);
                 if (mWishAdapter != null) {
-                    mWishAdapter.notifyItemChanged(i);
+                    mWishAdapter.notifyItemChanged(i, changedItem);
                 }
             }
         }
     }
 
     private void markItemComplete(final List<Long> item_ids, int complete) {
-        HashSet<Long/*item_id*/> changed = new HashSet<>();
+        HashMap<Long/*item_id*/, WishItem> changed = new HashMap<>();
         for (long item_id : item_ids) {
             WishItem wish_item = WishItemManager.getInstance().getItemById(item_id);
             String label = "Complete";
@@ -400,12 +402,12 @@ public class MyWishActivity extends WishBaseActivity implements
                 label = "InProgress";
             }
             if (wish_item.getComplete() != complete) {
-                changed.add(item_id);
-
                 wish_item.setComplete(complete);
                 wish_item.setUpdatedTime(System.currentTimeMillis());
                 wish_item.setSyncedToServer(false);
                 wish_item.saveToLocal();
+
+                changed.put(item_id, wish_item);
 
                 Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                 t.send(new HitBuilders.EventBuilder()
@@ -421,11 +423,12 @@ public class MyWishActivity extends WishBaseActivity implements
         }
 
         for (int i = 0; i < mWishlist.size(); i++) {
-            WishItem item = mWishlist.get(i);
-            if (changed.contains(item.getId())) {
-                item.setComplete(complete);
+            Long item_id = mWishlist.get(i).getId();
+            WishItem changedItem = changed.get(item_id);
+            if (changedItem != null) {
+                mWishlist.set(i, changedItem);
                 if (mWishAdapter != null) {
-                    mWishAdapter.notifyItemChanged(i);
+                    mWishAdapter.notifyItemChanged(i, changedItem);
                 }
             }
         }

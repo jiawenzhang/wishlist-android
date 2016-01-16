@@ -8,6 +8,7 @@ import java.util.Comparator;
 public class ItemTimeComparator implements Comparator<WishItem> {
     @Override
     public int compare(WishItem o1, WishItem o2) {
-        return Long.valueOf(o1.getUpdatedTime()).compareTo(Long.valueOf(o2.getUpdatedTime()));
+        // Sort by time, most recent first
+        return Long.valueOf(o2.getUpdatedTime()).compareTo(Long.valueOf(o1.getUpdatedTime()));
     }
 }
