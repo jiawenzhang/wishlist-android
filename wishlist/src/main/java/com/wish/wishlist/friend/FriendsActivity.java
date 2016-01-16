@@ -85,6 +85,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
         mNavigationView.getMenu().findItem(R.id.list_view).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.grid_view).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.map_view).setVisible(false);
+        mNavigationView.getMenu().findItem(R.id.friends).setVisible(false);
     }
 
     protected boolean onTapAdd() {
