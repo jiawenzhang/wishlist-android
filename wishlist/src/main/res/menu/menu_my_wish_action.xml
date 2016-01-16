@@ -24,4 +24,12 @@
           android:title="Mark incomplete"
           app:showAsAction="ifRoom"
         />
+    <item android:id="@+id/menu_private"
+          android:title="Set private"
+          app:showAsAction="ifRoom"
+        />
+    <item android:id="@+id/menu_public"
+          android:title="Set public"
+          app:showAsAction="ifRoom"
+        />
 </menu>

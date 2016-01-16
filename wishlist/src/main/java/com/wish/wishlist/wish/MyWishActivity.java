@@ -280,6 +280,14 @@ public class MyWishActivity extends WishBaseActivity implements
                         Log.d(TAG, "incomplete");
                         markItemComplete(idList, 0);
                         return true;
+                    case R.id.menu_private:
+                        Log.d(TAG, "private");
+                        setItemAccess(idList, WishItem.PRIVATE);
+                        return true;
+                    case R.id.menu_public:
+                        Log.d(TAG, "public");
+                        setItemAccess(idList, WishItem.PUBLIC);
+                        return true;
                     default:
                         return false;
                 }
@@ -355,6 +363,34 @@ public class MyWishActivity extends WishBaseActivity implements
         updateDrawerList();
     }
 
+    private void setItemAccess(final List<Long> item_ids, int access) {
+        HashSet<Long/*item_id*/> changed = new HashSet<>();
+        for (long item_id : item_ids) {
+            WishItem wish_item = WishItemManager.getInstance().getItemById(item_id);
+            if (wish_item.getAccess() != access) {
+                changed.add(item_id);
+
+                wish_item.setAccess(access);
+                wish_item.setUpdatedTime(System.currentTimeMillis());
+                wish_item.setSyncedToServer(false);
+                wish_item.saveToLocal();
+            }
+        }
+        if (changed.size() > 0) {
+            SyncAgent.getInstance().sync();
+        }
+
+        for (int i = 0; i < mWishlist.size(); i++) {
+            WishItem item = mWishlist.get(i);
+            if (changed.contains(item.getId())) {
+                item.setAccess(access);
+                if (mWishAdapter != null) {
+                    mWishAdapter.notifyItemChanged(i);
+                }
+            }
+        }
+    }
+
     private void markItemComplete(final List<Long> item_ids, int complete) {
         HashSet<Long/*item_id*/> changed = new HashSet<>();
         for (long item_id : item_ids) {
@@ -365,7 +401,12 @@ public class MyWishActivity extends WishBaseActivity implements
             }
             if (wish_item.getComplete() != complete) {
                 changed.add(item_id);
+
                 wish_item.setComplete(complete);
+                wish_item.setUpdatedTime(System.currentTimeMillis());
+                wish_item.setSyncedToServer(false);
+                wish_item.saveToLocal();
+
                 Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                 t.send(new HitBuilders.EventBuilder()
                         .setCategory("Wish")
@@ -373,10 +414,12 @@ public class MyWishActivity extends WishBaseActivity implements
                         .setLabel(label)
                         .build());
             }
-            wish_item.setUpdatedTime(System.currentTimeMillis());
-            wish_item.setSyncedToServer(false);
-            wish_item.save();
         }
+
+        if (changed.size() > 0) {
+            SyncAgent.getInstance().sync();
+        }
+
         for (int i = 0; i < mWishlist.size(); i++) {
             WishItem item = mWishlist.get(i);
             if (changed.contains(item.getId())) {
