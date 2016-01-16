@@ -11,6 +11,7 @@ import com.path.android.jobqueue.Params;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.ProfileUtil;
 
 import java.io.File;
 
@@ -39,9 +40,12 @@ public class UploadProfileImageJob extends Job {
     public void onRun() throws Throwable {
         Log.d(TAG, "onRun");
         // Job logic goes here, upload the profile image to Parse
-        File profileImageFile = new File(WishlistApplication.getAppContext().getFilesDir(), ProfileActivity.profileImageName());
+        File profileImageFile = ProfileUtil.profileImageFile();
+        if (profileImageFile == null) {
+            return;
+        }
         final byte[] data = ImageManager.readFile(profileImageFile.getAbsolutePath());
-        final ParseFile profileImage = new ParseFile(ProfileActivity.profileImageName(), data);
+        final ParseFile profileImage = new ParseFile(ProfileUtil.profileImageName(), data);
         profileImage.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {

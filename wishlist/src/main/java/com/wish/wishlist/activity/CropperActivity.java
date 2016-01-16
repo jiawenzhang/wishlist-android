@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import com.isseiaoki.simplecropview.CropImageView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.ProfileUtil;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -62,7 +63,7 @@ public class CropperActivity extends ActivityBase {
             case R.id.menu_cropper_crop:
                 final Bitmap croppedImage = mCropImageView.getCroppedBitmap();
                 final Bitmap scaledCroppedImage = ImageManager.getThumb(croppedImage);
-                ProfileActivity.saveProfileImageToFile(scaledCroppedImage);
+                ProfileUtil.saveProfileImageToFile(scaledCroppedImage);
                 setResult(RESULT_OK);
                 finish();
                 return true;

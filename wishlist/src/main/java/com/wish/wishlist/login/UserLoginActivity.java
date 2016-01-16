@@ -3,19 +3,17 @@ package com.wish.wishlist.login;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.wish.wishlist.R;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.util.Options;
+import com.wish.wishlist.util.ProfileUtil;
 import com.wish.wishlist.wish.MyWishActivity;
 
 import java.util.Arrays;
@@ -97,6 +95,8 @@ public class UserLoginActivity extends Activity {
         Log.d(TAG, "login success");
         ParseUser currentUser = ParseUser.getCurrentUser();
         Log.d(TAG, "You are logged in as " + currentUser.getEmail() + " " + currentUser.getString("name"));
+
+        ProfileUtil.downloadProfileImage();
 
         // Installation is used to identify self devices for push notification
         // so self device can sync wishes from Parse

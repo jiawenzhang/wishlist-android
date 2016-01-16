@@ -25,6 +25,7 @@ import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.friend.FriendsActivity;
 import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Options;
+import com.wish.wishlist.util.ProfileUtil;
 import com.wish.wishlist.wish.MyWishActivity;
 
 import java.io.File;
@@ -143,13 +144,10 @@ public abstract class DrawerActivity extends ActivityBase {
 
     private void setupProfileImage() {
         // set profile image in the header
-        if (ProfileActivity.profileImageName() != null) {
-            final File profileImageFile = new File(getFilesDir(), ProfileActivity.profileImageName());
-            final Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
+        final Bitmap bitmap = ProfileUtil.profileImageBitmap();
+        if (bitmap != null) {
             final ImageView profileImageView = (ImageView) mNavigationViewHeader.findViewById(R.id.profile_image);
-            if (bitmap != null) {
-                profileImageView.setImageBitmap(bitmap);
-            }
+            profileImageView.setImageBitmap(bitmap);
         }
     }
 

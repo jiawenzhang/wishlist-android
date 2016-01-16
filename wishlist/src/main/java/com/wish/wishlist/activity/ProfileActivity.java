@@ -38,6 +38,7 @@ import com.wish.wishlist.job.UploadProfileImageJob;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.Options;
+import com.wish.wishlist.util.ProfileUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -74,6 +75,7 @@ public class ProfileActivity extends ActivityBase implements
             return;
         }
 
+        ProfileUtil.downloadProfileImageIfNotExists();
         showProfileImage();
         ImageView profileImage = (ImageView) findViewById(R.id.profile_image);
         profileImage.setOnClickListener(new View.OnClickListener() {
@@ -228,19 +230,10 @@ public class ProfileActivity extends ActivityBase implements
         }
     }
 
-    public static String profileImageName() {
-        ParseUser user = ParseUser.getCurrentUser();
-        if (user == null) {
-            return null;
-        }
-        return user.getObjectId() + "-profile-image.jpg";
-    }
-
     private void showProfileImage() {
-        File profileImageFile = new File(getFilesDir(), profileImageName());
-        Bitmap bitmap = BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
-        ImageView profileImageView = (ImageView) findViewById(R.id.profile_image);
+        Bitmap bitmap = ProfileUtil.profileImageBitmap();
         if (bitmap != null) {
+            ImageView profileImageView = (ImageView) findViewById(R.id.profile_image);
             profileImageView.setImageBitmap(bitmap);
         }
     }
@@ -249,22 +242,6 @@ public class ProfileActivity extends ActivityBase implements
         JobManager jobManager = ((WishlistApplication) getApplication()).getJobManager();
         jobManager.addJobInBackground(new UploadProfileImageJob());
         showProfileImage();
-    }
-
-    public static boolean saveProfileImageToFile(Bitmap bitmap) {
-        ByteArrayOutputStream bs = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
-        return saveProfileImageToFile(bs.toByteArray());
-    }
-
-    public static boolean saveProfileImageToFile(byte[] data) {
-        File profileImageFile = new File(WishlistApplication.getAppContext().getFilesDir(), profileImageName());
-        if (ImageManager.saveByteToPath(data, profileImageFile.getAbsolutePath())) {
-            // Wishlist activity listens to this and update the profile info in navigation view
-            EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.image));
-            return true;
-        }
-        return false;
     }
 
     /**

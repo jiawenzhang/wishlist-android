@@ -25,6 +25,7 @@ import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.ProfileUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -397,7 +398,7 @@ public class SyncAgent {
                     ParseUser currentUser = (ParseUser) object;
                     final ParseFile parseImage = currentUser.getParseFile("profileImage");
                     try {
-                        ProfileActivity.saveProfileImageToFile(parseImage.getData());
+                        ProfileUtil.saveProfileImageToFile(parseImage.getData());
                     } catch (com.parse.ParseException e2) {
                         Log.e(TAG, e2.toString());
                     }
