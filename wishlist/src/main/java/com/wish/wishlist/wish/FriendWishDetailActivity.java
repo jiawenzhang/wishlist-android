@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class FriendWishDetailActivity extends WishDetailActivity implements
         WishImageDownloader.onWishImageDownloadDoneListener {
-    private static final String TAG = "FriendWishDetailActivity";
+    private static final String TAG = "FriendWishDetailAct";
     private WishImageDownloader mWishImageDownloader;
     private ProgressDialog mProgressDialog = null;
 

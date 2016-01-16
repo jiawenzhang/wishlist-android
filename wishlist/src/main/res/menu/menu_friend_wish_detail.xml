@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:android1="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android1:id="@+id/save"
-          android1:title="Save as my wish"
-          android1:icon="@drawable/ic_action_download_white"
+    <item android:id="@+id/save"
+          android:title="Save as my wish"
+          android:icon="@drawable/ic_action_download_white"
           app:showAsAction="ifRoom"
         />
     <item android:id="@+id/share"
         android:title="@string/share"
-        android1:icon="@drawable/ic_action_share_white"
-        app:showAsAction="ifRoom"
+        android:visible="false"
+        android:icon="@drawable/ic_action_share_white"
         />
-    <item android1:id="@+id/location"
-        android1:title="@string/location"
-        android1:icon="@drawable/ic_action_location_white"
+    <item android:id="@+id/location"
+        android:title="@string/location"
+        android:icon="@drawable/ic_action_location_white"
         app:showAsAction="ifRoom"
         />
 </menu>
