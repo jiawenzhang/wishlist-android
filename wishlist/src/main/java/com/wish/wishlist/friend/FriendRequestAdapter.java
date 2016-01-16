@@ -111,7 +111,7 @@ public class FriendRequestAdapter extends UserAdapter {
         } else {
             Log.d(TAG, "request to me");
             // accept
-            holder_.button1.setImageResource(R.drawable.ic_action_add_friend_grey);
+            holder_.button1.setImageResource(R.drawable.ic_action_accept_grey);
             holder_.button1.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
