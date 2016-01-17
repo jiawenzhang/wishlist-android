@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                       android:orientation="vertical"
                       android:layout_width="match_parent"
                       android:layout_height="match_parent"
@@ -25,8 +25,32 @@
                 android:id="@+id/user_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_below="@id/friends_toolbar"
                 android:scrollbars="vertical" />
-        </LinearLayout>
+
+            <ScrollView
+                android:layout_below="@id/user_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                >
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    >
+                    <TextView
+                        android:id="@+id/empty_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/text_size_medium"
+                        android:layout_centerInParent="true"
+                        android:visibility="gone"
+                        android:text="Empty"
+                        />
+                </RelativeLayout>
+            </ScrollView>
+        </RelativeLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.NavigationView

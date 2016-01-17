@@ -2,8 +2,11 @@ package com.wish.wishlist.friend;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.wish.wishlist.R;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.VisibleActivityTracker;
 
@@ -59,6 +62,17 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
         mRecyclerView.swapAdapter(mFriendRequestAdapter, true);
 
         mSwipeRefreshLayout.setRefreshing(false);
+
+        TextView txtEmpty = (TextView) findViewById(R.id.empty_text);
+        if (FriendRequestCache.getInstance().friendRequestList().size() == 0) {
+            Log.d(TAG, "No friend request");
+            txtEmpty.setText("No friend invitations");
+            txtEmpty.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            txtEmpty.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

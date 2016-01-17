@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
@@ -137,12 +140,26 @@ public class FriendsActivity extends FriendsBaseActivity implements
     @Override
     public void onGotAllFriends(final List<ParseUser> friends) {
         Log.d(TAG, "onGotAllFriend " + friends.size());
-        mFriendAdapter = new FriendAdapter(getUserMetaList(friends));
+        List<UserAdapter.UserMeta> userMetaList = getUserMetaList(friends);
+        mFriendAdapter = new FriendAdapter(userMetaList);
         mFriendAdapter.setFriendTapListener(this);
         mFriendAdapter.setRemoveFriendListener(this);
         mFriendAdapter.setFriendRequestTapListener(this);
         mRecyclerView.swapAdapter(mFriendAdapter, true);
         mSwipeRefreshLayout.setRefreshing(false);
+
+        TextView txtEmpty = (TextView) findViewById(R.id.empty_text);
+        if (userMetaList.size() == 0) {
+            Log.d(TAG, "No friends");
+            txtEmpty.setText("You have no friends yet");
+            txtEmpty.setVisibility(View.VISIBLE);
+            ViewGroup.LayoutParams params = mRecyclerView.getLayoutParams();
+            params.height = (int) getResources().getDimension(R.dimen.recyclerview_top_button_height) + 1;
+        } else {
+            txtEmpty.setVisibility(View.GONE);
+            ViewGroup.LayoutParams params = mRecyclerView.getLayoutParams();
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        }
     }
 
     public void onFriendTap(final UserAdapter.UserMeta friendMeta) {

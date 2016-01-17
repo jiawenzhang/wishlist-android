@@ -1,8 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:id="@+id/recyclerview_top_button_layout"
-             android:orientation="horizontal"
              android:layout_width="match_parent"
-             android:layout_height="96dp"
+             android:layout_height="@dimen/recyclerview_top_button_height"
              android:clickable="true"
              android:foreground="?android:attr/selectableItemBackground"
              android:paddingLeft="10dp"
@@ -34,7 +33,6 @@
                 android:layout_margin="5dp"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_action_users_grey"
-                android:layout_centerInParent="true"
                 />
             <ImageView
                 android:id="@+id/red_dot"
