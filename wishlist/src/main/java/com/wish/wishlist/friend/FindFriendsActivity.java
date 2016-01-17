@@ -50,9 +50,10 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
     private void handleIntent(Intent intent) {
         // check if the activity is started from search
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            //MenuItemCompat.collapseActionView(_menuSearch);
             // activity is started from search, get the search query and
             // displayed the searched items
+            SearchView searchView = (SearchView) _menuSearch.getActionView();
+            searchView.clearFocus();
             final String searchQuery = intent.getStringExtra(SearchManager.QUERY);
             showProgressDialog("Loading...");
             FriendManager.getInstance().setFoundUserListener(this);
