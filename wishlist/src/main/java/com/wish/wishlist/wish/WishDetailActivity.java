@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -114,6 +116,16 @@ public abstract class WishDetailActivity extends ActivityBase {
             mLinkView.setVisibility(View.VISIBLE);
         } else {
             mLinkView.setVisibility(View.GONE);
+        }
+    }
+
+    protected void inflateMenu(int resId, Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(resId, menu);
+
+        MenuItem item = menu.findItem(R.id.location);
+        if (!mItem.hasGeoLocation()) {
+            item.setVisible(false);
         }
     }
 

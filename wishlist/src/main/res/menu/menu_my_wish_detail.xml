@@ -12,7 +12,7 @@
         android1:icon="@drawable/ic_action_share_white"
         app:showAsAction="ifRoom"
         />
-    <item android1:id="@+id/menu_item_detail_location"
+    <item android1:id="@+id/location"
         android1:title="@string/location"
         android1:icon="@drawable/ic_action_location_white"
         app:showAsAction="ifRoom"

@@ -229,7 +229,7 @@ public class MapActivity extends Activity {
             // show friend's wishes
             List<WishItem> items = WishLoader.getInstance().getWishes(friendId);
             for (WishItem item : items) {
-                if (item.getLatitude() != Double.MIN_VALUE && item.getLongitude() != Double.MAX_VALUE) {
+                if (item.hasGeoLocation()) {
                     items_to_show.add(item);
                 }
             }

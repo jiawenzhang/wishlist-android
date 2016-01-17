@@ -220,8 +220,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_my_wish_detail, menu);
+        inflateMenu(R.menu.menu_my_wish_detail, menu);
         return true;
     }
 
@@ -234,7 +233,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             case R.id.menu_item_detail_share:
                 shareItem();
                 return true;
-            case R.id.menu_item_detail_location:
+            case R.id.location:
                 showOnMap();
                 return true;
             case R.id.menu_item_detail_delete:

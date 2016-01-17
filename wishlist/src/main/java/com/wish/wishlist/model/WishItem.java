@@ -170,6 +170,10 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         return _longitude;
     }
 
+    public boolean hasGeoLocation() {
+        return (getLatitude() != Double.MIN_VALUE && getLongitude() != Double.MAX_VALUE);
+    }
+
     public void setAddress(String add) {
         _address = add;
     }
