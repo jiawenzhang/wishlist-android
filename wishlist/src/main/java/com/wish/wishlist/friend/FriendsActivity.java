@@ -1,8 +1,10 @@
 package com.wish.wishlist.friend;
 
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +18,8 @@ import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.FriendListChangeEvent;
-import com.wish.wishlist.fragment.ListDialogFragment;
+import com.wish.wishlist.fragment.AddFriendOptionDialogFragment;
+import com.wish.wishlist.fragment.FriendOptionDialogFragment;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.VisibleActivityTracker;
@@ -25,18 +28,22 @@ import com.wish.wishlist.wish.FriendsWishActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.wish.wishlist.R.style.AppCompatAlertDialogStyle;
+
 public class FriendsActivity extends FriendsBaseActivity implements
         FriendAdapter.FriendTapListener,
-        FriendAdapter.RemoveFriendListener,
+        FriendAdapter.FriendMoreListener,
         FriendAdapter.FriendRequestTapListener,
         FriendManager.onGotAllFriendsListener,
-        FriendManager.onRemoveFriendResultListener {
+        FriendManager.onRemoveFriendResultListener,
+        FriendOptionDialogFragment.RemoveFriendListener {
 
     public static final String FRIEND_ID = "FRIEND_ID";
     public static final String FRIEND_NAME = "FRIEND_NAME";
     public static final String FRIEND_IMAGE_URL = "FRIEND_IMAGE_URL";
     final static String TAG = "FriendsActivity";
     private FriendAdapter mFriendAdapter;
+    private String mSelectedFriendId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +99,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
     }
 
     protected boolean onTapAdd() {
-        showListDialog();
+        showAddFriendListDialog();
         return true;
     }
 
@@ -130,7 +137,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
         }
         int id = item.getItemId();
         if (id == R.id.menu_add_friends) {
-            showListDialog();
+            showAddFriendListDialog();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -143,7 +150,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
         List<UserAdapter.UserMeta> userMetaList = getUserMetaList(friends);
         mFriendAdapter = new FriendAdapter(userMetaList);
         mFriendAdapter.setFriendTapListener(this);
-        mFriendAdapter.setRemoveFriendListener(this);
+        mFriendAdapter.setFriendMoreListener(this);
         mFriendAdapter.setFriendRequestTapListener(this);
         mRecyclerView.swapAdapter(mFriendAdapter, true);
         mSwipeRefreshLayout.setRefreshing(false);
@@ -172,11 +179,38 @@ public class FriendsActivity extends FriendsBaseActivity implements
         startActivity(friendsWishIntent);
     }
 
-    public void onRemoveFriend(final String friendId) {
-        showProgressDialog("Removing friend");
+    public void onFriendMore(final String friendId) {
 
-        FriendManager.getInstance().setRemoveFriendResultListener(this);
-        FriendManager.getInstance().removeFriend(friendId);
+        mSelectedFriendId = friendId;
+
+        FragmentManager manager = getFragmentManager();
+        FriendOptionDialogFragment dialog = new FriendOptionDialogFragment();
+        dialog.setRemoveFriendListener(this);
+        dialog.show(manager, "dialog");
+    }
+
+    public void onRemoveFriend() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, AppCompatAlertDialogStyle);
+        String message = "Sure to remove this friend?";
+        builder.setMessage(message);
+        builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                showProgressDialog("Removing friend");
+
+                FriendManager.getInstance().setRemoveFriendResultListener(FriendsActivity.this);
+                FriendManager.getInstance().removeFriend(mSelectedFriendId);
+            }
+        });
+        builder.setNegativeButton("CANCEL",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog dialog;
+        dialog = builder.create();
+        dialog.show();
     }
 
     public void onRemoveFriendResult(final String friendId, final boolean success) {
@@ -188,9 +222,9 @@ public class FriendsActivity extends FriendsBaseActivity implements
         startActivity(friendRequestIntent);
     }
 
-    private void showListDialog() {
+    private void showAddFriendListDialog() {
         FragmentManager manager = getFragmentManager();
-        ListDialogFragment dialog = new ListDialogFragment();
+        AddFriendOptionDialogFragment dialog = new AddFriendOptionDialogFragment();
         dialog.show(manager, "dialog");
     }
 }

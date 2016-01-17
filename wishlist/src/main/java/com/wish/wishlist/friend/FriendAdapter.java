@@ -37,19 +37,19 @@ public class FriendAdapter extends UserAdapter {
         mFriendTapListener = listener;
     }
 
-    /******************* RemoveFriendListener *********************/
-    private RemoveFriendListener mRemoveFriendListener = null;
-    public interface RemoveFriendListener {
-        void onRemoveFriend(final String friendId);
+    /******************* FriendMoreListener *********************/
+    private FriendMoreListener mFriendMoreListener = null;
+    public interface FriendMoreListener {
+        void onFriendMore(final String friendId);
     }
-    protected void onRemoveFriend(final String friendId) {
-        if (mRemoveFriendListener != null) {
-            mRemoveFriendListener.onRemoveFriend(friendId);
+    protected void onFriendMore(final String friendId) {
+        if (mFriendMoreListener != null) {
+            mFriendMoreListener.onFriendMore(friendId);
         }
     }
-    public void setRemoveFriendListener(RemoveFriendListener listener)
+    public void setFriendMoreListener(FriendMoreListener listener)
     {
-        mRemoveFriendListener = listener;
+        mFriendMoreListener = listener;
     }
 
     /******************* FriendRequestTapListener *********************/
@@ -124,12 +124,12 @@ public class FriendAdapter extends UserAdapter {
         final UserMeta userMeta = mUserMetaList.get(adjusted_position);
         holder_.button1.setVisibility(View.GONE);
         // remove
-        holder_.button2.setImageResource(R.drawable.ic_action_remove_friend_grey);
+        holder_.button2.setImageResource(R.drawable.ic_action_three_dots_grey);
         holder_.button2.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "remove friend button clicked");
-                onRemoveFriend(userMeta.objectId);
+                Log.d(TAG, "more button clicked");
+                onFriendMore(userMeta.objectId);
             }
         });
 

@@ -1,16 +1,11 @@
 package com.wish.wishlist.fragment;
 
+import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.os.Bundle;
-import android.app.DialogFragment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FindFriendsActivity;
@@ -22,34 +17,18 @@ import java.util.List;
 /**
  * Created by jiawen on 2016-01-11.
  */
-public class ListDialogFragment extends DialogFragment implements
+public class AddFriendOptionDialogFragment extends OptionDialogFragment implements
         AdapterView.OnItemClickListener {
 
-    static final String TAG = "ListDialogFragment";
-    ListView mListView;
+    static final String TAG = "AddFriendListDialog";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.list_dialog_fragment, null, false);
-        mListView = (ListView) view.findViewById(R.id.list);
-        mListView.setDivider(null);
-
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
+    protected IconTextAdapter getAdapter() {
         List<IconTextAdapter.Entry> list = new ArrayList<>();
         list.add(new IconTextAdapter.Entry("Find friend", R.drawable.ic_action_search_grey));
         list.add(new IconTextAdapter.Entry("Invite friend", R.drawable.ic_action_add_friend_grey));
-        IconTextAdapter adapter  = new IconTextAdapter(getActivity(), list);
-        mListView.setAdapter(adapter);
-        mListView.setOnItemClickListener(this);
+        return new IconTextAdapter(getActivity(), list);
     }
 
     @Override
