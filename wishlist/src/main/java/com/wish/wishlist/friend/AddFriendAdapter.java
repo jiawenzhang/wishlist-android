@@ -92,6 +92,12 @@ public class AddFriendAdapter extends UserAdapter {
         }
     }
 
+    public void add(List<UserMeta> userMetaList) {
+        int startPosition = mUserMetaList.size();
+        mUserMetaList.addAll(userMetaList);
+        notifyItemRangeInserted(startPosition, userMetaList.size());
+    }
+
     @Override
     public int getItemCount() {
         return mUserMetaList.size();

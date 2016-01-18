@@ -19,7 +19,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
-import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
@@ -255,6 +254,7 @@ public class SyncAgent {
     {
         Log.d(TAG, "saveParseImage: item " + parseItem.getString(ItemDBManager.KEY_NAME));
         try {
+            // Fixme: getData is gets data from network syncrhonousely, blocks the UI
             final byte[] imageBytes = parseImage.getData();
             ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), /*thumb*/true);
             String fullsizePicPath = ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), /*thumb*/false);

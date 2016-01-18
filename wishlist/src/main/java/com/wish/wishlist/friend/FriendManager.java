@@ -56,7 +56,7 @@ public class FriendManager {
         void onFoundUser(final List<ParseUser> users, final boolean success);
     }
 
-    protected void onFoundUser(final List<ParseUser> users, final boolean success) {
+    protected void onFoundUsers(final List<ParseUser> users, final boolean success) {
         if (mFoundUserListener != null) {
             mFoundUserListener.onFoundUser(users, success);
         }
@@ -393,7 +393,7 @@ public class FriendManager {
         });
     }
 
-    public void findUser(final String text)
+    public void fetchUsers(final String text, int skip)
     {
         // text could be email or display name
         // exclude self
@@ -412,13 +412,15 @@ public class FriendManager {
         queries.add(queryName);
 
         ParseQuery<ParseUser> mainQuery = ParseQuery.or(queries);
+        mainQuery.setSkip(skip);
+        mainQuery.setLimit(10);
         mainQuery.findInBackground(new FindCallback<ParseUser>() {
             public void done(List<ParseUser> users, com.parse.ParseException e) {
                 if (e == null) {
-                    onFoundUser(users, true);
+                    onFoundUsers(users, true);
                 } else {
                     Log.e(TAG, e.toString());
-                    onFoundUser(new ArrayList<ParseUser>(), false);
+                    onFoundUsers(new ArrayList<ParseUser>(), false);
                 }
             }
         });

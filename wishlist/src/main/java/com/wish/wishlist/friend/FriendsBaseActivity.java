@@ -26,7 +26,7 @@ public class FriendsBaseActivity extends DrawerActivity {
     final static String TAG = "FriendsBaseActivity";
 
     protected RecyclerView mRecyclerView;
-    protected RecyclerView.LayoutManager mLayoutManager;
+    protected LinearLayoutManager mLayoutManager;
     protected ProgressDialog mProgressDialog = null;
     protected SwipeRefreshLayout mSwipeRefreshLayout;
 
