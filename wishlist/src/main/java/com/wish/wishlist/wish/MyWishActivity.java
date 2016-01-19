@@ -80,8 +80,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
     private Options.Tag mTag = new Options.Tag(null);
 
-    private String mFullsizePhotoPath = null;
-    private String mNewfullsizePhotoPath = null;
+    private String mTempPhotoPath = null;
 
     private String mNameQuery = null;
     private Button mAddNewButton;
@@ -141,11 +140,9 @@ public class MyWishActivity extends WishBaseActivity implements
         if (savedInstanceState != null) {
             Log.d(MyWishActivity.TAG, "savedInstanceState != null");
             // restore the current selected item in the list
-            mNewfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
-            mFullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
+            mTempPhotoPath = savedInstanceState.getString(EditWishActivity.TEMP_PHOTO_PATH);
 
-            Log.d(MyWishActivity.TAG, "mNewfullsizePhotoPath " + mNewfullsizePhotoPath);
-            Log.d(MyWishActivity.TAG, "mFullsizePhotoPath " + mFullsizePhotoPath);
+            Log.d(MyWishActivity.TAG, "mTempPhotoPath " + mTempPhotoPath);
         } else{
             Log.d(MyWishActivity.TAG, "savedInstanceState == null");
         }
@@ -472,7 +469,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
     private void dispatchTakePictureIntent() {
         CameraManager c = new CameraManager();
-        mNewfullsizePhotoPath = c.getPhotoPath();
+        mTempPhotoPath = c.getPhotoPath();
         startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
     }
 
@@ -507,8 +504,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("newfullsizePhotoPath", mNewfullsizePhotoPath);
-        savedInstanceState.putString("fullsizePhotoPath", mFullsizePhotoPath);
+        savedInstanceState.putString(EditWishActivity.TEMP_PHOTO_PATH, mTempPhotoPath);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -518,8 +514,7 @@ public class MyWishActivity extends WishBaseActivity implements
             return;
         }
 
-        mNewfullsizePhotoPath = savedInstanceState.getString("newfullsizePhotoPath");
-        mFullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
+        mTempPhotoPath = savedInstanceState.getString(EditWishActivity.TEMP_PHOTO_PATH);
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -593,17 +588,11 @@ public class MyWishActivity extends WishBaseActivity implements
             }
             case TAKE_PICTURE: {
                 if (resultCode == RESULT_OK) {
-                    Log.d(MyWishActivity.TAG, "TAKE_PICTURE: RESULT_OK");
-                    Log.d("TAKE PICTURE", "_new " + mNewfullsizePhotoPath);
-                    mFullsizePhotoPath = String.valueOf(mNewfullsizePhotoPath);
-                    mNewfullsizePhotoPath = null;
+                    Log.d(TAG, "TAKE_PICTURE: RESULT_OK");
+                    Log.d("TAKE PICTURE ",  mTempPhotoPath);
                     Intent i = new Intent(this, EditWishActivity.class);
-                    i.putExtra(EditWishActivity.FULLSIZE_PHOTO_PATH, mFullsizePhotoPath);
-                    if (mFullsizePhotoPath != null) {
-                        Log.v("photo path", mFullsizePhotoPath);
-                    } else {
-                        Log.v("photo path", "null");
-                    }
+                    i.putExtra(EditWishActivity.TEMP_PHOTO_PATH, mTempPhotoPath);
+
                     Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
                             .setCategory("Wish")
@@ -612,7 +601,7 @@ public class MyWishActivity extends WishBaseActivity implements
                             .build());
                     startActivityForResult(i, EDIT_ITEM);
                 } else {
-                    Log.d(MyWishActivity.TAG, "TAKE_PICTURE: not RESULT_OK");
+                    Log.d(TAG, "TAKE_PICTURE: not RESULT_OK");
                 }
                 break;
             }

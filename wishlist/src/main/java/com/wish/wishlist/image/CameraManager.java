@@ -2,32 +2,29 @@ package com.wish.wishlist.image;
 
 import android.content.Intent;
 import android.net.Uri;
-import java.io.File;
-import java.io.IOException;
 import android.provider.MediaStore;
+
+import java.io.File;
 
 public class CameraManager
 {
-    private Intent _intent;
-    private String _photoPath;
+    private Intent mIntent;
+    private String mPhotoPath = null;
 
     public CameraManager() {
-        _intent =  new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File f;
-        try {
-            f = PhotoFileCreater.getInstance().setUpPhotoFile(false);
-            _photoPath = f.getAbsolutePath();
-            _intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        mIntent =  new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File f = PhotoFileCreater.getInstance().getTempImageFile();
+        mPhotoPath = f.getAbsolutePath();
+
+        // we need to supply EXTRA_OUTPUT for the camera to save a high-quality photo
+        mIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
     }
 
     public Intent getCameraIntent() {
-        return _intent;
+        return mIntent;
     }
 
     public String getPhotoPath() {
-        return _photoPath;
+        return mPhotoPath;
     }
 }

@@ -122,7 +122,7 @@ public class EditWishActivity extends ActivityBase
     private Uri _selectedPicUri = null;
     private String _webPicUrl = null;
     private String _fullsizePhotoPath = null;
-    private String _newfullsizePhotoPath = null;
+    private String mTempPhotoPath = null;
     PositionManager _pManager;
     private long mItem_id = -1;
     private int _complete = -1;
@@ -144,7 +144,7 @@ public class EditWishActivity extends ActivityBase
     private static WebResult mWebResult = null;
 
     static final public String FULLSIZE_PHOTO_PATH = "FULLSIZE_PHOTO_PATH";
-    static final public String NEW_FULLSIZE_PHOTO_PATH = "NEW_FULLSIZE_PHOTO_PATH";
+    static final public String TEMP_PHOTO_PATH = "TEMP_PHOTO_PATH";
     static final public String SELECTED_PIC_URL = "SELECTED_PIC_URL";
     static final public String WEB_PIC_URL = "WEB_PIC_URL";
 
@@ -265,8 +265,8 @@ public class EditWishActivity extends ActivityBase
             }
         }
 
-        //get the fullsizephotopatch, if it is not null, EdiItemInfo is launched from camera
-        _fullsizePhotoPath = intent.getStringExtra(FULLSIZE_PHOTO_PATH);
+        //get the mTempPhotoPath, if it is not null, EdiItemInfo is launched from camera
+        mTempPhotoPath = intent.getStringExtra(TEMP_PHOTO_PATH);
         setTakenPhoto();
         if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
             _selectedPicUri = Uri.parse(intent.getStringExtra(SELECTED_PIC_URL));
@@ -354,7 +354,6 @@ public class EditWishActivity extends ActivityBase
                     }
                 });
                 AlertDialog dialog = builder.create();
-                //dialog.setOnShowListener(new DialogOnShowListener(EditWishActivity.this));
                 dialog.show();
             };
         });
@@ -418,7 +417,7 @@ public class EditWishActivity extends ActivityBase
         // We are restoring an instance, for example after screen orientation
         if (savedInstanceState != null) {
             // restore the current selected item in the list
-            _newfullsizePhotoPath = savedInstanceState.getString(NEW_FULLSIZE_PHOTO_PATH);
+            mTempPhotoPath = savedInstanceState.getString(TEMP_PHOTO_PATH);
             _fullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
             if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
                 _selectedPicUri = Uri.parse(intent.getStringExtra(SELECTED_PIC_URL));
@@ -692,6 +691,13 @@ public class EditWishActivity extends ActivityBase
         }
     }
 
+    private void removeItemImage() {
+        if (mItem_id != -1) {
+            WishItem item = WishItemManager.getInstance().getItemById(mItem_id);
+            item.removeImage();
+        }
+    }
+
     /***
      * Save user input as a wish item
      */
@@ -765,9 +771,24 @@ public class EditWishActivity extends ActivityBase
         if (_webBitmap != null) {
             _fullsizePhotoPath = ImageManager.saveBitmapToAlbum(_webBitmap);
             ImageManager.saveBitmapToThumb(_webBitmap, _fullsizePhotoPath);
+            removeItemImage();
         } else if (_selectedPic && _selectedPicUri != null) {
             _fullsizePhotoPath = copyPhotoToAlbum(_selectedPicUri);
             ImageManager.saveBitmapToThumb(_selectedPicUri, _fullsizePhotoPath, this);
+            removeItemImage();
+        } else if (mTempPhotoPath != null) {
+            File f;
+            try {
+                f = PhotoFileCreater.getInstance().setupPhotoFile(false);
+            } catch (IOException e) {
+                return;
+            }
+            File tempPhotoFile = new File(mTempPhotoPath);
+            if (tempPhotoFile.renameTo(f)) {
+                _fullsizePhotoPath = f.getAbsolutePath();
+                ImageManager.saveBitmapToThumb(_fullsizePhotoPath);
+                removeItemImage();
+            }
         }
 
         if (mItem_id == -1) {
@@ -888,16 +909,17 @@ public class EditWishActivity extends ActivityBase
         switch (requestCode) {
             case TAKE_PICTURE: {
                 if (resultCode == RESULT_OK) {
-                    _fullsizePhotoPath = String.valueOf(_newfullsizePhotoPath);
-                    _newfullsizePhotoPath = null;
-                    ImageManager.saveBitmapToThumb(_fullsizePhotoPath);
                     Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
                             .setCategory("Wish")
                             .setAction("TakenPicture")
                             .setLabel("FromEditItemCameraButton")
                             .build());
+
                     setTakenPhoto();
+                } else {
+                    Log.d(TAG, "cancel taking photo");
+                    mTempPhotoPath = null;
                 }
                 break;
             }
@@ -923,7 +945,7 @@ public class EditWishActivity extends ActivityBase
 
     private void dispatchTakePictureIntent() {
         CameraManager c = new CameraManager();
-        _newfullsizePhotoPath = c.getPhotoPath();
+        mTempPhotoPath = c.getPhotoPath();
         startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
     }
 
@@ -931,14 +953,14 @@ public class EditWishActivity extends ActivityBase
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURE);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
     }
 
     private String copyPhotoToAlbum(Uri uri) {
         try {
             //save the photo to a file we created in wishlist album
             final InputStream in = getContentResolver().openInputStream(uri);
-            File f = PhotoFileCreater.getInstance().setUpPhotoFile(false);
+            File f = PhotoFileCreater.getInstance().setupPhotoFile(false);
             String path = f.getAbsolutePath();
             OutputStream stream = new BufferedOutputStream(new FileOutputStream(f));
             int bufferSize = 1024;
@@ -962,27 +984,36 @@ public class EditWishActivity extends ActivityBase
         return null;
     }
 
+    private void removeTempPhoto() {
+        if (mTempPhotoPath != null) {
+            File f = new File(mTempPhotoPath);
+            f.delete();
+        }
+    }
+
     private boolean navigateBack(){
         //all fields are empty
-        if(_itemNameEditText.getText().toString().length() == 0 &&
+        if (_itemNameEditText.getText().toString().length() == 0 &&
                 _noteEditText.getText().toString().length() == 0 &&
                 _priceEditText.getText().toString().length() == 0 &&
                 _locationEditText.getText().toString().length() == 0 &&
                 _storeEditText.getText().toString().length() == 0){
 
+            removeTempPhoto();
             setResult(RESULT_CANCELED, null);
             finish();
             return false;
         }
 
         //only show warning if user is editing a new item
-        if(_editNew){
+        if (_editNew) {
             AlertDialog dialog;
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
             builder.setMessage("Discard the wish?").setCancelable(
                     false).setPositiveButton("Yes",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            removeTempPhoto();
                             setResult(RESULT_CANCELED, null);
                             EditWishActivity.this.finish();
                         }
@@ -993,15 +1024,13 @@ public class EditWishActivity extends ActivityBase
                         }
                     });
             dialog = builder.create();
-            //dialog.setOnShowListener(new DialogOnShowListener(this));
             dialog.show();
-        }
-        else{
+        } else {
+            removeTempPhoto();
             setResult(RESULT_CANCELED, null);
             finish();
         }
         return false;
-
     }
 
     /***
@@ -1016,13 +1045,14 @@ public class EditWishActivity extends ActivityBase
     }
 
     private Boolean setTakenPhoto() {
-        if (_fullsizePhotoPath == null) {
+        if (mTempPhotoPath == null) {
             return false;
         }
-        Log.d(TAG, "setTakePhoto " + _fullsizePhotoPath);
+        Log.d(TAG, "setTakePhoto " + mTempPhotoPath);
+        File tempPhotoFile = new File(mTempPhotoPath);
+        Picasso.with(this).invalidate(tempPhotoFile);
         _imageItem.setVisibility(View.VISIBLE);
-        String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(_fullsizePhotoPath);
-        Picasso.with(this).load(new File(thumb_path)).fit().centerCrop().into(_imageItem);
+        Picasso.with(this).load(tempPhotoFile).fit().centerCrop().into(_imageItem);
         _selectedPicUri = null;
         _webPicUrl = null;
         _selectedPic = false;
@@ -1033,7 +1063,7 @@ public class EditWishActivity extends ActivityBase
         if (_selectedPicUri == null) {
             return false;
         }
-        Log.d(TAG, "setSelectedPic " + _selectedPicUri.toString());
+        Log.e(TAG, "setSelectedPic " + _selectedPicUri.toString());
         _imageItem.setVisibility(View.VISIBLE);
         Picasso.with(this).load(_selectedPicUri).fit().centerCrop().into(_imageItem);
         _fullsizePhotoPath = null;
@@ -1071,8 +1101,8 @@ public class EditWishActivity extends ActivityBase
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         Log.d(TAG, "onSaveInstanceState");
-        if (_newfullsizePhotoPath != null) {
-            savedInstanceState.putString(NEW_FULLSIZE_PHOTO_PATH, _newfullsizePhotoPath.toString());
+        if (mTempPhotoPath != null) {
+            savedInstanceState.putString(TEMP_PHOTO_PATH, mTempPhotoPath);
         }
         if (_selectedPicUri != null) {
             savedInstanceState.putString(SELECTED_PIC_URL, _selectedPicUri.toString());
@@ -1091,7 +1121,7 @@ public class EditWishActivity extends ActivityBase
         super.onRestoreInstanceState(savedInstanceState);
         // restore the current selected item in the list
         if (savedInstanceState != null) {
-            _newfullsizePhotoPath = savedInstanceState.getString(NEW_FULLSIZE_PHOTO_PATH);
+            mTempPhotoPath = savedInstanceState.getString(TEMP_PHOTO_PATH);
             _fullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
             if (savedInstanceState.getString(SELECTED_PIC_URL) != null) {
                 _selectedPicUri = Uri.parse(savedInstanceState.getString(SELECTED_PIC_URL));
@@ -1099,7 +1129,7 @@ public class EditWishActivity extends ActivityBase
             if (savedInstanceState.getString(WEB_PIC_URL) != null) {
                 _webPicUrl = savedInstanceState.getString(WEB_PIC_URL);
             }
-            if (_fullsizePhotoPath != null) {
+            if (mTempPhotoPath != null) {
                 setTakenPhoto();
             } else if (_selectedPicUri != null) {
                 setSelectedPic();

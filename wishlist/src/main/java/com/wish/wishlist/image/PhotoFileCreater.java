@@ -50,7 +50,12 @@ public class PhotoFileCreater {
         return imageF;
     }
 
-    public File setUpPhotoFile(boolean thumnail) throws IOException {
+    public File getTempImageFile() {
+        File albumF = getAlbumDir(false);
+        return new File(albumF.getAbsolutePath(), "TEMP_PHOTO.jpg");
+    }
+
+    public File setupPhotoFile(boolean thumnail) throws IOException {
         hideAlbumFromGallery(); //should not be called here, it should be less frequent
         File f = createImageFile(thumnail);
         return f;
