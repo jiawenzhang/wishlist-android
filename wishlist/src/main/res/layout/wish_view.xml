@@ -35,31 +35,41 @@
             android:layout_marginRight="5dp"
             android:scrollbars="vertical" />
 
-        <RelativeLayout
+        <!-- ScrollView is to make Swipe to refresh to work -->
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             >
 
-            <Button
-                android:id="@+id/addNewWishButton"
-                android:layout_width="205dp"
-                android:layout_height="44dp"
-                android:gravity="center"
-                android:layout_margin="25dp"
-                android:bottomRightRadius="10dp"
-                android:bottomLeftRadius="10dp"
-                android:topLeftRadius="10dp"
-                android:topRightRadius="10dp"
-                android:text="Make your first wish"
-                android:textSize="16.0sp"
-                android:clickable="true"
-                android:textColor="@color/grey"
-                android:background="@drawable/dotted_button"
-                android:layout_centerInParent="true"
-                />
-        </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                >
 
-        <android.support.v4.widget.NestedScrollView
+                <Button
+                    android:id="@+id/addNewWishButton"
+                    android:layout_width="205dp"
+                    android:layout_height="44dp"
+                    android:gravity="center"
+                    android:layout_margin="25dp"
+                    android:bottomRightRadius="10dp"
+                    android:bottomLeftRadius="10dp"
+                    android:topLeftRadius="10dp"
+                    android:topRightRadius="10dp"
+                    android:text="Make your first wish"
+                    android:textSize="16.0sp"
+                    android:clickable="true"
+                    android:textColor="@color/grey"
+                    android:background="@drawable/dotted_button"
+                    android:layout_centerInParent="true"
+                    />
+            </RelativeLayout>
+        </ScrollView>
+
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -74,7 +84,7 @@
                 android:text="No matching wishes"
                 android:textSize="16sp"
                 />
-        </android.support.v4.widget.NestedScrollView>
+        </ScrollView>
 
         <!-- default listSelector in android 10 has a left/right margins, while in android >10 has no margins,
              set to null will remove these margins and make it consistent over different android version -->
