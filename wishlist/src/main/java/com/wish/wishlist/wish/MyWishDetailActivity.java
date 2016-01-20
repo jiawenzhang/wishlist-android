@@ -138,7 +138,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             public void onClick(View view) {
                 if (fullsize_picture_str != null) {
                     Intent i = new Intent(MyWishDetailActivity.this, FullscreenPhotoActivity.class);
-                    i.putExtra(EditWishActivity.FULLSIZE_PHOTO_PATH, fullsize_picture_str);
+                    i.putExtra(FullscreenPhotoActivity.PHOTO_PATH, fullsize_picture_str);
                     startActivity(i);
                 }
             }

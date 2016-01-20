@@ -9,7 +9,6 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.widget.ImageView;
 import android.util.AttributeSet;
-import android.util.Log;
 
 public class ZoomPanImageView extends ImageView {
 

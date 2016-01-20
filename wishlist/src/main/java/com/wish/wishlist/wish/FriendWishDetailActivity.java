@@ -2,16 +2,17 @@ package com.wish.wishlist.wish;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
+import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.model.WishItem;
 
 import java.util.ArrayList;
@@ -28,17 +29,20 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
 
         showItemInfo();
 
-//        final View imageFrame = findViewById(R.id.imagePhotoDetailFrame);
-//        imageFrame.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent i = new Intent(FriendWishDetailActivity.this, FullscreenPhotoActivity.class);
-//                if (_fullsize_picture_str != null) {
-//                    i.putExtra(EditWishActivity.FULLSIZE_PHOTO_PATH, _fullsize_picture_str);
-//                    startActivity(i);
-//                }
-//            }
-//        });
+        final View imageFrame = findViewById(R.id.imagePhotoDetailFrame);
+        imageFrame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(FriendWishDetailActivity.this, FullscreenPhotoActivity.class);
+                if (mItem.getPicURL() != null) {
+                    i.putExtra(FullscreenPhotoActivity.PHOTO_URL, mItem.getPicURL());
+                    startActivity(i);
+                } else if (mItem.getPicParseURL() != null) {
+                    i.putExtra(FullscreenPhotoActivity.PHOTO_URL, mItem.getPicParseURL());
+                    startActivity(i);
+                }
+            }
+        });
     }
 
     @Override
