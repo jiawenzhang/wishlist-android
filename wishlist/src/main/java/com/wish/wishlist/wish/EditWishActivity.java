@@ -432,7 +432,9 @@ public class EditWishActivity extends ActivityBase
                 String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(_fullsizePhotoPath);
                 Picasso.with(this).load(new File(thumb_path)).fit().centerCrop().into(_imageItem);
             } else {
-                Picasso.with(this).load(_selectedPicUri).fit().centerCrop().into(_imageItem);
+                // Picasso bug: fit().centerCrop() does not work together when image is large
+                // https://github.com/square/picasso/issues/249
+                Picasso.with(this).load(_selectedPicUri).into(_imageItem);
             }
         }
     }
@@ -1069,7 +1071,9 @@ public class EditWishActivity extends ActivityBase
         }
         Log.e(TAG, "setSelectedPic " + _selectedPicUri.toString());
         _imageItem.setVisibility(View.VISIBLE);
-        Picasso.with(this).load(_selectedPicUri).fit().centerCrop().into(_imageItem);
+        // Picasso bug: fit().centerCrop() does not work together when image is large
+        // https://github.com/square/picasso/issues/249
+        Picasso.with(this).load(_selectedPicUri).into(_imageItem);
         _fullsizePhotoPath = null;
         _webPicUrl = null;
         _selectedPic = true;
