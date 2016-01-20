@@ -809,8 +809,6 @@ public class EditWishActivity extends ActivityBase
             item.setPicURL(_webPicUrl);
             item.setFullsizePicPath(_fullsizePhotoPath);
             item.setPrice(itemPrice);
-            item.setLatitude(_lat);
-            item.setLongitude(_lng);
             item.setAddress(_ddStr);
             item.setComplete(itemComplete);
             item.setLink(itemLink);
