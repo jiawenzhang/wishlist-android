@@ -6,32 +6,59 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import com.wish.wishlist.view.ZoomPanImageView;
 import com.wish.wishlist.wish.EditWishActivity;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class FullscreenPhotoActivity extends Activity {
-    String _fullsizePhotoPath;
+    private static final String TAG = "FullscreenPhotoAct";
+    public static final String PHOTO_PATH = "PHOTO_PATH";
+    public static final String PHOTO_URI = "PHOTO_URI";
+    String mPhotoPath;
+    String mPhotoUri;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fullscreen_photo);
 
         Intent intent = getIntent();
-        _fullsizePhotoPath = intent.getStringExtra(EditWishActivity.FULLSIZE_PHOTO_PATH);
+        mPhotoPath = intent.getStringExtra(PHOTO_PATH);
+        mPhotoUri = intent.getStringExtra(PHOTO_URI);
 
         if (savedInstanceState != null) {
             //we are restoring on switching screen orientation
-            _fullsizePhotoPath = savedInstanceState.getString("fullsizePhotoPath");
+            mPhotoPath = savedInstanceState.getString(PHOTO_PATH);
+            mPhotoUri = savedInstanceState.getString(PHOTO_URI);
         }
 
         ZoomPanImageView imageItem = (ZoomPanImageView) findViewById(R.id.fullscreen_photo);
 
-        final Bitmap bitmap = BitmapFactory.decodeFile(_fullsizePhotoPath, null);
-        if (bitmap != null) {
-            imageItem.setImageBitmap(bitmap);
+        if (mPhotoUri != null) {
+            try {
+                Uri photoUri = Uri.parse(mPhotoUri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
+                imageItem.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, e.toString());
+                finish();
+            } catch (IOException e) {
+                Log.e(TAG, e.toString());
+                finish();
+            }
         } else {
-            finish();
+            final Bitmap bitmap = BitmapFactory.decodeFile(mPhotoPath, null);
+            if (bitmap != null) {
+                imageItem.setImageBitmap(bitmap);
+            } else {
+                finish();
+            }
         }
         //Bitmap bitmap = null;
 //			
@@ -104,7 +131,8 @@ public class FullscreenPhotoActivity extends Activity {
     //this will also save the photo on switching screen orientation
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("fullsizePhotoPath", _fullsizePhotoPath);
+        savedInstanceState.putString(PHOTO_PATH, mPhotoPath);
+        savedInstanceState.putString(PHOTO_URI, mPhotoUri);
         super.onSaveInstanceState(savedInstanceState);
     }
 

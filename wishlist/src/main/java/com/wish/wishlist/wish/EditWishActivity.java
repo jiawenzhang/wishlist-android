@@ -235,11 +235,14 @@ public class EditWishActivity extends ActivityBase
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(EditWishActivity.this, FullscreenPhotoActivity.class);
-                if (_fullsizePhotoPath != null) {
-                    i.putExtra(FULLSIZE_PHOTO_PATH, _fullsizePhotoPath);
-                    i.putExtra(SELECTED_PIC_URL, _selectedPicUri);
-                    startActivity(i);
+                if (mTempPhotoPath != null) {
+                    i.putExtra(FullscreenPhotoActivity.PHOTO_PATH, mTempPhotoPath);
+                } else if (_selectedPicUri != null) {
+                    i.putExtra(FullscreenPhotoActivity.PHOTO_URI, _selectedPicUri.toString());
+                } else if (_fullsizePhotoPath != null) {
+                    i.putExtra(FullscreenPhotoActivity.PHOTO_PATH, _fullsizePhotoPath);
                 }
+                startActivity(i);
             }
         });
 
