@@ -1050,7 +1050,10 @@ public class EditWishActivity extends ActivityBase
         File tempPhotoFile = new File(mTempPhotoPath);
         Picasso.with(this).invalidate(tempPhotoFile);
         _imageItem.setVisibility(View.VISIBLE);
-        Picasso.with(this).load(tempPhotoFile).fit().centerCrop().into(_imageItem);
+
+        // Picasso bug: fit().centerCrop() does not work together when image is large
+        // https://github.com/square/picasso/issues/249
+        Picasso.with(this).load(tempPhotoFile).into(_imageItem);
         _selectedPicUri = null;
         _webPicUrl = null;
         _selectedPic = false;
