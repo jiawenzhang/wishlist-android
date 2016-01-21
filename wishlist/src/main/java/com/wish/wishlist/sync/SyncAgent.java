@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -250,21 +251,24 @@ public class SyncAgent {
         SyncAgent.this.mSyncWishChangedListener.onSyncWishChanged();
     }
 
-    private void saveParseImage(ParseFile parseImage, final ParseObject parseItem, WishItem existingItem)
+    private void saveParseImage(final ParseFile parseImage, final ParseObject parseItem, final WishItem existingItem)
     {
         Log.d(TAG, "saveParseImage: item " + parseItem.getString(ItemDBManager.KEY_NAME));
-        try {
-            // Fixme: getData is gets data from network syncrhonousely, blocks the UI
-            final byte[] imageBytes = parseImage.getData();
-            ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), /*thumb*/true);
-            String fullsizePicPath = ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), /*thumb*/false);
-            if (existingItem != null) {
-                existingItem.removeImage();
+        parseImage.getDataInBackground(new GetDataCallback() {
+            @Override
+            public void done(byte[] imageBytes, ParseException e) {
+                if (e == null) {
+                    ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), /*thumb*/true);
+                    String fullsizePicPath = ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), /*thumb*/false);
+                    if (existingItem != null) {
+                        existingItem.removeImage();
+                    }
+                    onPhotoDone(parseItem, existingItem, fullsizePicPath);
+                } else {
+                    Log.e(TAG, e.toString());
+                }
             }
-            onPhotoDone(parseItem, existingItem, fullsizePicPath);
-        } catch (com.parse.ParseException e) {
-            Log.e(TAG, e.toString());
-        }
+        });
     }
 
     private void saveToParse(final ParseObject wishObject, final long item_id, final boolean saveImage, final boolean isNew)
