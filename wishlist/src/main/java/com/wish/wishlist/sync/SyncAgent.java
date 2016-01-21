@@ -45,6 +45,8 @@ public class SyncAgent {
     private OnSyncWishChangedListener mSyncWishChangedListener;
     private OnDownloadWishDoneListener mDownloadWishDoneListener;
     private Date m_synced_time;
+
+    private boolean mSyncing = false;
     private static String TAG = "SyncAgent";
 
     public static SyncAgent getInstance() {
@@ -55,6 +57,10 @@ public class SyncAgent {
     }
 
     private SyncAgent() {}
+
+    public boolean syncing() {
+        return mSyncing;
+    }
 
     // call sync on app start up
     // how does parse trigger sync on the client? push notification?
@@ -75,13 +81,15 @@ public class SyncAgent {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
         query.whereGreaterThan("updatedAt", last_synced_time);
         query.whereEqualTo(WishItem.PARSE_KEY_OWNDER_ID, ParseUser.getCurrentUser().getObjectId());
+
+        mSyncing = true;
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> itemList, com.parse.ParseException e) {
                 if (e == null) {
                     m_downloaded_items.clear();
                     m_items_to_download = itemList.size();
                     if (m_items_to_download == 0) {
-                        SyncAgent.this.mDownloadWishDoneListener.onDownloadWishDone();
+                        mDownloadWishDoneListener.onDownloadWishDone();
                         uploadToParse();
                         return;
                     }
@@ -374,6 +382,7 @@ public class SyncAgent {
 
     private void syncDone()
     {
+        mSyncing = false;
         Log.d(TAG, "sync finished at " + m_synced_time.getTime());
         // all items are processed, sync is done
         // save current time as last synced time

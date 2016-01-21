@@ -12,6 +12,7 @@ import com.parse.SaveCallback;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.ProfileChangeEvent;
+import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ProfileUtil;
 import com.wish.wishlist.wish.MyWishActivity;
@@ -96,8 +97,6 @@ public class UserLoginActivity extends Activity {
         ParseUser currentUser = ParseUser.getCurrentUser();
         Log.d(TAG, "You are logged in as " + currentUser.getEmail() + " " + currentUser.getString("name"));
 
-        ProfileUtil.downloadProfileImage();
-
         // Installation is used to identify self devices for push notification
         // so self device can sync wishes from Parse
         final ParseInstallation installation = ParseInstallation.getCurrentInstallation();
@@ -113,6 +112,9 @@ public class UserLoginActivity extends Activity {
                 }
             }
         });
+
+        ProfileUtil.downloadProfileImage();
+        SyncAgent.getInstance().sync();
 
         if (mFromSplash) {
             startActivity(new Intent(this, MyWishActivity.class));
