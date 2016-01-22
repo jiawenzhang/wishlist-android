@@ -9,13 +9,16 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.app.DialogFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 
 import com.parse.ParseUser;
+import com.wish.wishlist.BuildConfig;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.feature.NewFeatureFragmentActivity;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.login.UserLoginActivity;
+import com.wish.wishlist.util.Tester;
 import com.wish.wishlist.view.ReleaseNotesView;
 
 /**
@@ -110,6 +113,19 @@ public class PrefsFragment extends PreferenceFragment implements
                 return true;
             }
         });
+
+        final Preference debug = findPreference("debug");
+        if (!BuildConfig.DEBUG) {
+            PreferenceScreen preferenceScreen = getPreferenceScreen();
+            preferenceScreen.removePreference(debug);
+        } else {
+            debug.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    Tester.getInstance().addWishes();
+                    return true;
+                }
+            });
+        }
     }
 
     public void onCurrencyChanged(String currency) {

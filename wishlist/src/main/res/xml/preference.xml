@@ -55,5 +55,9 @@
             android:title="Privacy"
             android:key="privacy"
             android:layout="@xml/preference_style"/>
+        <Preference
+            android:title="Debug"
+            android:key="debug"
+            android:layout="@xml/preference_style"/>
     </PreferenceCategory>
 </PreferenceScreen>
