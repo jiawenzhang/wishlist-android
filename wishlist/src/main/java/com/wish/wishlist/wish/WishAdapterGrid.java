@@ -6,7 +6,6 @@ package com.wish.wishlist.wish;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -98,26 +97,9 @@ public class WishAdapterGrid extends WishAdapter {
         final String photo_path = wish.getFullsizePicPath();
         if (photo_path != null) {
             // we are loading my wish, and it has a fullsize photo on disk
-
-            // decode the original image into one with width about half the screen width, keep the aspect ratio
-            // this will avoid loading the original image into memory, which could be very slow if the image is large.
-            Display display = ((WindowManager) holder.imgPhoto.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-
-            // First decode with inJustDecodeBounds=true to check dimensions
-            final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(photo_path, options);
-            final float ratio = (float) options.outHeight / (float) options.outWidth;
-
-            int width = size.x / 2;
-            int height = (int) (width * ratio);
-
             String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(photo_path);
             holder.imgPhoto.setVisibility(View.VISIBLE);
-
-            Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(width, height).transform(mTransform).into(holder.imgPhoto);
+            Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
         } else {
             // we are loading friend wish
 
