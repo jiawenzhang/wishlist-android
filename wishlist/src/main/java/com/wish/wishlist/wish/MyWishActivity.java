@@ -132,7 +132,7 @@ public class MyWishActivity extends WishBaseActivity implements
         mAddNewButton = (Button) findViewById(R.id.addNewWishButton);
         mAddNewButton.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
-                Intent editItem = new Intent(MyWishActivity.this, EditWishActivity.class);
+                Intent editItem = new Intent(MyWishActivity.this, AddWishActivity.class);
                 startActivityForResult(editItem, ADD_ITEM);
             }
         });
@@ -140,7 +140,7 @@ public class MyWishActivity extends WishBaseActivity implements
         if (savedInstanceState != null) {
             Log.d(MyWishActivity.TAG, "savedInstanceState != null");
             // restore the current selected item in the list
-            mTempPhotoPath = savedInstanceState.getString(EditWishActivity.TEMP_PHOTO_PATH);
+            mTempPhotoPath = savedInstanceState.getString(AddWishActivity.TEMP_PHOTO_PATH);
 
             Log.d(MyWishActivity.TAG, "mTempPhotoPath " + mTempPhotoPath);
         } else{
@@ -517,7 +517,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString(EditWishActivity.TEMP_PHOTO_PATH, mTempPhotoPath);
+        savedInstanceState.putString(AddWishActivity.TEMP_PHOTO_PATH, mTempPhotoPath);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -527,7 +527,7 @@ public class MyWishActivity extends WishBaseActivity implements
             return;
         }
 
-        mTempPhotoPath = savedInstanceState.getString(EditWishActivity.TEMP_PHOTO_PATH);
+        mTempPhotoPath = savedInstanceState.getString(AddWishActivity.TEMP_PHOTO_PATH);
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -603,8 +603,8 @@ public class MyWishActivity extends WishBaseActivity implements
                 if (resultCode == RESULT_OK) {
                     Log.d(TAG, "TAKE_PICTURE: RESULT_OK");
                     Log.d("TAKE PICTURE ",  mTempPhotoPath);
-                    Intent i = new Intent(this, EditWishActivity.class);
-                    i.putExtra(EditWishActivity.TEMP_PHOTO_PATH, mTempPhotoPath);
+                    Intent i = new Intent(this, AddWishActivity.class);
+                    i.putExtra(AddWishActivity.TEMP_PHOTO_PATH, mTempPhotoPath);
 
                     Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
                     t.send(new HitBuilders.EventBuilder()
@@ -689,7 +689,7 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     protected boolean onTapAdd() {
-        Intent editItem = new Intent(MyWishActivity.this, EditWishActivity.class);
+        Intent editItem = new Intent(MyWishActivity.this, AddWishActivity.class);
         startActivityForResult(editItem, ADD_ITEM);
         return true;
     }

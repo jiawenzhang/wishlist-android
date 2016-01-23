@@ -54,17 +54,6 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"/>
             <!--android:src="@drawable/ic_tag_default_72by72"-->
-
-            <ImageButton style="@style/TitleBarAction"
-                android:id="@+id/imageButton_gallery"
-                android:contentDescription="@string/description_gallery"
-                android:src="@drawable/ic_action_camera"
-                android:background="@drawable/selectable_background_wishlist"
-                android:onClick="onClickCamera"
-                android:layout_gravity="right"
-                android:layout_weight="1"
-                android:visibility="gone"/>
-            <!--android:src="@drawable/ic_camera_default_72by72"-->
         </LinearLayout>
 
         <ScrollView

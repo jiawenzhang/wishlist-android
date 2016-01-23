@@ -15,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Display;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -145,11 +144,14 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         });
     }
 
+    @Override
     protected void showItemInfo() {
         super.showItemInfo();
+        final ImageView privateImage = (ImageView) findViewById(R.id.imgPrivate);
         if (mItem.getAccess() == mItem.PRIVATE) {
-            final ImageView privateImage = (ImageView) findViewById(R.id.imgPrivate);
             privateImage.setVisibility(View.VISIBLE);
+        } else {
+            privateImage.setVisibility(View.GONE);
         }
     }
 
@@ -195,7 +197,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
     private void editItem() {
         Intent i = new Intent(MyWishDetailActivity.this, EditWishActivity.class);
-        i.putExtra("item_id", mItem.getId());
+        i.putExtra(EditWishActivity.ITEM_ID, mItem.getId());
         startActivityForResult(i, EDIT_ITEM);
     }
 

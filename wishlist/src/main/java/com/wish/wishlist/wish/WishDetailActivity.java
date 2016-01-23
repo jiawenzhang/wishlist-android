@@ -24,6 +24,7 @@ public abstract class WishDetailActivity extends ActivityBase {
     public final static String ITEM = "Item";
 
     protected ImageView mPhotoView;
+    protected ImageView mImgComplete;
     private TextView mNameView;
     private TextView mDescriptionView;
     private TextView mDateView;
@@ -42,6 +43,7 @@ public abstract class WishDetailActivity extends ActivityBase {
         setupActionBar(R.id.item_detail_toolbar);
 
         mPhotoView = (ImageView) findViewById(R.id.imgPhotoDetail);
+        mImgComplete = (ImageView) findViewById(R.id.imgComplete);
         mNameView = (TextView) findViewById(R.id.itemNameDetail);
         mDescriptionView = (TextView) findViewById(R.id.itemDesription);
         mDateView = (TextView) findViewById(R.id.itemDateDetail);
@@ -58,6 +60,12 @@ public abstract class WishDetailActivity extends ActivityBase {
 
     protected void showItemInfo() {
         showPhoto();
+
+        if (mItem.getComplete() == 1) {
+            mImgComplete.setVisibility(View.VISIBLE);
+        } else {
+            mImgComplete.setVisibility(View.GONE);
+        }
 
         String dateTimeStr = mItem.getUpdatedTimeStr();
         String dateTimeStrNew = DateTimeFormatter.getInstance().getDateTimeString(dateTimeStr);
