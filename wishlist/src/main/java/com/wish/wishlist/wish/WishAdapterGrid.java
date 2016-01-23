@@ -6,6 +6,7 @@ package com.wish.wishlist.wish;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -27,6 +28,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.image.PhotoFileCreater;
+import com.wish.wishlist.util.DynamicHeightImageView;
 import com.wish.wishlist.util.RoundedCornersTransformation;
 
 import java.io.File;
@@ -45,7 +47,7 @@ public class WishAdapterGrid extends WishAdapter {
         public TextView txtPrice;
         public ImageView imgComplete;
         public ImageView imgPrivate;
-        public ImageView imgPhoto;
+        public DynamicHeightImageView imgPhoto;
 
         public ViewHolder(View v, MultiSelector multiSelector) {
             super(v, multiSelector);
@@ -55,7 +57,7 @@ public class WishAdapterGrid extends WishAdapter {
             txtPrice = (TextView) v.findViewById(R.id.txtPrice);
             imgComplete = (ImageView) v.findViewById(R.id.imgComplete);
             imgPrivate = (ImageView) v.findViewById(R.id.imgPrivate);
-            imgPhoto = (ImageView) v.findViewById(R.id.imgPhoto);
+            imgPhoto = (DynamicHeightImageView) v.findViewById(R.id.imgPhoto);
         }
     }
 
@@ -67,7 +69,6 @@ public class WishAdapterGrid extends WishAdapter {
         display.getSize(size);
         mScreenWidth = size.x / 2;
         Log.d(TAG, " screen width " + mScreenWidth);
-
     }
 
     // Create new views (invoked by the layout manager)
@@ -99,6 +100,13 @@ public class WishAdapterGrid extends WishAdapter {
             // we are loading my wish, and it has a fullsize photo on disk
             String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(photo_path);
             holder.imgPhoto.setVisibility(View.VISIBLE);
+
+            // First decode with inJustDecodeBounds=true to check dimensions
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(photo_path, options);
+            final float ratio = (float) options.outHeight / (float) options.outWidth;
+            holder.imgPhoto.setHeightRatio(ratio);
             Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
         } else {
             // we are loading friend wish
