@@ -1,52 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:id="@+id/itemDetail"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/bodyBackground_light_grey">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/itemDetail"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bodyBackground_light_grey">
 
-    <include layout="@layout/tool_bar"
-             android:id="@+id/item_detail_toolbar"
+    <include
+        layout="@layout/tool_bar"
+        android:id="@+id/item_detail_toolbar"
         />
 
-    <ScrollView android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fillViewport="true">
-        <LinearLayout android:orientation="vertical"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:layout_gravity="center"
-                      android:gravity="center_horizontal"
-                      android:layout_weight="12">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
 
             <!-- framelayout is for tap effect -->
             <FrameLayout
-            android:id="@+id/imagePhotoDetailFrame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:foreground="?android:attr/selectableItemBackground">
+                android:id="@+id/imagePhotoDetailFrame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:foreground="?android:attr/selectableItemBackground">
 
-            <ImageView android:id="@+id/imgPhotoDetail"
-                       android:contentDescription="@string/description_fullscreenPhoto"
-                       android:layout_width="match_parent"
-                       android:layout_height="300dp"
-                       android:scaleType="centerCrop"
-                       android:adjustViewBounds="true"
-                       android:gravity="center_horizontal"
-                />
-        </FrameLayout>
+                <ImageView
+                    android:id="@+id/imgPhotoDetail"
+                    android:contentDescription="@string/description_fullscreenPhoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"
+                    android:gravity="center_horizontal"
+                    />
+            </FrameLayout>
 
             <LinearLayout
+                android:id="@+id/itemNameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
+                android:layout_below="@+id/imagePhotoDetailFrame"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/itemNameDetail"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
                     android:textColor="@color/dark_grey"
@@ -81,35 +85,47 @@
                     />
             </LinearLayout>
 
-            <TextView style="@style/ItemInfoText"
-                      android:id="@+id/itemDesription"
-                      android:textSize="15sp"
-                      android:text="item description"/>
-
-            <TextView style="@style/ItemInfoText"
-                      android:id="@+id/itemDateDetail"
-                      android:textSize="14sp"
-                      android:fontFamily="sans-serif-light"
-                      android:layout_marginTop="20dp"
-                      android:text="item Date"/>
-
-            <TextView style="@style/ItemInfoText"
-                      android:fontFamily="sans-serif-light"
-                      android:id="@+id/itemPrice"/>
-
-            <TextView style="@style/ItemInfoText"
-                      android:id="@+id/itemStore"
-                      android:fontFamily="sans-serif-light"
-                      android:text="item store name"/>
-
-            <TextView style="@style/ItemInfoText"
-                      android:id="@+id/itemLocation"
-                      android:text="item location"/>
+            <TextView
+                android:id="@+id/itemDesription"
+                style="@style/ItemInfoText"
+                android:layout_below="@+id/itemNameLayout"
+                android:textSize="15sp"
+                android:text="item description"/>
 
             <TextView
+                android:id="@+id/itemDateDetail"
+                style="@style/ItemInfoText"
+                android:layout_below="@+id/itemDesription"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-light"
+                android:layout_marginTop="20dp"
+                android:text="item Date"/>
+
+            <TextView
+                android:id="@+id/itemPrice"
+                style="@style/ItemInfoText"
+                android:fontFamily="sans-serif-light"
+                android:layout_below="@+id/itemDateDetail"
+                />
+
+            <TextView
+                android:id="@+id/itemStore"
+                style="@style/ItemInfoText"
+                android:layout_below="@+id/itemPrice"
+                android:fontFamily="sans-serif-light"
+                android:text="item store name"/>
+
+            <TextView
+                android:id="@+id/itemLocation"
+                style="@style/ItemInfoText"
+                android:layout_below="@+id/itemStore"
+                android:text="item location"/>
+
+            <TextView
+                android:id="@+id/itemLink"
+                android:layout_below="@+id/itemLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/itemLink"
                 android:textSize="15sp"
                 android:paddingTop="8dp"
                 android:paddingLeft="15dp"
@@ -117,6 +133,7 @@
 
             <me.kaede.tagview.TagView
                 android:id="@+id/tag_view"
+                android:layout_below="@+id/itemLink"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
@@ -132,14 +149,14 @@
 
             <!-- white space at the bottom -->
             <TextView
-                android:layout_width="fill_parent"
+                android:layout_below="@+id/tag_view"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="8dip"
-                android:paddingLeft="15dip"
+                android:paddingTop="8dp"
+                android:paddingLeft="15dp"
                 android:visibility="invisible"
                 android:layout_gravity="left" />
 
-        </LinearLayout>
-
+        </RelativeLayout>
     </ScrollView>
 </LinearLayout>
