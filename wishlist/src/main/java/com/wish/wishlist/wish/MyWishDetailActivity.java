@@ -158,7 +158,12 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
     @Override
     protected void showPhoto() {
-        Glide.with(this).load(mItem.getFullsizePicPath()).fitCenter().into(mPhotoView);
+        if (mItem.getFullsizePicPath() != null) {
+            Glide.with(this).load(mItem.getFullsizePicPath()).fitCenter().into(mPhotoView);
+            mPhotoView.setVisibility(View.VISIBLE);
+        } else {
+            mPhotoView.setVisibility(View.GONE);
+        }
     }
 
     void addTags() {
