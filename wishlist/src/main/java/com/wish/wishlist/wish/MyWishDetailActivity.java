@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
@@ -157,8 +158,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
     @Override
     protected void showPhoto() {
-        String fullsize_picture_str = mItem.getFullsizePicPath();
-        new GetBitmapTask().execute(fullsize_picture_str);
+        Glide.with(this).load(mItem.getFullsizePicPath()).fitCenter().into(mPhotoView);
     }
 
     void addTags() {
