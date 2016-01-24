@@ -557,6 +557,7 @@ public abstract class EditWishActivityBase extends ActivityBase {
         // https://github.com/square/picasso/issues/249
         Glide.with(this).load(mSelectedPicUri).fitCenter().into(mImageItem);
         mFullsizePhotoPath = null;
+        mTempPhotoPath = null;
         mSelectedPic = true;
         return true;
     }
