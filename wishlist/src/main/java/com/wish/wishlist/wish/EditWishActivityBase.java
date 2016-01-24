@@ -23,9 +23,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.StringSignature;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.ActivityBase;
@@ -84,7 +85,6 @@ public abstract class EditWishActivityBase extends ActivityBase {
     protected static final int ADD_TAG = 3;
     protected Boolean mSelectedPic = false;
 
-    protected static final String FULLSIZE_PHOTO_PATH = "FULLSIZE_PHOTO_PATH";
     protected static final String TEMP_PHOTO_PATH = "TEMP_PHOTO_PATH";
     protected static final String SELECTED_PIC_URL = "SELECTED_PIC_URL";
 
@@ -177,9 +177,6 @@ public abstract class EditWishActivityBase extends ActivityBase {
             }
         });
 
-        mImageItem = (ImageView) findViewById(R.id.image_photo);
-        mImageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
         final View imageFrame = findViewById(R.id.image_photo_frame);
         imageFrame.setOnClickListener(new OnClickListener() {
             @Override
@@ -208,11 +205,7 @@ public abstract class EditWishActivityBase extends ActivityBase {
         mMapImageButton.setVisibility(View.GONE);
         mCompleteCheckBox.setVisibility(View.VISIBLE);
 
-        if (mFullsizePhotoPath != null) {
-            String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(mFullsizePhotoPath);
-            Picasso.with(this).load(new File(thumb_path)).fit().centerCrop().into(mImageItem);
-            mImageItem.setVisibility(View.VISIBLE);
-        }
+        mImageItem = (ImageView) findViewById(R.id.image_photo);
         mTags = TagItemDBManager.instance().tags_of_item(mItem_id);
 
         mCameraImageButton = (ImageButton) findViewById(R.id.imageButton_camera);
@@ -286,17 +279,11 @@ public abstract class EditWishActivityBase extends ActivityBase {
         if (savedInstanceState != null) {
             // restore the current selected item in the list
             mTempPhotoPath = savedInstanceState.getString(TEMP_PHOTO_PATH);
-            mFullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
             if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
                 mSelectedPicUri = Uri.parse(intent.getStringExtra(SELECTED_PIC_URL));
-            }
-            if (mFullsizePhotoPath != null) {
-                String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(mFullsizePhotoPath);
-                Picasso.with(this).load(new File(thumb_path)).fit().centerCrop().into(mImageItem);
-            } else {
-                // Picasso bug: fit().centerCrop() does not work together when image is large
+                // Picasso bug: fit() does not work when image is large
                 // https://github.com/square/picasso/issues/249
-                Picasso.with(this).load(mSelectedPicUri).into(mImageItem);
+                Glide.with(this).load(mSelectedPicUri).fitCenter().into(mImageItem);
             }
         }
     }
@@ -546,12 +533,15 @@ public abstract class EditWishActivityBase extends ActivityBase {
         }
         Log.d(TAG, "setTakePhoto " + mTempPhotoPath);
         File tempPhotoFile = new File(mTempPhotoPath);
-        Picasso.with(this).invalidate(tempPhotoFile);
         mImageItem.setVisibility(View.VISIBLE);
 
-        // Picasso bug: fit().centerCrop() does not work together when image is large
+        // Picasso bug: fit() does not work when image is large
         // https://github.com/square/picasso/issues/249
-        Picasso.with(this).load(tempPhotoFile).into(mImageItem);
+        // Picasso.with(this).invalidate(tempPhotoFile);
+        // Picasso.with(this).load(tempPhotoFile).fit.into(mImageItem);
+
+        // Because we save the taken photo to the same file, use StringSignature here to avoid loading image from cache
+        Glide.with(this).load(tempPhotoFile).fitCenter().signature(new StringSignature(String.valueOf(tempPhotoFile.lastModified()))).into(mImageItem);
         mSelectedPicUri = null;
         mSelectedPic = false;
         return true;
@@ -563,9 +553,9 @@ public abstract class EditWishActivityBase extends ActivityBase {
         }
         Log.e(TAG, "setSelectedPic " + mSelectedPicUri.toString());
         mImageItem.setVisibility(View.VISIBLE);
-        // Picasso bug: fit().centerCrop() does not work together when image is large
+        // Picasso bug: fit() does not work when image is large
         // https://github.com/square/picasso/issues/249
-        Picasso.with(this).load(mSelectedPicUri).into(mImageItem);
+        Glide.with(this).load(mSelectedPicUri).fitCenter().into(mImageItem);
         mFullsizePhotoPath = null;
         mSelectedPic = true;
         return true;
@@ -583,7 +573,6 @@ public abstract class EditWishActivityBase extends ActivityBase {
             savedInstanceState.putString(SELECTED_PIC_URL, mSelectedPicUri.toString());
         }
 
-        savedInstanceState.putString(FULLSIZE_PHOTO_PATH, mFullsizePhotoPath);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -593,7 +582,6 @@ public abstract class EditWishActivityBase extends ActivityBase {
         // restore the current selected item in the list
         if (savedInstanceState != null) {
             mTempPhotoPath = savedInstanceState.getString(TEMP_PHOTO_PATH);
-            mFullsizePhotoPath = savedInstanceState.getString(FULLSIZE_PHOTO_PATH);
             if (savedInstanceState.getString(SELECTED_PIC_URL) != null) {
                 mSelectedPicUri = Uri.parse(savedInstanceState.getString(SELECTED_PIC_URL));
             }

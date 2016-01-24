@@ -4,12 +4,11 @@ import java.io.File;
 import java.util.Observer;
 import java.util.Observable;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.image.ImageManager;
-import com.wish.wishlist.image.PhotoFileCreater;
 
 import android.content.Intent;
 import android.location.Location;
@@ -60,8 +59,9 @@ public class EditWishActivity extends EditWishActivityBase
         mStoreEditText.setText(item.getStoreName());
         mFullsizePhotoPath = item.getFullsizePicPath();
         if (mFullsizePhotoPath != null) {
-            String thumb_path = PhotoFileCreater.getInstance().thumbFilePath(mFullsizePhotoPath);
-            Picasso.with(this).load(new File(thumb_path)).fit().centerCrop().into(mImageItem);
+            // Picasso bug: fit().centerCrop() does not work together when image is large
+            // https://github.com/square/picasso/issues/249
+            Glide.with(this).load(new File(mFullsizePhotoPath)).fitCenter().into(mImageItem);
             mImageItem.setVisibility(View.VISIBLE);
         }
         mTags = TagItemDBManager.instance().tags_of_item(mItem_id);
