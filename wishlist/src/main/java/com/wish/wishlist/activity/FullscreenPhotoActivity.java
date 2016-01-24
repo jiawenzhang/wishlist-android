@@ -10,10 +10,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.view.ZoomPanImageView;
 
 import java.io.FileNotFoundException;
@@ -21,12 +24,38 @@ import java.io.IOException;
 
 public class FullscreenPhotoActivity extends Activity {
     private static final String TAG = "FullscreenPhotoAct";
+    private String mPhotoPath;
+    private String mPhotoUri;
+    private String mPhotoUrl;
+    private ZoomPanImageView mImageItem;
+    private class GetBitmapTask extends AsyncTask<Void, Void, Bitmap> {//<param, progress, result>
+        @Override
+        protected Bitmap doInBackground(Void... arg) {
+            // First decode with inJustDecodeBounds=true to check dimensions
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(mPhotoPath, options);
+            final float ratio = (float) options.outHeight / (float) options.outWidth;
+
+            int width = dimension.screenWidth();
+            int height = (int) (width * ratio);
+
+            return ImageManager.getInstance().decodeSampledBitmapFromFile(mPhotoPath, width, height, false);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (bitmap == null) {
+                finish();
+            } else {
+                mImageItem.setImageBitmap(bitmap);
+            }
+        }
+    }
+
     public static final String PHOTO_PATH = "PHOTO_PATH";
     public static final String PHOTO_URI = "PHOTO_URI";
     public static final String PHOTO_URL = "PHOTO_URL";
-    String mPhotoPath;
-    String mPhotoUri;
-    String mPhotoUrl;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,13 +73,13 @@ public class FullscreenPhotoActivity extends Activity {
             mPhotoUrl = savedInstanceState.getString(PHOTO_URL);
         }
 
-        final ZoomPanImageView imageItem = (ZoomPanImageView) findViewById(R.id.fullscreen_photo);
+        mImageItem = (ZoomPanImageView) findViewById(R.id.fullscreen_photo);
 
         if (mPhotoUri != null) {
             try {
                 Uri photoUri = Uri.parse(mPhotoUri);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
-                imageItem.setImageBitmap(bitmap);
+                mImageItem.setImageBitmap(bitmap);
             } catch (FileNotFoundException e) {
                 Log.e(TAG, e.toString());
                 finish();
@@ -59,19 +88,14 @@ public class FullscreenPhotoActivity extends Activity {
                 finish();
             }
         } else if (mPhotoPath != null) {
-            final Bitmap bitmap = BitmapFactory.decodeFile(mPhotoPath, null);
-            if (bitmap != null) {
-                imageItem.setImageBitmap(bitmap);
-            } else {
-                finish();
-            }
+            new GetBitmapTask().execute();
         } else if (mPhotoUrl != null) {
             Target target = new Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     if (bitmap != null) {
                         Log.d(TAG, "valid bitmap");
-                        imageItem.setImageBitmap(bitmap);
+                        mImageItem.setImageBitmap(bitmap);
                     } else {
                         Log.e(TAG, "null bitmap");
                         finish();

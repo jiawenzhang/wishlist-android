@@ -1,7 +1,11 @@
 package com.wish.wishlist.util;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.util.TypedValue;
+import android.view.Display;
+import android.view.WindowManager;
 
 import com.wish.wishlist.WishlistApplication;
 
@@ -12,6 +16,13 @@ public class dimension {
     public static int dp2px(int dp) {
         Resources r = WishlistApplication.getAppContext().getResources();
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
+    }
+
+    public static int screenWidth() {
+        Display display = ((WindowManager) WishlistApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        Point screenSize = new Point();
+        display.getSize(screenSize);
+        return screenSize.x;
     }
 }
 
