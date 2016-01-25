@@ -110,15 +110,18 @@ public class WishAdapterGrid extends WishAdapter {
             Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
         } else {
             // we are loading friend wish
-
-            final String photoWebURL = wish.getPicURL();
-            final String photoParseURL = wish.getPicParseURL();
-            if (photoWebURL != null) {
+            final WebImgMeta webImgMeta = wish.getWebImgMeta();
+            final WebImgMeta parseImgMeta = wish.getParseImgMeta();
+            if (webImgMeta != null) {
+                final float ratio = (float) webImgMeta.mHeight / (float) webImgMeta.mWidth;
+                holder.imgPhoto.setHeightRatio(ratio);
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
-            } else if (photoParseURL != null) {
+                Picasso.with(holder.imgPhoto.getContext()).load(webImgMeta.mUrl).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
+            } else if (parseImgMeta != null) {
+                final float ratio = (float) parseImgMeta.mHeight / (float) parseImgMeta.mWidth;
+                holder.imgPhoto.setHeightRatio(ratio);
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
+                Picasso.with(holder.imgPhoto.getContext()).load(parseImgMeta.mUrl).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
             } else {
                 holder.imgPhoto.setVisibility(View.GONE);
             }

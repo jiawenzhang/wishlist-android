@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -26,6 +27,7 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.ProfileUtil;
+import com.wish.wishlist.wish.WebImgMeta;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -152,14 +154,17 @@ public class SyncAgent {
 
     private void saveFromParse(final ParseObject parseItem)
     {
-        String photoURL = parseItem.getString(ItemDBManager.KEY_PHOTO_URL);
+        String webImgMetaJSON = parseItem.getString(ItemDBManager.KEY_WEB_IMG_META_JSON);
         final ParseFile parseImage = parseItem.getParseFile(WishItem.PARSE_KEY_IMAGE);
-        if (photoURL == null && parseImage == null) {
+        if (webImgMetaJSON == null && parseImage == null) {
             onPhotoDone(parseItem, null, null);
             return;
         }
-        if (photoURL != null) {
-            saveWebImage(photoURL, parseItem, null);
+        if (webImgMetaJSON != null) {
+            WebImgMeta webImageMeta = WebImgMeta.fromJSON(webImgMetaJSON);
+            if (webImageMeta != null) {
+                saveWebImage(webImageMeta.mUrl, parseItem, null);
+            }
             return;
         }
         saveParseImage(parseImage, parseItem, null);
@@ -168,17 +173,20 @@ public class SyncAgent {
     private void updateFromParse(final ParseObject parseItem, WishItem existingItem)
     {
         Log.d(TAG, "updateFromParse: item " + existingItem.getName());
-        String photoURL = parseItem.getString(ItemDBManager.KEY_PHOTO_URL);
-        final ParseFile parseImage = parseItem.getParseFile("image");
-        if (photoURL == null && parseImage == null) {
+        String webImgMetaJSON = parseItem.getString(ItemDBManager.KEY_WEB_IMG_META_JSON);
+        final ParseFile parseImage = parseItem.getParseFile(WishItem.PARSE_KEY_IMAGE);
+        if (webImgMetaJSON == null && parseImage == null) {
             existingItem.removeImage();
             onPhotoDone(parseItem, existingItem, null);
             return;
         }
-        if (photoURL != null) {
-            if (!photoURL.equals(existingItem.getPicURL())) {
+        if (webImgMetaJSON != null) {
+            if (!webImgMetaJSON.equals(existingItem.getWebImgMetaJSON())) {
                 // we have a new image, update it locally
-                saveWebImage(photoURL, parseItem, existingItem);
+                WebImgMeta webImgMeta = WebImgMeta.fromJSON(webImgMetaJSON);
+                if (webImgMeta != null) {
+                    saveWebImage(webImgMeta.mUrl, parseItem, existingItem);
+                }
             } else {
                 onPhotoDone(parseItem, existingItem, existingItem.getFullsizePicPath());
             }
@@ -279,24 +287,32 @@ public class SyncAgent {
         });
     }
 
-    private void saveToParse(final ParseObject wishObject, final long item_id, final boolean saveImage, final boolean isNew)
-    {
-        // save the wish meta and image data to parse
-        final ParseFile parseImage = wishObject.getParseFile(WishItem.PARSE_KEY_IMAGE);
-        if (saveImage && parseImage != null) {
-            parseImage.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        saveParseObject(wishObject, item_id, isNew);
-                    } else {
-                        Log.e(TAG, "save ParseFile failed " + e.toString());
-                    }
+    private void saveToParseWithImage(final ParseObject wishObject, final WishItem item, final boolean isNew) {
+        // we save a scale-down thumbnail image to Parse to save space
+        Log.d(TAG, "thumbPicPath " + item.getThumbPicPath());
+
+        // decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(item.getThumbPicPath(), options);
+        final int w = options.outWidth;
+        final int h = options.outHeight;
+
+        final byte[] data = ImageManager.readFile(item.getThumbPicPath());
+        final ParseFile parseImage = new ParseFile(item.getPicName(), data);
+        parseImage.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.e(TAG, "parse img url " + parseImage.getUrl());
+                    wishObject.put(WishItem.PARSE_KEY_IMAGE, parseImage);
+                    wishObject.put(WishItem.PARSE_KEY_IMG_META_JSON, new WebImgMeta(parseImage.getUrl(), w, h).toJSON());
+                    saveParseObject(wishObject, item.getId(), isNew);
+                } else {
+                    Log.e(TAG, "save ParseFile failed " + e.toString());
                 }
-            });
-        } else {
-            saveParseObject(wishObject, item_id, isNew);
-        }
+            }
+        });
     }
 
     private void saveParseObject(final ParseObject wishObject, final long item_id, final boolean isNew)
@@ -323,12 +339,18 @@ public class SyncAgent {
         });
     }
 
-    private void addToParse(WishItem item)
+    private void addToParse(final WishItem item)
     {
         Log.d(TAG, "Adding item " + item.getName() + " to Parse");
-
         final ParseObject wishObject = item.toParseObject();
-        saveToParse(wishObject, item.getId(), true, true);
+
+        if (item.getWebImgMetaJSON() != null || item.getThumbPicPath() == null) {
+            // if we have an web url for the photo, we don't upload the photo to Parse so that we can save server space
+            // when the other device sync down the wish, it will download the photo from the web url
+            saveParseObject(wishObject, item.getId(), true);
+            return;
+        }
+        saveToParseWithImage(wishObject, item, true);
     }
 
     private void updateParse(final WishItem item)
@@ -338,7 +360,7 @@ public class SyncAgent {
 
         // Retrieve the object by id
         query.getInBackground(item.getObjectId(), new GetCallback<ParseObject>() {
-            public void done(ParseObject wishObject, com.parse.ParseException e) {
+            public void done(final ParseObject wishObject, com.parse.ParseException e) {
                 if (e == null) {
                     String parseImageName = null;
                     ParseFile pf = wishObject.getParseFile(WishItem.PARSE_KEY_IMAGE);
@@ -354,7 +376,11 @@ public class SyncAgent {
                         saveImage = true;
                     }
                     WishItem.toParseObject(item, wishObject);
-                    saveToParse(wishObject, item.getId(), false, saveImage);
+                    if (saveImage) {
+                        saveToParseWithImage(wishObject, item, false);
+                    } else {
+                        saveParseObject(wishObject, item.getId(), false);
+                    }
                 } else {
                     Log.e(TAG, "update failed " + e.toString() + " object_id " + item.getObjectId());
                 }

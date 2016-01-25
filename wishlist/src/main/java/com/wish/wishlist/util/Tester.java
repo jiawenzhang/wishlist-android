@@ -2,6 +2,7 @@ package com.wish.wishlist.util;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.wish.WebImgMeta;
 
 import java.util.Random;
 
@@ -43,7 +44,7 @@ public class Tester {
     public void addWishes() {
         // create a new item
         Random r = new Random();
-        int n = 100;
+        int n = 20;
         for (int i=0; i < n; i++ ) {
             int itemAccess = r.nextInt(2); // int between [0, 2);
             String itemStoreName = "Store";
@@ -54,6 +55,7 @@ public class Tester {
             int height = 256 + r.nextInt(256); // 256 - 512
             //String webPicUrl = "http://placehold.it/" + String.valueOf(width) + "x" + String.valueOf(height) + ".jpg";
             String webPicUrl = "http://loremflickr.com/" + String.valueOf(width) + "/" + String.valueOf(height);
+            String webImgMetaJSON = new WebImgMeta(webPicUrl, width, height).toJSON();
             String fullsizePhotoPath = null;
             Double itemPrice = r.nextDouble();
 
@@ -73,7 +75,7 @@ public class Tester {
                     itemName,
                     itemDesc,
                     System.currentTimeMillis(),
-                    webPicUrl,
+                    webImgMetaJSON,
                     null,
                     fullsizePhotoPath,
                     itemPrice,

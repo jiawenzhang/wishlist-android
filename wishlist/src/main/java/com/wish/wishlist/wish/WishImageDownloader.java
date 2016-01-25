@@ -50,20 +50,20 @@ public class WishImageDownloader {
     }
 
     private void download(final WishItem item) {
-        final String webPicURL = item.getPicURL();
-        final String parsePicURL = item.getPicParseURL();
-        if (webPicURL == null && parsePicURL == null) {
+        final WebImgMeta webImgMeta = item.getWebImgMeta();
+        final WebImgMeta parseImgMeta = item.getParseImgMeta();
+        if (webImgMeta == null && parseImgMeta == null) {
             // wish does not have a picture
             bitmapLoaded(null, null, item);
             return;
         }
 
         final String picURL;
-        if (webPicURL != null) {
+        if (webImgMeta != null) {
             // try to download pic from internet first
-            picURL = webPicURL;
+            picURL = webImgMeta.mUrl;
         } else {
-            picURL = parsePicURL;
+            picURL = parseImgMeta.mUrl;
         }
 
         Target target = new Target() {

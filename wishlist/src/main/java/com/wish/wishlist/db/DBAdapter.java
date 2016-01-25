@@ -54,7 +54,7 @@ public class DBAdapter {
             String sql = "DELETE FROM "
                     + ItemDBManager.DB_TABLE
                     + " WHERE "
-                    + ItemDBManager.KEY_PHOTO_URL
+                    + ItemDBManager.KEY_WEB_IMG_META_JSON
                     + " LIKE '%sample'";
 
             db.execSQL(sql);
@@ -184,7 +184,7 @@ public class DBAdapter {
             + ItemDBManager.KEY_NAME 		+ " TEXT, "
             + ItemDBManager.KEY_DESCRIPTION + " TEXT, "
             + ItemDBManager.KEY_UPDATED_TIME+ " INTEGER, "
-            + ItemDBManager.KEY_PHOTO_URL 	+ " TEXT, "
+            + ItemDBManager.KEY_WEB_IMG_META_JSON + " TEXT, "
             + ItemDBManager.KEY_FULLSIZE_PHOTO_PATH 	+ " TEXT, "
             + ItemDBManager.KEY_PRICE 		+ " REAL, "
             + ItemDBManager.KEY_ADDRESS 	+ " TEXT, "

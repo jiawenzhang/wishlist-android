@@ -13,7 +13,6 @@ import com.wish.wishlist.image.ImageManager;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import android.os.AsyncTask;
@@ -73,11 +72,11 @@ public class EditWishActivity extends EditWishActivityBase
             mFullsizePhotoPath = copyPhotoToAlbum(mSelectedPicUri);
             ImageManager.saveBitmapToThumb(mSelectedPicUri, mFullsizePhotoPath, this);
             removeItemImage();
-            item.setPicURL(null);
+            item.setWebImgMeta(null, 0, 0);
         } else if (mTempPhotoPath != null) {
             if (saveTempPhoto()) {
                 removeItemImage();
-                item.setPicURL(null);
+                item.setWebImgMeta(null, 0, 0);
             } else {
                 return false;
             }

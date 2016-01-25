@@ -34,11 +34,11 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(FriendWishDetailActivity.this, FullscreenPhotoActivity.class);
-                if (mItem.getPicURL() != null) {
-                    i.putExtra(FullscreenPhotoActivity.PHOTO_URL, mItem.getPicURL());
+                if (mItem.getWebImgMeta() != null) {
+                    i.putExtra(FullscreenPhotoActivity.PHOTO_URL, mItem.getWebImgMeta().mUrl);
                     startActivity(i);
-                } else if (mItem.getPicParseURL() != null) {
-                    i.putExtra(FullscreenPhotoActivity.PHOTO_URL, mItem.getPicParseURL());
+                } else if (mItem.getParseImgMeta() != null) {
+                    i.putExtra(FullscreenPhotoActivity.PHOTO_URL, mItem.getParseImgMeta().mUrl);
                     startActivity(i);
                 }
             }
@@ -47,14 +47,14 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
 
     @Override
     protected void showPhoto() {
-        if (mItem.getPicURL() != null) {
+        if (mItem.getWebImgMeta() != null) {
             // we have the photo somewhere on the internet
             mPhotoView.setVisibility(View.VISIBLE);
-            Picasso.with(this).load(mItem.getPicURL()).fit().centerCrop().into(mPhotoView);
-        } else if (mItem.getPicParseURL() != null) {
+            Picasso.with(this).load(mItem.getWebImgMeta().mUrl).fit().centerCrop().into(mPhotoView);
+        } else if (mItem.getParseImgMeta() != null) {
             // we have the photo on Parse
             mPhotoView.setVisibility(View.VISIBLE);
-            Picasso.with(this).load(mItem.getPicParseURL()).fit().centerCrop().into(mPhotoView);
+            Picasso.with(this).load(mItem.getParseImgMeta().mUrl).fit().centerCrop().into(mPhotoView);
         } else {
             mPhotoView.setVisibility(View.GONE);
         }

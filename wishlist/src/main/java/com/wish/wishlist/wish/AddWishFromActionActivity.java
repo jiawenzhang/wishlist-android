@@ -386,9 +386,11 @@ public class AddWishFromActionActivity extends AddWishActivity
      * Save user input as a wish item
      */
     protected boolean saveWishItem(final WishInput input) {
+        String webImgMetaJson = null;
         if (mWebBitmap != null) {
             mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(mWebBitmap);
             ImageManager.saveBitmapToThumb(mWebBitmap, mFullsizePhotoPath);
+            webImgMetaJson = new WebImgMeta(mWebPicUrl, mWebBitmap.getWidth(), mWebBitmap.getHeight()).toJSON();
         }
 
         // create a new item
@@ -400,7 +402,7 @@ public class AddWishFromActionActivity extends AddWishActivity
                 input.mName,
                 input.mDescription,
                 System.currentTimeMillis(),
-                mWebPicUrl,
+                webImgMetaJson,
                 null,
                 mFullsizePhotoPath,
                 input.mPrice,

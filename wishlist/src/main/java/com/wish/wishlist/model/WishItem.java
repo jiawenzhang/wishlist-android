@@ -17,7 +17,6 @@ import android.content.ContentValues;
 import android.util.Log;
 import android.database.Cursor;
 
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.wish.wishlist.WishlistApplication;
@@ -26,9 +25,12 @@ import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.image.PhotoFileCreater;
 import com.wish.wishlist.sync.SyncAgent;
+import com.wish.wishlist.wish.WebImgMeta;
 
 import android.preference.PreferenceManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -45,8 +47,8 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     private String _comments;
     private String _desc;
     private long _updated_time;
-    private String _picURL;
-    private String _picParseURL;
+    private String mWebImgMetaJSON;
+    private String mParseImgMetaJSON;
     private String _fullsizePicPath;
     private int _priority;
     private int _complete;
@@ -61,9 +63,10 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     public final static String PARSE_KEY_OWNDER_ID = "owner_id";
     public final static String PARSE_KEY_TAGS = "tags";
     public final static String PARSE_KEY_IMAGE = "image";
+    public final static String PARSE_KEY_IMG_META_JSON = "parse_img_meta_json";
 
     public WishItem(long itemId, String object_id, int access, String storeName, String name, String desc,
-                    long updated_time, String picURL, String picParseURL, String fullsizePicPath, double price, double latitude, double longitude,
+                    long updated_time, String webImgMetaJSON, String parseImgMetaJSON, String fullsizePicPath, double price, double latitude, double longitude,
                     String address, int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
         _id = itemId;
         _object_id = object_id;
@@ -73,8 +76,8 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         _latitude = latitude;
         _longitude = longitude;
         _address = address;
-        _picURL = picURL;
-        _picParseURL = picParseURL;
+        mWebImgMetaJSON = webImgMetaJSON;
+        mParseImgMetaJSON = parseImgMetaJSON;
         _storeName = storeName;
         _name = name;
         _desc = desc;
@@ -330,16 +333,34 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         return uri;
     }
 
-    public String getPicURL() {
-        return _picURL;
+    public String getWebImgMetaJSON() {
+        return mWebImgMetaJSON;
     }
 
-    public String getPicParseURL() {
-        return _picParseURL;
+    public WebImgMeta getWebImgMeta() {
+        if (mWebImgMetaJSON == null) {
+            return null;
+        }
+        return WebImgMeta.fromJSON(mWebImgMetaJSON);
     }
 
-    public void setPicURL(String picURL) {
-        _picURL = picURL;
+    public String getParseImgMetaJSON() {
+        return mParseImgMetaJSON;
+    }
+
+    public WebImgMeta getParseImgMeta() {
+        if (mParseImgMetaJSON == null) {
+            return null;
+        }
+        return WebImgMeta.fromJSON(mParseImgMetaJSON);
+    }
+
+    public void setWebImgMeta(String url, int w, int h) {
+        if (url == null) {
+            mWebImgMetaJSON = null;
+            return;
+        }
+        mWebImgMetaJSON = new WebImgMeta(url, w, h).toJSON();
     }
 
     @Override
@@ -414,7 +435,7 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         Log.d(TAG, "saveToLocal");
         ItemDBManager manager = new ItemDBManager();
         if (_id == -1) { // new item
-            _id = manager.addItem(_object_id, _access, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,
+            _id = manager.addItem(_object_id, _access, _storeName, _name, _desc, _updated_time, mWebImgMetaJSON, _fullsizePicPath,
                     _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted, _synced_to_server);
         } else { // existing item
             updateDB();
@@ -425,36 +446,32 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     private void updateDB()
     {
         ItemDBManager manager = new ItemDBManager();
-        manager.updateItem(_id, _object_id, _access, _storeName, _name, _desc, _updated_time, _picURL, _fullsizePicPath,
+        manager.updateItem(_id, _object_id, _access, _storeName, _name, _desc, _updated_time, mWebImgMetaJSON, _fullsizePicPath,
                 _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted, _synced_to_server);
     }
 
-    public static WishItem fromParseObject(final ParseObject item, long item_id)
+    public static WishItem fromParseObject(final ParseObject wishObject, long item_id)
     {
-        String picParseURL = null;
-        final ParseFile parseImage = item.getParseFile(WishItem.PARSE_KEY_IMAGE);
-        if (parseImage != null ) {
-            picParseURL = parseImage.getUrl();
-        }
+        final String parseImgMetaJSON = wishObject.getString(WishItem.PARSE_KEY_IMG_META_JSON);
         WishItem wishItem = new WishItem(
                 item_id,
-                item.getObjectId(),
-                item.getInt(ItemDBManager.KEY_ACCESS),
-                item.getString(ItemDBManager.KEY_STORENAME),
-                item.getString(ItemDBManager.KEY_NAME),
-                item.getString(ItemDBManager.KEY_DESCRIPTION),
-                item.getLong(ItemDBManager.KEY_UPDATED_TIME),
-                item.getString(ItemDBManager.KEY_PHOTO_URL),
-                picParseURL,
+                wishObject.getObjectId(),
+                wishObject.getInt(ItemDBManager.KEY_ACCESS),
+                wishObject.getString(ItemDBManager.KEY_STORENAME),
+                wishObject.getString(ItemDBManager.KEY_NAME),
+                wishObject.getString(ItemDBManager.KEY_DESCRIPTION),
+                wishObject.getLong(ItemDBManager.KEY_UPDATED_TIME),
+                wishObject.getString(ItemDBManager.KEY_WEB_IMG_META_JSON),
+                parseImgMetaJSON,
                 null, // _fullsizePhotoPath,
-                item.getDouble(ItemDBManager.KEY_PRICE),
-                item.getDouble(ItemDBManager.KEY_LATITUDE),
-                item.getDouble(ItemDBManager.KEY_LONGITUDE),
-                item.getString(ItemDBManager.KEY_ADDRESS),
+                wishObject.getDouble(ItemDBManager.KEY_PRICE),
+                wishObject.getDouble(ItemDBManager.KEY_LATITUDE),
+                wishObject.getDouble(ItemDBManager.KEY_LONGITUDE),
+                wishObject.getString(ItemDBManager.KEY_ADDRESS),
                 0, // priority
-                item.getInt(ItemDBManager.KEY_COMPLETE),
-                item.getString(ItemDBManager.KEY_LINK),
-                item.getBoolean(ItemDBManager.KEY_DELETED),
+                wishObject.getInt(ItemDBManager.KEY_COMPLETE),
+                wishObject.getString(ItemDBManager.KEY_LINK),
+                wishObject.getBoolean(ItemDBManager.KEY_DELETED),
                 true);
 
         return wishItem;
@@ -471,10 +488,10 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         wishObject.put(ItemDBManager.KEY_NAME, item.getName());
         wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc());
         wishObject.put(ItemDBManager.KEY_UPDATED_TIME, item.getUpdatedTime());
-        if (item.getPicURL() != null) {
-            wishObject.put(ItemDBManager.KEY_PHOTO_URL, item.getPicURL());
+        if (item.getWebImgMetaJSON() != null) {
+            wishObject.put(ItemDBManager.KEY_WEB_IMG_META_JSON, item.getWebImgMetaJSON());
         } else {
-            wishObject.put(ItemDBManager.KEY_PHOTO_URL, JSONObject.NULL);
+            wishObject.put(ItemDBManager.KEY_WEB_IMG_META_JSON, JSONObject.NULL);
         }
         wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice());
         wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude());
@@ -485,19 +502,6 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         wishObject.put(ItemDBManager.KEY_DELETED, item.getDeleted());
         List<String> tags = TagItemDBManager.instance().tags_of_item(item.getId());
         wishObject.put(WishItem.PARSE_KEY_TAGS, tags);
-
-        if (item.getPicURL() != null) {
-            // if we have an url for the photo, we don't upload the photo to Parse so that we can save space
-            // when the other device sync down the wish, it will download the photo from the url
-            return;
-        }
-        if (item.getThumbPicPath() != null) {
-            // we save a scale-down thumbnail image to Parse to save space
-            Log.d(TAG, "toParseObject thumbPicPath " + item.getThumbPicPath());
-            final byte[] data = ImageManager.readFile(item.getThumbPicPath());
-            ParseFile parseImage = new ParseFile(item.getPicName(), data);
-            wishObject.put(PARSE_KEY_IMAGE, parseImage);
-        }
     }
 
     public ParseObject toParseObject()
@@ -566,8 +570,8 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         out.writeString(_comments);
         out.writeString(_desc);
         out.writeLong(_updated_time);
-        out.writeString(_picURL);
-        out.writeString(_picParseURL);
+        out.writeString(mWebImgMetaJSON);
+        out.writeString(mParseImgMetaJSON);
         out.writeString(_fullsizePicPath);
         out.writeInt(_priority);
         out.writeInt(_complete);
@@ -601,8 +605,8 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         _comments = in.readString();
         _desc = in.readString();
         _updated_time = in.readLong();
-        _picURL = in.readString();
-        _picParseURL = in.readString();
+        mWebImgMetaJSON = in.readString();
+        mParseImgMetaJSON = in.readString();
         _fullsizePicPath = in.readString();
         _priority = in.readInt();
         _complete = in.readInt();

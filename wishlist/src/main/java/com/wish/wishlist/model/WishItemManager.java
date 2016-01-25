@@ -128,7 +128,7 @@ public class WishItemManager {
                 .getColumnIndexOrThrow(ItemDBManager.KEY_STORENAME));
 
         String picture_str = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_PHOTO_URL));
+                .getColumnIndexOrThrow(ItemDBManager.KEY_WEB_IMG_META_JSON));
 
         String fullsize_pic_path = wishItemCursor.getString(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_FULLSIZE_PHOTO_PATH));
@@ -171,7 +171,7 @@ public class WishItemManager {
         WishItem item = getItemById(itemId);
         item.removeImage();
         item.setFullsizePicPath(null);
-        item.setPicURL(null);
+        item.setWebImgMeta(null, 0, 0);
         TagItemDBManager.instance().Remove_tags_by_item(itemId);
         item.setDeleted(true);
         item.setUpdatedTime(System.currentTimeMillis());

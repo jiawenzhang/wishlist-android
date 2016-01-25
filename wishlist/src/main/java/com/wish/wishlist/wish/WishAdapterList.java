@@ -91,14 +91,14 @@ public class WishAdapterList extends WishAdapter {
             holder.imgPhoto.setVisibility(View.VISIBLE);
         } else {
             // we are loading friend wish
-            final String photoWebURL = wish.getPicURL();
-            final String photoParseURL = wish.getPicParseURL();
-            if (photoWebURL != null) {
+            final WebImgMeta webImgMeta = wish.getWebImgMeta();
+            final WebImgMeta parseImgMeta = wish.getParseImgMeta();
+            if (webImgMeta != null) {
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(photoWebURL).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
-            } else if (photoParseURL != null) {
+                Picasso.with(holder.imgPhoto.getContext()).load(webImgMeta.mUrl).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
+            } else if (parseImgMeta != null) {
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(photoParseURL).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
+                Picasso.with(holder.imgPhoto.getContext()).load(parseImgMeta.mUrl).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
             } else {
                 holder.imgPhoto.setVisibility(View.GONE);
             }

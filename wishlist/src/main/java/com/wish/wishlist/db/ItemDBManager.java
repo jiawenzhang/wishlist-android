@@ -25,7 +25,7 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_NAME = "item_name";
 	public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_UPDATED_TIME = "updated_time"; // ms, migrated from data_time:String
-	public static final String KEY_PHOTO_URL = "picture";
+	public static final String KEY_WEB_IMG_META_JSON = "picture";
 	public static final String KEY_FULLSIZE_PHOTO_PATH = "fullsize_picture";
 	public static final String KEY_PRICE = "price";
 	public static final String KEY_ADDRESS = "location";
@@ -73,7 +73,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
 		initialValues.put(KEY_UPDATED_TIME, updated_time);
-		initialValues.put(KEY_PHOTO_URL, picture_url);
+		initialValues.put(KEY_WEB_IMG_META_JSON, picture_url);
 		initialValues.put(KEY_FULLSIZE_PHOTO_PATH, fullsize_picture_path);
 		initialValues.put(KEY_PRICE, price);
 		initialValues.put(KEY_ADDRESS, address);
@@ -121,7 +121,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
 		initialValues.put(KEY_UPDATED_TIME, updated_time);
-		initialValues.put(KEY_PHOTO_URL, picture_url);
+		initialValues.put(KEY_WEB_IMG_META_JSON, picture_url);
 		initialValues.put(KEY_FULLSIZE_PHOTO_PATH, fullsize_picture_path);
 		initialValues.put(KEY_PRICE, price);
 		initialValues.put(KEY_ADDRESS, address);
@@ -190,7 +190,7 @@ public class ItemDBManager extends DBManager {
                 KEY_DESCRIPTION + ", " +
                 KEY_UPDATED_TIME + ", " +
                 KEY_STORE_ID + ", " +
-                KEY_PHOTO_URL + ", " +
+				KEY_WEB_IMG_META_JSON + ", " +
                 KEY_FULLSIZE_PHOTO_PATH + ", " +
                 KEY_PRICE + ", " +
                 KEY_ADDRESS + ", " +
