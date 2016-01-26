@@ -363,9 +363,9 @@ public class AddWishFromActionActivity extends AddWishActivity
         final Target target = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                mImageItem.setImageBitmap(bitmap);
+                mWebBitmap = ImageManager.getScaleDownBitmap(bitmap, 1024);
+                mImageItem.setImageBitmap(mWebBitmap);
                 mImageItem.setVisibility(View.VISIBLE);
-                mWebBitmap = bitmap;
             }
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {}

@@ -256,7 +256,7 @@ public class SyncAgent {
 
     private void bitmapLoaded(final Bitmap bitmap, final ParseObject parseItem, WishItem existingItem, String url)
     {
-        String fullsizePath = ImageManager.saveBitmapToAlbum(bitmap);
+        String fullsizePath = ImageManager.saveBitmapToAlbum(ImageManager.getScaleDownBitmap(bitmap, 1024));
         ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
         if (existingItem != null) {
             existingItem.removeImage();

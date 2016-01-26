@@ -221,11 +221,17 @@ public class ImageManager
     }
 
     public static Bitmap getThumb(Bitmap bitmap) {
-        Float width = new Float(bitmap.getWidth());
-        Float height = new Float(bitmap.getHeight());
-        Float ratio = height / width;
-        bitmap = Bitmap.createScaledBitmap(bitmap, THUMB_WIDTH, (int) (THUMB_WIDTH * ratio), false);
-        return bitmap;
+        return getScaleDownBitmap(bitmap, THUMB_WIDTH);
+    }
+
+    public static Bitmap getScaleDownBitmap(Bitmap bitmap, int dstWidth) {
+        if (bitmap.getWidth() <= dstWidth) {
+            return bitmap;
+        }
+        float width = (float) bitmap.getWidth();
+        float height = (float) bitmap.getHeight();
+        float ratio = height / width;
+        return Bitmap.createScaledBitmap(bitmap, dstWidth, (int) (dstWidth * ratio), false);
     }
 }
 

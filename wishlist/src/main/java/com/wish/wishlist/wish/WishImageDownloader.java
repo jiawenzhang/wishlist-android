@@ -102,7 +102,7 @@ public class WishImageDownloader {
         String fullsizePath = null;
         if (bitmap != null) {
             // save the bitmap and a thumbnail as a local file
-             fullsizePath = ImageManager.saveBitmapToAlbum(bitmap);
+            fullsizePath = ImageManager.saveBitmapToAlbum(ImageManager.getScaleDownBitmap(bitmap, 1024));
             ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
         }
 
