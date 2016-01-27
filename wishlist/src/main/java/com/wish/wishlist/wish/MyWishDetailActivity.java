@@ -114,9 +114,12 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             } catch (IOException e) {
                 address = "unknown";
             }
-            mItem.setAddress(address);
-            mItem.setUpdatedTime(System.currentTimeMillis());
-            mItem.save();
+            if (!mItem.getAddress().equals(address)) {
+                mItem.setAddress(address);
+                mItem.setUpdatedTime(System.currentTimeMillis());
+                mItem.save();
+                EventBus.getInstance().post(new MyWishChangeEvent());
+            }
         }
 
         Display display = ((WindowManager) mPhotoView.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
