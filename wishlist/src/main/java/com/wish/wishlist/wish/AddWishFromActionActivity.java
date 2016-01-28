@@ -382,41 +382,17 @@ public class AddWishFromActionActivity extends AddWishActivity
         return true;
     }
 
-    /***
-     * Save user input as a wish item
-     */
-    protected boolean saveWishItem(final WishInput input) {
-        String webImgMetaJson = null;
+    @Override
+    protected boolean saveWishItem() {
         if (mWebBitmap != null) {
             mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(mWebBitmap);
             ImageManager.saveBitmapToThumb(mWebBitmap, mFullsizePhotoPath);
-            webImgMetaJson = new WebImgMeta(mWebPicUrl, mWebBitmap.getWidth(), mWebBitmap.getHeight()).toJSON();
         }
 
         // create a new item
-        WishItem item = new WishItem(
-                -1,
-                "",
-                input.mAccess,
-                input.mStore,
-                input.mName,
-                input.mDescription,
-                System.currentTimeMillis(),
-                webImgMetaJson,
-                null,
-                mFullsizePhotoPath,
-                input.mPrice,
-                mLat,
-                mLng,
-                input.mAddress,
-                0,
-                input.mComplete,
-                input.mLink,
-                false,
-                false);
-
+        WishItem item = createNewWish();
+        item.setWebImgMeta(mWebPicUrl, mWebBitmap.getWidth(), mWebBitmap.getHeight());
         mItem_id = item.saveToLocal();
-
         return true;
     }
 

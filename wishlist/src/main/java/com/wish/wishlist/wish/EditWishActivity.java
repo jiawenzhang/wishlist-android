@@ -5,10 +5,10 @@ import java.util.Observer;
 import java.util.Observable;
 
 import com.bumptech.glide.Glide;
+import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.image.ImageManager;
 
 import android.content.Intent;
 import android.location.Location;
@@ -66,22 +66,24 @@ public class EditWishActivity extends EditWishActivityBase
         mTags = TagItemDBManager.instance().tags_of_item(mItem_id);
     }
 
-    protected boolean saveWishItem(final WishInput input) {
-        WishItem item = WishItemManager.getInstance().getItemById(mItem_id);
+    protected boolean saveWishItem() {
         if (mSelectedPic && mSelectedPicUri != null) {
-            mFullsizePhotoPath = copyPhotoToAlbum(mSelectedPicUri);
-            ImageManager.saveBitmapToThumb(mSelectedPicUri, mFullsizePhotoPath, this);
-            removeItemImage();
-            item.setWebImgMeta(null, 0, 0);
+            showProgressDialog(getString(R.string.saving_image));
+            new saveSelectedPhotoTask().execute();
         } else if (mTempPhotoPath != null) {
-            if (saveTempPhoto()) {
-                removeItemImage();
-                item.setWebImgMeta(null, 0, 0);
-            } else {
-                return false;
-            }
+            showProgressDialog(getString(R.string.saving_image));
+            new saveTempPhoto().execute();
+        } else {
+            WishItem item = populateItem();
+            item.saveToLocal();
+            wishSaved();
         }
+        return true;
+    }
 
+    protected WishItem populateItem() {
+        WishItem item = WishItemManager.getInstance().getItemById(mItem_id);
+        WishInput input = wishInput();
         item.setAccess(input.mAccess);
         item.setStoreName(input.mStore);
         item.setName(input.mName);
@@ -93,9 +95,17 @@ public class EditWishActivity extends EditWishActivityBase
         item.setComplete(input.mComplete);
         item.setLink(input.mLink);
         item.setSyncedToServer(false);
-        item.saveToLocal();
 
-        return true;
+        return item;
+    }
+
+    protected void newImageSaved() {
+        super.newImageSaved();
+        removeItemImage();
+        WishItem item = populateItem();
+        item.setWebImgMeta(null, 0, 0);
+        item.saveToLocal();
+        wishSaved();
     }
 
     @Override

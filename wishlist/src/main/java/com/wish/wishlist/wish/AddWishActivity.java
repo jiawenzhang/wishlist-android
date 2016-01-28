@@ -13,7 +13,6 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.wish.wishlist.R;
-import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.PositionManager;
 import java.util.Observable;
@@ -69,16 +68,34 @@ public class AddWishActivity extends EditWishActivityBase
     /***
      * Save user input as a wish item
      */
-    protected boolean saveWishItem(final WishInput input) {
+    protected boolean saveWishItem() {
         if (mSelectedPic && mSelectedPicUri != null) {
-            mFullsizePhotoPath = copyPhotoToAlbum(mSelectedPicUri);
-            ImageManager.saveBitmapToThumb(mSelectedPicUri, mFullsizePhotoPath, this);
+            showProgressDialog(getString(R.string.saving_image));
+            new saveSelectedPhotoTask().execute();
         } else if (mTempPhotoPath != null) {
-            saveTempPhoto();
+            showProgressDialog(getString(R.string.saving_image));
+            new saveTempPhoto().execute();
+        } else {
+            WishItem item = createNewWish();
+            mItem_id = item.saveToLocal();
+            wishSaved();
         }
+        return true;
+    }
 
+    protected void newImageSaved() {
+        super.newImageSaved();
+        WishItem item = createNewWish();
+        item.setWebImgMeta(null, 0, 0);
+        mItem_id = item.saveToLocal();
+        wishSaved();
+    }
+
+    protected WishItem createNewWish() {
         // create a new item
-        WishItem item = new WishItem(
+        WishInput input = wishInput();
+
+        return new WishItem(
                 -1,
                 "",
                 input.mAccess,
@@ -98,10 +115,6 @@ public class AddWishActivity extends EditWishActivityBase
                 input.mLink,
                 false,
                 false);
-
-        mItem_id = item.saveToLocal();
-
-        return true;
     }
 
     @Override

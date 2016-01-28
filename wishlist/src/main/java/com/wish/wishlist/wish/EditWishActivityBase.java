@@ -1,9 +1,12 @@
 package com.wish.wishlist.wish;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -36,7 +39,6 @@ import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.image.CameraManager;
 import com.wish.wishlist.image.ImageManager;
-import com.wish.wishlist.image.PhotoFileCreater;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.sync.SyncAgent;
@@ -44,13 +46,7 @@ import com.wish.wishlist.tag.AddTagActivity;
 import com.wish.wishlist.tag.AddTagFromEditActivity;
 import com.wish.wishlist.util.PositionManager;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 public abstract class EditWishActivityBase extends ActivityBase {
@@ -87,6 +83,37 @@ public abstract class EditWishActivityBase extends ActivityBase {
 
     protected static final String TEMP_PHOTO_PATH = "TEMP_PHOTO_PATH";
     protected static final String SELECTED_PIC_URL = "SELECTED_PIC_URL";
+
+    private ProgressDialog mProgressDialog;
+    protected class saveTempPhoto extends AsyncTask<Void, Void, Void> {//<param, progress, result>
+        @Override
+        protected Void doInBackground(Void... arg) {
+            final Bitmap bitmap = ImageManager.decodeSampledBitmapFromFile(mTempPhotoPath, 1024);
+            mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(bitmap);
+            ImageManager.saveBitmapToThumb(bitmap, mFullsizePhotoPath);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            newImageSaved();
+        }
+    }
+
+    protected class saveSelectedPhotoTask extends AsyncTask<Void, Void, Void> {//<param, progress, result>
+        @Override
+        protected Void doInBackground(Void... arg) {
+            final Bitmap bitmap = ImageManager.decodeSampledBitmapFromUri(mSelectedPicUri, 1024);
+            mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(bitmap);
+            ImageManager.saveBitmapToThumb(bitmap, mFullsizePhotoPath);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            newImageSaved();
+        }
+    }
 
     private static final String TAG = "EditWishActivityBase";
 
@@ -380,23 +407,22 @@ public abstract class EditWishActivityBase extends ActivityBase {
                 link);
     }
 
-    protected boolean saveTempPhoto() {
-        File f;
-        try {
-            f = PhotoFileCreater.getInstance().setupPhotoFile(false);
-        } catch (IOException e) {
-            Log.e(TAG, e.toString());
-            return false;
-        }
-        File tempPhotoFile = new File(mTempPhotoPath);
-        if (tempPhotoFile.renameTo(f)) {
-            mFullsizePhotoPath = f.getAbsolutePath();
-            ImageManager.saveBitmapToThumb(mFullsizePhotoPath);
-        }
-        return true;
+    protected void newImageSaved() {
+        dismissProgressDialog();
     }
 
-    protected abstract boolean saveWishItem(final WishInput input);
+    protected void showProgressDialog(final String text) {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(text);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+    }
+
+    protected void dismissProgressDialog() {
+        mProgressDialog.dismiss();
+    }
+
+    protected abstract boolean saveWishItem();
 
     /***
      * Save user input as a wish item
@@ -407,8 +433,10 @@ public abstract class EditWishActivityBase extends ActivityBase {
             return;
         }
 
-        saveWishItem(wishInput());
+        saveWishItem();
+    }
 
+    protected void wishSaved() {
         //save the tags of this item
         TagItemDBManager.instance().Update_item_tags(mItem_id, mTags);
         EventBus.getInstance().post(new MyWishChangeEvent());
@@ -477,34 +505,6 @@ public abstract class EditWishActivityBase extends ActivityBase {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
-    }
-
-    protected String copyPhotoToAlbum(Uri uri) {
-        try {
-            //save the photo to a file we created in wishlist album
-            final InputStream in = getContentResolver().openInputStream(uri);
-            File f = PhotoFileCreater.getInstance().setupPhotoFile(false);
-            String path = f.getAbsolutePath();
-            OutputStream stream = new BufferedOutputStream(new FileOutputStream(f));
-            int bufferSize = 1024;
-            byte[] buffer = new byte[bufferSize];
-            int len;
-            while ((len = in.read(buffer)) != -1) {
-                stream.write(buffer, 0, len);
-            }
-            in.close();
-            if (stream != null) {
-                stream.close();
-            }
-            return path;
-        }
-        catch (FileNotFoundException e) {
-            Log.e(TAG, e.toString());
-        }
-        catch (IOException e) {
-            Log.e(TAG, e.toString());
-        }
-        return null;
     }
 
     protected void removeTempPhoto() {

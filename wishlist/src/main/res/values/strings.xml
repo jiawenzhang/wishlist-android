@@ -235,4 +235,7 @@
     <!-- setting keys -->
     <string name="version_number">version_number</string>
 
+    <!-- message -->
+    <string name="saving_image">Saving&#x2026;</string>
+
 </resources>

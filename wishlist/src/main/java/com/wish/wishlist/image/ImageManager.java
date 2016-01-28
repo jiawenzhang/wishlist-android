@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.wish.wishlist.WishlistApplication;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -15,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 public class ImageManager
@@ -32,7 +35,14 @@ public class ImageManager
         return _instance;
     }
 
-    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight, boolean fitFullImage) {
+    private static int calculateInSampleSize(BitmapFactory.Options options, int dstWidth) {
+        // keep image aspect ratio
+        // Raw height and width of image
+        final int width = options.outWidth;
+        return Math.round((float)width / (float)dstWidth);
+    }
+
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight, boolean fitFullImage) {
         // if fitFullImage is true, the image will be resized so that the whole image will fit into reqWidth * reqHeight
         // in other words, reqWidth*reqHeight is the min rec in which the whole image can be shown
         // if fitFullImage is false, the image can be larger than reqWidth*reqHeight
@@ -77,7 +87,47 @@ public class ImageManager
         return BitmapFactory.decodeResource(res, resId, options);
     }
 
-    public static Bitmap decodeSampledBitmapFromFile(String file, int reqWidth, int reqHeight, boolean fitFullImage) {
+    public static Bitmap decodeSampledBitmapFromUri(Uri selectedImage, int dstWidth) {
+        try {
+            InputStream inputStream = WishlistApplication.getAppContext().getContentResolver().openInputStream(selectedImage);
+            // First decode with inJustDecodeBounds=true to check dimensions
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(inputStream, null, options);
+
+            // Calculate inSampleSize
+            options.inSampleSize = calculateInSampleSize(options, dstWidth);
+
+            // close the input stream
+            inputStream.close();
+
+            // reopen the input stream
+            inputStream = WishlistApplication.getAppContext().getContentResolver().openInputStream(selectedImage);
+
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false;
+            return BitmapFactory.decodeStream(inputStream, null, options);
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.toString());
+            return null;
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+            return null;
+        }
+    }
+
+    public static Bitmap decodeSampledBitmapFromFile(String file, int dstWidth) {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file, options);
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, dstWidth);
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(file, options);
+    }
+
+    public static Bitmap decodeSampledBitmapFromFile(String file, int dstWidth, int dstHeight, boolean fitFullImage) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -85,7 +135,7 @@ public class ImageManager
         BitmapFactory.decodeFile(file, options);
 
         // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight, fitFullImage);
+        options.inSampleSize = calculateInSampleSize(options, dstWidth, dstHeight, fitFullImage);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
@@ -233,5 +283,34 @@ public class ImageManager
         float ratio = height / width;
         return Bitmap.createScaledBitmap(bitmap, dstWidth, (int) (dstWidth * ratio), false);
     }
+
+    public static String copyPhotoToAlbum(Uri uri) {
+        try {
+            //save the photo to a file we created in wishlist album
+            final InputStream in = WishlistApplication.getAppContext().getContentResolver().openInputStream(uri);
+            File f = PhotoFileCreater.getInstance().setupPhotoFile(false);
+            String path = f.getAbsolutePath();
+            OutputStream stream = new BufferedOutputStream(new FileOutputStream(f));
+            int bufferSize = 1024;
+            byte[] buffer = new byte[bufferSize];
+            int len;
+            while ((len = in.read(buffer)) != -1) {
+                stream.write(buffer, 0, len);
+            }
+            in.close();
+            if (stream != null) {
+                stream.close();
+            }
+            return path;
+        }
+        catch (FileNotFoundException e) {
+            Log.e(TAG, e.toString());
+        }
+        catch (IOException e) {
+            Log.e(TAG, e.toString());
+        }
+        return null;
+    }
+
 }
 
