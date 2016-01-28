@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
+import com.wish.wishlist.WishlistApplication;
+
 public class PhotoFileCreater {
     private static final String JPEG_FILE_PREFIX = "IMG_";
     private static final String JPEG_FILE_SUFFIX = ".jpg";
@@ -33,11 +35,20 @@ public class PhotoFileCreater {
         }
     }
 
-    public String thumbFilePath(String fullsizeFilePath)
-    {
+    /* old way
+    public String thumbFilePath(String fullsizeFilePath) {
         // thumb file has the same file name as fullsize file, but in the .WishlistThumbnail folder
         String fileName = fullsizeFilePath.substring(fullsizeFilePath.lastIndexOf("/") + 1);
         File f = new File(getAlbumDir(true), fileName);
+        return f.getAbsolutePath();
+    }
+    */
+
+    public String thumbFilePath(String fullsizeFilePath) {
+        // thumb file has the same file name as fullsize file, but in the /thumb folder
+        String fileName = fullsizeFilePath.substring(fullsizeFilePath.lastIndexOf("/") + 1);
+        File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/thumb");
+        File f = new File(dir, fileName);
         return f.getAbsolutePath();
     }
 

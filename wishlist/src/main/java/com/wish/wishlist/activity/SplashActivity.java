@@ -26,6 +26,7 @@ import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.wish.MyWishActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class SplashActivity extends Activity {
@@ -42,6 +43,15 @@ public class SplashActivity extends Activity {
                 .build());
 
         DBAdapter.getInstance().createDB();
+        File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/image");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+
+        File thumb_dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/thumb");
+        if (!thumb_dir.exists()) {
+            thumb_dir.mkdir();
+        }
 
         run();
     }

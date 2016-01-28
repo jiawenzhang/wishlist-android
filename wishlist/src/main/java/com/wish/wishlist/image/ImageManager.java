@@ -144,6 +144,23 @@ public class ImageManager
 
     public static String saveBitmapToAlbum(Bitmap bitmap) {
         try {
+            File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/image");
+            File f = File.createTempFile("IMG", ".jpg", dir);
+            String path = f.getAbsolutePath();
+            OutputStream stream = new FileOutputStream(f);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+            stream.flush();
+            stream.close();
+            Log.d(TAG, "Save image as " + path);
+            return path;
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+        }
+        return null;
+
+
+        /* old way
+        try {
             //save the image to a file we created in wishlist album
             File f = PhotoFileCreater.getInstance().setupPhotoFile(false);
             String path = f.getAbsolutePath();
@@ -158,6 +175,7 @@ public class ImageManager
             e.printStackTrace();
         }
         return null;
+        */
     }
 
     public static void saveBitmapToThumb(Uri imageUri, String fullsizePath, Context ctx)
