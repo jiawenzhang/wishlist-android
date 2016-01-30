@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -28,7 +27,6 @@ import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ProfileUtil;
 import com.wish.wishlist.wish.MyWishActivity;
 
-import java.io.File;
 import static com.wish.wishlist.R.style.AppCompatAlertDialogStyle;
 
 /***
@@ -46,7 +44,11 @@ public abstract class DrawerActivity extends ActivityBase {
 
     protected abstract void setContentView();
 
-    protected void prepareDrawerList() {}
+    protected void prepareDrawerList() {
+        if (!getResources().getBoolean(R.bool.enable_account)) {
+            mNavigationView.getMenu().findItem(R.id.friends).setVisible(false);
+        }
+    }
     protected boolean onTapAdd() { return true; }
     protected boolean switchView(int viewType) { return true; }
     protected boolean mapView() { return true; }
@@ -151,8 +153,7 @@ public abstract class DrawerActivity extends ActivityBase {
         }
     }
 
-    protected void disableDrawer()
-    {
+    protected void disableDrawer() {
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawerToggle.setDrawerIndicatorEnabled(false);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -167,24 +168,28 @@ public abstract class DrawerActivity extends ActivityBase {
     protected void setupNavigationDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-        mNavigationViewHeader = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
-        mHeaderLayout = (RelativeLayout) mNavigationViewHeader.findViewById(R.id.drawer_header_layout);
-        mHeaderLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ParseUser.getCurrentUser() != null) {
-                    startActivity(new Intent(DrawerActivity.this, ProfileActivity.class));
-                } else {
-                    startActivity(new Intent(DrawerActivity.this, UserLoginActivity.class));
+        if (getResources().getBoolean(R.bool.enable_account)) {
+            mNavigationViewHeader = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
+            mHeaderLayout = (RelativeLayout) mNavigationViewHeader.findViewById(R.id.drawer_header_layout);
+            mHeaderLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (ParseUser.getCurrentUser() != null) {
+                        startActivity(new Intent(DrawerActivity.this, ProfileActivity.class));
+                    } else {
+                        startActivity(new Intent(DrawerActivity.this, UserLoginActivity.class));
+                    }
                 }
-            }
-        });
+            });
 
-        if (ParseUser.getCurrentUser() != null) {
-            setupUserName();
-            setupUserEmail();
+            if (ParseUser.getCurrentUser() != null) {
+                setupUserName();
+                setupUserEmail();
+            }
+            setupProfileImage();
+        } else {
+            mNavigationViewHeader = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header2);
         }
-        setupProfileImage();
 
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             // This method will trigger on item Click of navigation menu

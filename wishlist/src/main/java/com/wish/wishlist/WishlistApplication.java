@@ -48,28 +48,32 @@ public class WishlistApplication extends Application {
         //Parse.enableLocalDatastore(this);
 
         // Add your initialization code here
-        Parse.initialize(this,
-                getResources().getString(R.string.parse_application_id),
-                getResources().getString(R.string.parse_client_id));
 
-        ParseInstallation.getCurrentInstallation().saveInBackground();
-        //ParsePush.subscribeInBackground();
 
-        Parse.setLogLevel(Parse.LOG_LEVEL_VERBOSE);
+        if (getResources().getBoolean(R.bool.enable_account)) {
+            Parse.initialize(this,
+                    getResources().getString(R.string.parse_application_id),
+                    getResources().getString(R.string.parse_client_id));
 
-        // Optional - If you don't want to allow Twitter login, you can
-        // remove this line (and other related ParseTwitterUtils calls)
-        //ParseTwitterUtils.initialize(getString(R.string.twitter_consumer_key),
-                //getString(R.string.twitter_consumer_secret));
+            ParseInstallation.getCurrentInstallation().saveInBackground();
+            //ParsePush.subscribeInBackground();
+
+            Parse.setLogLevel(Parse.LOG_LEVEL_VERBOSE);
+
+            // Optional - If you don't want to allow Twitter login, you can
+            // remove this line (and other related ParseTwitterUtils calls)
+            //ParseTwitterUtils.initialize(getString(R.string.twitter_consumer_key),
+            //getString(R.string.twitter_consumer_secret));
 
 //        ParseUser.enableAutomaticUser();
-        ParseACL defaultACL = new ParseACL();
-        // Optionally enable public read access.
-        // defaultACL.setPublicReadAccess(true);
-        ParseACL.setDefaultACL(defaultACL, true);
+            ParseACL defaultACL = new ParseACL();
+            // Optionally enable public read access.
+            // defaultACL.setPublicReadAccess(true);
+            ParseACL.setDefaultACL(defaultACL, true);
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        ParseFacebookUtils.initialize(this);
+            FacebookSdk.sdkInitialize(getApplicationContext());
+            ParseFacebookUtils.initialize(this);
+        }
 
         configJobManager();
     }

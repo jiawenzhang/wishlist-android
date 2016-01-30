@@ -216,6 +216,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
     @Override
     protected void prepareDrawerList() {
+        super.prepareDrawerList();
         mNavigationView.getMenu().findItem(R.id.my_wish).setVisible(false);
     }
 
@@ -232,6 +233,14 @@ public class MyWishActivity extends WishBaseActivity implements
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 super.onCreateActionMode(actionMode, menu);
                 getMenuInflater().inflate(R.menu.menu_my_wish_action, menu);
+                if (!getResources().getBoolean(R.bool.enable_account)) {
+                    MenuItem item1 = menu.findItem(R.id.menu_private);
+                    item1.setVisible(false);
+
+                    MenuItem item2 = menu.findItem(R.id.menu_public);
+                    item2.setVisible(false);
+                }
+
                 if (refreshEnabled()) {
                     mSwipeRefreshLayout.setEnabled(false);
                 }
@@ -741,6 +750,10 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     private Boolean refreshEnabled() {
-        return ParseUser.getCurrentUser() != null;
+        if (getResources().getBoolean(R.bool.enable_account)) {
+            return ParseUser.getCurrentUser() != null;
+        } else {
+            return false;
+        }
     }
 }

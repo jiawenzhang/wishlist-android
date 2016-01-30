@@ -191,6 +191,11 @@ public abstract class EditWishActivityBase extends ActivityBase {
                 }
         );
 
+        if (!getResources().getBoolean(R.bool.enable_account)) {
+            mPrivateCheckBox.setVisibility(View.GONE);
+            mPrivateImageView.setVisibility(View.GONE);
+        }
+
         ImageButton tagImageButton = (ImageButton) findViewById(R.id.imageButton_tag);
         tagImageButton.setOnClickListener(new OnClickListener() {
             @Override

@@ -67,6 +67,10 @@ public class SyncAgent {
     // call sync on app start up
     // how does parse trigger sync on the client? push notification?
     public void sync() {
+        if (!WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_account)) {
+            return;
+        }
+
         if (ParseUser.getCurrentUser() == null) {
             Log.d(TAG, "user not login, sync is disabled ");
             return;

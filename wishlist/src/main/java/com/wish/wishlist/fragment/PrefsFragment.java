@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.app.DialogFragment;
 import android.preference.PreferenceManager;
@@ -49,6 +50,12 @@ public class PrefsFragment extends PreferenceFragment implements
             }
         });
 
+        if (!getResources().getBoolean(R.bool.enable_account)) {
+            final Preference p = findPreference("wishDefaultPrivate");
+            PreferenceCategory category = (PreferenceCategory) findPreference("general");
+            category.removePreference(p);
+            category.removePreference(userProfile);
+        }
 
         final Preference currencyPref = findPreference("currency");
         String currency = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).getString("currency", "");
