@@ -5,20 +5,16 @@ package com.wish.wishlist.wish;
  */
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,7 +33,7 @@ import java.util.List;
 
 public class WishAdapterGrid extends WishAdapter {
 
-    private int mScreenWidth;
+    private int mCardWidth;
     private static final String TAG = "WishAdapter";
 
     public class ViewHolder extends ItemSwappingHolder {
@@ -61,14 +57,10 @@ public class WishAdapterGrid extends WishAdapter {
         }
     }
 
-    public WishAdapterGrid(final List<WishItem> wishList, Activity fromActivity, MultiSelector ms) {
+    public WishAdapterGrid(final List<WishItem> wishList, Activity fromActivity, MultiSelector ms, int cardWidth) {
         super(wishList, fromActivity, ms);
 
-        final Display display = ((WindowManager) WishlistApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        mScreenWidth = size.x / 2;
-        Log.d(TAG, " screen width " + mScreenWidth);
+        mCardWidth = cardWidth;
     }
 
     // Create new views (invoked by the layout manager)
@@ -107,7 +99,7 @@ public class WishAdapterGrid extends WishAdapter {
             BitmapFactory.decodeFile(photo_path, options);
             final float ratio = (float) options.outHeight / (float) options.outWidth;
             holder.imgPhoto.setHeightRatio(ratio);
-            Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
+            Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(mCardWidth, 0).transform(mTransform).into(holder.imgPhoto);
         } else {
             // we are loading friend wish
             final WebImgMeta webImgMeta = wish.getWebImgMeta();
@@ -116,12 +108,12 @@ public class WishAdapterGrid extends WishAdapter {
                 final float ratio = (float) webImgMeta.mHeight / (float) webImgMeta.mWidth;
                 holder.imgPhoto.setHeightRatio(ratio);
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(webImgMeta.mUrl).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
+                Picasso.with(holder.imgPhoto.getContext()).load(webImgMeta.mUrl).resize(mCardWidth, 0).transform(mTransform).into(holder.imgPhoto);
             } else if (parseImgMeta != null) {
                 final float ratio = (float) parseImgMeta.mHeight / (float) parseImgMeta.mWidth;
                 holder.imgPhoto.setHeightRatio(ratio);
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(parseImgMeta.mUrl).resize(mScreenWidth, 0).transform(mTransform).into(holder.imgPhoto);
+                Picasso.with(holder.imgPhoto.getContext()).load(parseImgMeta.mUrl).resize(mCardWidth, 0).transform(mTransform).into(holder.imgPhoto);
             } else {
                 holder.imgPhoto.setVisibility(View.GONE);
             }
