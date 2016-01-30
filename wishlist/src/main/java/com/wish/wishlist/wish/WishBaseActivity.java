@@ -1,11 +1,9 @@
 package com.wish.wishlist.wish;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -15,11 +13,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.ViewFlipper;
 
@@ -182,11 +178,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
 
         mRecyclerView.addItemDecoration(new ItemDecoration(mItemSpace));
 
-        final Display display = ((WindowManager) WishlistApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int screenWidth = size.x;
-        mCardWidth = screenWidth / gridColumns;
+        mCardWidth = dimension.screenWidth() / gridColumns;
 
         // Set up toolbar action mode. This mode is activated when an item is long tapped and user can then select
         // multiple items for an action

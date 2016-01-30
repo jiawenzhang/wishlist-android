@@ -1,23 +1,19 @@
 package com.wish.wishlist.wish;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -29,6 +25,7 @@ import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.dimension;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +48,6 @@ import me.kaede.tagview.TagView;
 public class MyWishDetailActivity extends WishDetailActivity implements TokenCompleteTextView.TokenListener {
     private static final int EDIT_ITEM = 0;
     private static final String TAG = "MyWishDetailActivity";
-    private Point mScreenSize = new Point();
     private TagView mTagView;
 
     // workaround to avoid Picasso bug: fit().centerCrop() does not work together when image is large
@@ -71,7 +67,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
                     BitmapFactory.decodeFile(fullsize_picture_str, options);
                     final float ratio = (float) options.outHeight / (float) options.outWidth;
 
-                    int width = mScreenSize.x;
+                    int width = dimension.screenWidth();
                     int height = (int) (width * ratio);
 
                     bitmap = ImageManager.getInstance().decodeSampledBitmapFromFile(fullsize_picture_str, width, height, false);
@@ -122,8 +118,6 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             }
         }
 
-        Display display = ((WindowManager) mPhotoView.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        display.getSize(mScreenSize);
         showItemInfo();
 
         mTagView = (TagView) this.findViewById(R.id.tag_view);
