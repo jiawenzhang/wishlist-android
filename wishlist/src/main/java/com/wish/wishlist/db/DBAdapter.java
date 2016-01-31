@@ -1,8 +1,6 @@
 package com.wish.wishlist.db;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.util.Log;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,10 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /***
  * The DBAdapter class only gets called when the app first starts 
@@ -104,11 +98,11 @@ public class DBAdapter {
             //add wish latitude and longitude column in the Item table
             String sql1 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
-                    + " ADD COLUMN latitude REAL ";
+                    + " ADD COLUMN " + ItemDBManager.KEY_LATITUDE + " REAL ";
 
             String sql2 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
-                    + " ADD COLUMN longitude REAL ";
+                    + " ADD COLUMN " + ItemDBManager.KEY_LONGITUDE + " REAL ";
 
             db.execSQL(sql1);
             db.execSQL(sql2);
@@ -116,26 +110,26 @@ public class DBAdapter {
             //add parse object id column in the Item table
             String sql3 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
-                    + " ADD COLUMN object_id TEXT "; // parse object id
+                    + " ADD COLUMN " + ItemDBManager.KEY_OBJECT_ID + " TEXT "; // parse object id
 
             //add deleted column in the Item table
             String sql4 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
-                    + " ADD COLUMN deleted INTEGER NOT NULL DEFAULT(0)";
+                    + " ADD COLUMN " + ItemDBManager.KEY_DELETED + " INTEGER NOT NULL DEFAULT(0)";
 
             //number of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
             String sql5 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
-                    + " ADD COLUMN updated_time INTEGER ";
+                    + " ADD COLUMN " + ItemDBManager.KEY_UPDATED_TIME + " INTEGER ";
 
             String sql6 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
-                    + " ADD COLUMN synced_to_server INTEGER ";
+                    + " ADD COLUMN " + ItemDBManager.KEY_SYNCED_TO_SERVER + " INTEGER NOT NULL DEFAULT(0)";
 
             //add access (PUBLIC/PRIVATE) column in the Item table
             String sql7 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
-                    + " ADD COLUMN access INTEGER DEFAULT 0"; //default to PUBLIC
+                    + " ADD COLUMN " + ItemDBManager.KEY_ACCESS + " INTEGER NOT NULL DEFAULT(0)"; //default to PUBLIC
 
             db.execSQL(sql3);
             db.execSQL(sql4);
