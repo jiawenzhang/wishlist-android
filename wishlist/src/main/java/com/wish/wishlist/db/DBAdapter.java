@@ -103,10 +103,6 @@ public class DBAdapter {
             String sql2 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
                     + " ADD COLUMN " + ItemDBManager.KEY_LONGITUDE + " REAL ";
-
-            db.execSQL(sql1);
-            db.execSQL(sql2);
-
             //add parse object id column in the Item table
             String sql3 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
@@ -131,11 +127,17 @@ public class DBAdapter {
                     + ItemDBManager.DB_TABLE
                     + " ADD COLUMN " + ItemDBManager.KEY_ACCESS + " INTEGER NOT NULL DEFAULT(0)"; //default to PUBLIC
 
-            db.execSQL(sql3);
-            db.execSQL(sql4);
-            db.execSQL(sql5);
-            db.execSQL(sql6);
-            db.execSQL(sql7);
+            try {
+                db.execSQL(sql1);
+                db.execSQL(sql2);
+                db.execSQL(sql3);
+                db.execSQL(sql4);
+                db.execSQL(sql5);
+                db.execSQL(sql6);
+                db.execSQL(sql7);
+            } catch (SQLException e) {
+                Log.e(TAG, e.toString());
+            }
         }
     }
     };
@@ -363,11 +365,11 @@ public class DBAdapter {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             // Adding any table mods to this guy here
+            Log.e(TAG, "onUpgrade");
             for (int i = oldVersion; i < newVersion; i++) {
                 PATCHES[i].apply(db);
             }
             Log.d(TAG, "version " + newVersion);
-
         }
 
         //API LEVEL 11 starts to support onDowngrade
