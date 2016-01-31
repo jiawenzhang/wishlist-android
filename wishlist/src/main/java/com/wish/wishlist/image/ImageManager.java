@@ -201,8 +201,7 @@ public class ImageManager
         }
     }
 
-    public static void saveBitmapToThumb(Bitmap bitmap, String fullsizePath)
-    {
+    public static void saveBitmapToThumb(Bitmap bitmap, String fullsizePath) {
         try {
             String thumbPath = PhotoFileCreater.getInstance().thumbFilePath(fullsizePath);
             Bitmap thumbBitmap = getThumb(bitmap);
@@ -211,6 +210,9 @@ public class ImageManager
             stream.flush();
             stream.close();
             Log.d(TAG, "Save thumb as " + thumbPath);
+
+            File f = new File(thumbPath);
+            Log.d(TAG, "Thumb file size: " + f.length()/1024 + "kB");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
