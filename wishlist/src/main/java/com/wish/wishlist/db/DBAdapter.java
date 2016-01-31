@@ -135,40 +135,13 @@ public class DBAdapter {
             //add access (PUBLIC/PRIVATE) column in the Item table
             String sql7 = "ALTER TABLE "
                     + ItemDBManager.DB_TABLE
-                    + " ADD COLUMN access INTEGER ";
+                    + " ADD COLUMN access INTEGER DEFAULT 0"; //default to PUBLIC
 
             db.execSQL(sql3);
             db.execSQL(sql4);
             db.execSQL(sql5);
             db.execSQL(sql6);
             db.execSQL(sql7);
-
-            //convert updated_time in String to updated_time in long(ms)
-            String sql = String.format("SELECT _id, updated_time FROM Item");
-            Cursor c = db.rawQuery(sql, null);
-            if (c != null) {
-                SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                c.moveToFirst();
-                while (!c.isAfterLast()){
-                    long id = c.getLong(c.getColumnIndexOrThrow("_id"));
-                    String updated_time_str = c.getString(c.getColumnIndexOrThrow("updated_time"));
-                    long updated_time = 0;
-                    try {
-                        Date date = f.parse(updated_time_str);
-                        updated_time = date.getTime();
-                        Log.d(TAG, "updated_time " + updated_time);
-                    } catch (ParseException e1) {
-                        Log.e(TAG, e1.toString());
-                    }
-
-                    ContentValues cv = new ContentValues();
-                    cv.put(ItemDBManager.KEY_UPDATED_TIME, updated_time);
-                    String where = String.format("_id = '%d'", id);
-                    db.update(ItemDBManager.DB_TABLE, cv, where, null);
-
-                    c.moveToNext();
-                }
-            }
         }
     }
     };

@@ -1,5 +1,6 @@
 package com.wish.wishlist.util;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -10,6 +11,7 @@ import android.util.Log;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.db.DBAdapter;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.LocationDBManager;
 import com.wish.wishlist.db.StoreDBManager;
@@ -18,7 +20,10 @@ import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by jiawen on 2016-01-31.
@@ -108,6 +113,36 @@ public class MigrationTask extends AsyncTask<Void, Void, Void> {//<param, progre
             item.saveToLocal();
         }
         Log.d(TAG, "location migration done");
+
+        //Convert column date_time in String to column updated_time in long(ms)
+        String sql = "SELECT _id, date_time FROM Item";
+        Cursor c = DBAdapter.getInstance().db().rawQuery(sql, null);
+        if (c != null) {
+            SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            c.moveToFirst();
+            while (!c.isAfterLast()){
+                long id = c.getLong(c.getColumnIndexOrThrow("_id"));
+                String updated_time_str = c.getString(c.getColumnIndexOrThrow("date_time"));
+                long updated_time;
+                try {
+                    Date date = f.parse(updated_time_str);
+                    updated_time = date.getTime();
+                    Log.d(TAG, "updated_time " + updated_time);
+                } catch (ParseException e1) {
+                    Log.e(TAG, e1.toString());
+                    continue;
+                }
+
+                ContentValues cv = new ContentValues();
+                cv.put(ItemDBManager.KEY_UPDATED_TIME, updated_time);
+                String where = String.format("_id = '%d'", id);
+                DBAdapter.getInstance().db().update(ItemDBManager.DB_TABLE, cv, where, null);
+
+                c.moveToNext();
+            }
+            c.close();
+        }
+        Log.d(TAG, "updated_time migration done");
 
         // Starting from v24, we save full size photo in the "image" folder in app's sandbox
         // instead of album folder in external storage,
