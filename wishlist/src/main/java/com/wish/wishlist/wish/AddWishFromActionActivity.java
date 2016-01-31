@@ -393,6 +393,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         WishItem item = createNewWish();
         item.setWebImgMeta(mWebPicUrl, mWebBitmap.getWidth(), mWebBitmap.getHeight());
         mItem_id = item.saveToLocal();
+        wishSaved();
         return true;
     }
 
