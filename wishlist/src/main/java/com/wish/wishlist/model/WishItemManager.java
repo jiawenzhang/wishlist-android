@@ -20,11 +20,26 @@ public class WishItemManager {
 
     private WishItemManager() {}
 
-    public ArrayList<WishItem> getItemsSinceLastSynced()
-    {
+    public ArrayList<WishItem> getItemsSinceLastSynced() {
         ItemDBManager itemDBManager = new ItemDBManager();
 
         ArrayList<Long> ids = itemDBManager.getItemsSinceLastSynced();
+        ArrayList<WishItem> items = new ArrayList<>();
+        // Fixme: optimize this by using one SQL to get all items into on cursor
+        for (Long id : ids) {
+            ItemsCursor wishItemCursor = itemDBManager.getItem(id);
+            if (wishItemCursor.getCount() == 0) {
+                continue;
+            }
+            items.add(itemFromCursor(wishItemCursor));
+        }
+        return items;
+    }
+
+    public ArrayList<WishItem> getAllItems() {
+        ItemDBManager itemDBManager = new ItemDBManager();
+
+        ArrayList<Long> ids = itemDBManager.getAllItemIds();
         ArrayList<WishItem> items = new ArrayList<>();
         // Fixme: optimize this by using one SQL to get all items into on cursor
         for (Long id : ids) {
