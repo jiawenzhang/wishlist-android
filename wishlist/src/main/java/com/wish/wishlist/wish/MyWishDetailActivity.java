@@ -16,7 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
@@ -156,7 +156,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     @Override
     protected void showPhoto() {
         if (mItem.getFullsizePicPath() != null) {
-            Glide.with(this).load(mItem.getFullsizePicPath()).fitCenter().into(mPhotoView);
+            Picasso.with(mPhotoView.getContext()).load(new File(mItem.getFullsizePicPath())).fit().centerCrop().into(mPhotoView);
             mPhotoView.setVisibility(View.VISIBLE);
         } else {
             mPhotoView.setVisibility(View.GONE);

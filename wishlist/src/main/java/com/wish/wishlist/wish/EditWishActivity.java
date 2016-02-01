@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Observer;
 import java.util.Observable;
 
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
@@ -58,9 +58,7 @@ public class EditWishActivity extends EditWishActivityBase
         mStoreEditText.setText(item.getStoreName());
         mFullsizePhotoPath = item.getFullsizePicPath();
         if (mFullsizePhotoPath != null) {
-            // Picasso bug: fit().centerCrop() does not work together when image is large
-            // https://github.com/square/picasso/issues/249
-            Glide.with(this).load(new File(mFullsizePhotoPath)).fitCenter().into(mImageItem);
+            Picasso.with(mImageItem.getContext()).load(new File(mFullsizePhotoPath)).fit().centerCrop().into(mImageItem);
             mImageItem.setVisibility(View.VISIBLE);
         }
         mTags = TagItemDBManager.instance().tags_of_item(mItem_id);
