@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.DialogFragment;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -116,9 +117,13 @@ public class ShareAppDialogFragment extends DialogFragment {
 
                         String path = item.getFullsizePicPath();
                         if (path != null && !path.isEmpty()) {
-                            Uri uri = Uri.fromFile(new File(item.getFullsizePicPath()));
-                            Log.e(TAG, uri.toString());
-                            imageUris.add(uri);
+                            try {
+                                Uri uri = FileProvider.getUriForFile(getActivity(), "com.wish.wishlist.fileprovider", new File(item.getFullsizePicPath()));
+                                Log.d(TAG, uri.toString());
+                                imageUris.add(uri);
+                            } catch (IllegalArgumentException e) {
+                                Log.e(TAG, e.toString());
+                            }
                         }
                     }
 
