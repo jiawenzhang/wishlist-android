@@ -130,9 +130,9 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
         final View imageFrame = findViewById(R.id.imagePhotoDetailFrame);
         imageFrame.setOnClickListener(new View.OnClickListener() {
-            final String fullsize_picture_str = mItem.getFullsizePicPath();
             @Override
             public void onClick(View view) {
+                final String fullsize_picture_str = mItem.getFullsizePicPath();
                 if (fullsize_picture_str != null) {
                     Intent i = new Intent(MyWishDetailActivity.this, FullscreenPhotoActivity.class);
                     i.putExtra(FullscreenPhotoActivity.PHOTO_PATH, fullsize_picture_str);
