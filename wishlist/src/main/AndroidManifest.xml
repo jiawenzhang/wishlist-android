@@ -245,7 +245,9 @@
         <activity
             android:name=".tag.AddTagFromEditActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
+            <!-- TagsCompletionView crashes on screen orientation, this is a workaround -->
         </activity>
         <activity
             android:name=".feature.NewFeatureFragmentActivity"
