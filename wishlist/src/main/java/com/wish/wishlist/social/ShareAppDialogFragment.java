@@ -1,6 +1,5 @@
 package com.wish.wishlist.social;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -19,13 +18,11 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.R;
 //import com.wish.wishlist.activity.FacebookPostActivity;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.Analytics;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -137,12 +134,8 @@ public class ShareAppDialogFragment extends DialogFragment {
                     intent.putExtra(Intent.EXTRA_STREAM, imageUris);
                     mCtx.startActivity(intent);
                 }
-                Tracker t = ((WishlistApplication) ((Activity) mCtx).getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                t.send(new HitBuilders.EventBuilder()
-                        .setCategory("Social")
-                        .setAction("ShareWish")
-                        .setLabel(info.activityInfo.packageName)
-                        .build());
+
+                Analytics.send(Analytics.SOCIAL, "ShareWish", info.activityInfo.packageName);
 
                 dismiss();
             }

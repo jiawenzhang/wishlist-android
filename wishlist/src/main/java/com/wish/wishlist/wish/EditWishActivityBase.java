@@ -28,10 +28,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.StringSignature;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
-import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.ActivityBase;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
@@ -44,6 +41,7 @@ import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.tag.AddTagActivity;
 import com.wish.wishlist.tag.AddTagFromEditActivity;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.PositionManager;
 
 import java.io.File;
@@ -448,11 +446,7 @@ public abstract class EditWishActivityBase extends ActivityBase {
 
         SyncAgent.getInstance().sync();
 
-        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory("Wish")
-                .setAction("Save")
-                .build());
+        Analytics.send(Analytics.WISH, "Save", null);
 
         //close this activity
         Intent resultIntent = new Intent();
@@ -465,12 +459,7 @@ public abstract class EditWishActivityBase extends ActivityBase {
         switch (requestCode) {
             case TAKE_PICTURE: {
                 if (resultCode == RESULT_OK) {
-                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                    t.send(new HitBuilders.EventBuilder()
-                            .setCategory("Wish")
-                            .setAction("TakenPicture")
-                            .setLabel("FromEditItemCameraButton")
-                            .build());
+                    Analytics.send(Analytics.WISH, "TakenPicture", "FromEditItemCameraButton");
 
                     setTakenPhoto();
                 } else {
@@ -482,11 +471,7 @@ public abstract class EditWishActivityBase extends ActivityBase {
             case SELECT_PICTURE: {
                 if (resultCode == RESULT_OK) {
                     mSelectedPicUri = data.getData();
-                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                    t.send(new HitBuilders.EventBuilder()
-                            .setCategory("Wish")
-                            .setAction("SelectedPicture")
-                            .build());
+                    Analytics.send(Analytics.WISH, "SelectedPicture", null);
                     setSelectedPic();
                 }
                 break;

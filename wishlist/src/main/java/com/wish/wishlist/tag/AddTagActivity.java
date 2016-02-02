@@ -26,17 +26,15 @@ import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.tokenautocomplete.FilteredArrayAdapter;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.ActivityBase;
 import com.wish.wishlist.db.TagDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
-import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.Analytics;
 
 public class AddTagActivity extends ActivityBase implements TokenCompleteTextView.TokenListener {
     protected final static String PREFIX = "Tags: ";
@@ -162,11 +160,7 @@ public class AddTagActivity extends ActivityBase implements TokenCompleteTextVie
         }
         else if (id == R.id.menu_save) {
             onSave();
-            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-            t.send(new HitBuilders.EventBuilder()
-                    .setCategory("Tag")
-                    .setAction("ClickSave")
-                    .build());
+            Analytics.send(Analytics.TAG, "ClickSave", null);
             return true;
         }
         else {

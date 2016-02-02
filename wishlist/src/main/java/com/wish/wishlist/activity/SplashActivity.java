@@ -8,13 +8,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.DBAdapter;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.login.UserLoginActivity;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.MigrationTask;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.wish.MyWishActivity;
@@ -30,11 +29,7 @@ public class SplashActivity extends Activity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory("App")
-                .setAction("Start")
-                .build());
+        Analytics.send(Analytics.APP, "Start", null);
 
         DBAdapter.getInstance().createDB();
         File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/image");

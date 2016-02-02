@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.HashMap;

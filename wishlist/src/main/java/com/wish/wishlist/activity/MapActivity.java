@@ -16,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,9 +29,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.db.ItemDBManager;
-import com.wish.wishlist.WishlistApplication;
 
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.wish.FriendWishDetailActivity;
 import com.wish.wishlist.wish.MyWishDetailActivity;
 import com.wish.wishlist.wish.WebImgMeta;
@@ -100,11 +98,7 @@ public class MapActivity extends Activity {
                 Log.e(TAG, e.toString());
             }
 
-            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-            t.send(new HitBuilders.EventBuilder()
-                    .setCategory("Debug")
-                    .setAction("com.google.android.gms: " + Integer.toString(v))
-                    .build());
+            Analytics.send(Analytics.DEBUG, "com.google.android.gms: " + Integer.toString(v), null);
 
             finish();
             return;
@@ -112,9 +106,7 @@ public class MapActivity extends Activity {
 
         setContentView(R.layout.map);
 
-        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        t.setScreenName("MapView");
-        t.send(new HitBuilders.AppViewBuilder().build());
+        Analytics.sendScreen("MapView");
 
         mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         Intent i = getIntent();
@@ -144,14 +136,9 @@ public class MapActivity extends Activity {
             // Defines the contents of the InfoWindow
             @Override
             public View getInfoContents(Marker marker) {
-                Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                t.send(new HitBuilders.EventBuilder()
-                        .setCategory("Map")
-                        .setAction("TapPin")
-                        .build());
+                Analytics.send(Analytics.MAP, "TapPin", null);
 
                 View v = getLayoutInflater().inflate(R.layout.info_window_layout, null);
-
                 ImageView thumb = (ImageView) v.findViewById(R.id.map_thumb);
 
                 // we need to refresh the InfoWindow when loading image is complete. the callback object's onSuccess is called

@@ -21,8 +21,6 @@ import android.widget.ViewFlipper;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.DrawerActivity;
@@ -30,6 +28,7 @@ import com.wish.wishlist.model.ItemNameComparator;
 import com.wish.wishlist.model.ItemPriceComparator;
 import com.wish.wishlist.model.ItemTimeComparator;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.widgets.ItemDecoration;
@@ -114,14 +113,12 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         mView.read();
         if (mView.val() == Options.View.LIST) {
-            t.setScreenName("ListView");
+            Analytics.sendScreen("ListView");
         } else {
-            t.setScreenName("GridView");
+            Analytics.sendScreen("GridView");
         }
-        t.send(new HitBuilders.AppViewBuilder().build());
 
         mFilterView = (TagView) this.findViewById(R.id.filter_view);
         mFilterView.setOnTagClickListener(new OnTagClickListener() {
@@ -248,9 +245,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         mView.setVal(viewOption);
         mView.save();
 
-        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        t.setScreenName(screenView);
-        t.send(new HitBuilders.AppViewBuilder().build());
+        Analytics.sendScreen(screenView);
         return true;
     }
 

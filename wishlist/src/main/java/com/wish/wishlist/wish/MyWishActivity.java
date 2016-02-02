@@ -29,8 +29,6 @@ import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import me.kaede.tagview.OnTagDeleteListener;
 import me.kaede.tagview.Tag;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.parse.ParseUser;
 import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
@@ -40,10 +38,10 @@ import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.social.ShareHelper;
 import com.wish.wishlist.tag.AddTagActivity;
 import com.wish.wishlist.tag.FindTagActivity;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.image.CameraManager;
@@ -427,12 +425,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
                 changed.put(item_id, wish_item);
 
-                Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                t.send(new HitBuilders.EventBuilder()
-                        .setCategory("Wish")
-                        .setAction("ChangeStatus")
-                        .setLabel(label)
-                        .build());
+                Analytics.send(Analytics.WISH, "ChangeStatus", label);
             }
         }
 
@@ -611,16 +604,11 @@ public class MyWishActivity extends WishBaseActivity implements
             case TAKE_PICTURE: {
                 if (resultCode == RESULT_OK) {
                     Log.d(TAG, "TAKE_PICTURE: RESULT_OK");
-                    Log.d("TAKE PICTURE ",  mTempPhotoPath);
+                    Log.d("TAKE PICTURE ", mTempPhotoPath);
                     Intent i = new Intent(this, AddWishActivity.class);
                     i.putExtra(AddWishActivity.TEMP_PHOTO_PATH, mTempPhotoPath);
 
-                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                    t.send(new HitBuilders.EventBuilder()
-                            .setCategory("Wish")
-                            .setAction("TakenPicture")
-                            .setLabel("FromActionBarCameraButton")
-                            .build());
+                    Analytics.send(Analytics.WISH, "TakenPicture", "FromActionBarCameraButton");
                     startActivityForResult(i, EDIT_ITEM);
                 } else {
                     Log.d(TAG, "TAKE_PICTURE: not RESULT_OK");

@@ -21,15 +21,13 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.WebImage;
 import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.GetWebItemTask;
 import com.wish.wishlist.util.WebRequest;
 import com.wish.wishlist.util.WebResult;
@@ -159,12 +157,7 @@ public class AddWishFromActionActivity extends AddWishActivity
                 return;
             }
 
-            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-            t.send(new HitBuilders.EventBuilder()
-                    .setCategory("Wish")
-                    .setAction("ShareFrom_All")
-                    .setLabel(mHost)
-                    .build());
+            Analytics.send(Analytics.WISH, "ShareFrom_All", mHost);
         }
     }
 
@@ -211,13 +204,8 @@ public class AddWishFromActionActivity extends AddWishActivity
             }
             Log.d(TAG, "extracted link: " + mLink);
 
-            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
             if (mHost != null) {
-                t.send(new HitBuilders.EventBuilder()
-                        .setCategory("Wish")
-                        .setAction("ShareFrom_Text")
-                        .setLabel(mHost)
-                        .build());
+                Analytics.send(Analytics.WISH, "ShareFrom_Text", mHost);
             }
 
             mLinkEditText.setText(mLink);
@@ -236,12 +224,7 @@ public class AddWishFromActionActivity extends AddWishActivity
                 public void onCancel(DialogInterface dialog) {
                     Log.d(TAG, "onCancel");
 
-                    Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-                    t.send(new HitBuilders.EventBuilder()
-                            .setCategory("Wish")
-                            .setAction("CancelLoadingImages")
-                            .setLabel(mLink)
-                            .build());
+                    Analytics.send(Analytics.WISH, "CancelLoadingImages", mLink);
 
                     if (mGetWebItemTask != null) {
                         mGetWebItemTask.cancel(true);
@@ -299,12 +282,7 @@ public class AddWishFromActionActivity extends AddWishActivity
 
             Log.d(TAG, "host " + mSelectedPicUri.getHost());
 
-            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-            t.send(new HitBuilders.EventBuilder()
-                    .setCategory("Wish")
-                    .setAction("ShareFrom_Image")
-                    .setLabel(mHost)
-                    .build());
+            Analytics.send(Analytics.WISH, "ShareFrom_Image", mHost);
         }
     }
 
@@ -315,11 +293,7 @@ public class AddWishFromActionActivity extends AddWishActivity
             // Update UI to reflect multiple images being shared
         }
 
-        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory("Wish")
-                .setAction("ShareFrom_MultipleImage")
-                .build());
+        Analytics.send(Analytics.WISH, "ShareFrom_MultipleImage", null);
     }
 
     private String getEbayLink(String link) {
@@ -404,23 +378,13 @@ public class AddWishFromActionActivity extends AddWishActivity
         setWebPic(mWebPicUrl);
         unlockScreenOrientation();
 
-        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory("Wish")
-                .setAction("SelectWebImage`")
-                .setLabel(mHost)
-                .build());
+        Analytics.send(Analytics.WISH, "SelectWebImage", mHost);
     }
 
     public void onLoadMoreFromWebView() {
         Log.d(TAG, "onLoadMoreFromWebview");
 
-        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory("Wish")
-                .setAction("LoadMoreFromWebView")
-                .setLabel(mLink)
-                .build());
+        Analytics.send(Analytics.WISH, "LoadMoreFromWebView", mLink);
 
         mProgressDialog.show();
         getGeneratedHtml();
@@ -430,12 +394,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         Log.d(TAG, "onWebImageCancelled");
         unlockScreenOrientation();
 
-        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory("Wish")
-                .setAction("CancelWebImage")
-                .setLabel(mLink)
-                .build());
+        Analytics.send(Analytics.WISH, "CancelWebImage", mLink);
     }
 
     public void onLoadMoreFromStaticHtml() {
@@ -443,12 +402,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         lockScreenOrientation();
         mProgressDialog.show();
 
-        Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory("Wish")
-                .setAction("LoadMoreFromStaticHtml")
-                .setLabel(mLink)
-                .build());
+        Analytics.send(Analytics.WISH, "LoadMoreFromStaticHtml", mLink);
 
         if (mWebResult._attemptedAllFromJsoup) {
             getGeneratedHtml();
@@ -539,12 +493,7 @@ public class AddWishFromActionActivity extends AddWishActivity
             unlockScreenOrientation();
             Toast.makeText(this, "No image found", Toast.LENGTH_SHORT).show();
 
-            Tracker t = ((WishlistApplication) getApplication()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
-            t.send(new HitBuilders.EventBuilder()
-                    .setCategory("Wish")
-                    .setAction("NoImageFound")
-                    .setLabel(mLink)
-                    .build());
+            Analytics.send(Analytics.WISH, "NoImageFound", mLink);
         }
     }
 
