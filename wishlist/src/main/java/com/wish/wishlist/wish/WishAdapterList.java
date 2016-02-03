@@ -139,9 +139,13 @@ public class WishAdapterList extends WishAdapter {
             holder.imgComplete.setVisibility(View.GONE);
         }
 
-        int access = wish.getAccess();
-        if (access == wish.PRIVATE) {
-            holder.imgPrivate.setVisibility(View.VISIBLE);
+        if (WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_account)) {
+            int access = wish.getAccess();
+            if (access == wish.PRIVATE) {
+                holder.imgPrivate.setVisibility(View.VISIBLE);
+            } else {
+                holder.imgPrivate.setVisibility(View.GONE);
+            }
         } else {
             holder.imgPrivate.setVisibility(View.GONE);
         }

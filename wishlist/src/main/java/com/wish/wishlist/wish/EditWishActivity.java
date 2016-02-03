@@ -44,10 +44,14 @@ public class EditWishActivity extends EditWishActivityBase
             mCompleteCheckBox.setChecked(false);
         }
 
-        if (item.getAccess() == WishItem.PRIVATE) {
-            mPrivateCheckBox.setChecked(true);
+        if (getResources().getBoolean(R.bool.enable_account)) {
+            if (item.getAccess() == WishItem.PRIVATE) {
+                mPrivateCheckBox.setChecked(true);
+            } else {
+                mPrivateCheckBox.setChecked(false);
+            }
         } else {
-            mPrivateCheckBox.setChecked(false);
+            mPrivateCheckBox.setVisibility(View.GONE);
         }
 
         mNameEditText.setText(item.getName());

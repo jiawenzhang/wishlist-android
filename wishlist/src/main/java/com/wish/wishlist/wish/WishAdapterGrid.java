@@ -146,9 +146,13 @@ public class WishAdapterGrid extends WishAdapter {
             holder.imgComplete.setVisibility(View.GONE);
         }
 
-        final int access = wish.getAccess();
-        if (access == wish.PRIVATE) {
-            holder.imgPrivate.setVisibility(View.VISIBLE);
+        if (WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_account)) {
+            final int access = wish.getAccess();
+            if (access == wish.PRIVATE) {
+                holder.imgPrivate.setVisibility(View.VISIBLE);
+            } else {
+                holder.imgPrivate.setVisibility(View.GONE);
+            }
         } else {
             holder.imgPrivate.setVisibility(View.GONE);
         }

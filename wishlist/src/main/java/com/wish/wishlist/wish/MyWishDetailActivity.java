@@ -149,10 +149,13 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     protected void showItemInfo() {
         super.showItemInfo();
         final ImageView privateImage = (ImageView) findViewById(R.id.imgPrivate);
-        if (mItem.getAccess() == mItem.PRIVATE) {
-            privateImage.setVisibility(View.VISIBLE);
-        } else {
-            privateImage.setVisibility(View.GONE);
+
+        if (getResources().getBoolean(R.bool.enable_account)) {
+            if (mItem.getAccess() == mItem.PRIVATE) {
+                privateImage.setVisibility(View.VISIBLE);
+            } else {
+                privateImage.setVisibility(View.GONE);
+            }
         }
     }
 
