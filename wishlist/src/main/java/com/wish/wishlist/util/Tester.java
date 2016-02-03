@@ -106,11 +106,15 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
 
     @Override
     public void onWishImageDownloadDone(boolean success) {
-        // WishImageDownload set the access to default settings, let's reset it to random
+        // WishImageDownload set the access to default settings and completed to 0, let's reset it to random
         Random r = new Random();
         for (WishItem item : mItems) {
             int itemAccess = r.nextInt(2); // int between [0, 2);
             item.setAccess(itemAccess);
+
+            int itemCompleted = r.nextInt(2);
+            item.setComplete(itemCompleted);
+
             item.saveToLocal();
             Log.d(TAG, "item saved");
         }
