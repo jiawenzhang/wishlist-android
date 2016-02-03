@@ -408,8 +408,7 @@ public class DBAdapter {
         mDb.close();
     }
 
-    public SQLiteDatabase db()
-    {
+    public SQLiteDatabase db() {
         return mDb;
     }
 

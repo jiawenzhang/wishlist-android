@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.PositionManager;
 import java.util.Observable;
 import java.util.Observer;
@@ -26,6 +27,8 @@ public class AddWishActivity extends EditWishActivityBase
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.sendScreen("AddWish");
 
         if (loadLocation()) {
             mMapImageButton.setOnClickListener(new OnClickListener() {

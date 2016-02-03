@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.ActivityBase;
 import com.wish.wishlist.db.TagDBManager;
+import com.wish.wishlist.util.Analytics;
 
 public class FindTagActivity extends ActivityBase {
     TagListAdapter tagsAdapter = null;
@@ -37,6 +38,8 @@ public class FindTagActivity extends ActivityBase {
         setupActionBar(R.id.find_tag_toolbar);
 
         showTags();
+
+        Analytics.sendScreen("FindTag");
     }
 
     private void showTags() {

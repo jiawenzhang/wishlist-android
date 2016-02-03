@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.view.ZoomPanImageView;
 
@@ -60,6 +61,8 @@ public class FullscreenPhotoActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fullscreen_photo);
+
+        Analytics.sendScreen("FullscreenPhoto");
 
         Intent intent = getIntent();
         mPhotoPath = intent.getStringExtra(PHOTO_PATH);
@@ -125,5 +128,4 @@ public class FullscreenPhotoActivity extends Activity {
         savedInstanceState.putString(PHOTO_URL, mPhotoUrl);
         super.onSaveInstanceState(savedInstanceState);
     }
-
 }

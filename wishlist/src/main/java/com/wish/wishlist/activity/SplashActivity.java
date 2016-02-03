@@ -12,6 +12,7 @@ import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.db.DBAdapter;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.MigrationTask;
@@ -32,6 +33,10 @@ public class SplashActivity extends Activity implements
         Analytics.send(Analytics.APP, "Start", null);
 
         DBAdapter.getInstance().createDB();
+
+        Analytics.send(Analytics.WISH, "ItemCount", String.valueOf(ItemDBManager.getItemsCount()));
+        Analytics.send(Analytics.WISH, "ImageItemCount", String.valueOf(ItemDBManager.getImageItemsCount()));
+
         File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/image");
         if (!dir.exists()) {
             dir.mkdir();

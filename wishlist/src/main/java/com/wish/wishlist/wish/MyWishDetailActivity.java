@@ -25,6 +25,7 @@ import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.dimension;
 
 import java.io.File;
@@ -90,6 +91,8 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.sendScreen("MyWishDetail");
 
         double lat = mItem.getLatitude();
         double lng = mItem.getLongitude();
@@ -179,6 +182,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
                 false).setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        Analytics.send(Analytics.WISH, "Delete", null);
                         WishItemManager.getInstance().deleteItemById(mItem.getId());
                         EventBus.getInstance().post(new MyWishChangeEvent());
 

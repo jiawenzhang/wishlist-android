@@ -322,10 +322,13 @@ public abstract class WishBaseActivity extends DrawerActivity implements
                 } sortBuilder.setSingleChoiceItems(sortOption, j, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         if (sortOption[item].equals(BY_NAME)) {
+                            Analytics.send(Analytics.WISH, "Sort", "ByName");
                             mSort.setVal(Options.Sort.NAME);
                         } else if (sortOption[item].equals(BY_TIME)) {
+                            Analytics.send(Analytics.WISH, "Sort", "ByTime");
                             mSort.setVal(Options.Sort.UPDATED_TIME);
                         } else {
+                            Analytics.send(Analytics.WISH, "Sort", "ByPrice");
                             mSort.setVal(Options.Sort.PRICE);
                         }
                         mSort.save();
@@ -354,12 +357,15 @@ public abstract class WishBaseActivity extends DrawerActivity implements
                 optionBuilder.setSingleChoiceItems(options, mStatus.val(), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         if (options[item].equals(BY_ALL)) {
+                            Analytics.send(Analytics.WISH, "Filter", "ByAll");
                             mWhere.clear();
                             mStatus.setVal(Options.Status.ALL);
                         } else if (options[item].equals(BY_COMPLETED)) {
+                            Analytics.send(Analytics.WISH, "Filter", "ByCompleted");
                             mWhere.put("complete", "1");
                             mStatus.setVal(Options.Status.COMPLETED);
                         } else {
+                            Analytics.send(Analytics.WISH, "Filter", "ByInProgress");
                             mWhere.put("complete", "0");
                             mStatus.setVal(Options.Status.IN_PROGRESS);
                         }

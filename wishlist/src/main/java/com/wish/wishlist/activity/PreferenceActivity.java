@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import com.wish.wishlist.R;
 import com.wish.wishlist.fragment.PrefsFragment;
+import com.wish.wishlist.util.Analytics;
 
 public class PreferenceActivity extends ActivityBase {
 
@@ -13,6 +14,8 @@ public class PreferenceActivity extends ActivityBase {
         setContentView(R.layout.wishlist_preference);
         getFragmentManager().beginTransaction().replace(R.id.pref_frame, new PrefsFragment()).commit();
         setupActionBar(R.id.pref_toolbar);
+
+        Analytics.sendScreen("Preference");
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {

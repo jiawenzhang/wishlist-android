@@ -320,6 +320,7 @@ public class MyWishActivity extends WishBaseActivity implements
     protected void handleIntent(Intent intent) {
         // check if the activity is started from search
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            Analytics.send(Analytics.WISH, "Search", null);
             MenuItemCompat.collapseActionView(mMenuSearch);
             // activity is started from search, get the search query and
             // displayed the searched items
@@ -463,6 +464,7 @@ public class MyWishActivity extends WishBaseActivity implements
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                Analytics.send(Analytics.WISH, "Delete", null);
                 for (long item_id : item_ids) {
                     WishItemManager.getInstance().deleteItemById(item_id);
                 }

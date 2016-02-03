@@ -5,7 +5,6 @@ package com.wish.wishlist.tag;
  */
 
 import android.content.Intent;
-import android.os.Bundle;
 import java.util.ArrayList;
 
 public class AddTagFromEditActivity extends AddTagActivity {

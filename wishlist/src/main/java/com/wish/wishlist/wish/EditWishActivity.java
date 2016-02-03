@@ -9,6 +9,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.Analytics;
 
 import android.content.Intent;
 import android.location.Location;
@@ -26,6 +27,8 @@ public class EditWishActivity extends EditWishActivityBase
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.sendScreen("EditWish");
 
         mMapImageButton.setVisibility(View.GONE);
         mCompleteCheckBox.setVisibility(View.VISIBLE);

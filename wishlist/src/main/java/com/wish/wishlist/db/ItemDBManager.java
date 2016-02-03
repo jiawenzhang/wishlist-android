@@ -160,13 +160,35 @@ public class ItemDBManager extends DBManager {
 		//delete from store table
 	}
 
-	/** Returns the number of Items */
-	public int getItemsCount() {
+	/** Returns the number of Items with image*/
+	public static int getImageItemsCount() {
 
 		Cursor c = null;
 		try {
 			c = DBAdapter.getInstance().db().rawQuery(
-					"SELECT count(*) FROM Item", null);
+					"SELECT count(*) FROM Item WHERE deleted=0 AND fullsize_picture IS NOT NULL", null);
+			if (0 >= c.getCount()) {
+				return 0;
+			}
+			c.moveToFirst();
+			return c.getInt(0);
+		} finally {
+			if (null != c) {
+				try {
+					c.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+	}
+
+	/** Returns the number of Items */
+	public static int getItemsCount() {
+
+		Cursor c = null;
+		try {
+			c = DBAdapter.getInstance().db().rawQuery(
+					"SELECT count(*) FROM Item WHERE deleted=0", null);
 			if (0 >= c.getCount()) {
 				return 0;
 			}

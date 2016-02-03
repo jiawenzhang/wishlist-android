@@ -53,6 +53,8 @@ public class AddTagActivity extends ActivityBase implements TokenCompleteTextVie
         setContentView(R.layout.add_tag);
         setupActionBar(R.id.add_tag_toolbar);
 
+        Analytics.sendScreen("AddTag");
+
         adapter = new FilteredArrayAdapter<String>(this, R.layout.tag_layout, new String[]{}) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
