@@ -123,8 +123,8 @@ public class PrefsFragment extends PreferenceFragment implements
 
         final Preference debug = findPreference("debug");
         if (!BuildConfig.DEBUG) {
-            PreferenceScreen preferenceScreen = getPreferenceScreen();
-            preferenceScreen.removePreference(debug);
+            PreferenceCategory category = (PreferenceCategory) findPreference("about");
+            category.removePreference(debug);
         } else {
             debug.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
