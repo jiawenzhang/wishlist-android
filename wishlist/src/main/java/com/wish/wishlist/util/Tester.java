@@ -1,23 +1,32 @@
 package com.wish.wishlist.util;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.wish.WebImgMeta;
+import com.wish.wishlist.wish.WishImageDownloader;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
  * Created by jiawen on 2016-01-21.
  */
-public class Tester {
+public class Tester implements WishImageDownloader.onWishImageDownloadDoneListener {
+    private WishImageDownloader mImageDownloader = new WishImageDownloader();
+    private ArrayList<WishItem> mItems = new ArrayList<>();
+    private static final String TAG = "Tester";
+
     private static Tester ourInstance = new Tester();
 
     public static Tester getInstance() {
         return ourInstance;
     }
 
-    private Tester() {
-    }
+    private Tester() {}
 
     private LatLng getLocation(double x0, double y0, int radius/*meters*/) {
         Random random = new Random();
@@ -42,9 +51,11 @@ public class Tester {
     }
 
     public void addWishes() {
+        mImageDownloader.setWishImageDownloadDoneListener(this);
         // create a new item
         Random r = new Random();
         int n = 20;
+
         for (int i=0; i < n; i++ ) {
             int itemAccess = r.nextInt(2); // int between [0, 2);
             String itemStoreName = "Store";
@@ -56,7 +67,6 @@ public class Tester {
             //String webPicUrl = "http://placehold.it/" + String.valueOf(width) + "x" + String.valueOf(height) + ".jpg";
             String webPicUrl = "http://loremflickr.com/" + String.valueOf(width) + "/" + String.valueOf(height);
             String webImgMetaJSON = new WebImgMeta(webPicUrl, width, height).toJSON();
-            String fullsizePhotoPath = null;
             Double itemPrice = r.nextDouble();
 
             LatLng randomLatLng = getLocation(-79, 44, 1000);
@@ -77,7 +87,7 @@ public class Tester {
                     System.currentTimeMillis(),
                     webImgMetaJSON,
                     null,
-                    fullsizePhotoPath,
+                    null,
                     itemPrice,
                     lat,
                     lng,
@@ -88,7 +98,23 @@ public class Tester {
                     false,
                     false);
 
-            item.saveToLocal();
+            mItems.add(item);
         }
+
+        mImageDownloader.download(mItems);
+    }
+
+    @Override
+    public void onWishImageDownloadDone(boolean success) {
+        // WishImageDownload set the access to default settings, let's reset it to random
+        Random r = new Random();
+        for (WishItem item : mItems) {
+            int itemAccess = r.nextInt(2); // int between [0, 2);
+            item.setAccess(itemAccess);
+            item.saveToLocal();
+            Log.d(TAG, "item saved");
+        }
+
+        EventBus.getInstance().post(new MyWishChangeEvent());
     }
 }
