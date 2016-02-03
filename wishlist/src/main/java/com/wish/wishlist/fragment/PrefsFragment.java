@@ -10,15 +10,17 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.app.DialogFragment;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.BuildConfig;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.feature.NewFeatureFragmentActivity;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.login.UserLoginActivity;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.Tester;
 import com.wish.wishlist.view.ReleaseNotesView;
 
@@ -142,5 +144,8 @@ public class PrefsFragment extends PreferenceFragment implements
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).edit();
         editor.putString("currency", currency);
         editor.commit();
+
+        EventBus.getInstance().post(new MyWishChangeEvent());
+        Analytics.send(Analytics.WISH, "Currency", currency);
     }
 }
