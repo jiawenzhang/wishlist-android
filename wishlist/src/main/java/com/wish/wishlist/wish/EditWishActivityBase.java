@@ -225,6 +225,7 @@ public abstract class EditWishActivityBase extends ActivityBase {
 
         Intent intent = getIntent();
         //get the mTempPhotoPath, if it is not null, EdiItemInfo is launched from camera
+        mImageItem = (ImageView) findViewById(R.id.image_photo);
         mTempPhotoPath = intent.getStringExtra(TEMP_PHOTO_PATH);
         setTakenPhoto();
         if (intent.getStringExtra(SELECTED_PIC_URL) != null) {
@@ -235,7 +236,6 @@ public abstract class EditWishActivityBase extends ActivityBase {
         mMapImageButton.setVisibility(View.GONE);
         mCompleteCheckBox.setVisibility(View.VISIBLE);
 
-        mImageItem = (ImageView) findViewById(R.id.image_photo);
         mTags = TagItemDBManager.instance().tags_of_item(mItem_id);
 
         mCameraImageButton = (ImageButton) findViewById(R.id.imageButton_camera);
