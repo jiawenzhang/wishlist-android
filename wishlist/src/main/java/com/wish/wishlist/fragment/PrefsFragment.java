@@ -79,6 +79,8 @@ public class PrefsFragment extends PreferenceFragment implements
                 return true;
             }
         });
+        PreferenceCategory c = (PreferenceCategory) findPreference("about");
+        c.removePreference(newFeature);
 
         final Preference releaseNotes = findPreference("releaseNotes");
         releaseNotes.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
