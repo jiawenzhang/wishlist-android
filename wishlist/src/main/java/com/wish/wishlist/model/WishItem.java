@@ -150,7 +150,7 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         if (_price == Double.MIN_VALUE) {
             return null;
         } else {
-            DecimalFormat Dec = new DecimalFormat("#.##");
+            DecimalFormat Dec = new DecimalFormat("0.00");
             String priceStr = (Dec.format(_price));
 
             return priceStr;

@@ -25,7 +25,6 @@ import com.wish.wishlist.image.PhotoFileCreater;
 import com.wish.wishlist.util.RoundedCornersTransformation;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class WishAdapterList extends WishAdapter {
@@ -106,11 +105,8 @@ public class WishAdapterList extends WishAdapter {
 
         holder.txtName.setText(wish.getName());
 
-        double price = wish.getPrice();
-        //we use float.min_value to indicate price is not available
-        if (price != Double.MIN_VALUE) {
-            DecimalFormat Dec = new DecimalFormat("0.00");
-            String priceStr = (Dec.format(price));
+        String priceStr = wish.getPriceAsString();
+        if (priceStr != null) {
             holder.txtPrice.setText(WishItem.priceStringWithCurrency(priceStr));
             holder.txtPrice.setVisibility(View.VISIBLE);
         } else {
