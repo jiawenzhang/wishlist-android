@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <releaseNote>
+    <release versionName="1.2.3" versionCode="24">
+        <note>Long press a wish to activate selection mode and choose multiple wishes for action.</note>
+        <note>Support sharing multiple wishes.</note>
+        <note>List/grid view UI improvement.</note>
+        <note>Faster wish image loading.</note>
+    </release>
     <release versionName="1.2.2" versionCode="22">
         <note>Improved map view:</note>
         <note>Show wish's name and thumbnail picture when tapping the wish on map.</note>
