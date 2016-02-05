@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.wish.wishlist.R;
 import com.wish.wishlist.activity.WebImage;
 import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.image.ImageManager;
@@ -361,19 +362,22 @@ public class AddWishFromActionActivity extends AddWishActivity
         if (mWebBitmap != null) {
             mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(mWebBitmap);
             ImageManager.saveBitmapToThumb(mWebBitmap, mFullsizePhotoPath);
+
+            // create a new item
+            WishItem item = createNewWish();
+
+            if (mWebPicUrl != null && mWebBitmap !=null) {
+                item.setWebImgMeta(mWebPicUrl, mWebBitmap.getWidth(), mWebBitmap.getHeight());
+            } else {
+                item.setWebImgMeta(null, 0, 0);
+            }
+
+            mItem_id = item.saveToLocal();
+            wishSaved();
+        } else if (mSelectedPicUri != null) {
+            showProgressDialog(getString(R.string.saving_image));
+            new saveSelectedPhotoTask().execute();
         }
-
-        // create a new item
-        WishItem item = createNewWish();
-
-        if (mWebPicUrl != null && mWebBitmap !=null) {
-            item.setWebImgMeta(mWebPicUrl, mWebBitmap.getWidth(), mWebBitmap.getHeight());
-        } else {
-            item.setWebImgMeta(null, 0, 0);
-        }
-
-        mItem_id = item.saveToLocal();
-        wishSaved();
         return true;
     }
 

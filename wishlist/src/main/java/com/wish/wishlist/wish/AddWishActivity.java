@@ -86,6 +86,7 @@ public class AddWishActivity extends EditWishActivityBase
         return true;
     }
 
+    @Override
     protected void newImageSaved() {
         super.newImageSaved();
         WishItem item = createNewWish();
