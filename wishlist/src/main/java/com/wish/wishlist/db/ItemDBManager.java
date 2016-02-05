@@ -265,6 +265,10 @@ public class ItemDBManager extends DBManager {
 		if (sortOption.equals(KEY_UPDATED_TIME)) {
 			// sort by date is most recent at the top
 			sortOption = sortOption + " DESC";
+		} else if (sortOption.equals(KEY_NAME)) {
+			// sort by name is case insensitive
+			sortOption = "LOWER(" + KEY_NAME + ")";
+
 		}
         sql = "SELECT * FROM Item " + WHERE + " ORDER BY " + sortOption;
 
