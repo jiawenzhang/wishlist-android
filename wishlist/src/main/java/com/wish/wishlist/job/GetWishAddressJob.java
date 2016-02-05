@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
+import com.path.android.jobqueue.RetryConstraint;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
@@ -79,11 +80,15 @@ public class GetWishAddressJob extends Job {
     }
 
     @Override
-    protected boolean shouldReRunOnThrowable(Throwable throwable) {
+    protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
+                                                     int maxRunCount) {
         // An error occurred in onRun.
-        // Return value determines whether this job should retry running (true) or abort (false).
-        return true;
+        // Return value determines whether this job should retry or cancel. You can further
+        // specify a backoff strategy or change the job's priority. You can also apply the
+        // delay to the whole group to preserve jobs' running order.
+        return RetryConstraint.createExponentialBackoff(runCount, 1000);
     }
+
     @Override
     protected void onCancel() {
         Log.e(TAG, "onCancel");
