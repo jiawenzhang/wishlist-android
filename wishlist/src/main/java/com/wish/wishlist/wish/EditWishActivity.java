@@ -147,8 +147,8 @@ public class EditWishActivity extends EditWishActivityBase
     private class GetAddressTask extends AsyncTask<String, Void, String> {//<param, progress, result>
         @Override
         protected String doInBackground(String... arg) {
-            //getCuttentAddStr using geocode, may take a while, need to put this to a separate thread
-            mAddStr = mPositionManager.getCuttentAddStr();
+            //getCurrentAddStr using geocode, may take a while, need to put this to a separate thread
+            mAddStr = mPositionManager.getCurrentAddStr();
             return mAddStr;
         }
 

@@ -15,50 +15,70 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import com.wish.wishlist.WishlistApplication;
+
 public class PositionManager extends Observable {
-	static final String LOG_TAG = "MyWishActivity";
-	private Context context;
-	private LocationManager _locationManager;
-	private Location _currentBestLocation = null;
-	private String addressString = "unknown";
-	private LocationListener _locationListenerGPS;
-	private LocationListener _locationListenerNetwork;
-	private static final int LISTEN_INTERVAL = 1000 * 60;//1min
-	boolean _gps_enabled=false;
-	boolean _network_enabled=false;
-	Handler _timeoutHandler = new Handler();
+	private static final String TAG = "PositionManager";
+	private static final String UNKNOWN = "unknown";
+
+	private LocationManager mLocationManager;
+	private Location mCurrentBestLocation = null;
+	private String mAddressString = UNKNOWN;
+	private LocationListener mLocationListenerGPS;
+	private LocationListener mLocationListenerNetwork;
+	private static final int LISTEN_INTERVAL = 1000 * 60;//1 min
+	private boolean mGPSEnabled = false;
+	private boolean mNetworkEnabled = false;
+	private Handler mTimeoutHandler = new Handler();
 	
-	public PositionManager(Context ctx) {
-		context = ctx;
-		_locationManager = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+	public PositionManager() {
+		mLocationManager = (LocationManager) WishlistApplication.getAppContext().getSystemService(Context.LOCATION_SERVICE);
+
+		if (mGPSEnabled) {
+			Location gpsLastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			if (gpsLastKnownLocation != null) {
+				mCurrentBestLocation = gpsLastKnownLocation;
+			}
+		}
+
+		if (mNetworkEnabled) {
+			Location netLastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if (netLastKnownLocation != null && isBetterLocation(netLastKnownLocation)) {
+				mCurrentBestLocation = netLastKnownLocation;
+			}
+		}
+
 //		criteria = new Criteria();
-//        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-//        criteria.setAltitudeRequired(false);
-//        criteria.setBearingRequired(false);
-//        criteria.setCostAllowed(true);
-//        criteria.setPowerRequirement(Criteria.POWER_LOW);
+//      criteria.setAccuracy(Criteria.ACCURACY_FINE);
+//      criteria.setAltitudeRequired(false);
+//      criteria.setBearingRequired(false);
+//      criteria.setCostAllowed(true);
+//      criteria.setPowerRequirement(Criteria.POWER_LOW);
 	}
 
 	public void startLocationUpdates(){
-		Log.d(LOG_TAG, "startLocationUpdates");
-		//exceptions will be thrown if provider is not permitted.
+		Log.d(TAG, "startLocationUpdates");
+
+		//Exceptions will be thrown if provider is not permitted.
         try {
-			_gps_enabled=_locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			mGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		} catch (Exception e){
+			Log.e(TAG, e.toString());
 		}
-		catch (Exception ex){}
 
         try {
-			_network_enabled=_locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+			mNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+		} catch(Exception e){
+			Log.e(TAG, e.toString());
 		}
-		catch(Exception ex){}
 
         //don't start listeners if no provider is enabled
-        if(!_gps_enabled && !_network_enabled) {
+        if (!mGPSEnabled && !mNetworkEnabled) {
             return;
         }
         
         // Define a listener that responds to location updates
-		_locationListenerGPS = new LocationListener() {
+		mLocationListenerGPS = new LocationListener() {
 			public void onLocationChanged(Location location) {
 				// Called when a new location is found by the gps location provider.
 				gotNewLocation(location);
@@ -69,7 +89,7 @@ public class PositionManager extends Observable {
 			public void onProviderDisabled(String provider) {}
 		};
 
-        _locationListenerNetwork = new LocationListener() {
+        mLocationListenerNetwork = new LocationListener() {
 			public void onLocationChanged(Location location) {
 				// Called when a new location is found by the network location provider.
 				gotNewLocation(location);
@@ -80,76 +100,57 @@ public class PositionManager extends Observable {
 			public void onProviderDisabled(String provider) {}
         };
 
-        if(_gps_enabled)
-            _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, _locationListenerGPS);
-        if(_network_enabled)
-            _locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, _locationListenerNetwork);
+        if (mGPSEnabled) {
+			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListenerGPS);
+		}
 
-		//start the timer for listenning to location update
-		_timeoutHandler.postDelayed(new Runnable() {
+        if (mNetworkEnabled) {
+			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListenerNetwork);
+		}
+
+		//start the timer for listening to location update
+		mTimeoutHandler.postDelayed(new Runnable() {
 			public void run() {
 				stopLocationUpdates();
 				setChanged();
 				notifyObservers();
 			}
-		}, 12 * 1000);//timout is 12s
+		}, 12 * 1000);//timeout is 12s
 	}
 	
 	public void stopLocationUpdates(){
-		// Remove the listener you previously added
-		_locationManager.removeUpdates(_locationListenerGPS);
-		_locationManager.removeUpdates(_locationListenerNetwork);
+		// Remove the listener previously added
+		mLocationManager.removeUpdates(mLocationListenerGPS);
+		mLocationManager.removeUpdates(mLocationListenerNetwork);
 	}
 	
 	public Location getCurrentLocation() {
-		if (_currentBestLocation != null) {
-			return _currentBestLocation;
-		}
-		
-		// both gps and network location listener has not got a location yet, so use the
-		// the lastknown location
-        if(_gps_enabled) {
-			Location gpsLastKnownLoc=null;
-            gpsLastKnownLoc=_locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (gpsLastKnownLoc!= null) {
-				gotNewLocation(gpsLastKnownLoc);
-            }
-        }
-        if(_network_enabled) {
-			Location netLastKnownloc=null;
-            netLastKnownloc=_locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if (netLastKnownloc != null) {
-				gotNewLocation(netLastKnownloc);
-            }
-        }
-        
-        return _currentBestLocation;
-  
+		return mCurrentBestLocation;
 	}
 	
-	private void gotNewLocation(Location newlocation) {
-		if (isBetterLocation(newlocation, _currentBestLocation)) {
-			_currentBestLocation = newlocation;
+	private void gotNewLocation(Location newLocation) {
+		if (isBetterLocation(newLocation)) {
+			mCurrentBestLocation = newLocation;
 		}
-		_timeoutHandler.removeCallbacksAndMessages(null);
+
+		mTimeoutHandler.removeCallbacksAndMessages(null);
 		stopLocationUpdates();
 		setChanged();
 		notifyObservers();
-		Log.d(LOG_TAG, "notifyObservers called");
+		Log.d(TAG, "notifyObservers called");
 	}
 
 	/** Determines whether one Location reading is better than the current Location fix
 	  * @param location  The new Location that you want to evaluate
-	  * @param currentBestLocation  The current Location fix, to which you want to compare the new one
 	  */
-	protected boolean isBetterLocation(Location location, Location currentBestLocation) {
-		if (currentBestLocation == null) {
+	private boolean isBetterLocation(Location location) {
+		if (mCurrentBestLocation == null && location != null) {
 			// A new location is always better than no location
 			return true;
 		}
 
 		// Check whether the new location fix is newer or older
-		long timeDelta = location.getTime() - currentBestLocation.getTime();
+		long timeDelta = location.getTime() - mCurrentBestLocation.getTime();
 		boolean isSignificantlyNewer = timeDelta > LISTEN_INTERVAL;
 		boolean isSignificantlyOlder = timeDelta < -LISTEN_INTERVAL;
 		boolean isNewer = timeDelta > 0;
@@ -164,14 +165,14 @@ public class PositionManager extends Observable {
 		}
 
 		// Check whether the new location fix is more or less accurate
-		int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+		int accuracyDelta = (int) (location.getAccuracy() - mCurrentBestLocation.getAccuracy());
 		boolean isLessAccurate = accuracyDelta > 0;
 		boolean isMoreAccurate = accuracyDelta < 0;
 		boolean isSignificantlyLessAccurate = accuracyDelta > 200;
 
 		// Check if the old and new location are from the same provider
 		boolean isFromSameProvider = isSameProvider(location.getProvider(),
-				currentBestLocation.getProvider());
+				mCurrentBestLocation.getProvider());
 
 		// Determine location quality using a combination of timeliness and accuracy
 		if (isMoreAccurate) {
@@ -187,16 +188,16 @@ public class PositionManager extends Observable {
 	/** Checks whether two providers are the same */
 	private boolean isSameProvider(String provider1, String provider2) {
 		if (provider1 == null) {
-		  return provider2 == null;
+			return provider2 == null;
 		}
 		return provider1.equals(provider2);
 	}
 	
-	public String getCuttentAddStr(){ //this needs network to be on
-		Geocoder gc = new Geocoder(context, Locale.getDefault());
+	public String getCurrentAddStr() { //this needs network to be on
+		Geocoder gc = new Geocoder(WishlistApplication.getAppContext(), Locale.getDefault());
 		try {
-			double latitude = _currentBestLocation.getLatitude();
-			double longitude = _currentBestLocation.getLongitude();
+			double latitude = mCurrentBestLocation.getLatitude();
+			double longitude = mCurrentBestLocation.getLongitude();
 			List<Address> addresses = gc.getFromLocation(latitude, longitude, 1);
 			StringBuilder sb = new StringBuilder();
 			if (addresses.size() > 0) {
@@ -207,11 +208,11 @@ public class PositionManager extends Observable {
 				//sb.append(address.getPostalCode()).append("\n");
 				//sb.append(address.getCountryName());
 			}
-			addressString = sb.toString().trim();
-			return addressString;
+			mAddressString = sb.toString().trim();
+			return mAddressString;
 		} catch (IOException e) {
-			addressString = "unknown";
-			return addressString;
+			mAddressString = UNKNOWN;
+			return mAddressString;
 		}
 	}
 }

@@ -184,22 +184,23 @@ public class AddWishActivity extends EditWishActivityBase
             //get current latitude and longitude
             mLat = location.getLatitude();
             mLng = location.getLongitude();
-            new GetAddressTask().execute("");
+            Log.d(TAG, "execute GetAddressTAsk");
+            new GetAddressTask().execute();
         }
     }
 
-    private class GetAddressTask extends AsyncTask<String, Void, String> {//<param, progress, result>
+    private class GetAddressTask extends AsyncTask<Void, Void, Void> {//<param, progress, result>
         @Override
-        protected String doInBackground(String... arg) {
-            //getCuttentAddStr using geocode, may take a while, need to put this to a separate thread
-            mAddStr = mPositionManager.getCuttentAddStr();
-            return mAddStr;
+        protected Void doInBackground(Void... arg) {
+            //getCurrentAddStr using geocode, may take a while, need to put this to a separate thread
+            mAddStr = mPositionManager.getCurrentAddStr();
+            return null;
         }
 
         @Override
-        protected void onPostExecute(String add) {
+        protected void onPostExecute(Void result) {
             if (mAddStr.equals("unknown")) {
-                Toast.makeText(AddWishActivity.this, "location not available", Toast.LENGTH_LONG).show();
+                Toast.makeText(AddWishActivity.this, "Location unavailable", Toast.LENGTH_LONG).show();
             }
             mLocationEditText.setText(mAddStr);
             mGettingLocation = false;
