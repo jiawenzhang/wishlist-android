@@ -33,7 +33,6 @@ public class UploadProfileImageJob extends Job {
         Log.d(TAG, "onAdded");
         // Job has been saved to disk.
         // This is a good place to dispatch a UI event to indicate the job will eventually run.
-        // In this example, it would be good to update the UI with the newly posted tweet.
     }
 
     @Override
@@ -68,7 +67,7 @@ public class UploadProfileImageJob extends Job {
     }
     @Override
     protected void onCancel() {
-        Log.e("A", "onCancel");
+        Log.e(TAG, "onCancel");
         // Job has exceeded retry attempts or shouldReRunOnThrowable() has returned false.
     }
 }

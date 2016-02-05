@@ -199,6 +199,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
     @Subscribe
     public void myWishChangeEvent(MyWishChangeEvent event) {
+        Log.d(TAG, "reloadItems");
         reloadItems();
     }
 

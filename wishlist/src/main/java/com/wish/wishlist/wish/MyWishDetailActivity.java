@@ -5,8 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -16,23 +14,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.path.android.jobqueue.JobManager;
 import com.squareup.picasso.Picasso;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.job.GetWishAddressJob;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.dimension;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
@@ -99,26 +97,8 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         String address = mItem.getAddress();
 
         if (lat != Double.MIN_VALUE && lng != Double.MIN_VALUE && (address.equals("unknown") || address.equals(""))) {
-            //we have a location by gps, but don't have an address
-            Geocoder gc = new Geocoder(this, Locale.getDefault());
-            try {
-                List<Address> addresses = gc.getFromLocation(lat, lng, 1);
-                StringBuilder sb = new StringBuilder();
-                if (addresses.size() > 0) {
-                    Address add = addresses.get(0);
-                    for (int k = 0; k < add.getMaxAddressLineIndex()+1; k++)
-                        sb.append(add.getAddressLine(k)).append("\n");
-                }
-                address = sb.toString();
-            } catch (IOException e) {
-                address = "unknown";
-            }
-            if (!mItem.getAddress().equals(address)) {
-                mItem.setAddress(address);
-                mItem.setUpdatedTime(System.currentTimeMillis());
-                mItem.save();
-                EventBus.getInstance().post(new MyWishChangeEvent());
-            }
+            JobManager jobManager = ((WishlistApplication) getApplication()).getJobManager();
+            jobManager.addJobInBackground(new GetWishAddressJob(mItem.getId()));
         }
 
         showItemInfo();

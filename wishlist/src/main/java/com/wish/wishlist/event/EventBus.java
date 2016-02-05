@@ -1,16 +1,14 @@
 package com.wish.wishlist.event;
 
-import com.squareup.otto.Bus;
-
 /**
  * Created by jiawen on 15-10-04.
  */
 
 // a singleton instance for getting the bus.
 public final class EventBus {
-    private static final Bus BUS = new Bus();
+    private static final MainThreadBus BUS = new MainThreadBus();
 
-    public static Bus getInstance() {
+    public static MainThreadBus getInstance() {
         return BUS;
     }
 
