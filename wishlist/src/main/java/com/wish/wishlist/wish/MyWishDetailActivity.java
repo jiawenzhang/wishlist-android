@@ -14,17 +14,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.path.android.jobqueue.JobManager;
 import com.squareup.picasso.Picasso;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
-import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.image.ImageManager;
-import com.wish.wishlist.job.GetWishAddressJob;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.dimension;
@@ -91,15 +88,6 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         super.onCreate(savedInstanceState);
 
         Analytics.sendScreen("MyWishDetail");
-
-        double lat = mItem.getLatitude();
-        double lng = mItem.getLongitude();
-        String address = mItem.getAddress();
-
-        if (lat != Double.MIN_VALUE && lng != Double.MIN_VALUE && (address.equals("unknown") || address.equals(""))) {
-            JobManager jobManager = ((WishlistApplication) getApplication()).getJobManager();
-            jobManager.addJobInBackground(new GetWishAddressJob(mItem.getId()));
-        }
 
         showItemInfo();
 

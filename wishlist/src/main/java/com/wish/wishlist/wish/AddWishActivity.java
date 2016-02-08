@@ -12,7 +12,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
+import com.path.android.jobqueue.JobManager;
 import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.job.GetWishAddressJob;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.PositionManager;
@@ -23,6 +26,23 @@ public class AddWishActivity extends EditWishActivityBase
         implements Observer {
 
     private static final String TAG = "AddWishActivity";
+    private class GetAddressTask extends AsyncTask<Void, Void, Void> {//<param, progress, result>
+        @Override
+        protected Void doInBackground(Void... arg) {
+            //getCurrentAddStr using geocode, may take a while, need to put this to a separate thread
+            mAddStr = mPositionManager.getCurrentAddStr();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (mAddStr.equals("unknown")) {
+                Toast.makeText(AddWishActivity.this, "Location unavailable", Toast.LENGTH_LONG).show();
+            }
+            mLocationEditText.setText(mAddStr);
+            mGettingLocation = false;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +63,7 @@ public class AddWishActivity extends EditWishActivityBase
                 }
             });
 
-            mPositionManager = new PositionManager(AddWishActivity.this);
+            mPositionManager = new PositionManager();
             mPositionManager.addObserver(this);
 
             // Get the location in background
@@ -81,6 +101,7 @@ public class AddWishActivity extends EditWishActivityBase
         } else {
             WishItem item = createNewWish();
             mItem_id = item.saveToLocal();
+            getWishAddressInBackground(item);
             wishSaved();
         }
         return true;
@@ -92,6 +113,7 @@ public class AddWishActivity extends EditWishActivityBase
         WishItem item = createNewWish();
         item.setWebImgMeta(null, 0, 0);
         mItem_id = item.saveToLocal();
+        getWishAddressInBackground(item);
         wishSaved();
     }
 
@@ -119,6 +141,13 @@ public class AddWishActivity extends EditWishActivityBase
                 input.mLink,
                 false,
                 false);
+    }
+
+    protected void getWishAddressInBackground(WishItem item) {
+        if (item.getLatitude() != Double.MIN_VALUE && item.getLongitude() != Double.MIN_VALUE && (item.getAddress().equals("unknown") || item.getAddress().equals(""))) {
+            JobManager jobManager = ((WishlistApplication) getApplication()).getJobManager();
+            jobManager.addJobInBackground(new GetWishAddressJob(item.getId()));
+        }
     }
 
     @Override
@@ -171,7 +200,7 @@ public class AddWishActivity extends EditWishActivityBase
     @Override
     public void update(Observable observable, Object data) {
         // This method is notified after data changes.
-        //get the location
+        // get the location
         Location location = mPositionManager.getCurrentLocation();
         if (location == null){
             mAddStr = "unknown";
@@ -186,24 +215,6 @@ public class AddWishActivity extends EditWishActivityBase
             mLng = location.getLongitude();
             Log.d(TAG, "execute GetAddressTAsk");
             new GetAddressTask().execute();
-        }
-    }
-
-    private class GetAddressTask extends AsyncTask<Void, Void, Void> {//<param, progress, result>
-        @Override
-        protected Void doInBackground(Void... arg) {
-            //getCurrentAddStr using geocode, may take a while, need to put this to a separate thread
-            mAddStr = mPositionManager.getCurrentAddStr();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            if (mAddStr.equals("unknown")) {
-                Toast.makeText(AddWishActivity.this, "Location unavailable", Toast.LENGTH_LONG).show();
-            }
-            mLocationEditText.setText(mAddStr);
-            mGettingLocation = false;
         }
     }
 

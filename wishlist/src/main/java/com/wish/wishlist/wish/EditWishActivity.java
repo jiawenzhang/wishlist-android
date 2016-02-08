@@ -1,8 +1,6 @@
 package com.wish.wishlist.wish;
 
 import java.io.File;
-import java.util.Observer;
-import java.util.Observable;
 
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
@@ -12,15 +10,10 @@ import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.Analytics;
 
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
-import android.os.AsyncTask;
 
-public class EditWishActivity extends EditWishActivityBase
-        implements Observer {
-
+public class EditWishActivity extends EditWishActivityBase {
     private static final String TAG = "EditWishActivity";
     public static final String ITEM_ID = "ITEM_ID";
 
@@ -121,45 +114,6 @@ public class EditWishActivity extends EditWishActivityBase
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void update(Observable observable, Object data) {
-        // This method is notified after data changes.
-        //get the location
-        Location location = mPositionManager.getCurrentLocation();
-        if (location == null){
-            mAddStr = "unknown";
-            //need better value to indicate it's not valid lat and lng
-            mLat = Double.MIN_VALUE;
-            mLng = Double.MIN_VALUE;
-            mLocationEditText.setText(mAddStr);
-            mGettingLocation = false;
-        }
-        else {
-            //get current latitude and longitude
-            mLat = location.getLatitude();
-            mLng = location.getLongitude();
-            new GetAddressTask().execute("");
-        }
-    }
-
-    private class GetAddressTask extends AsyncTask<String, Void, String> {//<param, progress, result>
-        @Override
-        protected String doInBackground(String... arg) {
-            //getCurrentAddStr using geocode, may take a while, need to put this to a separate thread
-            mAddStr = mPositionManager.getCurrentAddStr();
-            return mAddStr;
-        }
-
-        @Override
-        protected void onPostExecute(String add) {
-            if (mAddStr.equals("unknown")) {
-                Toast.makeText(EditWishActivity.this, "location not available", Toast.LENGTH_LONG).show();
-            }
-            mLocationEditText.setText(mAddStr);
-            mGettingLocation = false;
-        }
     }
 
     @Override
