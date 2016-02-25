@@ -1,5 +1,7 @@
 package com.wish.wishlist.login;
 
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import android.app.Activity;
@@ -18,6 +20,8 @@ import com.wish.wishlist.util.ProfileUtil;
 import com.wish.wishlist.wish.MyWishActivity;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Shows the user profile. This simple activity can function regardless of whether the user
@@ -109,6 +113,17 @@ public class UserLoginActivity extends Activity {
                     Log.d(TAG, "installation id: " + installation.getInstallationId());
                 } else {
                     Log.e(TAG, e.toString());
+                }
+            }
+        });
+
+        Map<String, Object> params = new HashMap<>();
+        ParseCloud.callFunctionInBackground("createRoleACL", params, new FunctionCallback<Map<String, Object>>() {
+            public void done(Map<String, Object> mapObject, ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "create role success");
+                } else {
+                    Log.e(TAG, "create role failed " + e.toString());
                 }
             }
         });

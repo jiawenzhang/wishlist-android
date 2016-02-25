@@ -81,8 +81,8 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.6.0'
     compile files("$rootProject.projectDir/third-party/Parse/ParseFacebookUtilsV4-1.10.3.jar")
     compile files("$rootProject.projectDir/third-party/Parse/ParseTwitterUtils-1.10.3.jar")
-    //compile fileTree(dir: '../third-party/Parse', include: 'ParseCrashReporting-*.jar')
-    compile fileTree(dir: '../third-party/Parse', include: 'Parse-1.11.0.jar')
+    compile 'com.parse:parse-android:1.13.0'
+    debugCompile 'com.parse:parseinterceptors:0.0.2'
 
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.android.support:cardview-v7:23.1.1'

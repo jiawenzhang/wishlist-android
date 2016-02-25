@@ -17,6 +17,7 @@ import com.parse.ParseACL;
 //import com.parse.ParseCrashReporting;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
+import com.parse.interceptors.ParseLogInterceptor;
 import com.path.android.jobqueue.JobManager;
 
 /**
@@ -53,9 +54,17 @@ public class WishlistApplication extends Application {
 
 
         if (getResources().getBoolean(R.bool.enable_account)) {
-            Parse.initialize(this,
-                    getResources().getString(R.string.parse_application_id),
-                    getResources().getString(R.string.parse_client_key));
+//            Parse.initialize(this,
+//                    getResources().getString(R.string.parse_application_id),
+//                    getResources().getString(R.string.parse_client_id));
+
+            Parse.initialize(new Parse.Configuration.Builder(getAppContext())
+                    .applicationId("myAppId")
+                    .clientKey("foo")
+                    //.server("http://localhost:1337/parse")
+                    .server("https://fast-badlands-99020.herokuapp.com/parse/")
+                    .addNetworkInterceptor(new ParseLogInterceptor())
+                    .build());
 
             ParseInstallation.getCurrentInstallation().saveInBackground();
             //ParsePush.subscribeInBackground();
