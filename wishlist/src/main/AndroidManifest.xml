@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.wish.wishlist"
     android:versionCode="24"
-    android:versionName="1.2.2" >
+    android:versionName="1.2.3" >
 
     <!--
     min sdkversion earlier than 4 will implicitly require WRITE_EXTERNAL_STORAGE and READ_PHONE_STATE 
