@@ -54,7 +54,7 @@ public class WishlistApplication extends Application {
         if (getResources().getBoolean(R.bool.enable_account)) {
             Parse.initialize(this,
                     getResources().getString(R.string.parse_application_id),
-                    getResources().getString(R.string.parse_client_id));
+                    getResources().getString(R.string.parse_client_key));
 
             ParseInstallation.getCurrentInstallation().saveInBackground();
             //ParsePush.subscribeInBackground();
@@ -94,7 +94,7 @@ public class WishlistApplication extends Application {
 
             //analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
 
-            Tracker t = analytics.newTracker(R.string.analytics_property_id);
+            Tracker t = analytics.newTracker(getResources().getString(R.string.analytics_property_id));
             t.setSessionTimeout(300);
             t.enableExceptionReporting(true);
 

@@ -349,7 +349,7 @@
             android:value="@string/parse_application_id" />
         <meta-data
             android:name="com.parse.CLIENT_KEY"
-            android:value="@string/parse_client_id" />
+            android:value="@string/parse_client_key" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
