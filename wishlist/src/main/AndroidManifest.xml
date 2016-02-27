@@ -42,9 +42,6 @@
     <uses-permission android:name="com.wish.wishlist.permission.C2D_MESSAGE" />
 
 
-    <meta-data android:name="com.parse.push.gcm_sender_id"
-               android:value="id:171489718992" />
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -81,6 +78,9 @@
                     <meta-data android:name="com.google.android.gms.analytics.globalConfigResource"
                     android:resource="@xml/global_tracker" />
         -->
+
+        <meta-data android:name="com.parse.push.gcm_sender_id"
+                   android:value="id:171489718992" />
 
         <uses-library android:name="com.google.android.maps" />
 
