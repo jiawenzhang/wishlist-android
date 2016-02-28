@@ -443,10 +443,12 @@ public class SyncAgent {
                     Log.d(TAG, "success to fetch Parse user");
                     ParseUser currentUser = (ParseUser) object;
                     final ParseFile parseImage = currentUser.getParseFile("profileImage");
-                    try {
-                        ProfileUtil.saveProfileImageToFile(parseImage.getData());
-                    } catch (com.parse.ParseException e2) {
-                        Log.e(TAG, e2.toString());
+                    if (parseImage != null) {
+                        try {
+                            ProfileUtil.saveProfileImageToFile(parseImage.getData());
+                        } catch (com.parse.ParseException e2) {
+                            Log.e(TAG, e2.toString());
+                        }
                     }
                 } else {
                     Log.e(TAG, "fail to fetch Parse user");
