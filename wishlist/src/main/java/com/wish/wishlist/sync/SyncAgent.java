@@ -366,18 +366,21 @@ public class SyncAgent {
         query.getInBackground(item.getObjectId(), new GetCallback<ParseObject>() {
             public void done(final ParseObject wishObject, com.parse.ParseException e) {
                 if (e == null) {
-                    String parseImageName = null;
-                    ParseFile pf = wishObject.getParseFile(WishItem.PARSE_KEY_IMAGE);
                     boolean saveImage = false;
-                    if (pf != null) {
-                        parseImageName = pf.getName();
-                    }
-                    if (parseImageName == null) {
-                        if (item.getPicName() != null) {
+                    if (!item.getDeleted()) {
+                        // if we are deleting the wish, we don't need to save the image
+                        String parseImageName = null;
+                        ParseFile pf = wishObject.getParseFile(WishItem.PARSE_KEY_IMAGE);
+                        if (pf != null) {
+                            parseImageName = pf.getName();
+                        }
+                        if (parseImageName == null) {
+                            if (item.getPicName() != null) {
+                                saveImage = true;
+                            }
+                        } else if (!parseImageName.equals(item.getPicName())) {
                             saveImage = true;
                         }
-                    } else if (!parseImageName.equals(item.getPicName())) {
-                        saveImage = true;
                     }
                     WishItem.toParseObject(item, wishObject);
                     if (saveImage) {
