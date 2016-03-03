@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.wish.wishlist"
-    android:versionCode="25"
+    android:versionCode="26"
     android:versionName="1.2.3" >
 
     <!--
@@ -323,7 +323,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDXt7pwa4cvJA2O62kjTftAMVR17JjwrEc" />
+            android:value="AIzaSyDhnVZB5q0JznTklAmGWaEu5OWj06Nz9kk" />
 
         <activity
             android:name=".login.UserLoginActivity"
