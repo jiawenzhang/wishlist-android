@@ -29,8 +29,6 @@ import com.wish.wishlist.wish.WebImgMeta;
 
 import android.preference.PreferenceManager;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 
