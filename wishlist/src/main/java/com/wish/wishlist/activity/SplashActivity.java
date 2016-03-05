@@ -32,7 +32,8 @@ public class SplashActivity extends Activity implements
 
         Analytics.send(Analytics.APP, "Start", null);
 
-        DBAdapter.getInstance().createDB();
+        // this opens the db
+        DBAdapter.getInstance();
 
         Analytics.send(Analytics.WISH, "ItemCount", String.valueOf(ItemDBManager.getItemsCount()));
         Analytics.send(Analytics.WISH, "ImageItemCount", String.valueOf(ItemDBManager.getImageItemsCount()));

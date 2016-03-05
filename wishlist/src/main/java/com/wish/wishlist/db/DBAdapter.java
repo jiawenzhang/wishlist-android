@@ -199,14 +199,11 @@ public class DBAdapter {
 
     /** * Constructor
      */
-    private DBAdapter() {}
-
-    public void createDB() {
+    private DBAdapter() {
         this.mDBHelper = new DatabaseHelper(WishlistApplication.getAppContext());
-
         //according to android sdk document,
-        //we must call open() getWritableDatabase() or getReadableDatabase() to actually create the tables;
-        open();
+        //we must call getWritableDatabase() or getReadableDatabase() to actually create the tables;
+        mDb = mDBHelper.getWritableDatabase();
     }
 
     //private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -384,20 +381,6 @@ public class DBAdapter {
     private static class Patch {
         public void apply(SQLiteDatabase db) {}
         public void revert(SQLiteDatabase db) {}
-    }
-
-    /**
-     * open the db
-     *
-     * @return this
-     * @throws SQLException
-     *             return type: DBAdapter
-     */
-    public DBAdapter open() throws SQLException {
-        if (mDb == null || !mDb.isOpen()) {
-            mDb = mDBHelper.getWritableDatabase();
-        }
-        return this;
     }
 
     /**
