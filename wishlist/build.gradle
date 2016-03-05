@@ -63,7 +63,6 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
     //compile project(':third-party:facebook-android-sdk:facebook')
     compile project(':third-party:TokenAutoComplete:library')
-    compile project(':third-party:AndroidStaggeredGrid:library')
     compile project(':third-party:Android-Cloud-TagView-Plus:library')
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.bumptech.glide:glide:3.5.2'

@@ -8,25 +8,26 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.support.v7.app.AppCompatDialog;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 
-import com.etsy.android.grid.StaggeredGridView;
 import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.util.WebImageAdapter;
 import com.wish.wishlist.activity.WebImage;
+import com.wish.wishlist.widgets.ItemDecoration;
 
 import java.util.ArrayList;
 
 public class WebImageFragmentDialog extends DialogFragment implements
-        AbsListView.OnScrollListener, AbsListView.OnItemClickListener {
+        WebImageAdapter.WebImageTapListener {
 
-    private StaggeredGridView mGridView;
+    protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     private WebImageAdapter mAdapter;
     private static ArrayList<WebImage> mList;
     private OnWebImageSelectedListener mWebImageSelectedListener;
@@ -46,7 +47,6 @@ public class WebImageFragmentDialog extends DialogFragment implements
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-
     }
 
     @Override
@@ -54,10 +54,6 @@ public class WebImageFragmentDialog extends DialogFragment implements
         if (mList.size() > 1) {
             // We have multiple images, we show them in a grid view that is loaded in onCreateView
             return new AppCompatDialog(getActivity());
-        }
-
-        if (savedInstanceState == null) {
-            final LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         }
 
         // We only have one image, show the image in an AlertDialog with a "Load more" button
@@ -114,11 +110,17 @@ public class WebImageFragmentDialog extends DialogFragment implements
         }
 
         View v = inflater.inflate(R.layout.web_image_view, container, false);
-        mGridView = (StaggeredGridView) v.findViewById(R.id.staggered_web_image_view);
-
-        if (savedInstanceState == null) {
-            final LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.web_image_recycler_view);
+        mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        int itemSpace = (int) WishlistApplication.getAppContext().getResources().getDimension(R.dimen.item_decoration_space); // in px
+        if (itemSpace % 2 != 0) {
+            // odd number, make it even
+            // ItemDecoration will use half mItemSpace for item rect margin
+            itemSpace--;
         }
+
+        recyclerView.addItemDecoration(new ItemDecoration(itemSpace));
 
         if (mAdapter == null) {
             if (mList == null) {
@@ -131,12 +133,10 @@ public class WebImageFragmentDialog extends DialogFragment implements
                     Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
                 }
             }
-            mAdapter = new WebImageAdapter(getActivity(), 0, mList);
+            mAdapter = new WebImageAdapter(mList, getActivity());
+            mAdapter.setWebImageTapListener(this);
         }
-        mGridView.setAdapter(mAdapter);
-        mGridView.setOnScrollListener(this);
-        mGridView.setOnItemClickListener(this);
-
+        recyclerView.setAdapter(mAdapter);
         return v;
     }
 
@@ -178,16 +178,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
         dismiss();
     }
 
-    @Override
-    public void onScrollStateChanged(final AbsListView view, final int scrollState) {
-    }
-
-    @Override
-    public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+    public void onWebImageTap(int position) {
         if (mAllowLoadMore && position == mList.size() - 1) {
             mList.remove(position);
             this.mLoadMoreFromWebView.onLoadMoreFromWebView();

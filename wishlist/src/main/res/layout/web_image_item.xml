@@ -1,42 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/web_image_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:foreground="?android:attr/selectableItemBackground" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <!-- the FrameLayout is to have the press state of the item-->
-
-    <LinearLayout
+    <android.support.v7.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:id="@+id/panel_content"
+        android:id="@+id/web_image_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="1dp"
-        android:paddingRight="1dp"
-        android:paddingTop="1dp"
-        android:paddingBottom="1dp"
-        android:background="@drawable/staggered_view_border"
-        android:descendantFocusability="blocksDescendants">
-        <!--1dp padding is to match with 1dp border so images won't obscure the border -->
+        app:cardCornerRadius="@dimen/radius"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="1dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        >
 
-        <com.etsy.android.grid.util.DynamicHeightImageView
-            android:id="@+id/web_image"
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:id="@+id/panel_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:layout_height="wrap_content">
 
-        <com.etsy.android.grid.util.DynamicHeightTextView
-            android:id="@+id/web_image_size"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:gravity="center"
-            android:singleLine="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:textColor="@color/medium_grey"/>
+            <com.wish.wishlist.util.DynamicHeightImageView
+                android:id="@+id/web_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"/>
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/web_image_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:textColor="@color/medium_grey"/>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 </FrameLayout>
