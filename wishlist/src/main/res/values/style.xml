@@ -294,13 +294,19 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:ellipsize">marquee</item>
         <item name="android:textColor">@color/medium_grey</item>
+        <item name="android:textColorHint">@color/light_grey</item>
+        <item name="android:background">@null</item>
         <item name="android:paddingLeft">15dp</item>
         <item name="android:paddingRight">15dp</item>
-        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
         <item name="android:layout_gravity">left</item>
+        <item name="android:imeOptions">flagNoExtractUi</item>
+        <item name="android:inputType">textNoSuggestions|textMultiLine</item>
     </style>
+    <!--<item name="android:ellipsize">marquee</item>-->
+
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">20sp</item>

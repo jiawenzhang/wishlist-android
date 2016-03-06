@@ -1,19 +1,35 @@
 package com.wish.wishlist.wish;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ActionMode;
+import android.util.Log;
+import android.util.Patterns;
+import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.StringSignature;
 import com.squareup.picasso.Picasso;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
@@ -21,13 +37,20 @@ import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
+import com.wish.wishlist.image.CameraManager;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.sync.SyncAgent;
+import com.wish.wishlist.tag.AddTagActivity;
+import com.wish.wishlist.tag.AddTagFromEditActivity;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.dimension;
+import com.wish.wishlist.widgets.ClearableEditText;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
@@ -42,9 +65,87 @@ import me.kaede.tagview.TagView;
  */
 
 public class MyWishDetailActivity extends WishDetailActivity implements TokenCompleteTextView.TokenListener {
-    private static final int EDIT_ITEM = 0;
     private static final String TAG = "MyWishDetailActivity";
+    private LinearLayout mImgInstruction;
+    private ClearableEditText mLinkText;
     private TagView mTagView;
+    private View mImageFrame;
+    private TextView mTxtInstruction;
+    private LinearLayout mTagLayout;
+    protected CheckBox mCompleteCheckBox;
+    private ActionMode mActionMode;
+    protected ArrayList<String> mTags = new ArrayList<>();
+    protected String mFullsizePhotoPath = null;
+    protected String mTempPhotoPath = null;
+    protected Uri mSelectedPicUri = null;
+    protected Boolean mSelectedPic = false;
+    protected Boolean mEditDone = false;
+    protected static final int TAKE_PICTURE = 1;
+    protected static final int SELECT_PICTURE = 2;
+    protected static final int ADD_TAG = 3;
+
+    protected static final String TEMP_PHOTO_PATH = "TEMP_PHOTO_PATH";
+    protected static final String SELECTED_PIC_URL = "SELECTED_PIC_URL";
+    private ProgressDialog mProgressDialog;
+    protected class saveTempPhoto extends AsyncTask<Void, Void, Void> {//<param, progress, result>
+        @Override
+        protected Void doInBackground(Void... arg) {
+            final Bitmap bitmap = ImageManager.decodeSampledBitmapFromFile(mTempPhotoPath, 1024);
+            mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(bitmap);
+            ImageManager.saveBitmapToThumb(bitmap, mFullsizePhotoPath);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            newImageSaved();
+        }
+    }
+
+    protected class saveSelectedPhotoTask extends AsyncTask<Void, Void, Void> {//<param, progress, result>
+        @Override
+        protected Void doInBackground(Void... arg) {
+            final Bitmap bitmap = ImageManager.decodeSampledBitmapFromUri(mSelectedPicUri, 1024);
+            mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(bitmap);
+            ImageManager.saveBitmapToThumb(bitmap, mFullsizePhotoPath);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            newImageSaved();
+        }
+    }
+
+    protected class WishInput {
+        WishInput(
+                String name,
+                String description,
+                String store,
+                String address,
+                double price,
+                int complete,
+                int access,
+                String link) {
+            mName = name;
+            mDescription = description;
+            mPrice = price;
+            mComplete = complete;
+            mAccess = access;
+            mStore = store;
+            mAddress = address;
+            mLink = link;
+        }
+
+        String mName;
+        String mDescription;
+        String mStore;
+        String mAddress;
+        double mPrice;
+        int mComplete;
+        int mAccess;
+        String mLink;
+    }
 
     // workaround to avoid Picasso bug: fit().centerCrop() does not work together when image is large
     // https://github.com/square/picasso/issues/249
@@ -89,28 +190,482 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
         Analytics.sendScreen("MyWishDetail");
 
-        showItemInfo();
-
-        mTagView = (TagView) this.findViewById(R.id.tag_view);
-
-        if (savedInstanceState == null) {
-            // if screen is oriented, savedInstanceStat != null,
-            // and don't add tags again on screen orientation
-            addTags();
+        if (savedInstanceState != null) {
+            // on screen orientation, reload the item from db as it could have been changed
+            mItem = WishItemManager.getInstance().getItemById(mItem.getId());
         }
 
-        final View imageFrame = findViewById(R.id.imagePhotoDetailFrame);
-        imageFrame.setOnClickListener(new View.OnClickListener() {
+        showItemInfo();
+
+        mImgInstruction = (LinearLayout) findViewById(R.id.imgInstruction);
+
+        mTagView = (TagView) findViewById(R.id.tag_view);
+        mTags = TagItemDBManager.instance().tags_of_item(mItem.getId());
+        addTags();
+
+        mTagLayout = (LinearLayout) findViewById(R.id.tagLayout);
+        mLinkText = (ClearableEditText) findViewById(R.id.itemLinkText);
+        mLinkText.setVisibility(View.GONE);
+        mCompleteCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
+
+        mFullsizePhotoPath = mItem.getFullsizePicPath();
+        mComplete = mItem.getComplete();
+        if (mComplete == 1) {
+            mCompleteCheckBox.setChecked(true);
+        } else {
+            mCompleteCheckBox.setChecked(false);
+        }
+
+
+        mImageFrame = findViewById(R.id.imagePhotoDetailFrame);
+        mImageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String fullsize_picture_str = mItem.getFullsizePicPath();
-                if (fullsize_picture_str != null) {
-                    Intent i = new Intent(MyWishDetailActivity.this, FullscreenPhotoActivity.class);
-                    i.putExtra(FullscreenPhotoActivity.PHOTO_PATH, fullsize_picture_str);
-                    startActivity(i);
+                showFullScreenPhoto();
+            }
+        });
+
+        mImageFrame.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return false;
+            }
+        });
+
+        mTxtInstruction = (TextView) findViewById(R.id.txtInstruction);
+
+        mNameView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    enterEditMode();
+                    Log.d(TAG, "has focus");
+                } else {
+                    Log.d(TAG, "lost focus");
                 }
             }
         });
+
+        mDescriptionView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    enterEditMode();
+                    Log.d(TAG, "has focus");
+                } else {
+                    Log.d(TAG, "lost focus");
+                }
+            }
+        });
+
+        mPriceView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    enterEditMode();
+                    Log.d(TAG, "has focus");
+                } else {
+                    Log.d(TAG, "lost focus");
+                }
+            }
+        });
+
+        mLocationView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    enterEditMode();
+                    Log.d(TAG, "has focus");
+                } else {
+                    Log.d(TAG, "lost focus");
+                }
+            }
+        });
+
+        mStoreView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    enterEditMode();
+                    Log.d(TAG, "has focus");
+                } else {
+                    Log.d(TAG, "lost focus");
+                }
+            }
+        });
+
+        mLinkLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mLinkText.setText(mItem.getLink());
+                mLinkText.setVisibility(View.VISIBLE);
+                mLinkText.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(mLinkView, InputMethodManager.SHOW_FORCED);
+                enterEditMode();
+            }
+        });
+
+        LinearLayout completeLayout = (LinearLayout) findViewById(R.id.itemCompleteLayout);
+        completeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enterEditMode();
+            }
+        });
+
+        mTagView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "tag click");
+                startAddTagIntent();
+            }
+        });
+
+        mTagLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startAddTagIntent();
+            }
+        });
+    }
+
+    private void showFullScreenPhoto() {
+        final String fullsize_picture_str = mItem.getFullsizePicPath();
+        if (fullsize_picture_str != null) {
+            Intent i = new Intent(MyWishDetailActivity.this, FullscreenPhotoActivity.class);
+            i.putExtra(FullscreenPhotoActivity.PHOTO_PATH, fullsize_picture_str);
+            startActivity(i);
+        }
+    }
+
+    private void dispatchTakePictureIntent() {
+        CameraManager c = new CameraManager();
+        mTempPhotoPath = c.getPhotoPath();
+        startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
+    }
+
+    private void dispatchImportPictureIntent() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+    }
+
+    protected Boolean setTakenPhoto() {
+        if (mTempPhotoPath == null) {
+            return false;
+        }
+        Log.d(TAG, "setTakePhoto " + mTempPhotoPath);
+        File tempPhotoFile = new File(mTempPhotoPath);
+        mPhotoView.setVisibility(View.VISIBLE);
+
+        // Picasso bug: fit() does not work when image is large
+        // https://github.com/square/picasso/issues/249
+        // Picasso.with(this).invalidate(tempPhotoFile);
+        // Picasso.with(this).load(tempPhotoFile).fit.into(mImageItem);
+
+        // Because we save the taken photo to the same file, use StringSignature here to avoid loading image from cache
+        Glide.with(this).load(tempPhotoFile).fitCenter().signature(new StringSignature(String.valueOf(tempPhotoFile.lastModified()))).into(mPhotoView);
+        mSelectedPicUri = null;
+        mSelectedPic = false;
+        return true;
+    }
+
+    protected Boolean setSelectedPic() {
+        if (mSelectedPicUri == null) {
+            return false;
+        }
+        Log.d(TAG, "setSelectedPic " + mSelectedPicUri.toString());
+        mPhotoView.setVisibility(View.VISIBLE);
+        // Picasso bug: fit() does not work when image is large
+        // https://github.com/square/picasso/issues/249
+        Glide.with(this).load(mSelectedPicUri).fitCenter().into(mPhotoView);
+        mTempPhotoPath = null;
+        mSelectedPic = true;
+        return true;
+    }
+
+    private void startAddTagIntent() {
+        Intent i = new Intent(MyWishDetailActivity.this, AddTagFromEditActivity.class);
+        long[] ids = new long[1];
+        ids[0] = mItem.getId();
+        i.putExtra(AddTagActivity.ITEM_ID_ARRAY, (ids));
+        mTags = TagItemDBManager.instance().tags_of_item(mItem.getId());
+        i.putExtra(AddTagFromEditActivity.TAGS, mTags);
+        startActivityForResult(i, ADD_TAG);
+    }
+
+    private void showChangePhotoDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MyWishDetailActivity.this, R.style.AppCompatAlertDialogStyle);
+
+        final CharSequence[] items = {"Take a photo", "From gallery"};
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // The 'which' argument contains the index position
+                // of the selected item
+                if (which == 0) {
+                    dispatchTakePictureIntent();
+                } else if (which == 1) {
+                    dispatchImportPictureIntent();
+                }
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void enterEditMode() {
+        if (mActionMode != null) {
+            Log.d(TAG, "ActionMode is already on");
+            return;
+        }
+
+        mImgInstruction.setVisibility(View.VISIBLE);
+        mDescriptionView.setVisibility(View.VISIBLE);
+        mPriceView.setVisibility(View.VISIBLE);
+
+        // price is shown with currency, remove the currency for editing mode
+        String priceStr = mItem.getPriceAsString();
+        if (priceStr != null) {
+            mPriceView.setText(priceStr);
+        }
+
+        mStoreView.setVisibility(View.VISIBLE);
+        mLocationView.setVisibility(View.VISIBLE);
+
+        mLinkLayout.setVisibility(View.VISIBLE);
+        mLinkText.setVisibility(View.VISIBLE);
+        String link = mItem.getLink();
+        if (link != null && !link.isEmpty()) {
+            mLinkText.setText(link);
+        }
+
+        mCompleteInnerLayout.setVisibility(View.GONE);
+        mCompleteCheckBox.setVisibility(View.VISIBLE);
+        mCompleteCheckBox.setChecked(mItem.getComplete() == 1);
+
+        mTagLayout.setVisibility(mTags.size() == 0 ? View.VISIBLE : View.GONE);
+        mImageFrame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showChangePhotoDialog();
+            }
+        });
+
+        mTxtInstruction.setText(mPhotoView.getVisibility() == View.VISIBLE ? "Tap here to change photo" : "Add photo");
+
+        mActionMode = startSupportActionMode(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.menu_my_wish_detail_action, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_done:
+                        if (save()) {
+                            mEditDone = true;
+                        }
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                mActionMode = null;
+                showItemInfo();
+
+                if (!mEditDone) {
+                    // user canceled editing, clear the photos that were taken/selected
+                    clearPhotoState();
+                }
+                mEditDone = false;
+
+                clearFocus();
+
+                mImgInstruction.setVisibility(View.GONE);
+                mLinkText.setVisibility(View.GONE);
+                mTagLayout.setVisibility(View.GONE);
+                mCompleteCheckBox.setVisibility(View.GONE);
+                mCompleteInnerLayout.setVisibility(mItem.getComplete() == 1 ? View.VISIBLE : View.GONE);
+
+                mImageFrame.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showFullScreenPhoto();
+                    }
+                });
+            }
+        });
+    }
+
+    protected void clearFocus() {
+        // Check if any view has focus, clear its focus and close keyboard
+        View view = getCurrentFocus();
+        if (view != null) {
+            view.clearFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    protected WishInput wishInput() {
+        String name = mNameView.getText().toString().trim();
+        String description = mDescriptionView.getText().toString().trim();
+        String store = mStoreView.getText().toString().trim();
+        String link = mLinkText.getText().toString().trim();
+
+        String address = mLocationView.getText().toString().trim();
+        if (address.equals("Loading location...")) {
+            address = "unknown";
+        }
+
+        String priceString = mPriceView.getText().toString().trim();
+        double price = priceString.isEmpty() ? Double.MIN_VALUE : Double.valueOf(mPriceView.getText().toString().trim());
+        int complete = mCompleteCheckBox.isChecked() ? 1 : 0;
+        //int access = mPrivateCheckBox.isChecked() ? WishItem.PRIVATE : WishItem.PUBLIC;
+        int access = mItem.getAccess();
+
+        return new WishInput(
+                name,
+                description,
+                store,
+                address,
+                price,
+                complete,
+                access,
+                link);
+    }
+
+    protected void showProgressDialog(final String text) {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(text);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+    }
+
+    protected void dismissProgressDialog() {
+        mProgressDialog.dismiss();
+    }
+
+    protected WishItem populateItem() {
+        WishItem item = WishItemManager.getInstance().getItemById(mItem.getId());
+        WishInput input = wishInput();
+        item.setAccess(input.mAccess);
+        item.setStoreName(input.mStore);
+        item.setName(input.mName);
+        item.setDesc(input.mDescription);
+        item.setUpdatedTime(System.currentTimeMillis());
+        item.setFullsizePicPath(mFullsizePhotoPath);
+        item.setPrice(input.mPrice);
+        item.setAddress(input.mAddress);
+        item.setComplete(input.mComplete);
+        item.setLink(input.mLink);
+        item.setSyncedToServer(false);
+
+        return item;
+    }
+
+    protected boolean validateInput() {
+        if (mNameView.getText().toString().trim().length() == 0) {
+            showErrorToast("Please give a name to your wish");
+            return false;
+        }
+
+        String link = mLinkText.getText().toString().trim();
+        if (!link.isEmpty() && !Patterns.WEB_URL.matcher(link).matches()) {
+            showErrorToast("Link invalid");
+            return false;
+        }
+
+        String priceString = mPriceView.getText().toString().trim();
+        if (priceString.isEmpty()) {
+            return true;
+        }
+        try {
+            double price = Double.valueOf(priceString);
+        } catch (NumberFormatException e) {
+            // need some error message here
+            // price format incorrect
+            Log.e(TAG, e.toString());
+            showErrorToast("Price invalid");
+            return false;
+        }
+        return true;
+    }
+
+    private void showErrorToast(String message) {
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+        toast.setGravity(Gravity.TOP | Gravity.CENTER, 0, screenHeight/4);
+        toast.show();
+    }
+
+    protected void saveWishItem() {
+        if (mSelectedPic && mSelectedPicUri != null) {
+            showProgressDialog(getString(R.string.saving_image));
+            new saveSelectedPhotoTask().execute();
+        } else if (mTempPhotoPath != null) {
+            showProgressDialog(getString(R.string.saving_image));
+            new saveTempPhoto().execute();
+        } else {
+            mItem = populateItem();
+            mItem.saveToLocal();
+            wishSaved();
+        }
+    }
+
+    protected void newImageSaved() {
+        dismissProgressDialog();
+        removeItemImage();
+        mItem = populateItem();
+        mItem.setWebImgMeta(null, 0, 0);
+        mItem.saveToLocal();
+        wishSaved();
+    }
+
+    protected void removeItemImage() {
+        mItem.removeImage();
+    }
+
+    protected void wishSaved() {
+        //save the tags of this item
+        //TagItemDBManager.instance().Update_item_tags(mItem_id, mTags);
+        EventBus.getInstance().post(new MyWishChangeEvent());
+
+        SyncAgent.getInstance().sync();
+
+        Analytics.send(Analytics.WISH, "Save", null);
+
+        clearPhotoState();
+        mActionMode.finish();
+    }
+
+    private void clearPhotoState() {
+        mSelectedPic = false;
+        mSelectedPicUri = null;
+        mTempPhotoPath = null;
+    }
+
+    protected boolean save() {
+        if (!validateInput()) {
+            Log.e(TAG, "error in input");
+            return false;
+        }
+
+        saveWishItem();
+        return true;
     }
 
     @Override
@@ -138,9 +693,9 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     }
 
     void addTags() {
-        ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItem.getId());
+        //ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItem.getId());
         mTagView.removeAllTags();
-        for (String tagTxt : tags) {
+        for (String tagTxt : mTags) {
             Tag tag = new Tag(tagTxt);
             tag.layoutColor = ContextCompat.getColor(this, R.color.wishlist_yellow_color);
             mTagView.addTag(tag);
@@ -173,27 +728,12 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     }
 
     private void editItem() {
-        Intent i = new Intent(MyWishDetailActivity.this, EditWishActivity.class);
-        i.putExtra(EditWishActivity.ITEM_ID, mItem.getId());
-        startActivityForResult(i, EDIT_ITEM);
-    }
+        //Intent i = new Intent(MyWishDetailActivity.this, EditWishActivity.class);
+        //i.putExtra(EditWishActivity.ITEM_ID, mItem.getId());
+        //startActivityForResult(i, EDIT_ITEM);
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case EDIT_ITEM: {
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
-                        long id = data.getLongExtra("itemID", -1);
-                        if (id != -1) {
-                            mItem = WishItemManager.getInstance().getItemById(id);
-                            showItemInfo();
-                            addTags();
-                        }
-                    }
-                }
-                break;
-            }
-        }
+        mNameView.requestFocus();
+        enterEditMode();
     }
 
     @Override
@@ -223,6 +763,61 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         }
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case TAKE_PICTURE: {
+                if (resultCode == RESULT_OK) {
+                    Analytics.send(Analytics.WISH, "TakenPicture", "FromEditItemCameraButton");
+
+                    setTakenPhoto();
+                    mTxtInstruction.setText("Tap here to change photo");
+                } else {
+                    Log.d(TAG, "cancel taking photo");
+                    mTempPhotoPath = null;
+                }
+                break;
+            }
+            case SELECT_PICTURE: {
+                if (resultCode == RESULT_OK) {
+                    mSelectedPicUri = data.getData();
+                    Analytics.send(Analytics.WISH, "SelectedPicture", null);
+                    setSelectedPic();
+                    mTxtInstruction.setText("Tap here to change photo");
+                }
+                break;
+            }
+            case ADD_TAG: {
+                clearFocus();
+                if (resultCode == RESULT_OK) {
+                    ArrayList<String> tags = data.getStringArrayListExtra(AddTagFromEditActivity.TAGS);
+                    if (!sameArrays(tags, mTags)) {
+                        Log.d(TAG, "Save tags");
+                        mTags = tags;
+                        addTags();
+                        mTagLayout.setVisibility(mTags.size() == 0 && mActionMode != null ? View.VISIBLE : View.GONE);
+
+                        //save the tags of this item
+                        TagItemDBManager.instance().Update_item_tags(mItem.getId(), mTags);
+                        EventBus.getInstance().post(new MyWishChangeEvent());
+
+                        SyncAgent.getInstance().sync();
+                    } else {
+                        Log.d(TAG, "Tags have not been changed");
+                    }
+                }
+            }
+        } //end of switch
+    }
+
+    public static boolean sameArrays(ArrayList<String> arr1, ArrayList<String> arr2) {
+        if (arr1.size() != arr2.size()) {
+            return false;
+        }
+        HashSet<String> set1 = new HashSet<>(arr1);
+        HashSet<String> set2 = new HashSet<>(arr2);
+        return set1.equals(set2);
+    }
+
     @Override
     public void onTokenAdded(Object token) {}
 
@@ -231,4 +826,36 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
     @Override
     protected boolean myWish() { return true; }
+
+    //this will make the photo taken before to show up if user cancels taking a second photo
+    //this will also save the thumbnail on switching screen orientation
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onSaveInstanceState");
+        if (mTempPhotoPath != null) {
+            savedInstanceState.putString(TEMP_PHOTO_PATH, mTempPhotoPath);
+        }
+        if (mSelectedPicUri != null) {
+            savedInstanceState.putString(SELECTED_PIC_URL, mSelectedPicUri.toString());
+        }
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // restore the current selected item in the list
+        if (savedInstanceState != null) {
+            mTempPhotoPath = savedInstanceState.getString(TEMP_PHOTO_PATH);
+            if (savedInstanceState.getString(SELECTED_PIC_URL) != null) {
+                mSelectedPicUri = Uri.parse(savedInstanceState.getString(SELECTED_PIC_URL));
+            }
+            if (mTempPhotoPath != null) {
+                setTakenPhoto();
+            } else if (mSelectedPicUri != null) {
+                setSelectedPic();
+            }
+        }
+    }
 }

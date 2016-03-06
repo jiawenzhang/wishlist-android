@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,21 +19,26 @@ import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.DateTimeFormatter;
 import com.wish.wishlist.social.ShareHelper;
+import com.wish.wishlist.widgets.ClearableEditText;
+
 
 public abstract class WishDetailActivity extends ActivityBase {
-
     public final static String ITEM = "Item";
 
     protected ImageView mPhotoView;
     protected ImageView mImgComplete;
-    private TextView mNameView;
-    private TextView mDescriptionView;
+    protected LinearLayout mCompleteInnerLayout;
+    protected TextView mTextComplete;
+    protected ClearableEditText mNameView;
+    protected ClearableEditText mDescriptionView;
     private TextView mDateView;
-    private TextView mPriceView;
-    private TextView mStoreView;
-    private TextView mLocationView;
-    private TextView mLinkView;
+    protected ClearableEditText mPriceView;
+    protected ClearableEditText mStoreView;
+    protected ClearableEditText mLocationView;
+    protected TextView mLinkView;
+    protected LinearLayout mLinkLayout;
     protected WishItem mItem;
+    protected int mComplete = -1;
 
     protected abstract boolean myWish();
 
@@ -43,14 +49,17 @@ public abstract class WishDetailActivity extends ActivityBase {
         setupActionBar(R.id.item_detail_toolbar);
 
         mPhotoView = (ImageView) findViewById(R.id.imgPhotoDetail);
-        mImgComplete = (ImageView) findViewById(R.id.imgComplete);
-        mNameView = (TextView) findViewById(R.id.itemNameDetail);
-        mDescriptionView = (TextView) findViewById(R.id.itemDesription);
+        mCompleteInnerLayout = (LinearLayout) findViewById(R.id.completeInnerLayout);
+        mImgComplete = (ImageView) findViewById(R.id.completeImageView);
+        mTextComplete = (TextView) findViewById(R.id.completeTextView);
+        mNameView = (ClearableEditText) findViewById(R.id.itemNameDetail);
+        mDescriptionView = (ClearableEditText) findViewById(R.id.itemDesription);
         mDateView = (TextView) findViewById(R.id.itemDateDetail);
-        mPriceView = (TextView) findViewById(R.id.itemPrice);
-        mStoreView = (TextView) findViewById(R.id.itemStore);
-        mLocationView = (TextView) findViewById(R.id.itemLocation);
+        mPriceView = (ClearableEditText) findViewById(R.id.itemPrice);
+        mStoreView = (ClearableEditText) findViewById(R.id.itemStore);
+        mLocationView = (ClearableEditText) findViewById(R.id.itemLocation);
         mLinkView = (TextView) findViewById(R.id.itemLink);
+        mLinkLayout = (LinearLayout) findViewById(R.id.linkLayout);
 
         Intent i = getIntent();
         mItem = i.getParcelableExtra(ITEM);
@@ -62,9 +71,9 @@ public abstract class WishDetailActivity extends ActivityBase {
         showPhoto();
 
         if (mItem.getComplete() == 1) {
-            mImgComplete.setVisibility(View.VISIBLE);
+            mCompleteInnerLayout.setVisibility(View.VISIBLE);
         } else {
-            mImgComplete.setVisibility(View.GONE);
+            mCompleteInnerLayout.setVisibility(View.GONE);
         }
 
         String dateTimeStr = mItem.getUpdatedTimeStr();
@@ -72,7 +81,7 @@ public abstract class WishDetailActivity extends ActivityBase {
 
         mNameView.setText(mItem.getName());
         if (mItem.getComplete() == 1) {
-            final ImageView completeImage = (ImageView) findViewById(R.id.imgComplete);
+            final ImageView completeImage = (ImageView) findViewById(R.id.completeImageView);
             completeImage.setVisibility(View.VISIBLE);
         }
 
@@ -118,12 +127,14 @@ public abstract class WishDetailActivity extends ActivityBase {
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "http://" + url;
             }
-            String text = "<a href=\"" + url + "\">Link</a>";
+            String text = "<a href=\"" + url + "\">LINK</a>";
             mLinkView.setText(Html.fromHtml(text));
             mLinkView.setMovementMethod(LinkMovementMethod.getInstance());
             mLinkView.setVisibility(View.VISIBLE);
+            mLinkLayout.setVisibility(View.VISIBLE);
         } else {
             mLinkView.setVisibility(View.GONE);
+            mLinkLayout.setVisibility(View.GONE);
         }
     }
 

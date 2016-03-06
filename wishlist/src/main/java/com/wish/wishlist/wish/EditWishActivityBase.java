@@ -115,7 +115,7 @@ public abstract class EditWishActivityBase extends ActivityBase {
 
     private static final String TAG = "EditWishActivityBase";
 
-    protected class WishInput {
+    public class WishInput {
         WishInput(
                 String name,
                 String description,

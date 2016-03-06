@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    set focusable and focusableInTouchMode true
+    to prevent its child EditText to gain focus on activity startup
+-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/itemDetail"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,6 +24,7 @@
         android:layout_height="wrap_content"
         android:fillViewport="true">
         <RelativeLayout
+            android:clickable="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >
@@ -36,42 +43,51 @@
                     android:layout_height="300dp"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
+                    android:visibility="visible"
                     android:gravity="center_horizontal"
                     />
+                <LinearLayout
+                    android:id="@+id/imgInstruction"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:background="@color/grey_transparent"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical|center_horizontal">
+                    <TextView
+                        android:id="@+id/txtInstruction"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:padding="10dp"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:text="Tap here to change photo"
+                        />
+                </LinearLayout>
             </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/itemNameLayout"
+                android:clickable="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:layout_below="@+id/imagePhotoDetailFrame"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.wish.wishlist.widgets.ClearableEditText
                     android:id="@+id/itemNameDetail"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:hint="Name"
+                    style="@style/ItemInfoText"
                     android:textSize="18sp"
                     android:textColor="@color/dark_grey"
                     android:gravity="center_horizontal|left"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:paddingTop="15dp"
-                    android:layout_weight="1"
-                    android:text="item name"/>
+                    android:paddingTop="20dp"
+                    android:imeOptions="flagNoExtractUi"
+                    android:text=""/>
 
-                <ImageView
-                    android:id="@+id/imgComplete"
-                    android:layout_width="@dimen/ic_action_size_medium"
-                    android:layout_height="@dimen/ic_action_size_medium"
-                    android:gravity="right|center_horizontal"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginRight="15dp"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/ic_action_check_yellow"
-                    android:visibility="gone"
-                    />
                 <ImageView
                     android:id="@+id/imgPrivate"
                     android:layout_width="@dimen/ic_action_size_medium"
@@ -85,55 +101,145 @@
                     />
             </LinearLayout>
 
-            <TextView
+            <com.wish.wishlist.widgets.ClearableEditText
                 android:id="@+id/itemDesription"
+                android:hint="Description"
                 style="@style/ItemInfoText"
                 android:layout_below="@+id/itemNameLayout"
                 android:textSize="15sp"
-                android:text="item description"/>
+                android:text=""/>
 
-            <TextView
-                android:id="@+id/itemDateDetail"
-                style="@style/ItemInfoText"
-                android:layout_below="@+id/itemDesription"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-light"
-                android:layout_marginTop="20dp"
-                android:text="item Date"/>
-
-            <TextView
+            <com.wish.wishlist.widgets.ClearableEditText
                 android:id="@+id/itemPrice"
+                android:hint="Price"
                 style="@style/ItemInfoText"
+                android:inputType="numberDecimal"
                 android:fontFamily="sans-serif-light"
-                android:layout_below="@+id/itemDateDetail"
+                android:layout_below="@+id/itemDesription"
                 />
 
-            <TextView
+            <com.wish.wishlist.widgets.ClearableEditText
                 android:id="@+id/itemStore"
+                android:hint="Store"
                 style="@style/ItemInfoText"
                 android:layout_below="@+id/itemPrice"
                 android:fontFamily="sans-serif-light"
-                android:text="item store name"/>
+                android:text=""/>
 
-            <TextView
+            <com.wish.wishlist.widgets.ClearableEditText
                 android:id="@+id/itemLocation"
+                android:hint="Location"
                 style="@style/ItemInfoText"
                 android:layout_below="@+id/itemStore"
-                android:text="item location"/>
+                android:text=""/>
 
-            <TextView
-                android:id="@+id/itemLink"
+            <LinearLayout
+                android:id="@+id/linkLayout"
                 android:layout_below="@+id/itemLocation"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
                 android:paddingTop="8dp"
-                android:paddingLeft="15dp"
-                android:layout_gravity="left"/>
+                android:paddingBottom="8dp"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/itemLink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:paddingLeft="15dp"
+                    android:visibility="visible"
+                    android:layout_gravity="left"/>
+
+                <com.wish.wishlist.widgets.ClearableEditText
+                    android:hint="Link url"
+                    android:id="@+id/itemLinkText"
+                    style="@style/ItemInfoText"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp"
+                    android:text=""/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/itemCompleteLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="8dp"
+                android:layout_below="@+id/linkLayout"
+                >
+
+                <LinearLayout
+                    android:id="@+id/completeInnerLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp">
+                    <ImageView
+                        android:id="@+id/completeImageView"
+                        android:layout_width="@dimen/ic_action_size_medium"
+                        android:layout_height="@dimen/ic_action_size_medium"
+                        android:src="@drawable/ic_action_check_yellow"
+                        android:layout_marginLeft="3dp"
+                        />
+                    <TextView
+                        android:id="@+id/completeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/ItemInfoText"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="0dp"
+                        android:text="Completed"
+                        android:layout_gravity="center"
+                        android:paddingBottom="0dp"/>
+                </LinearLayout>
+
+                <CheckBox
+                    android:id="@+id/completeCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mark completed"
+                    android:visibility="gone"
+                    android:textSize="15sp"
+                    android:textColor="@color/medium_grey"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tagLayout"
+                android:visibility="gone"
+                android:layout_below="@+id/itemCompleteLayout"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingLeft="11dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/tag_button"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:src="@drawable/ic_action_tag"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingBottom="5dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add tag"
+                    android:textSize="15sp"
+                    android:textColor="@color/medium_grey"
+                    android:layout_gravity="center_vertical"
+                    />
+            </LinearLayout>
 
             <me.kaede.tagview.TagView
                 android:id="@+id/tag_view"
-                android:layout_below="@+id/itemLink"
+                android:layout_below="@+id/tagLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
@@ -157,6 +263,17 @@
                 android:visibility="invisible"
                 android:layout_gravity="left" />
 
+            <TextView
+                android:id="@+id/itemDateDetail"
+                style="@style/ItemInfoText"
+                android:layout_below="@+id/tag_view"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-light"
+                android:layout_marginTop="20dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="20dp"
+                android:gravity="right"
+                android:text=""/>
         </RelativeLayout>
     </ScrollView>
 </LinearLayout>
