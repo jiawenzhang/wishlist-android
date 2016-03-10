@@ -185,6 +185,7 @@ public class AddTagActivity extends ActivityBase implements TokenCompleteTextVie
 
             WishItem wish = WishItemManager.getInstance().getItemById(mItem_ids[0]);
             wish.setUpdatedTime(System.currentTimeMillis());
+            wish.setSyncedToServer(false);
             wish.save();
         } else {
             // We have multiple wishes, mCurrentTags are new tags we should add to the wishes (existing tags remain)
@@ -196,6 +197,7 @@ public class AddTagActivity extends ActivityBase implements TokenCompleteTextVie
 
                 WishItem wish = WishItemManager.getInstance().getItemById(item_id);
                 wish.setUpdatedTime(System.currentTimeMillis());
+                wish.setSyncedToServer(false);
                 wish.save();
             }
         }

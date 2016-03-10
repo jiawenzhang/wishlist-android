@@ -8,24 +8,39 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.path.android.jobqueue.JobManager;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.db.TagItemDBManager;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.job.GetWishAddressJob;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.PositionManager;
+
+import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
-public class AddWishActivity extends EditWishActivityBase
+public class AddWishActivity extends MyWishDetailActivity
         implements Observer {
 
     private static final String TAG = "AddWishActivity";
+    protected String mAddStr = "unknown";
+    protected PositionManager mPositionManager;
+    protected boolean mGettingLocation = false;
+    protected double mLat = Double.MIN_VALUE;
+    protected double mLng = Double.MIN_VALUE;
+
     private class GetAddressTask extends AsyncTask<Void, Void, Void> {//<param, progress, result>
         @Override
         protected Void doInBackground(Void... arg) {
@@ -39,7 +54,7 @@ public class AddWishActivity extends EditWishActivityBase
             if (mAddStr.equals("unknown")) {
                 Toast.makeText(AddWishActivity.this, "Location unavailable", Toast.LENGTH_LONG).show();
             }
-            mLocationEditText.setText(mAddStr);
+            mLocationView.setText(mAddStr);
             mGettingLocation = false;
         }
     }
@@ -51,17 +66,17 @@ public class AddWishActivity extends EditWishActivityBase
         Analytics.sendScreen("AddWish");
 
         if (loadLocation()) {
-            mMapImageButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //get the location
-                    if (!mGettingLocation) {
-                        mPositionManager.startLocationUpdates();
-                        mGettingLocation = true;
-                        mLocationEditText.setText("Loading location...");
-                    }
-                }
-            });
+            //mMapImageButton.setOnClickListener(new OnClickListener() {
+            //    @Override
+            //    public void onClick(View view) {
+            //        //get the location
+            //        if (!mGettingLocation) {
+            //            mPositionManager.startLocationUpdates();
+            //            mGettingLocation = true;
+            //            mLocationEditText.setText("Loading location...");
+            //        }
+            //    }
+            //});
 
             mPositionManager = new PositionManager();
             mPositionManager.addObserver(this);
@@ -71,27 +86,75 @@ public class AddWishActivity extends EditWishActivityBase
             if (tagLocation) {
                 mPositionManager.startLocationUpdates();
                 mGettingLocation = true;
-                mLocationEditText.setText("Loading location...");
+                mLocationView.setText("Loading location...");
             }
         }
 
         Intent intent = getIntent();
+
         //get the mTempPhotoPath, if it is not null, activity is launched from camera
         mTempPhotoPath = intent.getStringExtra(TEMP_PHOTO_PATH);
-        setTakenPhoto();
-
-        final boolean wishDefaultPrivate = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("wishDefaultPrivate", false);
-        if (wishDefaultPrivate) {
-            mPrivateCheckBox.setChecked(true);
+        if (mTempPhotoPath != null) {
+            setTakenPhoto();
+            mTxtInstruction.setText(getResources().getString(R.string.tap_here_to_change_photo));
         } else {
-            mPrivateCheckBox.setChecked(false);
+            mPhotoView.setVisibility(View.GONE);
+            mTxtInstruction.setText(getResources().getString(R.string.add_photo));
+        }
+
+        mInstructionLayout.setVisibility(View.VISIBLE);
+        mDescriptionView.setVisibility(View.VISIBLE);
+        mLocationView.setVisibility(View.VISIBLE);
+
+        mLinkLayout.setVisibility(View.VISIBLE);
+        mLinkText.setVisibility(View.VISIBLE);
+
+        mCompleteInnerLayout.setVisibility(View.GONE);
+        mCompleteCheckBox.setVisibility(View.VISIBLE);
+
+        mTagLayout.setVisibility(View.VISIBLE);
+        mTagView.setVisibility(View.VISIBLE);
+        mImageFrame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showChangePhotoDialog();
+            }
+        });
+
+
+        //final boolean wishDefaultPrivate = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("wishDefaultPrivate", false);
+        //if (wishDefaultPrivate) {
+        //    mPrivateCheckBox.setChecked(true);
+        //} else {
+        //    mPrivateCheckBox.setChecked(false);
+        //}
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_add_wish, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.menu_done:
+                save();
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
         }
     }
 
     /***
      * Save user input as a wish item
      */
-    protected boolean saveWishItem() {
+    @Override
+    protected void saveWishItem() {
         if (mSelectedPic && mSelectedPicUri != null) {
             showProgressDialog(getString(R.string.saving_image));
             new saveSelectedPhotoTask().execute();
@@ -99,21 +162,20 @@ public class AddWishActivity extends EditWishActivityBase
             showProgressDialog(getString(R.string.saving_image));
             new saveTempPhoto().execute();
         } else {
-            WishItem item = createNewWish();
-            mItem_id = item.saveToLocal();
-            getWishAddressInBackground(item);
+            mItem = createNewWish();
+            mItem.saveToLocal();
+            getWishAddressInBackground(mItem);
             wishSaved();
         }
-        return true;
     }
 
     @Override
     protected void newImageSaved() {
-        super.newImageSaved();
-        WishItem item = createNewWish();
-        item.setWebImgMeta(null, 0, 0);
-        mItem_id = item.saveToLocal();
-        getWishAddressInBackground(item);
+        dismissProgressDialog();
+        mItem = createNewWish();
+        mItem.setWebImgMeta(null, 0, 0);
+        mItem.saveToLocal();
+        getWishAddressInBackground(mItem);
         wishSaved();
     }
 
@@ -143,6 +205,15 @@ public class AddWishActivity extends EditWishActivityBase
                 false);
     }
 
+    @Override
+    protected void wishSaved() {
+        TagItemDBManager.instance().Update_item_tags(mItem.getId(), mTags);
+        EventBus.getInstance().post(new MyWishChangeEvent());
+        SyncAgent.getInstance().sync();
+        Analytics.send(Analytics.WISH, "Save new", null);
+        finish();
+    }
+
     protected void getWishAddressInBackground(WishItem item) {
         if (item.getLatitude() != Double.MIN_VALUE && item.getLongitude() != Double.MIN_VALUE && (item.getAddress().equals("unknown") || item.getAddress().equals(""))) {
             JobManager jobManager = ((WishlistApplication) getApplication()).getJobManager();
@@ -150,14 +221,31 @@ public class AddWishActivity extends EditWishActivityBase
         }
     }
 
+    protected void removeTempPhoto() {
+        if (mTempPhotoPath != null) {
+            File f = new File(mTempPhotoPath);
+            f.delete();
+        }
+    }
+
+    /***
+     * called when the "return" button is clicked
+     */
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            return navigateBack();
+        }
+        return false;
+    }
+
     protected boolean navigateBack() {
         //all fields are empty
-        if (mNameEditText.getText().toString().length() == 0 &&
-                mDescriptionEditText.getText().toString().length() == 0 &&
-                mPriceEditText.getText().toString().length() == 0 &&
-                mLocationEditText.getText().toString().length() == 0 &&
-                mStoreEditText.getText().toString().length() == 0){
+        if (mNameView.getText().toString().length() == 0 &&
+                mDescriptionView.getText().toString().length() == 0 &&
+                mPriceView.getText().toString().length() == 0 &&
+                mLocationView.getText().toString().length() == 0 &&
+                mStoreView.getText().toString().length() == 0){
 
             removeTempPhoto();
             setResult(RESULT_CANCELED, null);
@@ -207,7 +295,7 @@ public class AddWishActivity extends EditWishActivityBase
             //need better value to indicate it's not valid lat and lng
             mLat = Double.MIN_VALUE;
             mLng = Double.MIN_VALUE;
-            mLocationEditText.setText(mAddStr);
+            mLocationView.setText(mAddStr);
             mGettingLocation = false;
         } else {
             //get current latitude and longitude

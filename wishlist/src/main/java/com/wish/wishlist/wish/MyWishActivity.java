@@ -577,7 +577,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
                     if (id != -1) {
                         WishItem item = WishItemManager.getInstance().getItemById(id);
-                        Intent i = new Intent(MyWishActivity.this, MyWishDetailActivity.class);
+                        Intent i = new Intent(MyWishActivity.this, ExistingWishDetailActivity.class);
                         i.putExtra(WishDetailActivity.ITEM, item);
                         startActivityForResult(i, ITEM_DETAILS);
                     }
@@ -601,6 +601,9 @@ public class MyWishActivity extends WishBaseActivity implements
                 if (resultCode == Activity.RESULT_OK) {
                     updateItemIdsForTag();
                     updateFilterView(filterType.tag);
+
+                    // item's updated time is changed, need to reload to get the update
+                    reloadItems();
                 }
                 break;
             }
@@ -683,7 +686,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
     public void onWishTapped(WishItem item) {
         Log.d(TAG, "onWishTapped");
-        Intent i = new Intent(MyWishActivity.this, MyWishDetailActivity.class);
+        Intent i = new Intent(MyWishActivity.this, ExistingWishDetailActivity.class);
         i.putExtra(WishDetailActivity.ITEM, item);
         startActivityForResult(i, ITEM_DETAILS);
     }

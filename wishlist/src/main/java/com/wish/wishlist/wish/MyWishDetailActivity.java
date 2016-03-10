@@ -66,12 +66,12 @@ import me.kaede.tagview.TagView;
 
 public class MyWishDetailActivity extends WishDetailActivity implements TokenCompleteTextView.TokenListener {
     private static final String TAG = "MyWishDetailActivity";
-    private LinearLayout mImgInstruction;
-    private ClearableEditText mLinkText;
-    private TagView mTagView;
-    private View mImageFrame;
-    private TextView mTxtInstruction;
-    private LinearLayout mTagLayout;
+    protected LinearLayout mInstructionLayout;
+    protected ClearableEditText mLinkText;
+    protected TagView mTagView;
+    protected View mImageFrame;
+    protected TextView mTxtInstruction;
+    protected LinearLayout mTagLayout;
     protected CheckBox mCompleteCheckBox;
     private ActionMode mActionMode;
     protected ArrayList<String> mTags = new ArrayList<>();
@@ -192,31 +192,19 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
         if (savedInstanceState != null) {
             // on screen orientation, reload the item from db as it could have been changed
-            mItem = WishItemManager.getInstance().getItemById(mItem.getId());
+            if (mItem != null) {
+                mItem = WishItemManager.getInstance().getItemById(mItem.getId());
+            }
         }
 
-        showItemInfo();
-
-        mImgInstruction = (LinearLayout) findViewById(R.id.imgInstruction);
-
-        mTagView = (TagView) findViewById(R.id.tag_view);
-        mTags = TagItemDBManager.instance().tags_of_item(mItem.getId());
-        addTags();
-
+        mTxtInstruction = (TextView) findViewById(R.id.txtInstruction);
+        mInstructionLayout = (LinearLayout) findViewById(R.id.instructionLayout);
         mTagLayout = (LinearLayout) findViewById(R.id.tagLayout);
         mLinkText = (ClearableEditText) findViewById(R.id.itemLinkText);
         mLinkText.setVisibility(View.GONE);
         mCompleteCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
 
-        mFullsizePhotoPath = mItem.getFullsizePicPath();
-        mComplete = mItem.getComplete();
-        if (mComplete == 1) {
-            mCompleteCheckBox.setChecked(true);
-        } else {
-            mCompleteCheckBox.setChecked(false);
-        }
-
-
+        mTagView = (TagView) findViewById(R.id.tag_view);
         mImageFrame = findViewById(R.id.imagePhotoDetailFrame);
         mImageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,88 +217,6 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             @Override
             public boolean onLongClick(View v) {
                 return false;
-            }
-        });
-
-        mTxtInstruction = (TextView) findViewById(R.id.txtInstruction);
-
-        mNameView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    enterEditMode();
-                    Log.d(TAG, "has focus");
-                } else {
-                    Log.d(TAG, "lost focus");
-                }
-            }
-        });
-
-        mDescriptionView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    enterEditMode();
-                    Log.d(TAG, "has focus");
-                } else {
-                    Log.d(TAG, "lost focus");
-                }
-            }
-        });
-
-        mPriceView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    enterEditMode();
-                    Log.d(TAG, "has focus");
-                } else {
-                    Log.d(TAG, "lost focus");
-                }
-            }
-        });
-
-        mLocationView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    enterEditMode();
-                    Log.d(TAG, "has focus");
-                } else {
-                    Log.d(TAG, "lost focus");
-                }
-            }
-        });
-
-        mStoreView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    enterEditMode();
-                    Log.d(TAG, "has focus");
-                } else {
-                    Log.d(TAG, "lost focus");
-                }
-            }
-        });
-
-        mLinkLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mLinkText.setText(mItem.getLink());
-                mLinkText.setVisibility(View.VISIBLE);
-                mLinkText.requestFocus();
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(mLinkView, InputMethodManager.SHOW_FORCED);
-                enterEditMode();
-            }
-        });
-
-        LinearLayout completeLayout = (LinearLayout) findViewById(R.id.itemCompleteLayout);
-        completeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                enterEditMode();
             }
         });
 
@@ -377,6 +283,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             return false;
         }
         Log.d(TAG, "setSelectedPic " + mSelectedPicUri.toString());
+        mImageFrame.setVisibility(View.VISIBLE);
         mPhotoView.setVisibility(View.VISIBLE);
         // Picasso bug: fit() does not work when image is large
         // https://github.com/square/picasso/issues/249
@@ -389,14 +296,16 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     private void startAddTagIntent() {
         Intent i = new Intent(MyWishDetailActivity.this, AddTagFromEditActivity.class);
         long[] ids = new long[1];
-        ids[0] = mItem.getId();
+        if (mItem != null) {
+            ids[0] = mItem.getId();
+            mTags = TagItemDBManager.instance().tags_of_item(mItem.getId());
+        }
         i.putExtra(AddTagActivity.ITEM_ID_ARRAY, (ids));
-        mTags = TagItemDBManager.instance().tags_of_item(mItem.getId());
         i.putExtra(AddTagFromEditActivity.TAGS, mTags);
         startActivityForResult(i, ADD_TAG);
     }
 
-    private void showChangePhotoDialog() {
+    protected void showChangePhotoDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MyWishDetailActivity.this, R.style.AppCompatAlertDialogStyle);
 
         final CharSequence[] items = {"Take a photo", "From gallery"};
@@ -415,20 +324,22 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         dialog.show();
     }
 
-    private void enterEditMode() {
+    protected void enterEditMode() {
         if (mActionMode != null) {
             Log.d(TAG, "ActionMode is already on");
             return;
         }
 
-        mImgInstruction.setVisibility(View.VISIBLE);
+        mInstructionLayout.setVisibility(View.VISIBLE);
         mDescriptionView.setVisibility(View.VISIBLE);
         mPriceView.setVisibility(View.VISIBLE);
 
         // price is shown with currency, remove the currency for editing mode
-        String priceStr = mItem.getPriceAsString();
-        if (priceStr != null) {
-            mPriceView.setText(priceStr);
+        if (mItem != null) {
+            String priceStr = mItem.getPriceAsString();
+            if (priceStr != null) {
+                mPriceView.setText(priceStr);
+            }
         }
 
         mStoreView.setVisibility(View.VISIBLE);
@@ -436,14 +347,17 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
         mLinkLayout.setVisibility(View.VISIBLE);
         mLinkText.setVisibility(View.VISIBLE);
-        String link = mItem.getLink();
-        if (link != null && !link.isEmpty()) {
-            mLinkText.setText(link);
+
+        if (mItem != null) {
+            String link = mItem.getLink();
+            if (link != null && !link.isEmpty()) {
+                mLinkText.setText(link);
+            }
         }
 
         mCompleteInnerLayout.setVisibility(View.GONE);
         mCompleteCheckBox.setVisibility(View.VISIBLE);
-        mCompleteCheckBox.setChecked(mItem.getComplete() == 1);
+        mCompleteCheckBox.setChecked(mItem != null && mItem.getComplete() == 1);
 
         mTagLayout.setVisibility(mTags.size() == 0 ? View.VISIBLE : View.GONE);
         mImageFrame.setOnClickListener(new View.OnClickListener() {
@@ -453,7 +367,10 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             }
         });
 
-        mTxtInstruction.setText(mPhotoView.getVisibility() == View.VISIBLE ? "Tap here to change photo" : "Add photo");
+        mTxtInstruction.setText(mPhotoView.getVisibility() == View.VISIBLE ?
+                getResources().getString(R.string.tap_here_to_change_photo) :
+                getResources().getString(R.string.add_photo)
+        );
 
         mActionMode = startSupportActionMode(new ActionMode.Callback() {
             @Override
@@ -494,11 +411,11 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
                 clearFocus();
 
-                mImgInstruction.setVisibility(View.GONE);
+                mInstructionLayout.setVisibility(View.GONE);
                 mLinkText.setVisibility(View.GONE);
                 mTagLayout.setVisibility(View.GONE);
                 mCompleteCheckBox.setVisibility(View.GONE);
-                mCompleteInnerLayout.setVisibility(mItem.getComplete() == 1 ? View.VISIBLE : View.GONE);
+                mCompleteInnerLayout.setVisibility(mItem != null && mItem.getComplete() == 1 ? View.VISIBLE : View.GONE);
 
                 mImageFrame.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -535,7 +452,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         double price = priceString.isEmpty() ? Double.MIN_VALUE : Double.valueOf(mPriceView.getText().toString().trim());
         int complete = mCompleteCheckBox.isChecked() ? 1 : 0;
         //int access = mPrivateCheckBox.isChecked() ? WishItem.PRIVATE : WishItem.PUBLIC;
-        int access = mItem.getAccess();
+        int access = WishItem.PUBLIC;
 
         return new WishInput(
                 name,
@@ -627,26 +544,21 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     }
 
     protected void newImageSaved() {
-        dismissProgressDialog();
-        removeItemImage();
-        mItem = populateItem();
-        mItem.setWebImgMeta(null, 0, 0);
-        mItem.saveToLocal();
-        wishSaved();
+
     }
 
     protected void removeItemImage() {
-        mItem.removeImage();
+        if (mItem != null) {
+            mItem.removeImage();
+        }
     }
 
     protected void wishSaved() {
-        //save the tags of this item
-        //TagItemDBManager.instance().Update_item_tags(mItem_id, mTags);
         EventBus.getInstance().post(new MyWishChangeEvent());
 
         SyncAgent.getInstance().sync();
 
-        Analytics.send(Analytics.WISH, "Save", null);
+        Analytics.send(Analytics.WISH, "Save existing", null);
 
         clearPhotoState();
         mActionMode.finish();
@@ -684,6 +596,9 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
     @Override
     protected void showPhoto() {
+        if (mItem == null) {
+            return;
+        }
         if (mItem.getFullsizePicPath() != null) {
             Picasso.with(mPhotoView.getContext()).load(new File(mItem.getFullsizePicPath())).fit().centerCrop().into(mPhotoView);
             mPhotoView.setVisibility(View.VISIBLE);
@@ -770,7 +685,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
                     Analytics.send(Analytics.WISH, "TakenPicture", "FromEditItemCameraButton");
 
                     setTakenPhoto();
-                    mTxtInstruction.setText("Tap here to change photo");
+                    mTxtInstruction.setText(getResources().getString(R.string.tap_here_to_change_photo));
                 } else {
                     Log.d(TAG, "cancel taking photo");
                     mTempPhotoPath = null;
@@ -782,7 +697,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
                     mSelectedPicUri = data.getData();
                     Analytics.send(Analytics.WISH, "SelectedPicture", null);
                     setSelectedPic();
-                    mTxtInstruction.setText("Tap here to change photo");
+                    mTxtInstruction.setText(getResources().getString(R.string.tap_here_to_change_photo));
                 }
                 break;
             }
@@ -797,10 +712,15 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
                         mTagLayout.setVisibility(mTags.size() == 0 && mActionMode != null ? View.VISIBLE : View.GONE);
 
                         //save the tags of this item
-                        TagItemDBManager.instance().Update_item_tags(mItem.getId(), mTags);
-                        EventBus.getInstance().post(new MyWishChangeEvent());
+                        if (mItem != null) {
+                            TagItemDBManager.instance().Update_item_tags(mItem.getId(), mTags);
+                            mItem.setUpdatedTime(System.currentTimeMillis());
+                            mItem.setSyncedToServer(false);
+                            mItem.saveToLocal();
 
-                        SyncAgent.getInstance().sync();
+                            EventBus.getInstance().post(new MyWishChangeEvent());
+                            SyncAgent.getInstance().sync();
+                        }
                     } else {
                         Log.d(TAG, "Tags have not been changed");
                     }

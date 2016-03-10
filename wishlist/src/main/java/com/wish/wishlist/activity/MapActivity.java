@@ -32,6 +32,7 @@ import com.wish.wishlist.db.ItemDBManager;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.wish.ExistingWishDetailActivity;
 import com.wish.wishlist.wish.FriendWishDetailActivity;
 import com.wish.wishlist.wish.MyWishDetailActivity;
 import com.wish.wishlist.wish.WebImgMeta;
@@ -189,7 +190,7 @@ public class MapActivity extends Activity {
             public void onInfoWindowClick(Marker marker) {
                 Intent intent;
                 if (mMyWish) {
-                    intent = new Intent(MapActivity.this, MyWishDetailActivity.class);
+                    intent = new Intent(MapActivity.this, ExistingWishDetailActivity.class);
                 } else {
                     intent = new Intent(MapActivity.this, FriendWishDetailActivity.class);
                 }

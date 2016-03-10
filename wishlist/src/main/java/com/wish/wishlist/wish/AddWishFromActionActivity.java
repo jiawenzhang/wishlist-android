@@ -24,10 +24,10 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wish.wishlist.R;
+import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.activity.WebImage;
 import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.image.ImageManager;
-import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.GetWebItemTask;
 import com.wish.wishlist.util.WebRequest;
@@ -87,11 +87,15 @@ public class AddWishFromActionActivity extends AddWishActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCameraImageButton.setVisibility(View.GONE);
 
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
+
+        mInstructionLayout.setVisibility(View.GONE);
+        mPhotoView.setVisibility(View.GONE);
+        mImageFrame.setVisibility(View.GONE);
+        mLinkView.setVisibility(View.GONE);
 
         if (savedInstanceState == null) {
             if (Intent.ACTION_SEND.equals(action) && type != null) {
@@ -145,21 +149,40 @@ public class AddWishFromActionActivity extends AddWishActivity
         Log.d(TAG, "handleSendAll");
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (sharedText != null) {
-            mNameEditText.setText(sharedText);
+            mNameView.setText(sharedText);
         }
+
         mSelectedPicUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        setSelectedPic();
-
         if (mSelectedPicUri != null) {
+            showSelectedImage();
             mHost = mSelectedPicUri.getHost();
-            Log.d(TAG, "host " + mHost);
-
-            if (mHost == null) {
-                return;
+            if (mHost != null) {
+                Log.d(TAG, "host " + mHost);
+                Analytics.send(Analytics.WISH, "ShareFrom_All", mHost);
             }
-
-            Analytics.send(Analytics.WISH, "ShareFrom_All", mHost);
         }
+    }
+
+    private void handleSendImage(Intent intent) {
+        Log.d(TAG, "handleSendImage");
+        mSelectedPicUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        if (mSelectedPicUri != null) {
+            showSelectedImage();
+            mHost = mSelectedPicUri.getHost();
+            if (mHost != null) {
+                Analytics.send(Analytics.WISH, "ShareFrom_Image", mHost);
+            }
+        }
+    }
+
+    private void handleSendMultipleImages(Intent intent) {
+        Log.d(TAG, "handleSendMultipleImages");
+        ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        if (imageUris != null) {
+            // Update UI to reflect multiple images being shared
+        }
+
+        Analytics.send(Analytics.WISH, "ShareFrom_MultipleImage", null);
     }
 
     private void handleSendText(Intent intent) {
@@ -169,7 +192,7 @@ public class AddWishFromActionActivity extends AddWishActivity
             Log.d(TAG, "shared text: " + sharedText);
             ArrayList<String> links = extractLinks(sharedText);
             if (links.isEmpty()) {
-                mNameEditText.setText(sharedText);
+                mNameView.setText(sharedText);
                 return;
             }
 
@@ -181,7 +204,7 @@ public class AddWishFromActionActivity extends AddWishActivity
                     mHost = url.getHost();
 
                     String store = mHost.startsWith("www.") ? mHost.substring(4) : mHost;
-                    mStoreEditText.setText(store);
+                    mStoreView.setText(store);
                     break;
                 } catch (MalformedURLException e) {
                     Log.d(TAG, e.toString());
@@ -189,13 +212,13 @@ public class AddWishFromActionActivity extends AddWishActivity
             }
 
             if (mLink == null) {
-                mNameEditText.setText(sharedText);
+                mNameView.setText(sharedText);
                 return;
             }
 
             // remove the link from the text;
             String name = sharedText.replace(mLink, "");
-            mNameEditText.setText(name);
+            mNameView.setText(name);
 
             if (mHost != null && mHost.equals("pages.ebay.com")) {
                 String redirected_link = getEbayLink(mLink);
@@ -209,8 +232,8 @@ public class AddWishFromActionActivity extends AddWishActivity
                 Analytics.send(Analytics.WISH, "ShareFrom_Text", mHost);
             }
 
-            mLinkEditText.setText(mLink);
-            mLinkEditText.setEnabled(false);
+            mLinkText.setText(mLink);
+            mLinkText.setEnabled(false);
 
             WebRequest request = new WebRequest();
             request.url = mLink;
@@ -260,6 +283,7 @@ public class AddWishFromActionActivity extends AddWishActivity
                         "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
 
             }
+
             @Override
             public void onReceivedError(WebView view, int errorCode,
                                         String description, String failingUrl) {
@@ -271,30 +295,16 @@ public class AddWishFromActionActivity extends AddWishActivity
         mWebView.loadUrl(mLink);
     }
 
-    private void handleSendImage(Intent intent) {
-        Log.d(TAG, "handleSendImage");
-        mSelectedPicUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+    private void showSelectedImage() {
         setSelectedPic();
-        if (mSelectedPicUri != null) {
-            mHost= mSelectedPicUri.getHost();
-            if (mHost == null) {
-                return;
+        mImageFrame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(AddWishFromActionActivity.this, FullscreenPhotoActivity.class);
+                i.putExtra(FullscreenPhotoActivity.PHOTO_URI, mSelectedPicUri.toString());
+                startActivity(i);
             }
-
-            Log.d(TAG, "host " + mSelectedPicUri.getHost());
-
-            Analytics.send(Analytics.WISH, "ShareFrom_Image", mHost);
-        }
-    }
-
-    private void handleSendMultipleImages(Intent intent) {
-        Log.d(TAG, "handleSendMultipleImages");
-        ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-        if (imageUris != null) {
-            // Update UI to reflect multiple images being shared
-        }
-
-        Analytics.send(Analytics.WISH, "ShareFrom_MultipleImage", null);
+        });
     }
 
     private String getEbayLink(String link) {
@@ -333,14 +343,23 @@ public class AddWishFromActionActivity extends AddWishActivity
         return links;
     }
 
-    private Boolean setWebPic(String url) {
+    private Boolean setWebPic(final String url) {
         Log.d(TAG, "setWebPic " + url);
         final Target target = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 mWebBitmap = ImageManager.getScaleDownBitmap(bitmap, 1024);
-                mImageItem.setImageBitmap(mWebBitmap);
-                mImageItem.setVisibility(View.VISIBLE);
+                mPhotoView.setImageBitmap(mWebBitmap);
+                mPhotoView.setVisibility(View.VISIBLE);
+                mImageFrame.setVisibility(View.VISIBLE);
+                mImageFrame.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(AddWishFromActionActivity.this, FullscreenPhotoActivity.class);
+                        i.putExtra(FullscreenPhotoActivity.PHOTO_URL, url);
+                        startActivity(i);
+                    }
+                });
             }
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {}
@@ -348,7 +367,7 @@ public class AddWishFromActionActivity extends AddWishActivity
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {}
         };
-        mImageItem.setTag(target);
+        mPhotoView.setTag(target);
 
         Picasso.with(this).load(url).into(target);
         mFullsizePhotoPath = null;
@@ -358,27 +377,28 @@ public class AddWishFromActionActivity extends AddWishActivity
     }
 
     @Override
-    protected boolean saveWishItem() {
+    protected void saveWishItem() {
         if (mWebBitmap != null) {
+            // image from web
             mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(mWebBitmap);
             ImageManager.saveBitmapToThumb(mWebBitmap, mFullsizePhotoPath);
 
-            // create a new item
-            WishItem item = createNewWish();
-
-            if (mWebPicUrl != null && mWebBitmap !=null) {
-                item.setWebImgMeta(mWebPicUrl, mWebBitmap.getWidth(), mWebBitmap.getHeight());
-            } else {
-                item.setWebImgMeta(null, 0, 0);
-            }
-
-            mItem_id = item.saveToLocal();
+            mItem = createNewWish();
+            mItem.setWebImgMeta(mWebPicUrl, mWebBitmap.getWidth(), mWebBitmap.getHeight());
+            mItem.saveToLocal();
             wishSaved();
         } else if (mSelectedPicUri != null) {
+            // image from uri
             showProgressDialog(getString(R.string.saving_image));
             new saveSelectedPhotoTask().execute();
+        } else {
+            // no image
+            mItem = createNewWish();
+            mItem.setWebImgMeta(null, 0, 0);
+
+            mItem.saveToLocal();
+            wishSaved();
         }
-        return true;
     }
 
     public void onWebImageSelected(int position) {
@@ -435,7 +455,6 @@ public class AddWishFromActionActivity extends AddWishActivity
         mGetWebItemTask.execute(request);
     }
 
-
     private void lockScreenOrientation() {
         int currentOrientation = getResources().getConfiguration().orientation;
         if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -490,10 +509,10 @@ public class AddWishFromActionActivity extends AddWishActivity
         }
         mProgressDialog.dismiss();
         if (result._title != null && !result._title.trim().isEmpty()) {
-            mNameEditText.setText(result._title);
+            mNameView.setText(result._title);
         }
         if (result._description != null && !result._description.trim().isEmpty()) {
-            mDescriptionEditText.setText(result._description);
+            mDescriptionView.setText(result._description);
         }
         mWebResult = result;
         if (!mWebResult._webImages.isEmpty()) {

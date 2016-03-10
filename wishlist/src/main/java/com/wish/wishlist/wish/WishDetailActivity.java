@@ -31,7 +31,7 @@ public abstract class WishDetailActivity extends ActivityBase {
     protected TextView mTextComplete;
     protected ClearableEditText mNameView;
     protected ClearableEditText mDescriptionView;
-    private TextView mDateView;
+    protected TextView mDateView;
     protected ClearableEditText mPriceView;
     protected ClearableEditText mStoreView;
     protected ClearableEditText mLocationView;
@@ -68,6 +68,10 @@ public abstract class WishDetailActivity extends ActivityBase {
     protected void showPhoto() {}
 
     protected void showItemInfo() {
+        if (mItem == null) {
+            return;
+        }
+
         showPhoto();
 
         if (mItem.getComplete() == 1) {
