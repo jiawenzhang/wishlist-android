@@ -51,7 +51,6 @@ import com.wish.wishlist.widgets.ClearableEditText;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
@@ -191,13 +190,6 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
         Analytics.sendScreen("MyWishDetail");
 
-        if (savedInstanceState != null) {
-            // on screen orientation, reload the item from db as it could have been changed
-            if (mItem != null) {
-                mItem = WishItemManager.getInstance().getItemById(mItem.getId());
-            }
-        }
-
         mTxtInstruction = (TextView) findViewById(R.id.txtInstruction);
         mInstructionLayout = (LinearLayout) findViewById(R.id.instructionLayout);
         mTagLayout = (LinearLayout) findViewById(R.id.tagLayout);
@@ -207,6 +199,14 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
         mTagView = (TagView) findViewById(R.id.tag_view);
         mImageFrame = findViewById(R.id.imagePhotoDetailFrame);
+
+        if (savedInstanceState != null) {
+            // on screen orientation, reload the item from db as it could have been changed
+            if (mItem != null) {
+                mItem = WishItemManager.getInstance().getItemById(mItem.getId());
+            }
+        }
+
         mImageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -368,10 +368,11 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             }
         });
 
-        mTxtInstruction.setText(mPhotoView.getVisibility() == View.VISIBLE ?
-                getResources().getString(R.string.tap_here_to_change_photo) :
-                getResources().getString(R.string.add_photo)
-        );
+        if (mTempPhotoPath == null && mSelectedPicUri == null && mItem.getFullsizePicPath() == null) {
+            mTxtInstruction.setText(getResources().getString(R.string.add_photo));
+        } else {
+            mTxtInstruction.setText(getResources().getString(R.string.tap_here_to_change_photo));
+        }
 
         mActionMode = startSupportActionMode(new ActionMode.Callback() {
             @Override
@@ -644,12 +645,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     }
 
     private void editItem() {
-        //Intent i = new Intent(MyWishDetailActivity.this, EditWishActivity.class);
-        //i.putExtra(EditWishActivity.ITEM_ID, mItem.getId());
-        //startActivityForResult(i, EDIT_ITEM);
-
         mNameView.requestFocus();
-        enterEditMode();
     }
 
     @Override

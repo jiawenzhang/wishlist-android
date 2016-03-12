@@ -23,6 +23,7 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         Analytics.sendScreen("ExistingWishDetail");
 
         showItemInfo();
+
         mTags = TagItemDBManager.instance().tags_of_item(mItem.getId());
         addTags();
 
@@ -132,5 +133,15 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         mItem.setWebImgMeta(null, 0, 0);
         mItem.saveToLocal();
         wishSaved();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (mTempPhotoPath == null && mSelectedPicUri == null && mItem.getFullsizePicPath() == null) {
+            mTxtInstruction.setText(getResources().getString(R.string.add_photo));
+        } else {
+            mTxtInstruction.setText(getResources().getString(R.string.tap_here_to_change_photo));
+        }
     }
 }
