@@ -106,11 +106,12 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
             }
         });
 
-        LinearLayout completeLayout = (LinearLayout) findViewById(R.id.itemCompleteLayout);
+        final LinearLayout completeLayout = (LinearLayout) findViewById(R.id.itemCompleteLayout);
         completeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 enterEditMode();
+                mCompleteCheckBox.getParent().requestChildFocus(mCompleteCheckBox, mCompleteCheckBox);
             }
         });
     }
