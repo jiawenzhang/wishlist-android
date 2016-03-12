@@ -114,6 +114,14 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
                 mCompleteCheckBox.getParent().requestChildFocus(mCompleteCheckBox, mCompleteCheckBox);
             }
         });
+
+        mTextComplete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enterEditMode();
+                mCompleteCheckBox.getParent().requestChildFocus(mCompleteCheckBox, mCompleteCheckBox);
+            }
+        });
     }
 
     @Override
