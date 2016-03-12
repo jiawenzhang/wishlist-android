@@ -455,7 +455,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
 
         SyncAgent.getInstance().sync();
 
-        Analytics.send(Analytics.WISH, "Save existing", null);
+        Analytics.send(Analytics.WISH, "Save", "Existing");
 
         clearPhotoState();
         mActionMode.finish();

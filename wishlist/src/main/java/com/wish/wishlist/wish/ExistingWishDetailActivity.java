@@ -135,6 +135,8 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
             return;
         }
 
+        Analytics.send(Analytics.WISH, "EnterEdit", null);
+
         mInstructionLayout.setVisibility(View.VISIBLE);
         mDescriptionView.setVisibility(View.VISIBLE);
         mPriceView.setVisibility(View.VISIBLE);

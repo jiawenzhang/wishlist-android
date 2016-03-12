@@ -211,7 +211,7 @@ public class AddWishActivity extends MyWishDetailActivity
         TagItemDBManager.instance().Update_item_tags(mItem.getId(), mTags);
         EventBus.getInstance().post(new MyWishChangeEvent());
         SyncAgent.getInstance().sync();
-        Analytics.send(Analytics.WISH, "Save new", null);
+        Analytics.send(Analytics.WISH, "Save", "New");
         finish();
     }
 
