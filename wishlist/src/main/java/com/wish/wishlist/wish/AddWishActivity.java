@@ -107,6 +107,7 @@ public class AddWishActivity extends MyWishDetailActivity
         mLocationView.setVisibility(View.VISIBLE);
 
         mLinkLayout.setVisibility(View.VISIBLE);
+        mLinkView.setVisibility(View.GONE);
         mLinkText.setVisibility(View.VISIBLE);
 
         mCompleteInnerLayout.setVisibility(View.GONE);
