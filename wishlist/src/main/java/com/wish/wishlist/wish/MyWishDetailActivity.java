@@ -45,6 +45,7 @@ import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.tag.AddTagActivity;
 import com.wish.wishlist.tag.AddTagFromEditActivity;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.widgets.ClearableEditText;
 
@@ -705,7 +706,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
                 clearFocus();
                 if (resultCode == RESULT_OK) {
                     ArrayList<String> tags = data.getStringArrayListExtra(AddTagFromEditActivity.TAGS);
-                    if (!sameArrays(tags, mTags)) {
+                    if (!StringUtil.sameArrays(tags, mTags)) {
                         Log.d(TAG, "Save tags");
                         mTags = tags;
                         addTags();
@@ -727,15 +728,6 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
                 }
             }
         } //end of switch
-    }
-
-    public static boolean sameArrays(ArrayList<String> arr1, ArrayList<String> arr2) {
-        if (arr1.size() != arr2.size()) {
-            return false;
-        }
-        HashSet<String> set1 = new HashSet<>(arr1);
-        HashSet<String> set2 = new HashSet<>(arr2);
-        return set1.equals(set2);
     }
 
     @Override

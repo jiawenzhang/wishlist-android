@@ -88,7 +88,7 @@ public class TagItemDBManager extends DBManager {
         }
         if (ids.isEmpty()) {
             //We don't have any tags for this item, return an empty tag list
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         ArrayList<String> tags = TagDBManager.instance().getTagsByIds(ids.toArray(new String[ids.size()]));
         return tags;

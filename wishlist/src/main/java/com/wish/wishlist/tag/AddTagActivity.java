@@ -35,6 +35,7 @@ import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.util.StringUtil;
 
 public class AddTagActivity extends ActivityBase implements TokenCompleteTextView.TokenListener {
     protected final static String PREFIX = "Tags: ";
@@ -181,24 +182,31 @@ public class AddTagActivity extends ActivityBase implements TokenCompleteTextVie
             // We only have one wish, mCurrentTags should overwrite the existing tags in the wish
             ArrayList<String> tags = new ArrayList<>();
             tags.addAll(mCurrentTags);
-            TagItemDBManager.instance().Update_item_tags(mItem_ids[0], tags);
+            ArrayList<String> existing_tags = TagItemDBManager.instance().tags_of_item(mItem_ids[0]);
 
-            WishItem wish = WishItemManager.getInstance().getItemById(mItem_ids[0]);
-            wish.setUpdatedTime(System.currentTimeMillis());
-            wish.setSyncedToServer(false);
-            wish.save();
-        } else {
-            // We have multiple wishes, mCurrentTags are new tags we should add to the wishes (existing tags remain)
-            for (long item_id : mItem_ids) {
-                ArrayList<String> existingTagList = TagItemDBManager.instance().tags_of_item(item_id);
-                HashSet<String> tagSet = new HashSet<>(existingTagList);
-                tagSet.addAll(mCurrentTags);
-                TagItemDBManager.instance().Update_item_tags(item_id, new ArrayList<>(tagSet));
+            if (!StringUtil.sameArrays(tags, existing_tags)) {
+                TagItemDBManager.instance().Update_item_tags(mItem_ids[0], tags);
 
-                WishItem wish = WishItemManager.getInstance().getItemById(item_id);
+                WishItem wish = WishItemManager.getInstance().getItemById(mItem_ids[0]);
                 wish.setUpdatedTime(System.currentTimeMillis());
                 wish.setSyncedToServer(false);
                 wish.save();
+            }
+        } else {
+            // We have multiple wishes, mCurrentTags are new tags we should add to the wishes (existing tags remain)
+            for (long item_id : mItem_ids) {
+                ArrayList<String> existingTags = TagItemDBManager.instance().tags_of_item(item_id);
+                HashSet<String> tagSet = new HashSet<>(existingTags);
+                tagSet.addAll(mCurrentTags);
+                ArrayList<String> newTags = new ArrayList<>(tagSet);
+                if (!StringUtil.sameArrays(newTags, existingTags)) {
+                    TagItemDBManager.instance().Update_item_tags(item_id, newTags);
+
+                    WishItem wish = WishItemManager.getInstance().getItemById(item_id);
+                    wish.setUpdatedTime(System.currentTimeMillis());
+                    wish.setSyncedToServer(false);
+                    wish.save();
+                }
             }
         }
 
