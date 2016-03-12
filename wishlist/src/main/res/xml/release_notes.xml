@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <releaseNote>
+    <release versionName="1.2.4" versionCode="28">
+        <note>Simplify adding and editing wishes.</note>
+    </release>
     <release versionName="1.2.3" versionCode="24">
         <note>Long press a wish to activate selection mode and choose multiple wishes for action.</note>
         <note>Support sharing multiple wishes.</note>
