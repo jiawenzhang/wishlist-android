@@ -62,7 +62,8 @@ public class WishlistApplication extends Application {
                     .applicationId("myAppId")
                     .clientKey("foo")
                     //.server("http://localhost:1337/parse")
-                    .server("https://fast-badlands-99020.herokuapp.com/parse/")
+                    //.server("https://fast-badlands-99020.herokuapp.com/parse/")
+                    .server("http://parse.beanswishlist.com:1337/parse/")
                     .addNetworkInterceptor(new ParseLogInterceptor())
                     .build());
 
