@@ -175,9 +175,9 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             if (bitmap == null) {
-                mPhotoView.setVisibility(View.GONE);
+                setPhotoVisible(false);
             } else {
-                mPhotoView.setVisibility(View.VISIBLE);
+                setPhotoVisible(true);
                 mPhotoView.setImageBitmap(bitmap);
             }
         }
@@ -264,7 +264,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         }
         Log.d(TAG, "setTakePhoto " + mTempPhotoPath);
         File tempPhotoFile = new File(mTempPhotoPath);
-        mPhotoView.setVisibility(View.VISIBLE);
+        setPhotoVisible(true);
 
         // Picasso bug: fit() does not work when image is large
         // https://github.com/square/picasso/issues/249
@@ -284,7 +284,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         }
         Log.d(TAG, "setSelectedPic " + mSelectedPicUri.toString());
         mImageFrame.setVisibility(View.VISIBLE);
-        mPhotoView.setVisibility(View.VISIBLE);
+        setPhotoVisible(true);
         // Picasso bug: fit() does not work when image is large
         // https://github.com/square/picasso/issues/249
         Glide.with(this).load(mSelectedPicUri).fitCenter().into(mPhotoView);
@@ -422,7 +422,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     private void showErrorToast(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-        toast.setGravity(Gravity.TOP | Gravity.CENTER, 0, screenHeight/4);
+        toast.setGravity(Gravity.TOP | Gravity.CENTER, 0, screenHeight / 4);
         toast.show();
     }
 
@@ -498,14 +498,13 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         }
         if (mItem.getFullsizePicPath() != null) {
             Picasso.with(mPhotoView.getContext()).load(new File(mItem.getFullsizePicPath())).fit().centerCrop().into(mPhotoView);
-            mPhotoView.setVisibility(View.VISIBLE);
+            setPhotoVisible(true);
         } else {
-            mPhotoView.setVisibility(View.GONE);
+            setPhotoVisible(false);
         }
     }
 
     void addTags() {
-        //ArrayList<String> tags = TagItemDBManager.instance().tags_of_item(mItem.getId());
         mTagView.removeAllTags();
         for (String tagTxt : mTags) {
             Tag tag = new Tag(tagTxt);

@@ -3,23 +3,18 @@
     set focusable and focusableInTouchMode true
     to prevent its child EditText to gain focus on activity startup
 -->
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/itemDetail"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bodyBackground_light_grey">
 
-    <include
-        layout="@layout/tool_bar"
-        android:id="@+id/item_detail_toolbar"
-        />
-
-    <ScrollView
+    <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true">
@@ -40,7 +35,7 @@
                     android:id="@+id/imgPhotoDetail"
                     android:contentDescription="@string/description_fullscreenPhoto"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="@dimen/wish_detail_image_height"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
                     android:visibility="visible"
@@ -275,5 +270,13 @@
                 android:gravity="right"
                 android:text=""/>
         </RelativeLayout>
-    </ScrollView>
-</LinearLayout>
+    </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
+
+    <include layout="@layout/gradient_header" />
+
+    <include
+        layout="@layout/tool_bar"
+        android:id="@+id/item_detail_toolbar"
+        />
+
+</FrameLayout>

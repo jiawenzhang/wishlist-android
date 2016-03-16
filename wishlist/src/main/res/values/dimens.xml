@@ -50,4 +50,5 @@
     <dimen name="ic_action_size_medium">25dp</dimen>
     <dimen name="profile_image_size">80dp</dimen>
     <dimen name="recyclerview_top_button_height">96dp</dimen>
+    <dimen name="wish_detail_image_height">300dp</dimen>
 </resources>

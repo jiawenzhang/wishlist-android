@@ -93,7 +93,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         String type = intent.getType();
 
         mInstructionLayout.setVisibility(View.GONE);
-        mPhotoView.setVisibility(View.GONE);
+        setPhotoVisible(false);
         mImageFrame.setVisibility(View.GONE);
         mLinkView.setVisibility(View.GONE);
 
@@ -350,7 +350,7 @@ public class AddWishFromActionActivity extends AddWishActivity
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 mWebBitmap = ImageManager.getScaleDownBitmap(bitmap, 1024);
                 mPhotoView.setImageBitmap(mWebBitmap);
-                mPhotoView.setVisibility(View.VISIBLE);
+                setPhotoVisible(true);
                 mImageFrame.setVisibility(View.VISIBLE);
                 mImageFrame.setOnClickListener(new View.OnClickListener() {
                     @Override

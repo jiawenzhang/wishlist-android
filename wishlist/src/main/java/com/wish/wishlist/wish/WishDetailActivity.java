@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,6 +13,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.ActivityBase;
@@ -22,9 +28,13 @@ import com.wish.wishlist.social.ShareHelper;
 import com.wish.wishlist.widgets.ClearableEditText;
 
 
-public abstract class WishDetailActivity extends ActivityBase {
+public abstract class WishDetailActivity extends ActivityBase implements ObservableScrollViewCallbacks {
     public final static String ITEM = "Item";
+    private final static String TAG = "WishDetailActivity";
 
+    protected View mToolbarView;
+    protected ObservableScrollView mScrollView;
+    private int mParallaxImageHeight;
     protected ImageView mPhotoView;
     protected ImageView mImgComplete;
     protected LinearLayout mCompleteInnerLayout;
@@ -47,6 +57,14 @@ public abstract class WishDetailActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wishitem_detail);
         setupActionBar(R.id.item_detail_toolbar);
+
+        getSupportActionBar().setTitle("");
+
+        mToolbarView = findViewById(R.id.item_detail_toolbar);
+
+        mScrollView = (ObservableScrollView) findViewById(R.id.scroll);
+        mScrollView.setScrollViewCallbacks(this);
+        mParallaxImageHeight = getResources().getDimensionPixelSize(R.dimen.wish_detail_image_height);
 
         mPhotoView = (ImageView) findViewById(R.id.imgPhotoDetail);
         mCompleteInnerLayout = (LinearLayout) findViewById(R.id.completeInnerLayout);
@@ -182,5 +200,44 @@ public abstract class WishDetailActivity extends ActivityBase {
             mapIntent.putExtra(MapActivity.MY_WISH, myWish());
             startActivity(mapIntent);
         }
+    }
+
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        onScrollChanged(mScrollView.getCurrentScrollY(), false, false);
+    }
+
+    protected int toolBarHeight() {
+        TypedValue tv = new TypedValue();
+        getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, tv, true);
+        return TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+    }
+
+    protected void setPhotoVisible(boolean visible) {
+        if (visible) {
+            mPhotoView.setVisibility(View.VISIBLE);
+            mScrollView.setPadding(mScrollView.getPaddingLeft(), 0, mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
+            mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, getResources().getColor(R.color.bodyText_dark_grey)));
+        } else {
+            mPhotoView.setVisibility(View.GONE);
+            mScrollView.setPadding(mScrollView.getPaddingLeft(), toolBarHeight(), mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
+            mToolbarView.setBackgroundResource(R.color.bodyText_dark_grey);
+        }
+    }
+
+    @Override
+    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+        int baseColor = getResources().getColor(R.color.grey);
+        float alpha = Math.min(1, (float) scrollY / mParallaxImageHeight);
+        mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, baseColor));
+        mPhotoView.setTranslationY(scrollY / 2);
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
     }
 }

@@ -98,7 +98,7 @@ public class AddWishActivity extends MyWishDetailActivity
             setTakenPhoto();
             mTxtInstruction.setText(getResources().getString(R.string.tap_here_to_change_photo));
         } else {
-            mPhotoView.setVisibility(View.GONE);
+            setPhotoVisible(false);
             mTxtInstruction.setText(getResources().getString(R.string.add_photo));
         }
 
@@ -129,8 +129,10 @@ public class AddWishActivity extends MyWishDetailActivity
         //} else {
         //    mPrivateCheckBox.setChecked(false);
         //}
-    }
 
+        mScrollView.setPadding(mScrollView.getPaddingLeft(), toolBarHeight(), mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
+        mToolbarView.setBackgroundResource(R.color.bodyText_dark_grey);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
