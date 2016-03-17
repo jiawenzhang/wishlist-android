@@ -32,6 +32,5 @@
         style="@style/NavigationView"
         />
     <!--app:headerLayout="@layout/navigation_drawer_header"-->
-    <!--android:background="@color/primary_material_dark"-->
 
 </android.support.v4.widget.DrawerLayout>

@@ -227,7 +227,7 @@
         <item name="android:layout_height">@dimen/footBar_height</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:background">@color/primary_material_dark</item>
+        <item name="android:background">@color/material_dark</item>
     </style>
 
 
@@ -244,7 +244,7 @@
         <!--<item name="actionBarStyle">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>-->
 
         <!-- Set AppCompat’s color theming attrs -->
-        <item name="colorPrimary">@color/primary_material_dark</item>
+        <item name="colorPrimary">@color/material_dark</item>
         <!--<item name="colorPrimaryDark">@color/material_blue_grey_800</item>-->
         <item name="colorAccent">@color/wishlist_yellow_color</item>
 
@@ -262,7 +262,7 @@
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <!--app abar color in Activties Task manager -->
-        <item name="colorPrimary">@color/primary_material_dark</item>
+        <item name="colorPrimary">@color/material_dark</item>
 
         <!--copy/paste colors -->
         <item name="colorAccent">@color/wishlist_yellow_color</item>

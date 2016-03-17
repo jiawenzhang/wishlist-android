@@ -2,6 +2,7 @@ package com.wish.wishlist.wish;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
@@ -20,6 +21,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 
 import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.ActivityBase;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
@@ -217,19 +219,18 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         if (visible) {
             mPhotoView.setVisibility(View.VISIBLE);
             mScrollView.setPadding(mScrollView.getPaddingLeft(), 0, mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
-            mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, getResources().getColor(R.color.bodyText_dark_grey)));
+            mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, ContextCompat.getColor(this, R.color.material_dark)));
         } else {
             mPhotoView.setVisibility(View.GONE);
             mScrollView.setPadding(mScrollView.getPaddingLeft(), toolBarHeight(), mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
-            mToolbarView.setBackgroundResource(R.color.bodyText_dark_grey);
+            mToolbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.material_dark));
         }
     }
 
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-        int baseColor = getResources().getColor(R.color.grey);
         float alpha = Math.min(1, (float) scrollY / mParallaxImageHeight);
-        mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, baseColor));
+        mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, ContextCompat.getColor(this, R.color.material_dark)));
         mPhotoView.setTranslationY(scrollY / 2);
     }
 

@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/com_parse_ui_horizontal_margin"
     android:paddingRight="@dimen/com_parse_ui_horizontal_margin"
     android:paddingBottom="@dimen/com_parse_ui_vertical_margin"
-    android:background="@color/primary_material_dark"
+    android:background="@color/material_dark"
     android:gravity="center"
     android:orientation="vertical">
 

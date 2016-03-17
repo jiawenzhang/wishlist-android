@@ -38,7 +38,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fitsSystemWindows="true"
-                        android:background="@color/primary_material_dark"
+                        android:background="@color/material_dark"
                         android:scaleType="centerCrop"
                         app:layout_collapseMode="parallax"
                         >
@@ -109,6 +109,5 @@
         style="@style/NavigationView"
         />
     <!--app:headerLayout="@layout/navigation_drawer_header"-->
-    <!--android:background="@color/primary_material_dark"-->
 
 </android.support.v4.widget.DrawerLayout>
