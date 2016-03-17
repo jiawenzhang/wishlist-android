@@ -34,6 +34,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     public final static String ITEM = "Item";
     private final static String TAG = "WishDetailActivity";
 
+    protected Boolean mTranslucentToolBar;
     protected ActionMode mActionMode;
     protected View mToolbarView;
     protected ObservableScrollView mScrollView;
@@ -220,11 +221,21 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         if (visible) {
             mPhotoView.setVisibility(View.VISIBLE);
             if (mActionMode == null) {
-                mScrollView.setPadding(mScrollView.getPaddingLeft(), 0, mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
-                mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, ContextCompat.getColor(this, R.color.material_dark)));
+                // only enable translucent toolbar when action mode is off
+                setToolbarTranslucent(true);
             }
         } else {
             mPhotoView.setVisibility(View.GONE);
+            setToolbarTranslucent(false);
+        }
+    }
+
+    protected void setToolbarTranslucent(boolean enable) {
+        mTranslucentToolBar = enable;
+        if (enable) {
+            mScrollView.setPadding(mScrollView.getPaddingLeft(), 0, mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
+            mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, ContextCompat.getColor(this, R.color.material_dark)));
+        } else {
             mScrollView.setPadding(mScrollView.getPaddingLeft(), toolBarHeight(), mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
             mToolbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.material_dark));
         }
@@ -232,9 +243,11 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
 
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-        float alpha = Math.min(1, (float) scrollY / mParallaxImageHeight);
-        mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, ContextCompat.getColor(this, R.color.material_dark)));
-        mPhotoView.setTranslationY(scrollY / 2);
+        if (mTranslucentToolBar) {
+            float alpha = Math.min(1, (float) scrollY / mParallaxImageHeight);
+            mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, ContextCompat.getColor(this, R.color.material_dark)));
+            mPhotoView.setTranslationY(scrollY / 2);
+        }
     }
 
     @Override
