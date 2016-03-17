@@ -180,6 +180,8 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
             mTxtInstruction.setText(getResources().getString(R.string.tap_here_to_change_photo));
         }
 
+        mScrollView.setPadding(mScrollView.getPaddingLeft(), toolBarHeight(), mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
+
         mActionMode = startSupportActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {

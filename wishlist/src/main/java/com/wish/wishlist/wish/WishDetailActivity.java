@@ -3,6 +3,7 @@ package com.wish.wishlist.wish;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.view.ActionMode;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
@@ -21,7 +22,6 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 
 import com.wish.wishlist.R;
-import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.ActivityBase;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
@@ -34,6 +34,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     public final static String ITEM = "Item";
     private final static String TAG = "WishDetailActivity";
 
+    protected ActionMode mActionMode;
     protected View mToolbarView;
     protected ObservableScrollView mScrollView;
     private int mParallaxImageHeight;
@@ -218,8 +219,10 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     protected void setPhotoVisible(boolean visible) {
         if (visible) {
             mPhotoView.setVisibility(View.VISIBLE);
-            mScrollView.setPadding(mScrollView.getPaddingLeft(), 0, mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
-            mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, ContextCompat.getColor(this, R.color.material_dark)));
+            if (mActionMode == null) {
+                mScrollView.setPadding(mScrollView.getPaddingLeft(), 0, mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
+                mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, ContextCompat.getColor(this, R.color.material_dark)));
+            }
         } else {
             mPhotoView.setVisibility(View.GONE);
             mScrollView.setPadding(mScrollView.getPaddingLeft(), toolBarHeight(), mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());

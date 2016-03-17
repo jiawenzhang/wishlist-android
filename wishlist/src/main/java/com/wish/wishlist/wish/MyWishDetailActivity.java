@@ -72,7 +72,6 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     protected TextView mTxtInstruction;
     protected LinearLayout mTagLayout;
     protected CheckBox mCompleteCheckBox;
-    protected ActionMode mActionMode;
     protected ArrayList<String> mTags = new ArrayList<>();
     protected String mFullsizePhotoPath = null;
     protected String mTempPhotoPath = null;
