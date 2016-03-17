@@ -129,9 +129,6 @@ public class AddWishActivity extends MyWishDetailActivity
         //} else {
         //    mPrivateCheckBox.setChecked(false);
         //}
-
-        mScrollView.setPadding(mScrollView.getPaddingLeft(), toolBarHeight(), mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
-        mToolbarView.setBackgroundResource(R.color.bodyText_dark_grey);
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.view.ActionMode;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,10 +32,11 @@ import com.wish.wishlist.widgets.ClearableEditText;
 
 
 public abstract class WishDetailActivity extends ActivityBase implements ObservableScrollViewCallbacks {
+    private final static String TRANSLUCENT_TOOLBAR = "TRANSLUCENT_TOOLBAR";
     public final static String ITEM = "Item";
     private final static String TAG = "WishDetailActivity";
 
-    protected Boolean mTranslucentToolBar;
+    protected Boolean mTranslucentToolBar = false;
     protected ActionMode mActionMode;
     protected View mToolbarView;
     protected ObservableScrollView mScrollView;
@@ -206,9 +208,24 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean(TRANSLUCENT_TOOLBAR, mTranslucentToolBar);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        onScrollChanged(mScrollView.getCurrentScrollY(), false, false);
+        mTranslucentToolBar = savedInstanceState.getBoolean(TRANSLUCENT_TOOLBAR);
+        if (mTranslucentToolBar) {
+            // Need to post here so the value from mScrollView.getScrollY() is correct
+            mScrollView.post(new Runnable() {
+                public void run() {
+                    onScrollChanged(mScrollView.getScrollY(), false, false);
+                }
+            });
+        }
     }
 
     protected int toolBarHeight() {
@@ -223,6 +240,8 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
             if (mActionMode == null) {
                 // only enable translucent toolbar when action mode is off
                 setToolbarTranslucent(true);
+            } else {
+                setToolbarTranslucent(false);
             }
         } else {
             mPhotoView.setVisibility(View.GONE);
@@ -234,7 +253,8 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         mTranslucentToolBar = enable;
         if (enable) {
             mScrollView.setPadding(mScrollView.getPaddingLeft(), 0, mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
-            mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, ContextCompat.getColor(this, R.color.material_dark)));
+            float alpha = Math.min(1, (float) mScrollView.getScrollY() / mParallaxImageHeight);
+            mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, ContextCompat.getColor(this, R.color.material_dark)));
         } else {
             mScrollView.setPadding(mScrollView.getPaddingLeft(), toolBarHeight(), mScrollView.getPaddingRight(), mScrollView.getPaddingBottom());
             mToolbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.material_dark));
@@ -246,7 +266,6 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         if (mTranslucentToolBar) {
             float alpha = Math.min(1, (float) scrollY / mParallaxImageHeight);
             mToolbarView.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, ContextCompat.getColor(this, R.color.material_dark)));
-            mPhotoView.setTranslationY(scrollY / 2);
         }
     }
 
