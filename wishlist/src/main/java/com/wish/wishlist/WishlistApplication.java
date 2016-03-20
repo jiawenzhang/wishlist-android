@@ -28,7 +28,7 @@ public class WishlistApplication extends Application {
         APP_TRACKER, // Tracker used only in this app.
     }
 
-    HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+    HashMap<TrackerName, Tracker> mTrackers = new HashMap<>();
     private static Context mContext;
 
     public WishlistApplication()
