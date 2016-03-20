@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.facebook.FacebookSdk;
+import com.github.stkent.amplify.tracking.Amplify;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
@@ -77,6 +78,11 @@ public class WishlistApplication extends Application {
         }
 
         configJobManager();
+
+        Amplify.get(this)
+                .setFeedbackEmailAddress("beanswishlist@gmail.com")
+                //.setAlwaysShow(true)
+                .applyAllDefaultRules();
     }
 
     public static Context getAppContext() {

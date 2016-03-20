@@ -1,5 +1,6 @@
 package com.wish.wishlist.wish;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
@@ -211,6 +212,10 @@ public class AddWishActivity extends MyWishDetailActivity
         EventBus.getInstance().post(new MyWishChangeEvent());
         SyncAgent.getInstance().sync();
         Analytics.send(Analytics.WISH, "Save", "New");
+
+        Intent intent = new Intent();
+        intent.putExtra("id", mItem.getId());
+        setResult(Activity.RESULT_OK, intent);
         finish();
     }
 

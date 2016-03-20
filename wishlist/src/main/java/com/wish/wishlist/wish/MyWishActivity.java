@@ -7,6 +7,7 @@ import java.util.List;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +30,10 @@ import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import me.kaede.tagview.OnTagDeleteListener;
 import me.kaede.tagview.Tag;
 
+import com.github.stkent.amplify.prompt.CustomLayoutPromptView;
+import com.github.stkent.amplify.tracking.Amplify;
+import com.github.stkent.amplify.tracking.PromptViewEvent;
+import com.github.stkent.amplify.tracking.interfaces.IEventListener;
 import com.parse.ParseUser;
 import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
@@ -130,8 +135,8 @@ public class MyWishActivity extends WishBaseActivity implements
         mAddNewButton = (Button) findViewById(R.id.addNewWishButton);
         mAddNewButton.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
-                Intent editItem = new Intent(MyWishActivity.this, AddWishActivity.class);
-                startActivityForResult(editItem, ADD_ITEM);
+                Intent addItem = new Intent(MyWishActivity.this, AddWishActivity.class);
+                startActivityForResult(addItem, ADD_ITEM);
             }
         });
 
@@ -567,20 +572,17 @@ public class MyWishActivity extends WishBaseActivity implements
             }
             case ADD_ITEM: {
                 if (resultCode == Activity.RESULT_OK) {
-                    // Create an intent to show the item detail.
-                    // Pass the item_id along so the next activity can use it to
-                    // retrieve the info. about the item from database
-                    long id = -1;
-                    if (data != null) {
-                        id = data.getLongExtra("itemID", -1);
-                    }
-
-                    if (id != -1) {
-                        WishItem item = WishItemManager.getInstance().getItemById(id);
-                        Intent i = new Intent(MyWishActivity.this, ExistingWishDetailActivity.class);
-                        i.putExtra(WishDetailActivity.ITEM, item);
-                        startActivityForResult(i, ITEM_DETAILS);
-                    }
+                    CustomLayoutPromptView promptView = (CustomLayoutPromptView) findViewById(R.id.feedback_prompt_view);
+                    Amplify.get(this).promptIfReady(this, promptView, new IEventListener<PromptViewEvent>() {
+                        @Override
+                        public void notifyEventTriggered(@NonNull final PromptViewEvent event) {
+                            if (event == PromptViewEvent.USER_GAVE_FEEDBACK) {
+                                Analytics.send(Analytics.APP, "Feedback", "Give");
+                            } else if (event == PromptViewEvent.USER_DECLINED_FEEDBACK) {
+                                Analytics.send(Analytics.APP, "Feedback", "Decline");
+                            }
+                        }
+                    });
                 }
                 break;
             }
@@ -692,8 +694,8 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     protected boolean onTapAdd() {
-        Intent editItem = new Intent(MyWishActivity.this, AddWishActivity.class);
-        startActivityForResult(editItem, ADD_ITEM);
+        Intent addItem = new Intent(MyWishActivity.this, AddWishActivity.class);
+        startActivityForResult(addItem, ADD_ITEM);
         return true;
     }
 
