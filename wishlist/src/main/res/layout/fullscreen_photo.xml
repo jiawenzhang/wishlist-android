@@ -8,6 +8,7 @@
     <!--<ImageView android:id="@+id/fullscreen_photo"-->
     <com.wish.wishlist.view.ZoomPanImageView
         android:id="@+id/fullscreen_photo"
+        android:transitionName="@string/photo"
         android:contentDescription="@string/description_fullscreenPhoto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

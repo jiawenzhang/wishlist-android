@@ -33,13 +33,10 @@ abstract public class FriendWishDetailActivity extends WishDetailActivity implem
         imageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(FriendWishDetailActivity.this, FullscreenPhotoActivity.class);
                 if (mItem.getWebImgMeta() != null) {
-                    i.putExtra(FullscreenPhotoActivity.PHOTO_URL, mItem.getWebImgMeta().mUrl);
-                    startActivity(i);
+                    showFullScreenPhoto(FullscreenPhotoActivity.PHOTO_URL, mItem.getWebImgMeta().mUrl);
                 } else if (mItem.getParseImgMeta() != null) {
-                    i.putExtra(FullscreenPhotoActivity.PHOTO_URL, mItem.getParseImgMeta().mUrl);
-                    startActivity(i);
+                    showFullScreenPhoto(FullscreenPhotoActivity.PHOTO_URL, mItem.getParseImgMeta().mUrl);
                 }
             }
         });

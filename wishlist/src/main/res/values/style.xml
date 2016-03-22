@@ -240,6 +240,7 @@
 
 
     <style name="Theme.WishlistTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowContentTransitions">true</item>
         <!-- Set AppCompat’s actionBarStyle -->
         <!--<item name="actionBarStyle">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>-->
 

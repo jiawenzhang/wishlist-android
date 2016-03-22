@@ -10,7 +10,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -207,7 +209,10 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         mImageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showFullScreenPhoto();
+                String fullsize_picture_str = mItem.getFullsizePicPath();
+                if (fullsize_picture_str != null) {
+                    showFullScreenPhoto(FullscreenPhotoActivity.PHOTO_PATH, fullsize_picture_str);
+                }
             }
         });
 
@@ -232,15 +237,6 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
                 startAddTagIntent();
             }
         });
-    }
-
-    protected void showFullScreenPhoto() {
-        final String fullsize_picture_str = mItem.getFullsizePicPath();
-        if (fullsize_picture_str != null) {
-            Intent i = new Intent(MyWishDetailActivity.this, FullscreenPhotoActivity.class);
-            i.putExtra(FullscreenPhotoActivity.PHOTO_PATH, fullsize_picture_str);
-            startActivity(i);
-        }
     }
 
     private void dispatchTakePictureIntent() {

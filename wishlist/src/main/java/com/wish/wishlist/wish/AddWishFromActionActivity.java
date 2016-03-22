@@ -300,9 +300,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         mImageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(AddWishFromActionActivity.this, FullscreenPhotoActivity.class);
-                i.putExtra(FullscreenPhotoActivity.PHOTO_URI, mSelectedPicUri.toString());
-                startActivity(i);
+                showFullScreenPhoto(FullscreenPhotoActivity.PHOTO_URI, mSelectedPicUri.toString());
             }
         });
     }
@@ -355,9 +353,7 @@ public class AddWishFromActionActivity extends AddWishActivity
                 mImageFrame.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent i = new Intent(AddWishFromActionActivity.this, FullscreenPhotoActivity.class);
-                        i.putExtra(FullscreenPhotoActivity.PHOTO_URL, url);
-                        startActivity(i);
+                        showFullScreenPhoto(FullscreenPhotoActivity.PHOTO_URL, url);
                     }
                 });
             }

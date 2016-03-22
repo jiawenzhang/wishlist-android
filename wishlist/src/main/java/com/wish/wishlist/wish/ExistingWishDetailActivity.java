@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
+import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.util.Analytics;
 
@@ -230,7 +231,10 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
                 mImageFrame.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        showFullScreenPhoto();
+                        String fullsize_picture_str = mItem.getFullsizePicPath();
+                        if (fullsize_picture_str != null) {
+                            showFullScreenPhoto(FullscreenPhotoActivity.PHOTO_PATH, fullsize_picture_str);
+                        }
                     }
                 });
             }

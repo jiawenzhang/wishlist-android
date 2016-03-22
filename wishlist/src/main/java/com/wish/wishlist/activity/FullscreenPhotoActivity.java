@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.wish.wishlist.image.ImageManager;
@@ -49,7 +50,7 @@ public class FullscreenPhotoActivity extends Activity {
             if (bitmap == null) {
                 finish();
             } else {
-                mImageItem.setImageBitmap(bitmap);
+                showPhoto(bitmap);
             }
         }
     }
@@ -61,6 +62,11 @@ public class FullscreenPhotoActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fullscreen_photo);
+
+        // Postpone the shared element enter transition until startPostponedEnterTransition() is called;
+        // This is to make the shared element's (photo) transition smooth
+        // Potential problem: if photo is from internet (PHOTO_URL), entering the activity might be slow
+        ActivityCompat.postponeEnterTransition(this);
 
         Analytics.sendScreen("FullscreenPhoto");
 
@@ -82,7 +88,7 @@ public class FullscreenPhotoActivity extends Activity {
             try {
                 Uri photoUri = Uri.parse(mPhotoUri);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
-                mImageItem.setImageBitmap(bitmap);
+                showPhoto(bitmap);
             } catch (FileNotFoundException e) {
                 Log.e(TAG, e.toString());
                 finish();
@@ -98,7 +104,7 @@ public class FullscreenPhotoActivity extends Activity {
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     if (bitmap != null) {
                         Log.d(TAG, "valid bitmap");
-                        mImageItem.setImageBitmap(bitmap);
+                        showPhoto(bitmap);
                     } else {
                         Log.e(TAG, "null bitmap");
                         finish();
@@ -118,6 +124,11 @@ public class FullscreenPhotoActivity extends Activity {
         } else {
             finish();
         }
+    }
+
+    void showPhoto(Bitmap bitmap) {
+        mImageItem.setImageBitmap(bitmap);
+        ActivityCompat.startPostponedEnterTransition(FullscreenPhotoActivity.this);
     }
 
     //this will also save the photo on switching screen orientation

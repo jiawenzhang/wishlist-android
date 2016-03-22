@@ -33,6 +33,7 @@
 
                 <ImageView
                     android:id="@+id/imgPhotoDetail"
+                    android:transitionName="@string/photo"
                     android:contentDescription="@string/description_fullscreenPhoto"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/wish_detail_image_height"

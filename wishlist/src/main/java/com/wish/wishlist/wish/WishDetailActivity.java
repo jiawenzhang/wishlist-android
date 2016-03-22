@@ -1,7 +1,9 @@
 package com.wish.wishlist.wish;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.view.ActionMode;
 import android.text.Html;
@@ -24,6 +26,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.ActivityBase;
+import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.DateTimeFormatter;
@@ -246,6 +249,20 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         } else {
             mPhotoView.setVisibility(View.GONE);
             setToolbarTranslucent(false);
+        }
+    }
+
+    protected void showFullScreenPhoto(String key, String val) {
+        Intent i = new Intent(this, FullscreenPhotoActivity.class);
+        i.putExtra(key, val);
+
+        if (Build.VERSION.SDK_INT < 21) {
+            startActivity(i);
+        } else {
+            // show transition animation
+            ActivityOptionsCompat options = ActivityOptionsCompat.
+                    makeSceneTransitionAnimation(this, mPhotoView, getString(R.string.photo));
+            startActivity(i, options.toBundle());
         }
     }
 
