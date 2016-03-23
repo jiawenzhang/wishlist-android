@@ -15,21 +15,24 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.dimension;
-import com.wish.wishlist.view.ZoomPanImageView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class FullscreenPhotoActivity extends Activity {
     private static final String TAG = "FullscreenPhotoAct";
     private String mPhotoPath;
     private String mPhotoUri;
     private String mPhotoUrl;
-    private ZoomPanImageView mImageItem;
+    private ImageView mImageItem;
+    private PhotoViewAttacher mAttacher;
     private class GetBitmapTask extends AsyncTask<Void, Void, Bitmap> {//<param, progress, result>
         @Override
         protected Bitmap doInBackground(Void... arg) {
@@ -82,7 +85,7 @@ public class FullscreenPhotoActivity extends Activity {
             mPhotoUrl = savedInstanceState.getString(PHOTO_URL);
         }
 
-        mImageItem = (ZoomPanImageView) findViewById(R.id.fullscreen_photo);
+        mImageItem = (ImageView) findViewById(R.id.fullscreen_photo);
 
         if (mPhotoUri != null) {
             try {
@@ -126,8 +129,19 @@ public class FullscreenPhotoActivity extends Activity {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Need to call clean-up
+        mAttacher.cleanup();
+    }
+
     void showPhoto(Bitmap bitmap) {
         mImageItem.setImageBitmap(bitmap);
+        // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
+        mAttacher = new PhotoViewAttacher(mImageItem);
+
         ActivityCompat.startPostponedEnterTransition(FullscreenPhotoActivity.this);
     }
 
