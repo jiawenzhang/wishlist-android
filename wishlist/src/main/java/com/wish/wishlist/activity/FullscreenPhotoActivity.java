@@ -137,6 +137,13 @@ public class FullscreenPhotoActivity extends Activity {
         mAttacher.cleanup();
     }
 
+    @Override
+    public void finishAfterTransition() {
+        Intent data = new Intent();
+        setResult(RESULT_OK, data);
+        super.finishAfterTransition();
+    }
+
     void showPhoto(Bitmap bitmap) {
         mImageItem.setImageBitmap(bitmap);
         // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.

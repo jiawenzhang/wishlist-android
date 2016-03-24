@@ -1,5 +1,6 @@
 package com.wish.wishlist.wish;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -259,10 +261,36 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         if (Build.VERSION.SDK_INT < 21) {
             startActivity(i);
         } else {
-            // show transition animation
+            // hide toolbar so it's fading away won't interfere with photo animation
+            mToolbarView.setVisibility(View.GONE);
+
+            // show photo transition animation
             ActivityOptionsCompat options = ActivityOptionsCompat.
                     makeSceneTransitionAnimation(this, mPhotoView, getString(R.string.photo));
             startActivity(i, options.toBundle());
+        }
+    }
+
+    @Override
+    public void onActivityReenter(int requestCode, Intent data) {
+        super.onActivityReenter(requestCode, data);
+
+        // show toolbar only after the photoView is fully drawn
+        // so the toolbar's appearing won't interfere with photo animation
+        mPhotoView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            public void onGlobalLayout() {
+                removeOnGlobalLayoutListener(mPhotoView, this);
+                mToolbarView.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public static void removeOnGlobalLayoutListener(View v, ViewTreeObserver.OnGlobalLayoutListener listener){
+        if (Build.VERSION.SDK_INT < 16) {
+            v.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
+        } else {
+            v.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
         }
     }
 
