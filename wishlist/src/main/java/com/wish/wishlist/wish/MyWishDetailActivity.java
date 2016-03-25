@@ -10,9 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -370,16 +368,32 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     protected WishItem populateItem() {
         WishItem item = WishItemManager.getInstance().getItemById(mItem.getId());
         WishInput input = wishInput();
-        item.setAccess(input.mAccess);
-        item.setStoreName(input.mStore);
+
+        if (StringUtil.compare(item.getName(), input.mName) &&
+                StringUtil.compare(item.getDesc(), input.mDescription) &&
+                StringUtil.compare(item.getStoreName(), input.mStore) &&
+                StringUtil.compare(item.getAddress(), input.mAddress) &&
+                item.getAccess() == input.mAccess &&
+                StringUtil.compare(item.getFullsizePicPath(), mFullsizePhotoPath) &&
+                item.getPrice() == input.mPrice &&
+                item.getComplete() == input.mComplete &&
+                StringUtil.compare(item.getLink(), input.mLink)
+                ) {
+
+            // wish has not changed
+            return null;
+        }
+
         item.setName(input.mName);
         item.setDesc(input.mDescription);
-        item.setUpdatedTime(System.currentTimeMillis());
+        item.setStoreName(input.mStore);
+        item.setAddress(input.mAddress);
+        item.setAccess(input.mAccess);
         item.setFullsizePicPath(mFullsizePhotoPath);
         item.setPrice(input.mPrice);
-        item.setAddress(input.mAddress);
         item.setComplete(input.mComplete);
         item.setLink(input.mLink);
+        item.setUpdatedTime(System.currentTimeMillis());
         item.setSyncedToServer(false);
 
         return item;
@@ -406,7 +420,6 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
         } catch (NumberFormatException e) {
             // need some error message here
             // price format incorrect
-            Log.e(TAG, e.toString());
             showErrorToast("Price invalid");
             return false;
         }
@@ -428,14 +441,19 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
             showProgressDialog(getString(R.string.saving_image));
             new saveTempPhoto().execute();
         } else {
-            mItem = populateItem();
+            WishItem newItem = populateItem();
+            if (newItem == null) {
+                // wish has not changed
+                mActionMode.finish();
+                return;
+            }
+            mItem = newItem;
             mItem.saveToLocal();
             wishSaved();
         }
     }
 
     protected void newImageSaved() {
-
     }
 
     protected void removeItemImage() {

@@ -15,6 +15,7 @@ import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
+import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.Analytics;
 
 public class ExistingWishDetailActivity extends MyWishDetailActivity implements TokenCompleteTextView.TokenListener {
@@ -241,12 +242,17 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         });
     }
 
-
     @Override
     protected void newImageSaved() {
         dismissProgressDialog();
         removeItemImage();
-        mItem = populateItem();
+
+        WishItem newItem = populateItem();
+        if (newItem == null) {
+            mItem.setFullsizePicPath(mFullsizePhotoPath);
+        } else {
+            mItem = newItem;
+        }
         mItem.setWebImgMeta(null, 0, 0);
         mItem.saveToLocal();
         wishSaved();
