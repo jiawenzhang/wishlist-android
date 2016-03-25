@@ -34,7 +34,6 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.wish.ExistingWishDetailActivity;
 import com.wish.wishlist.wish.FriendWishDetailActivity;
-import com.wish.wishlist.wish.MyWishDetailActivity;
 import com.wish.wishlist.wish.WebImgMeta;
 import com.wish.wishlist.wish.WishLoader;
 import com.wish.wishlist.model.WishItem;

@@ -192,10 +192,6 @@
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
-            android:name=".wish.MyWishDetailActivity"
-            android:theme="@style/Theme.WishlistTheme" >
-        </activity>
-        <activity
             android:name=".wish.FriendWishDetailActivity"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>

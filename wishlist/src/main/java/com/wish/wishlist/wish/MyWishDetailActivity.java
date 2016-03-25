@@ -62,7 +62,7 @@ import me.kaede.tagview.TagView;
  * the MyWishActivity activity
  */
 
-public class MyWishDetailActivity extends WishDetailActivity implements TokenCompleteTextView.TokenListener {
+public abstract class MyWishDetailActivity extends WishDetailActivity implements TokenCompleteTextView.TokenListener {
     private static final String TAG = "MyWishDetailActivity";
     protected LinearLayout mInstructionLayout;
     protected ClearableEditText mLinkText;
@@ -185,8 +185,6 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.sendScreen("MyWishDetail");
-
         mTxtInstruction = (TextView) findViewById(R.id.txtInstruction);
         mInstructionLayout = (LinearLayout) findViewById(R.id.instructionLayout);
         mTagLayout = (LinearLayout) findViewById(R.id.tagLayout);
@@ -286,7 +284,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     }
 
     private void startAddTagIntent() {
-        Intent i = new Intent(MyWishDetailActivity.this, AddTagFromEditActivity.class);
+        Intent i = new Intent(this, AddTagFromEditActivity.class);
         long[] ids = new long[1];
         if (mItem != null) {
             ids[0] = mItem.getId();
@@ -298,7 +296,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
     }
 
     protected void showChangePhotoDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MyWishDetailActivity.this, R.style.AppCompatAlertDialogStyle);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
 
         final CharSequence[] items = {"Take a photo", "From gallery"};
         builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -538,7 +536,7 @@ public class MyWishDetailActivity extends WishDetailActivity implements TokenCom
                         Intent intent = new Intent();
                         intent.putExtra("id", mItem.getId());
                         setResult(Activity.RESULT_OK, intent);
-                        MyWishDetailActivity.this.finish();
+                        finish();
                     }
                 }).setNegativeButton("No",
                 new DialogInterface.OnClickListener() {
