@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <releaseNote>
-    <release versionName="1.2.5" versionCode="29">
+    <release versionName="1.2.6" versionCode="31">
+        <note>View switching animations for Android Lollipop and up</note>
+    </release>
+    <release versionName="1.2.5" versionCode="30">
         <note>Improve wish detail view with translucent header bar</note>
     </release>
     <release versionName="1.2.4" versionCode="28">
