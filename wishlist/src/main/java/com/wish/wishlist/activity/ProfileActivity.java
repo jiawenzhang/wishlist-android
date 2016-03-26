@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
@@ -191,18 +192,31 @@ public class ProfileActivity extends ActivityBase implements
                 finish();
                 return true;
             case R.id.menu_profile_logout:
-                mUser.logOut();
+                mProgressDialog = new ProgressDialog(this);
+                mProgressDialog.setMessage("Logging out...");
+                mProgressDialog.setCancelable(false);
+                mProgressDialog.show();
+                mUser.logOutInBackground(new LogOutCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            // logout successful
+                            // show login on next app startup
+                            Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup(1);
+                            showLoginOption.save();
 
-                // show login on next app startup
-                Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup(1);
-                showLoginOption.save();
+                            // re-launch the app
+                            Intent i = getBaseContext().getPackageManager()
+                                    .getLaunchIntentForPackage(getBaseContext().getPackageName());
 
-                // re-launch the app
-                Intent i = getBaseContext().getPackageManager()
-                        .getLaunchIntentForPackage(getBaseContext().getPackageName() );
-
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(i);
+                        } else {
+                            Toast.makeText(ProfileActivity.this, "Fail to logout, check network?", Toast.LENGTH_LONG).show();
+                        }
+                        mProgressDialog.dismiss();
+                    }
+                });
             default:
                 return super.onOptionsItemSelected(item);
         }
