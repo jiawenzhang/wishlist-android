@@ -196,7 +196,7 @@ public class SyncAgent {
             }
             return;
         }
-        if (!parseImage.getName().equals(existingItem.getPicName())) {
+        if (!parseFileNameToLocal(parseImage.getName()).equals(existingItem.getPicName())) {
             saveParseImage(parseImage, parseItem, existingItem);
         } else {
             onPhotoDone(parseItem, existingItem, existingItem.getFullsizePicPath());
@@ -279,7 +279,7 @@ public class SyncAgent {
             public void done(byte[] imageBytes, ParseException e) {
                 if (e == null) {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes , 0, imageBytes .length);
-                    String fullsizePicPath = ImageManager.saveBitmapToFile(bitmap, parseImage.getName(), 100);
+                    String fullsizePicPath = ImageManager.saveBitmapToFile(bitmap, parseFileNameToLocal(parseImage.getName()), 100);
                     ImageManager.saveBitmapToThumb(bitmap, fullsizePicPath);
                     if (existingItem != null) {
                         existingItem.removeImage();
@@ -379,7 +379,7 @@ public class SyncAgent {
                             if (item.getPicName() != null) {
                                 saveImage = true;
                             }
-                        } else if (!parseImageName.equals(item.getPicName())) {
+                        } else if (!parseFileNameToLocal(parseImageName).equals(item.getPicName())) {
                             saveImage = true;
                         }
                     }
@@ -456,6 +456,14 @@ public class SyncAgent {
                 }
             }
         });
+    }
+
+    private String parseFileNameToLocal(String parseFileName) {
+        // when we save file to parse (aws s3), its file name will be prefixed by a server generated random string.
+        // for example:
+        // file name we uploaded                    IMG173391503.jpg
+        // file name actually saved on server       4ab50fb811da73520a71bf6a6e7c8844_IMG173391503.jpg
+        return parseFileName.substring(parseFileName.indexOf('_') + 1);
     }
 
     public interface OnSyncWishChangedListener {
