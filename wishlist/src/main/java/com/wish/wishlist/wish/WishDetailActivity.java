@@ -38,7 +38,6 @@ import com.wish.wishlist.widgets.ClearableEditText;
 
 public abstract class WishDetailActivity extends ActivityBase implements ObservableScrollViewCallbacks {
     private final static String TRANSLUCENT_TOOLBAR = "TRANSLUCENT_TOOLBAR";
-    public final static String ITEM = "Item";
     private final static String TAG = "WishDetailActivity";
 
     protected Boolean mTranslucentToolBar = false;
@@ -89,9 +88,6 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         mLocationView = (ClearableEditText) findViewById(R.id.itemLocation);
         mLinkView = (TextView) findViewById(R.id.itemLink);
         mLinkLayout = (LinearLayout) findViewById(R.id.linkLayout);
-
-        Intent i = getIntent();
-        mItem = i.getParcelableExtra(ITEM);
     }
 
     protected void showPhoto() {}

@@ -34,12 +34,12 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.wish.ExistingWishDetailActivity;
 import com.wish.wishlist.wish.FriendWishDetailActivity;
+import com.wish.wishlist.wish.MyWishDetailActivity;
 import com.wish.wishlist.wish.WebImgMeta;
 import com.wish.wishlist.wish.WishLoader;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.image.PhotoFileCreater;
-import com.wish.wishlist.wish.WishDetailActivity;
 
 public class MapActivity extends Activity {
     private GoogleMap mGoogleMap;
@@ -188,13 +188,14 @@ public class MapActivity extends Activity {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Intent intent;
+                WishItem item = mMarkerItemMap.get(marker);
                 if (mMyWish) {
                     intent = new Intent(MapActivity.this, ExistingWishDetailActivity.class);
+                    intent.putExtra(ExistingWishDetailActivity.ITEM_ID, item.getId());
                 } else {
                     intent = new Intent(MapActivity.this, FriendWishDetailActivity.class);
+                    intent.putExtra(FriendWishDetailActivity.ITEM, item);
                 }
-                WishItem item = mMarkerItemMap.get(marker);
-                intent.putExtra(WishDetailActivity.ITEM, item);
                 startActivityForResult(intent, ITEM_DETAILS);
             }
         });

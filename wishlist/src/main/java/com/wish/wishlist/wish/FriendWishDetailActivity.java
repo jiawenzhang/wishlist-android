@@ -23,9 +23,14 @@ abstract public class FriendWishDetailActivity extends WishDetailActivity implem
     private WishImageDownloader mWishImageDownloader;
     private ProgressDialog mProgressDialog = null;
 
+    public final static String ITEM = "ITEM";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent i = getIntent();
+        mItem = i.getParcelableExtra(ITEM);
 
         showItemInfo();
 

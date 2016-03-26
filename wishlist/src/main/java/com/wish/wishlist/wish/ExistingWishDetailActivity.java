@@ -1,6 +1,7 @@
 package com.wish.wishlist.wish;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
@@ -16,17 +17,22 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.util.Analytics;
 
 public class ExistingWishDetailActivity extends MyWishDetailActivity implements TokenCompleteTextView.TokenListener {
     private static final String TAG = "ExistingWishDetail";
-
+    public final static String ITEM_ID = "ITEM_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Analytics.sendScreen("ExistingWishDetail");
+
+        Intent i = getIntent();
+        long item_id = i.getLongExtra(ITEM_ID, -1);
+        mItem = WishItemManager.getInstance().getItemById(item_id);
 
         showItemInfo();
 

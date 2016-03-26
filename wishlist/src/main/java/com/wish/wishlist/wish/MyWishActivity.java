@@ -688,8 +688,8 @@ public class MyWishActivity extends WishBaseActivity implements
 
     public void onWishTapped(WishItem item) {
         Log.d(TAG, "onWishTapped");
-        Intent i = new Intent(MyWishActivity.this, ExistingWishDetailActivity.class);
-        i.putExtra(WishDetailActivity.ITEM, item);
+        Intent i = new Intent(this, ExistingWishDetailActivity.class);
+        i.putExtra(ExistingWishDetailActivity.ITEM_ID, item.getId());
         startActivityForResult(i, ITEM_DETAILS);
     }
 
