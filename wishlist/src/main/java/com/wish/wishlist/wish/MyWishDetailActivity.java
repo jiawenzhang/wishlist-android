@@ -88,7 +88,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         @Override
         protected Void doInBackground(Void... arg) {
             final Bitmap bitmap = ImageManager.decodeSampledBitmapFromFile(mTempPhotoPath, 1024);
-            mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(bitmap);
+            mFullsizePhotoPath = ImageManager.saveBitmapToFile(bitmap);
             ImageManager.saveBitmapToThumb(bitmap, mFullsizePhotoPath);
             return null;
         }
@@ -103,7 +103,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         @Override
         protected Void doInBackground(Void... arg) {
             final Bitmap bitmap = ImageManager.decodeSampledBitmapFromUri(mSelectedPicUri, 1024);
-            mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(bitmap);
+            mFullsizePhotoPath = ImageManager.saveBitmapToFile(bitmap);
             ImageManager.saveBitmapToThumb(bitmap, mFullsizePhotoPath);
             return null;
         }

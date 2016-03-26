@@ -260,7 +260,7 @@ public class SyncAgent {
 
     private void bitmapLoaded(final Bitmap bitmap, final ParseObject parseItem, WishItem existingItem, String url)
     {
-        String fullsizePath = ImageManager.saveBitmapToAlbum(ImageManager.getScaleDownBitmap(bitmap, 1024));
+        String fullsizePath = ImageManager.saveBitmapToFile(ImageManager.getScaleDownBitmap(bitmap, 1024));
         ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
         if (existingItem != null) {
             existingItem.removeImage();
@@ -278,8 +278,9 @@ public class SyncAgent {
             @Override
             public void done(byte[] imageBytes, ParseException e) {
                 if (e == null) {
-                    ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), /*thumb*/true);
-                    String fullsizePicPath = ImageManager.saveByteToAlbum(imageBytes, parseImage.getName(), /*thumb*/false);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes , 0, imageBytes .length);
+                    String fullsizePicPath = ImageManager.saveBitmapToFile(bitmap, parseImage.getName(), 100);
+                    ImageManager.saveBitmapToThumb(bitmap, fullsizePicPath);
                     if (existingItem != null) {
                         existingItem.removeImage();
                     }

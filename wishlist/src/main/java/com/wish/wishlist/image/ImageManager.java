@@ -1,11 +1,8 @@
 package com.wish.wishlist.image;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.content.res.Resources;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.wish.wishlist.WishlistApplication;
@@ -72,21 +69,6 @@ public class ImageManager
         return inSampleSize;
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight, boolean fitFullImage) {
-
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(res, resId, options);
-
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight, fitFullImage);
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeResource(res, resId, options);
-    }
-
     public static Bitmap decodeSampledBitmapFromUri(Uri selectedImage, int dstWidth) {
         try {
             InputStream inputStream = WishlistApplication.getAppContext().getContentResolver().openInputStream(selectedImage);
@@ -142,13 +124,22 @@ public class ImageManager
         return BitmapFactory.decodeFile(file, options);
     }
 
-    public static String saveBitmapToAlbum(Bitmap bitmap) {
+    public static String saveBitmapToFile(Bitmap bitmap) {
+        return saveBitmapToFile(bitmap, null, 85);
+    }
+
+    public static String saveBitmapToFile(Bitmap bitmap, String fileName, int compress) {
         try {
             File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/image");
-            File f = File.createTempFile("IMG", ".jpg", dir);
+            File f;
+            if (fileName == null) {
+                f = File.createTempFile("IMG", ".jpg", dir);
+            } else {
+                f = new File(dir, fileName);
+            }
             String path = f.getAbsolutePath();
             OutputStream stream = new FileOutputStream(f);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, compress, stream);
             stream.flush();
             stream.close();
             Log.d(TAG, "Save image as " + path);
@@ -157,48 +148,6 @@ public class ImageManager
             Log.e(TAG, e.toString());
         }
         return null;
-
-
-        /* old way
-        try {
-            //save the image to a file we created in wishlist album
-            File f = PhotoFileCreater.getInstance().setupPhotoFile(false);
-            String path = f.getAbsolutePath();
-            OutputStream stream = new FileOutputStream(path);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-            stream.flush();
-            stream.close();
-            return path;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-        */
-    }
-
-    public static void saveBitmapToThumb(Uri imageUri, String fullsizePath, Context ctx)
-    {
-        try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver(), imageUri);
-            saveBitmapToThumb(bitmap, fullsizePath);
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, e.toString());
-        } catch (IOException e) {
-            Log.e(TAG, e.toString());
-        }
-    }
-
-    public static void saveBitmapToThumb(String fullsizePath)
-    {
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap bitmap = BitmapFactory.decodeFile(fullsizePath, bmOptions);
-        if (bitmap != null) {
-            saveBitmapToThumb(bitmap, fullsizePath);
-        } else {
-            Log.e(TAG, "saveBitmapToThumb bitmap null");
-        }
     }
 
     public static void saveBitmapToThumb(Bitmap bitmap, String fullsizePath) {
@@ -220,25 +169,6 @@ public class ImageManager
         }
     }
 
-    public static String saveByteToAlbum(byte[] data, String fileName, boolean thumb)
-    {
-        BufferedOutputStream bos;
-        try {
-            File f = new File(PhotoFileCreater.getInstance().getAlbumDir(thumb), fileName);
-            String path = f.getAbsolutePath();
-            FileOutputStream fos = new FileOutputStream(path);
-            bos = new BufferedOutputStream(fos);
-            bos.write(data);
-            bos.close();
-            return path;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static boolean saveByteToPath(byte[] data, String absPath) {
         Log.d(TAG, "save byte to file " + absPath);
         try {
@@ -253,24 +183,6 @@ public class ImageManager
             e.printStackTrace();
         }
         return false;
-    }
-
-    public static boolean saveBitmapToPath(Bitmap bitmap, File f) {
-        try {
-            //save the image to a file
-            f.delete();
-            OutputStream stream = new FileOutputStream(f.getAbsoluteFile());
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            stream.flush();
-            stream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
     }
 
     public static byte[] readFile(String path)
@@ -304,6 +216,27 @@ public class ImageManager
         return Bitmap.createScaledBitmap(bitmap, dstWidth, (int) (dstWidth * ratio), false);
     }
 
+    // unused sample code
+    /*
+    public static String saveByteToAlbum(byte[] data, String fileName) {
+        BufferedOutputStream bos;
+        try {
+            File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/image");
+            File f = new File(dir, fileName);
+            String path = f.getAbsolutePath();
+            FileOutputStream fos = new FileOutputStream(path);
+            bos = new BufferedOutputStream(fos);
+            bos.write(data);
+            bos.close();
+            return path;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static String copyPhotoToAlbum(Uri uri) {
         try {
             //save the photo to a file we created in wishlist album
@@ -331,6 +264,84 @@ public class ImageManager
         }
         return null;
     }
+
+    public static boolean saveBitmapToPath(Bitmap bitmap, File f) {
+        try {
+            //save the image to a file
+            f.delete();
+            OutputStream stream = new FileOutputStream(f.getAbsoluteFile());
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            stream.flush();
+            stream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public static String saveByteToAlbum(byte[] data, String fileName, boolean thumb)
+    {
+        BufferedOutputStream bos;
+        try {
+            File f = new File(PhotoFileCreater.getInstance().getAlbumDir(thumb), fileName);
+            String path = f.getAbsolutePath();
+            FileOutputStream fos = new FileOutputStream(path);
+            bos = new BufferedOutputStream(fos);
+            bos.write(data);
+            bos.close();
+            return path;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void saveBitmapToThumb(String fullsizePath)
+    {
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        Bitmap bitmap = BitmapFactory.decodeFile(fullsizePath, bmOptions);
+        if (bitmap != null) {
+            saveBitmapToThumb(bitmap, fullsizePath);
+        } else {
+            Log.e(TAG, "saveBitmapToThumb bitmap null");
+        }
+    }
+
+    public static void saveBitmapToThumb(Uri imageUri, String fullsizePath, Context ctx)
+    {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver(), imageUri);
+            saveBitmapToThumb(bitmap, fullsizePath);
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.toString());
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight, boolean fitFullImage) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight, fitFullImage);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+    */
+
 
 }
 

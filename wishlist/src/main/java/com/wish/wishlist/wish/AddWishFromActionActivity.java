@@ -376,7 +376,7 @@ public class AddWishFromActionActivity extends AddWishActivity
     protected void saveWishItem() {
         if (mWebBitmap != null) {
             // image from web
-            mFullsizePhotoPath = ImageManager.saveBitmapToAlbum(mWebBitmap);
+            mFullsizePhotoPath = ImageManager.saveBitmapToFile(mWebBitmap);
             ImageManager.saveBitmapToThumb(mWebBitmap, mFullsizePhotoPath);
 
             mItem = createNewWish();

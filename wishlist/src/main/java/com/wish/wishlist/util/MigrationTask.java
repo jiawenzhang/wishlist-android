@@ -160,7 +160,7 @@ public class MigrationTask extends AsyncTask<Void, Void, Void> {//<param, progre
 
                 final Bitmap bitmap = ImageManager.decodeSampledBitmapFromFile(item.getFullsizePicPath(), 1024);
                 if (bitmap != null) {
-                    final String newFullsizePhotoPath = ImageManager.saveBitmapToAlbum(bitmap);
+                    final String newFullsizePhotoPath = ImageManager.saveBitmapToFile(bitmap);
                     ImageManager.saveBitmapToThumb(bitmap, newFullsizePhotoPath);
                     item.setFullsizePicPath(newFullsizePhotoPath);
                     item.saveToLocal();
