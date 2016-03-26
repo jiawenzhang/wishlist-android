@@ -23,7 +23,7 @@ import java.io.OutputStream;
 public class ImageManager
 {
     private static ImageManager _instance = null;
-    public static final int THUMB_WIDTH = 350; // about half the size of an iphone screen (iphone 5s w 640px, iphone 6 w 750px)
+    public static final int THUMB_WIDTH = 512; // iphone screen width (iphone 5s w 640px, iphone 6 w 750px)
     private static final String TAG = "ImageManager";
 
     private ImageManager() {}
