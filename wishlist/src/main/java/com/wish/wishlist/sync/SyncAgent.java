@@ -222,12 +222,12 @@ public class SyncAgent {
 
         m_downloaded_items.add(item_id);
 
+        m_synced_time = parseItem.getUpdatedAt();
         itemDownloadDone();
         if (m_items_to_download == 0) {
             // notify list/grid view to refresh
             SyncAgent.this.mSyncWishChangedListener.onSyncWishChanged();
         }
-        m_synced_time = parseItem.getUpdatedAt();
     }
 
     private void updateTags(ParseObject item, long item_id) {
