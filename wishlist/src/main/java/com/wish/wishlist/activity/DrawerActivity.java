@@ -66,7 +66,6 @@ public abstract class DrawerActivity extends ActivityBase {
         mBusEventListener = new Object() {
             @Subscribe
             public void profileChanged(ProfileChangeEvent event) {
-                Log.d(TAG, "profileChanged " + event.type.toString());
                 DrawerActivity.this.profileChanged(event);
             }
 

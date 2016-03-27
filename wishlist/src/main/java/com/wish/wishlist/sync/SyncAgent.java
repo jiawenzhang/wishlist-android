@@ -23,6 +23,8 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.image.ImageManager;
@@ -448,14 +450,22 @@ public class SyncAgent {
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "success to fetch Parse user");
+                    EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.name));
+                    EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.email));
+
                     ParseUser currentUser = (ParseUser) object;
                     final ParseFile parseImage = currentUser.getParseFile("profileImage");
                     if (parseImage != null) {
-                        try {
-                            ProfileUtil.saveProfileImageToFile(parseImage.getData());
-                        } catch (com.parse.ParseException e2) {
-                            Log.e(TAG, e2.toString());
-                        }
+                        parseImage.getDataInBackground(new GetDataCallback() {
+                            @Override
+                            public void done(byte[] data, ParseException e) {
+                                if (e == null) {
+                                    ProfileUtil.saveProfileImageToFile(data);
+                                } else {
+                                    Log.e(TAG, "fail to get profile image data " + e.toString());
+                                }
+                            }
+                        });
                     }
                 } else {
                     Log.e(TAG, "fail to fetch Parse user");
