@@ -95,7 +95,9 @@ public class SyncAgent {
                     m_downloaded_items.clear();
                     m_items_to_download = itemList.size();
                     if (m_items_to_download == 0) {
-                        mDownloadWishDoneListener.onDownloadWishDone();
+                        if (mDownloadWishDoneListener != null) {
+                            mDownloadWishDoneListener.onDownloadWishDone();
+                        }
                         uploadToParse();
                         return;
                     }
@@ -123,7 +125,9 @@ public class SyncAgent {
                         }
                     }
                 } else {
-                    SyncAgent.this.mDownloadWishDoneListener.onDownloadWishDone();
+                    if (mDownloadWishDoneListener != null) {
+                        mDownloadWishDoneListener.onDownloadWishDone();
+                    }
                     Log.e(TAG, "Error: " + e.getMessage());
                 }
             }
@@ -278,7 +282,7 @@ public class SyncAgent {
             @Override
             public void done(byte[] imageBytes, ParseException e) {
                 if (e == null) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes , 0, imageBytes .length);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                     String fullsizePicPath = ImageManager.saveBitmapToFile(bitmap, parseFileNameToLocal(parseImage.getName()), 100);
                     ImageManager.saveBitmapToThumb(bitmap, fullsizePicPath);
                     if (existingItem != null) {
@@ -409,7 +413,9 @@ public class SyncAgent {
         m_items_to_download--;
         if (m_items_to_download == 0) {
             // download from parse is finished, now upload to parse
-            SyncAgent.this.mDownloadWishDoneListener.onDownloadWishDone();
+            if (mDownloadWishDoneListener != null) {
+                mDownloadWishDoneListener.onDownloadWishDone();
+            }
             uploadToParse();
         }
     }
@@ -428,8 +434,8 @@ public class SyncAgent {
 
     public void register(Activity activity) {
         try {
-            this.mSyncWishChangedListener = (OnSyncWishChangedListener) activity;
-            this.mDownloadWishDoneListener = (OnDownloadWishDoneListener) activity;
+            mSyncWishChangedListener = (OnSyncWishChangedListener) activity;
+            mDownloadWishDoneListener = (OnDownloadWishDoneListener) activity;
         }
         catch (final ClassCastException e) {
             Log.e(TAG, "fail to register");
