@@ -184,11 +184,10 @@ public class WishItemManager {
 
     public void deleteItemById(long itemId) {
         WishItem item = getItemById(itemId);
-        item.removeImage();
-        item.setFullsizePicPath(null);
-        item.setWebImgMeta(null, 0, 0);
-        TagItemDBManager.instance().Remove_tags_by_item(itemId);
+        item.clear();
         item.setDeleted(true);
+        TagItemDBManager.instance().Remove_tags_by_item(itemId);
+
         item.setUpdatedTime(System.currentTimeMillis());
         item.setSyncedToServer(false);
         item.save();

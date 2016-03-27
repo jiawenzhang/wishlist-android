@@ -369,6 +369,22 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         return "(" + dateString + ") " + _name + " " + _desc;
     }
 
+    public void clear() {
+        // clear the attributes of a wish, called when deleting a wish,
+        // so that the attributes in db can be cleared. We will keep the object_id
+        // so that server still knows it
+        _name = "";
+        _desc = "";
+        _storeName = "";
+        _address = "";
+        _link = "";
+
+        removeImage();
+        _fullsizePicPath = "";
+        mWebImgMetaJSON = "";
+        mParseImgMetaJSON = "";
+    }
+
     public String getShareMessage(Boolean facebook) {
         String message;
         if (facebook) {
@@ -491,6 +507,13 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         } else {
             wishObject.put(ItemDBManager.KEY_WEB_IMG_META_JSON, JSONObject.NULL);
         }
+
+        if (item.getParseImgMetaJSON() != null) {
+            wishObject.put(WishItem.PARSE_KEY_IMG_META_JSON, item.getParseImgMetaJSON());
+        } else {
+            wishObject.put(WishItem.PARSE_KEY_IMG_META_JSON, JSONObject.NULL);
+        }
+
         wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice());
         wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude());
         wishObject.put(ItemDBManager.KEY_LONGITUDE, item.getLongitude());
