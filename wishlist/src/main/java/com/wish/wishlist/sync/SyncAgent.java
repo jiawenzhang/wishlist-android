@@ -196,6 +196,9 @@ public class SyncAgent {
                 WebImgMeta webImgMeta = WebImgMeta.fromJSON(webImgMetaJSON);
                 if (webImgMeta != null) {
                     saveWebImage(webImgMeta.mUrl, parseItem, existingItem);
+                } else {
+                    Log.e(TAG, "webImgMeta null, parsing JSON error");
+                    onPhotoDone(parseItem, existingItem, existingItem.getFullsizePicPath());
                 }
             } else {
                 onPhotoDone(parseItem, existingItem, existingItem.getFullsizePicPath());
