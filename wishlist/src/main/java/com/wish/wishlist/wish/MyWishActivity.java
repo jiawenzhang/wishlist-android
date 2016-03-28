@@ -189,7 +189,7 @@ public class MyWishActivity extends WishBaseActivity implements
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if (SyncAgent.getInstance().syncing()) {
+                if (SyncAgent.getInstance().downloading()) {
                     Log.e(TAG, "set refreshing");
                     mSwipeRefreshLayout.setRefreshing(true);
                 }

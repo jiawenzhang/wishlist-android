@@ -50,7 +50,7 @@ public class SyncAgent {
     private OnDownloadWishDoneListener mDownloadWishDoneListener;
     private Date m_synced_time;
 
-    private boolean mSyncing = false;
+    private boolean mDownloading = false;
     private static String TAG = "SyncAgent";
 
     public static SyncAgent getInstance() {
@@ -62,8 +62,8 @@ public class SyncAgent {
 
     private SyncAgent() {}
 
-    public boolean syncing() {
-        return mSyncing;
+    public boolean downloading() {
+        return mDownloading;
     }
 
     // call sync on app start up
@@ -90,17 +90,14 @@ public class SyncAgent {
         query.whereGreaterThan("updatedAt", last_synced_time);
         query.whereEqualTo(WishItem.PARSE_KEY_OWNDER_ID, ParseUser.getCurrentUser().getObjectId());
 
-        mSyncing = true;
+        mDownloading = true;
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> itemList, com.parse.ParseException e) {
                 if (e == null) {
                     m_downloaded_items.clear();
                     m_items_to_download = itemList.size();
                     if (m_items_to_download == 0) {
-                        if (mDownloadWishDoneListener != null) {
-                            mDownloadWishDoneListener.onDownloadWishDone();
-                        }
-                        uploadToParse();
+                        downloadAllDone();
                         return;
                     }
 
@@ -417,17 +414,22 @@ public class SyncAgent {
     {
         m_items_to_download--;
         if (m_items_to_download == 0) {
-            // download from parse is finished, now upload to parse
-            if (mDownloadWishDoneListener != null) {
-                mDownloadWishDoneListener.onDownloadWishDone();
-            }
-            uploadToParse();
+            downloadAllDone();
         }
+    }
+
+    private void downloadAllDone()
+    {
+        mDownloading = false;
+        // download from parse is finished, now upload to parse
+        if (mDownloadWishDoneListener != null) {
+            mDownloadWishDoneListener.onDownloadWishDone();
+        }
+        uploadToParse();
     }
 
     private void syncDone()
     {
-        mSyncing = false;
         Log.d(TAG, "sync finished at " + m_synced_time.getTime());
         // all items are processed, sync is done
         // save current time as last synced time
