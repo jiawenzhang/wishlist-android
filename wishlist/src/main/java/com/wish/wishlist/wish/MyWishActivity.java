@@ -186,14 +186,15 @@ public class MyWishActivity extends WishBaseActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        if (SyncAgent.getInstance().syncing()) {
-            mSwipeRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (SyncAgent.getInstance().syncing()) {
+                    Log.e(TAG, "set refreshing");
                     mSwipeRefreshLayout.setRefreshing(true);
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
