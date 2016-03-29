@@ -240,7 +240,9 @@ public class SyncAgent {
         itemDownloadDone();
         if (m_items_to_download == 0) {
             // notify list/grid view to refresh
-            SyncAgent.this.mSyncWishChangedListener.onSyncWishChanged();
+            if (mSyncWishChangedListener != null) {
+                mSyncWishChangedListener.onSyncWishChanged();
+            }
         }
     }
 
@@ -282,7 +284,9 @@ public class SyncAgent {
         onPhotoDone(parseItem, existingItem, fullsizePath);
         m_targets.remove(url);
 
-        SyncAgent.this.mSyncWishChangedListener.onSyncWishChanged();
+        if (mSyncWishChangedListener != null) {
+            mSyncWishChangedListener.onSyncWishChanged();
+        }
     }
 
     private void saveParseImage(final ParseFile parseImage, final ParseObject parseItem, final WishItem existingItem)
