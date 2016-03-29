@@ -51,6 +51,8 @@ public class SyncAgent {
     private Date m_synced_time;
 
     private boolean mDownloading = false;
+    private boolean mSyncing = false;
+    private boolean mScheduleToSync = false;
     private static String TAG = "SyncAgent";
 
     public static SyncAgent getInstance() {
@@ -78,6 +80,12 @@ public class SyncAgent {
             return;
         }
         // sync from parse
+        if (mSyncing) {
+            // if we are in the process of syncing, run sync again after the current sync is finished
+            mScheduleToSync = true;
+            return;
+        }
+        mSyncing = true;
 
         // get from parse the items with updated time > last synced time
         // save them in parseItemList
@@ -136,7 +144,7 @@ public class SyncAgent {
     private void uploadToParse() {
         // sync to parse
         // get from local the items with synced_to_parse == false and push them to parse
-        //Log.d(TAG, "uploadToParse");
+        Log.d(TAG, "uploadToParse");
         ArrayList<WishItem> items = WishItemManager.getInstance().getItemsNotSyncedToServer();
         m_items_to_upload = items.size();
         if (m_items_to_upload == 0) {
@@ -437,6 +445,12 @@ public class SyncAgent {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putLong("last_synced_time", m_synced_time.getTime());
         editor.commit();
+
+        mSyncing = false;
+        if (mScheduleToSync) {
+            mScheduleToSync = false;
+            sync();
+        }
     }
 
     public void register(Activity activity) {
