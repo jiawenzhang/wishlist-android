@@ -141,13 +141,13 @@ public class MyWishActivity extends WishBaseActivity implements
         });
 
         if (savedInstanceState != null) {
-            Log.d(MyWishActivity.TAG, "savedInstanceState != null");
+            Log.d(TAG, "savedInstanceState != null");
             // restore the current selected item in the list
             mTempPhotoPath = savedInstanceState.getString(AddWishActivity.TEMP_PHOTO_PATH);
 
-            Log.d(MyWishActivity.TAG, "mTempPhotoPath " + mTempPhotoPath);
+            Log.d(TAG, "mTempPhotoPath " + mTempPhotoPath);
         } else{
-            Log.d(MyWishActivity.TAG, "savedInstanceState == null");
+            Log.d(TAG, "savedInstanceState == null");
         }
 
         SyncAgent.getInstance().register(this);
@@ -518,7 +518,7 @@ public class MyWishActivity extends WishBaseActivity implements
                 showDialog(DIALOG_FILTER);
                 return true;
             case R.id.menu_tags:
-                Intent i = new Intent(MyWishActivity.this, FindTagActivity.class);
+                Intent i = new Intent(this, FindTagActivity.class);
                 startActivityForResult(i, FIND_TAG);
                 return true;
             default:
@@ -682,9 +682,12 @@ public class MyWishActivity extends WishBaseActivity implements
         reloadItems();
     }
 
-    public void onDownloadWishDone() {
-        Log.d(TAG, "onDownloadWishDone");
+    public void onDownloadWishDone(boolean success) {
+        Log.d(TAG, "onDownloadWishDone success? " + success);
         mSwipeRefreshLayout.setRefreshing(false);
+        if (!success) {
+            Toast.makeText(this, "Sync error, check network", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void onWishTapped(WishItem item) {
@@ -695,7 +698,7 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     protected boolean onTapAdd() {
-        Intent addItem = new Intent(MyWishActivity.this, AddWishActivity.class);
+        Intent addItem = new Intent(this, AddWishActivity.class);
         startActivityForResult(addItem, ADD_ITEM);
         return true;
     }

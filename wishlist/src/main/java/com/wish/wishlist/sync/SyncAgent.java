@@ -28,7 +28,9 @@ import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.ProfileUtil;
+import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.wish.WebImgMeta;
 
 import java.util.ArrayList;
@@ -48,12 +50,13 @@ public class SyncAgent {
     private HashMap<String, Target> m_targets = new HashMap<>();
     private OnSyncWishChangedListener mSyncWishChangedListener;
     private OnDownloadWishDoneListener mDownloadWishDoneListener;
-    private Date m_synced_time;
+    private Date mSyncedTime;
 
     private boolean mDownloading = false;
     private boolean mSyncing = false;
     private boolean mScheduleToSync = false;
     private static String TAG = "SyncAgent";
+    private static String LAST_SYNCED_TIME = "lastSyncedTime";
 
     public static SyncAgent getInstance() {
         if (instance == null) {
@@ -71,6 +74,7 @@ public class SyncAgent {
     // call sync on app start up
     // how does parse trigger sync on the client? push notification?
     public void sync() {
+        Log.d(TAG, "sync");
         if (!WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_account)) {
             return;
         }
@@ -82,20 +86,27 @@ public class SyncAgent {
         // sync from parse
         if (mSyncing) {
             // if we are in the process of syncing, run sync again after the current sync is finished
+            Log.d(TAG, "mSync true, schedule sync");
             mScheduleToSync = true;
             return;
         }
+        if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+            Log.d(TAG, "no network, sync is not started");
+            // Fixme: shall we attempt sync later?
+            return;
+        }
+
         mSyncing = true;
 
         // get from parse the items with updated time > last synced time
         // save them in parseItemList
         final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
-        final Date last_synced_time = new Date(sharedPref.getLong("last_synced_time", 0));
-        Log.d(TAG, "last_synced_time " + last_synced_time.getTime());
-        m_synced_time = last_synced_time;
+        final Date lastSyncedTime = new Date(sharedPref.getLong(LAST_SYNCED_TIME, 0));
+        Log.d(TAG, "lastSyncedTime " + lastSyncedTime.getTime() + " " + StringUtil.UTCDate(lastSyncedTime));
+        mSyncedTime = lastSyncedTime;
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
-        query.whereGreaterThan("updatedAt", last_synced_time);
+        query.whereGreaterThan("updatedAt", lastSyncedTime);
         query.whereEqualTo(WishItem.PARSE_KEY_OWNDER_ID, ParseUser.getCurrentUser().getObjectId());
 
         mDownloading = true;
@@ -104,6 +115,7 @@ public class SyncAgent {
                 if (e == null) {
                     m_downloaded_items.clear();
                     m_items_to_download = itemList.size();
+                    Log.d(TAG, itemList.size() + " items to download");
                     if (m_items_to_download == 0) {
                         downloadAllDone();
                         return;
@@ -122,27 +134,26 @@ public class SyncAgent {
                             }
                             saveFromParse(parseItem);
                         } else {
-                            if (existingItem.getUpdatedTime() >= parseItem.getLong(ItemDBManager.KEY_UPDATED_TIME)) {
-                                itemDownloadDone();
-                                continue;
-                            }
-                            Log.d(TAG, "item " + existingItem.getName() + " exists locally, but parse item is newer, overwrite local one");
+                            //Fixme: need a better solution here:
+                            //we cannot rely on device local time as that's inaccurate and could be different from devices to devices
+                            //if (existingItem.getUpdatedTime() >= parseItem.getLong(ItemDBManager.KEY_UPDATED_TIME)) {
+                            //    itemDownloadDone();
+                            //    continue;
+                            //}
+                            Log.d(TAG, "item " + existingItem.getName() + " exists locally, overwrite local one");
                             // parseItem could be marked as deleted, update local item to be deleted will just hide the item
                             updateFromParse(parseItem, existingItem);
                         }
                     }
                 } else {
-                    if (mDownloadWishDoneListener != null) {
-                        mDownloadWishDoneListener.onDownloadWishDone();
-                    }
                     Log.e(TAG, "Error: " + e.getMessage());
+                    syncFailed();
                 }
             }
         });
     }
 
     private void uploadToParse() {
-        // sync to parse
         // get from local the items with synced_to_parse == false and push them to parse
         Log.d(TAG, "uploadToParse");
         ArrayList<WishItem> items = WishItemManager.getInstance().getItemsNotSyncedToServer();
@@ -178,11 +189,11 @@ public class SyncAgent {
         if (webImgMetaJSON != null) {
             WebImgMeta webImageMeta = WebImgMeta.fromJSON(webImgMetaJSON);
             if (webImageMeta != null) {
-                saveWebImage(webImageMeta.mUrl, parseItem, null);
+                downloadWebImage(webImageMeta.mUrl, parseItem, null);
             }
             return;
         }
-        saveParseImage(parseImage, parseItem, null);
+        downloadParseImage(parseImage, parseItem, null);
     }
 
     private void updateFromParse(final ParseObject parseItem, WishItem existingItem)
@@ -200,7 +211,7 @@ public class SyncAgent {
                 // we have a new image, update it locally
                 WebImgMeta webImgMeta = WebImgMeta.fromJSON(webImgMetaJSON);
                 if (webImgMeta != null) {
-                    saveWebImage(webImgMeta.mUrl, parseItem, existingItem);
+                    downloadWebImage(webImgMeta.mUrl, parseItem, existingItem);
                 } else {
                     Log.e(TAG, "webImgMeta null, parsing JSON error");
                     onPhotoDone(parseItem, existingItem, existingItem.getFullsizePicPath());
@@ -211,7 +222,7 @@ public class SyncAgent {
             return;
         }
         if (!parseFileNameToLocal(parseImage.getName()).equals(existingItem.getPicName())) {
-            saveParseImage(parseImage, parseItem, existingItem);
+            downloadParseImage(parseImage, parseItem, existingItem);
         } else {
             onPhotoDone(parseItem, existingItem, existingItem.getFullsizePicPath());
         }
@@ -236,10 +247,10 @@ public class SyncAgent {
 
         m_downloaded_items.add(item_id);
 
-        m_synced_time = parseItem.getUpdatedAt();
+        mSyncedTime = parseItem.getUpdatedAt();
         itemDownloadDone();
         if (m_items_to_download == 0) {
-            // notify list/grid view to refresh
+            // we have finished downloading items, notify list/grid view to refresh
             if (mSyncWishChangedListener != null) {
                 mSyncWishChangedListener.onSyncWishChanged();
             }
@@ -251,37 +262,53 @@ public class SyncAgent {
         TagItemDBManager.instance().Update_item_tags(item_id, new ArrayList<>(tags));
     }
 
-    private void saveWebImage(final String url, final ParseObject parseItem, final WishItem existingItem)
+    private void downloadWebImage(final String url, final ParseObject parseItem, final WishItem existingItem)
     {
-        Log.d(TAG, "saveWebImage " + url);
+        Log.d(TAG, "downloadWebImage " + url);
         Target target = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 if (bitmap != null) {
-                    bitmapLoaded(bitmap, parseItem, existingItem, url);
+                    webImageLoaded(bitmap, parseItem, existingItem, url);
                 } else {
-                    Log.e(TAG, "saveWebImage->onBitmapLoaded null bitmap");
+                    //Fixme: on what circumstances will this be triggered? no network? url invalid?
+                    //shall we call syncFailed here or simply skip the image and let the rest of the sync
+                    //continue?
+                    Log.e(TAG, "downloadWebImage->onBitmapLoaded null bitmap");
+                    webImageLoaded(null, parseItem, existingItem, url);
                 }
             }
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {}
 
             @Override
-            public void onBitmapFailed(Drawable errorDrawable) {}
+            public void onBitmapFailed(Drawable errorDrawable) {
+                //Fixme: on what circumstances will this be triggered? no network? url invalid?
+                //shall we call syncFailed here or simply skip the image and let the rest of the sync
+                //continue?
+                Log.e(TAG, "onBitmapFailed");
+                webImageLoaded(null, parseItem, existingItem, url);
+            }
         };
-        m_targets.put(url, target);
 
+        m_targets.put(url, target);
         Picasso.with(WishlistApplication.getAppContext()).load(url).into(target);
     }
 
-    private void bitmapLoaded(final Bitmap bitmap, final ParseObject parseItem, WishItem existingItem, String url)
+    private void webImageLoaded(final Bitmap bitmap, final ParseObject parseItem, WishItem existingItem, String url)
     {
-        String fullsizePath = ImageManager.saveBitmapToFile(ImageManager.getScaleDownBitmap(bitmap, 1024));
-        ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
-        if (existingItem != null) {
-            existingItem.removeImage();
+        if (bitmap != null) {
+            String fullsizePath = ImageManager.saveBitmapToFile(ImageManager.getScaleDownBitmap(bitmap, 1024));
+            ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
+            if (existingItem != null) {
+                existingItem.removeImage();
+            }
+            onPhotoDone(parseItem, existingItem, fullsizePath);
+        } else {
+            String fullsizePath = existingItem == null ? null : existingItem.getFullsizePicPath();
+            onPhotoDone(parseItem, existingItem, fullsizePath);
         }
-        onPhotoDone(parseItem, existingItem, fullsizePath);
+
         m_targets.remove(url);
 
         if (mSyncWishChangedListener != null) {
@@ -289,9 +316,9 @@ public class SyncAgent {
         }
     }
 
-    private void saveParseImage(final ParseFile parseImage, final ParseObject parseItem, final WishItem existingItem)
+    private void downloadParseImage(final ParseFile parseImage, final ParseObject parseItem, final WishItem existingItem)
     {
-        Log.d(TAG, "saveParseImage: item " + parseItem.getString(ItemDBManager.KEY_NAME));
+        Log.d(TAG, "downloadParseImage: item " + parseItem.getString(ItemDBManager.KEY_NAME));
         parseImage.getDataInBackground(new GetDataCallback() {
             @Override
             public void done(byte[] imageBytes, ParseException e) {
@@ -305,6 +332,7 @@ public class SyncAgent {
                     onPhotoDone(parseItem, existingItem, fullsizePicPath);
                 } else {
                     Log.e(TAG, e.toString());
+                    syncFailed();
                 }
             }
         });
@@ -317,7 +345,11 @@ public class SyncAgent {
         // decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(item.getThumbPicPath(), options);
+        if (BitmapFactory.decodeFile(item.getThumbPicPath(), options) == null) {
+            Log.e(TAG, "fail to decode thumb file, skipping uploading image to parse");
+            uploadParseObject(wishObject, item.getId(), isNew);
+        }
+
         final int w = options.outWidth;
         final int h = options.outHeight;
 
@@ -330,22 +362,23 @@ public class SyncAgent {
                     Log.e(TAG, "parse img url " + parseImage.getUrl());
                     wishObject.put(WishItem.PARSE_KEY_IMAGE, parseImage);
                     wishObject.put(WishItem.PARSE_KEY_IMG_META_JSON, new WebImgMeta(parseImage.getUrl(), w, h).toJSON());
-                    saveParseObject(wishObject, item.getId(), isNew);
+                    uploadParseObject(wishObject, item.getId(), isNew);
                 } else {
                     Log.e(TAG, "save ParseFile failed " + e.toString());
+                    syncFailed();
                 }
             }
         });
     }
 
-    private void saveParseObject(final ParseObject wishObject, final long item_id, final boolean isNew)
+    private void uploadParseObject(final ParseObject wishObject, final long item_id, final boolean isNew)
     {
         wishObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(com.parse.ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "save wish success, object id: " + wishObject.getObjectId());
-                    m_synced_time = wishObject.getUpdatedAt();
+                    mSyncedTime = wishObject.getUpdatedAt();
                     WishItem item = WishItemManager.getInstance().getItemById(item_id);
                     Log.d(TAG, "set item " + item.getName() + " synced to true");
                     item.setSyncedToServer(true);
@@ -354,10 +387,11 @@ public class SyncAgent {
                         item.setObjectId(object_id);
                     }
                     item.saveToLocal();
+                    itemUploadDone();
                 } else {
                     Log.e(TAG, "save failed " + e.toString());
+                    syncFailed();
                 }
-                itemUploadDone();
             }
         });
     }
@@ -370,7 +404,7 @@ public class SyncAgent {
         if (item.getWebImgMetaJSON() != null || item.getThumbPicPath() == null) {
             // if we have an web url for the photo, we don't upload the photo to Parse so that we can save server space
             // when the other device sync down the wish, it will download the photo from the web url
-            saveParseObject(wishObject, item.getId(), true);
+            uploadParseObject(wishObject, item.getId(), true);
             return;
         }
         saveToParseWithImage(wishObject, item, true);
@@ -405,10 +439,11 @@ public class SyncAgent {
                     if (saveImage) {
                         saveToParseWithImage(wishObject, item, false);
                     } else {
-                        saveParseObject(wishObject, item.getId(), false);
+                        uploadParseObject(wishObject, item.getId(), false);
                     }
                 } else {
                     Log.e(TAG, "update failed " + e.toString() + " object_id " + item.getObjectId());
+                    syncFailed();
                 }
             }
         });
@@ -433,27 +468,44 @@ public class SyncAgent {
     private void downloadAllDone()
     {
         mDownloading = false;
-        // download from parse is finished, now upload to parse
+
         if (mDownloadWishDoneListener != null) {
-            mDownloadWishDoneListener.onDownloadWishDone();
+            mDownloadWishDoneListener.onDownloadWishDone(true);
         }
+
+        // download from parse is finished, now upload to parse
         uploadToParse();
     }
 
     private void syncDone()
     {
-        Log.d(TAG, "sync finished at " + m_synced_time.getTime());
-        // all items are processed, sync is done
-        // save current time as last synced time
+        // both download and upload is done, sync is finished
+        Log.d(TAG, "sync finished at " + mSyncedTime.getTime() + " " + StringUtil.UTCDate(mSyncedTime));
+        // all items are downloaded, save the last synced down time
         final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putLong("last_synced_time", m_synced_time.getTime());
+        editor.putLong(LAST_SYNCED_TIME, mSyncedTime.getTime());
         editor.commit();
 
         mSyncing = false;
         if (mScheduleToSync) {
             mScheduleToSync = false;
             sync();
+        }
+    }
+
+    private void syncFailed() {
+        Log.e(TAG, "syncFailed");
+
+        // when sync fails (most likely network unavailable), let's just do nothing
+        // util the next sync is triggered
+        mSyncing = false;
+        mDownloading = false;
+        mScheduleToSync = false;
+
+        // notify listener to stop spinning and show an error
+        if (mDownloadWishDoneListener != null) {
+            mDownloadWishDoneListener.onDownloadWishDone(false);
         }
     }
 
@@ -510,7 +562,7 @@ public class SyncAgent {
     }
 
     public interface OnDownloadWishDoneListener {
-        void onDownloadWishDone();
+        void onDownloadWishDone(boolean success);
     }
 }
 
