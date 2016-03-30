@@ -359,7 +359,9 @@ public class SyncAgent {
         // decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        if (BitmapFactory.decodeFile(item.getThumbPicPath(), options) == null) {
+        try {
+            BitmapFactory.decodeFile(item.getThumbPicPath(), options);
+        } catch (Exception e) {
             Log.e(TAG, "fail to decode thumb file, skipping uploading image to parse");
             uploadParseObject(wishObject, item.getId(), isNew);
         }
