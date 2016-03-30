@@ -190,6 +190,6 @@ public class WishItemManager {
 
         item.setUpdatedTime(System.currentTimeMillis());
         item.setSyncedToServer(false);
-        item.save();
+        item.saveToLocal();
     }
 }

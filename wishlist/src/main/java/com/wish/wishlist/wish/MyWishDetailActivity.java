@@ -531,6 +531,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
                     public void onClick(DialogInterface dialog, int id) {
                         Analytics.send(Analytics.WISH, "Delete", null);
                         WishItemManager.getInstance().deleteItemById(mItem.getId());
+                        SyncAgent.getInstance().sync();
                         EventBus.getInstance().post(new MyWishChangeEvent());
 
                         Intent intent = new Intent();

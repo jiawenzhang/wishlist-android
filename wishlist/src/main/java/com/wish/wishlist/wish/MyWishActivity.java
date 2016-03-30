@@ -476,6 +476,7 @@ public class MyWishActivity extends WishBaseActivity implements
                     WishItemManager.getInstance().deleteItemById(item_id);
                 }
                 mWishAdapter.removeByItemIds(item_ids);
+                SyncAgent.getInstance().sync();
                 //Fixme: need to show make a wish view if there is no wish left
             }
         });

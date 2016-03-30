@@ -140,8 +140,22 @@ public class SyncAgent {
                             //    itemDownloadDone();
                             //    continue;
                             //}
+
+                            if (parseItem.getBoolean(ItemDBManager.KEY_DELETED)) {
+                                Log.d(TAG, "item " + existingItem.getName() + " exists locally, deleting local one");
+                                WishItemManager.getInstance().deleteItemById(existingItem.getId());
+
+                                mSyncedTime = parseItem.getUpdatedAt();
+                                itemDownloadDone();
+                                if (m_items_to_download == 0) {
+                                    // we have finished downloading items, notify list/grid view to refresh
+                                    if (mSyncWishChangedListener != null) {
+                                        mSyncWishChangedListener.onSyncWishChanged();
+                                    }
+                                }
+                                continue;
+                            }
                             Log.d(TAG, "item " + existingItem.getName() + " exists locally, overwrite local one");
-                            // parseItem could be marked as deleted, update local item to be deleted will just hide the item
                             updateFromParse(parseItem, existingItem);
                         }
                     }
