@@ -46,7 +46,14 @@ public class PhotoFileCreater {
 
     public String thumbFilePath(String fullsizeFilePath) {
         // thumb file has the same file name as fullsize file, but in the /thumb folder
+        if (fullsizeFilePath == null) {
+            return null;
+        }
         String fileName = fullsizeFilePath.substring(fullsizeFilePath.lastIndexOf("/") + 1);
+        if (fileName.isEmpty()) {
+            return null;
+        }
+
         File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/thumb");
         File f = new File(dir, fileName);
         return f.getAbsolutePath();

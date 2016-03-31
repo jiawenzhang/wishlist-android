@@ -128,6 +128,20 @@ public class ImageManager
         return saveBitmapToFile(bitmap, null, 85);
     }
 
+    public static boolean saveBitmapToFile(Bitmap bitmap, String absFilePath) {
+        try {
+            OutputStream stream = new FileOutputStream(absFilePath);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            stream.flush();
+            stream.close();
+            Log.d(TAG, "Save bitmap to file " + absFilePath);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static String saveBitmapToFile(Bitmap bitmap, String fileName, int compress) {
         try {
             File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/image");

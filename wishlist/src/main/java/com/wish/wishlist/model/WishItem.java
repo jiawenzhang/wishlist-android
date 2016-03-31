@@ -541,15 +541,27 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         String fullsizePicPath= getFullsizePicPath();
         if (fullsizePicPath != null) {
             File file = new File(fullsizePicPath);
-            file.delete();
-            Log.e(TAG, "delete " + fullsizePicPath);
+            if (file.exists() && file.isFile()) {
+                if (file.delete()) {
+                    Log.d(TAG, "delete " + fullsizePicPath);
+                } else {
+                    Log.e(TAG, "fail to delete " + fullsizePicPath);
+                }
+            }
         }
+
         String thumbPath = getThumbPicPath();
-        if (thumbPath != null) {
+        if (thumbPath != null ) {
             File file = new File(thumbPath);
-            file.delete();
-            Log.e(TAG, "delete " + thumbPath);
+            if (file.exists() && file.isFile()) {
+                if (file.delete()) {
+                    Log.d(TAG, "delete " + thumbPath);
+                } else {
+                    Log.e(TAG, "fail to delete " + thumbPath);
+                }
+            }
         }
+
         setFullsizePicPath(null);
         saveToLocal();
     }

@@ -25,6 +25,7 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.ProfileChangeEvent;
+import com.wish.wishlist.image.PhotoFileCreater;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.image.ImageManager;
@@ -339,7 +340,7 @@ public class SyncAgent {
                 if (e == null) {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                     String fullsizePicPath = ImageManager.saveBitmapToFile(bitmap, parseFileNameToLocal(parseImage.getName()), 100);
-                    ImageManager.saveBitmapToThumb(bitmap, fullsizePicPath);
+                    ImageManager.saveBitmapToFile(bitmap, PhotoFileCreater.getInstance().thumbFilePath(fullsizePicPath));
                     if (existingItem != null) {
                         existingItem.removeImage();
                     }
