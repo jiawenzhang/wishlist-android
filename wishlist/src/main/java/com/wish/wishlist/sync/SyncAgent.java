@@ -144,7 +144,9 @@ public class SyncAgent {
 
                             if (parseItem.getBoolean(ItemDBManager.KEY_DELETED)) {
                                 Log.d(TAG, "item " + existingItem.getName() + " exists locally, deleting local one");
-                                WishItemManager.getInstance().deleteItemById(existingItem.getId());
+                                existingItem.removeImage();
+                                TagItemDBManager.instance().Remove_tags_by_item(existingItem.getId());
+                                ItemDBManager.deleteItem(existingItem.getId()); // remove from local db
 
                                 mSyncedTime = parseItem.getUpdatedAt();
                                 itemDownloadDone();
@@ -397,7 +399,15 @@ public class SyncAgent {
                 if (e == null) {
                     Log.d(TAG, "save wish success, object id: " + wishObject.getObjectId());
                     mSyncedTime = wishObject.getUpdatedAt();
+
                     WishItem item = WishItemManager.getInstance().getItemById(item_id);
+                    if (item.getDeleted()) {
+                        // we have updated the wish on parse server as deleted, we can now safely remove the item in local db
+                        ItemDBManager.deleteItem(item.getId());
+                        itemUploadDone();
+                        return;
+                    }
+
                     Log.d(TAG, "set item " + item.getName() + " synced to true");
                     item.setSyncedToServer(true);
                     if (isNew) {

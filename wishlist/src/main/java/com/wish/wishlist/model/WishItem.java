@@ -379,7 +379,6 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         _address = "";
         _link = "";
 
-        removeImage();
         _fullsizePicPath = "";
         mWebImgMetaJSON = null;
         mParseImgMetaJSON = "";

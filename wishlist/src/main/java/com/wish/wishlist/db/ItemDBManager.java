@@ -143,7 +143,7 @@ public class ItemDBManager extends DBManager {
 	 * @param _id
 	 *            The id of the item to delete
 	 */
-	public void deleteItem(long _id) {
+	public static void deleteItem(long _id) {
 		//delete from item table
 		String sql = String.format("DELETE FROM Item " + "WHERE _id = '%d' ", _id);
 		try {
@@ -154,10 +154,6 @@ public class ItemDBManager extends DBManager {
         TagItemDBManager.instance().Remove_tags_by_item(_id);
 
         //delete tags associated with this item
-		
-		//delete from location table
-
-		//delete from store table
 	}
 
 	/** Returns the number of Items with image*/

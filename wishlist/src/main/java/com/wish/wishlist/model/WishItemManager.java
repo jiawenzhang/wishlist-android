@@ -184,10 +184,19 @@ public class WishItemManager {
 
     public void deleteItemById(long itemId) {
         WishItem item = getItemById(itemId);
-        item.clear();
-        item.setDeleted(true);
+
+        item.removeImage();
         TagItemDBManager.instance().Remove_tags_by_item(itemId);
 
+        if (item.getObjectId().isEmpty()) {
+            // this wish has never been uploaded to parse, so it is safe to just delete it from db
+            ItemDBManager.deleteItem(itemId);
+            return;
+        }
+
+        // the wish exists on parse server, mark it as deleted so other device knows to delete it on sync
+        item.clear();
+        item.setDeleted(true);
         item.setUpdatedTime(System.currentTimeMillis());
         item.setSyncedToServer(false);
         item.saveToLocal();
