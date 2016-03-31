@@ -117,17 +117,6 @@ public class UserLoginActivity extends Activity {
             }
         });
 
-        Map<String, Object> params = new HashMap<>();
-        ParseCloud.callFunctionInBackground("createRoleACL", params, new FunctionCallback<Map<String, Object>>() {
-            public void done(Map<String, Object> mapObject, ParseException e) {
-                if (e == null) {
-                    Log.d(TAG, "create role success");
-                } else {
-                    Log.e(TAG, "create role failed " + e.toString());
-                }
-            }
-        });
-
         ProfileUtil.downloadProfileImage();
         SyncAgent.getInstance().sync();
 

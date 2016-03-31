@@ -173,6 +173,7 @@ public class SyncAgent {
         Log.d(TAG, "uploadToParse");
         ArrayList<WishItem> items = WishItemManager.getInstance().getItemsNotSyncedToServer();
         m_items_to_upload = items.size();
+        Log.d(TAG, "uploading " + m_items_to_upload + " items");
         if (m_items_to_upload == 0) {
             syncDone();
             return;
