@@ -67,9 +67,6 @@ public class WishlistApplication extends Application {
                     .addNetworkInterceptor(new ParseLogInterceptor())
                     .build());
 
-            ParseInstallation.getCurrentInstallation().saveInBackground();
-            //ParsePush.subscribeInBackground();
-
             Parse.setLogLevel(Parse.LOG_LEVEL_VERBOSE);
 
             // Optional - If you don't want to allow Twitter login, you can

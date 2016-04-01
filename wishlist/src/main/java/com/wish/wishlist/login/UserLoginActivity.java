@@ -105,17 +105,7 @@ public class UserLoginActivity extends Activity {
         // so self device can sync wishes from Parse
         final ParseInstallation installation = ParseInstallation.getCurrentInstallation();
         installation.put("user", ParseUser.getCurrentUser());
-        installation.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    Log.d(TAG, "installation saved");
-                    Log.d(TAG, "installation id: " + installation.getInstallationId());
-                } else {
-                    Log.e(TAG, e.toString());
-                }
-            }
-        });
+        installation.saveEventually();
 
         ProfileUtil.downloadProfileImage();
         SyncAgent.getInstance().sync();
