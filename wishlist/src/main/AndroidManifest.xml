@@ -36,10 +36,10 @@
       to match your app's package name + ".permission.C2D_MESSAGE".
     -->
     <permission
-        android:name="com.wish.wishlist.permission.C2D_MESSAGE"
+        android:name="${applicationId}.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.wish.wishlist.permission.C2D_MESSAGE" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
 
 
     <uses-feature
@@ -376,14 +376,15 @@
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
                 <!-- IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
-                <category android:name="com.wish.wishlist" />
+                <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.wish.wishlist.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:grantUriPermissions="true"
+            android:enabled="true"
             android:exported="false">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"

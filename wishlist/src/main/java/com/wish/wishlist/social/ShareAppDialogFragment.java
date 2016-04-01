@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.wish.wishlist.BuildConfig;
 import com.wish.wishlist.R;
 //import com.wish.wishlist.activity.FacebookPostActivity;
 import com.wish.wishlist.model.WishItem;
@@ -115,7 +116,7 @@ public class ShareAppDialogFragment extends DialogFragment {
                         String path = item.getFullsizePicPath();
                         if (path != null && !path.isEmpty()) {
                             try {
-                                Uri uri = FileProvider.getUriForFile(getActivity(), "com.wish.wishlist.fileprovider", new File(item.getFullsizePicPath()));
+                                Uri uri = FileProvider.getUriForFile(getActivity(), BuildConfig.APPLICATION_ID + ".fileprovider", new File(item.getFullsizePicPath()));
                                 Log.d(TAG, uri.toString());
                                 imageUris.add(uri);
                             } catch (IllegalArgumentException e) {

@@ -42,6 +42,8 @@ android {
         debug {
             debuggable true
             signingConfig signingConfigs.debug
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-debug'
         }
     }
 
