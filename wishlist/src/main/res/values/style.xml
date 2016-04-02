@@ -276,6 +276,10 @@
         <item name="colorPrimaryDark">@color/wishlist_yellow_color</item>
     </style>
 
+    <style name="AppCompatAlertDialogStyleNoTitle" parent="AppCompatAlertDialogStyle">
+        <item name="windowNoTitle">true</item>
+    </style>
+
 
     <style name="Wishlist.Dark.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="actionMenuTextAppearance">@style/Wishlist.actionMenuTextSize</item>

@@ -53,7 +53,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         if (mList.size() > 1) {
             // We have multiple images, we show them in a grid view that is loaded in onCreateView
-            return new AppCompatDialog(getActivity());
+            return new AppCompatDialog(getActivity(), R.style.AppCompatAlertDialogStyleNoTitle);
         }
 
         // We only have one image, show the image in an AlertDialog with a "Load more" button
