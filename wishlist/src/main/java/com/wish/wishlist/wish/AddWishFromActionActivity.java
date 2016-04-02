@@ -257,7 +257,7 @@ public class AddWishFromActionActivity extends AddWishActivity
                         mWebView.stopLoading();
                         mWebView.destroy();
                         Log.d(TAG, "stopped loading webview");
-                        if (!mWebResult._webImages.isEmpty()) {
+                        if (mWebResult != null && !mWebResult._webImages.isEmpty()) {
                             showImageDialog(true);
                         }
                     }
