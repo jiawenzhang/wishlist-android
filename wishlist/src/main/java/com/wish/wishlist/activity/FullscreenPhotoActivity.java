@@ -134,7 +134,9 @@ public class FullscreenPhotoActivity extends Activity {
         super.onDestroy();
 
         // Need to call clean-up
-        mAttacher.cleanup();
+        if (mAttacher != null) {
+            mAttacher.cleanup();
+        }
     }
 
     @Override
