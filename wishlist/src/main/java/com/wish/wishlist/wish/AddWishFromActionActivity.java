@@ -1,7 +1,7 @@
 package com.wish.wishlist.wish;
 
-import android.app.DialogFragment;
-import android.app.FragmentManager;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -75,6 +76,7 @@ public class AddWishFromActionActivity extends AddWishActivity
 
         @JavascriptInterface
         public void gotHTML(String html) {
+            // gotHTML could be called twice for some websites, usually the second time with more contents in html
             Log.d(TAG, "gotHTML");
             long time = System.currentTimeMillis() - mStartTime;
             Log.d(TAG, "webview show HTML took " + time + " ms");
@@ -277,7 +279,8 @@ public class AddWishFromActionActivity extends AddWishActivity
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                        /* This call inject JavaScript into the page which just finished loading. */
+                /* This call inject JavaScript into the page which just finished loading.
+                 * onPageFinished could be called twice for some websites, second time with different results*/
                 Log.d(TAG, "onPageFinished");
                 mWebView.loadUrl("javascript:window.HtmlViewer.gotHTML" +
                         "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
@@ -524,7 +527,13 @@ public class AddWishFromActionActivity extends AddWishActivity
 
     private void showImageDialog(boolean allowLoadMore) {
         DialogFragment fragment = WebImageFragmentDialog.newInstance(mWebResult._webImages, allowLoadMore);
-        final FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            WebImageFragmentDialog df = (WebImageFragmentDialog) prev;
+            df.reload(mWebResult._webImages, allowLoadMore);
+            return;
+        }
         Log.d(TAG, "fragment.show");
         fragment.show(fm, "dialog");
     }

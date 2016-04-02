@@ -6,7 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -34,6 +34,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
     private OnLoadMoreFromWebViewListener mLoadMoreFromWebView;
     private OnLoadMoreSelectedListener mLoadMoreSelectedListener;
     private OnWebImageCancelledListener mWebImageCancelledListener;
+    private RecyclerView mRecyclerView;
     private static boolean mAllowLoadMore = true;
     final private static String TAG = "WebImageFragmentDialog";
 
@@ -41,6 +42,25 @@ public class WebImageFragmentDialog extends DialogFragment implements
         mList = list;
         mAllowLoadMore = allowLoadMore;
         return new WebImageFragmentDialog();
+    }
+
+    public void reload(ArrayList<WebImage> list, boolean allowLoadMore) {
+        mList = list;
+        mAllowLoadMore = allowLoadMore;
+
+        if (mRecyclerView == null) {
+            return;
+        }
+
+        if (mAllowLoadMore) {
+            mList.add(new WebImage(null, 0, 0, "button", null));
+        }
+        for (WebImage img : mList) {
+            Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
+        }
+        mAdapter = new WebImageAdapter(mList, getActivity());
+        mAdapter.setWebImageTapListener(this);
+        mRecyclerView.swapAdapter(mAdapter, false);
     }
 
     @Override
@@ -110,9 +130,9 @@ public class WebImageFragmentDialog extends DialogFragment implements
         }
 
         View v = inflater.inflate(R.layout.web_image_view, container, false);
-        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.web_image_recycler_view);
+        mRecyclerView = (RecyclerView) v.findViewById(R.id.web_image_recycler_view);
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
         int itemSpace = (int) WishlistApplication.getAppContext().getResources().getDimension(R.dimen.item_decoration_space); // in px
         if (itemSpace % 2 != 0) {
             // odd number, make it even
@@ -120,7 +140,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
             itemSpace--;
         }
 
-        recyclerView.addItemDecoration(new ItemDecoration(itemSpace));
+        mRecyclerView.addItemDecoration(new ItemDecoration(itemSpace));
 
         if (mAdapter == null) {
             if (mList == null) {
@@ -136,7 +156,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
             mAdapter = new WebImageAdapter(mList, getActivity());
             mAdapter.setWebImageTapListener(this);
         }
-        recyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
         return v;
     }
 
