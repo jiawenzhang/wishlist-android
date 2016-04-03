@@ -150,7 +150,7 @@ public class MyWishActivity extends WishBaseActivity implements
             Log.d(TAG, "savedInstanceState == null");
         }
 
-        SyncAgent.getInstance().register(this);
+        SyncAgent.getInstance().registerListener(this);
 
         if (refreshEnabled()) {
             // only enable swipe down refresh when the first item in recycler view is visible
