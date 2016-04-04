@@ -11,7 +11,7 @@
             android:id="@+id/Add"
             android:checked="false"
             android:icon="@drawable/ic_action_add"
-            android:title="Add" />
+            android:title="New" />
         <item
             android:id="@+id/my_wish"
             android:checked="false"
