@@ -328,12 +328,14 @@ public class MyWishActivity extends WishBaseActivity implements
         // check if the activity is started from search
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             Analytics.send(Analytics.WISH, "Search", null);
-            MenuItemCompat.collapseActionView(mMenuSearch);
+            if (mMenuSearch != null) {
+                MenuItemCompat.collapseActionView(mMenuSearch);
+            }
             // activity is started from search, get the search query and
             // displayed the searched items
             mNameQuery = intent.getStringExtra(SearchManager.QUERY);
             updateFilterView(filterType.name);
-            MenuItem tagItem =  mMenu.findItem(R.id.menu_tags);
+            MenuItem tagItem = mMenu.findItem(R.id.menu_tags);
             MenuItemCompat.collapseActionView(tagItem);
 
             MenuItem statusItem = mMenu.findItem(R.id.menu_status);
