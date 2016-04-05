@@ -52,11 +52,14 @@ public class PrefsFragment extends PreferenceFragment implements
             }
         });
 
+        PreferenceCategory generalCategory = (PreferenceCategory) findPreference("general");
         if (!getResources().getBoolean(R.bool.enable_friend)) {
             final Preference p = findPreference("wishDefaultPrivate");
-            PreferenceCategory category = (PreferenceCategory) findPreference("general");
-            category.removePreference(p);
-            category.removePreference(userProfile);
+            generalCategory.removePreference(p);
+        }
+
+        if (!getResources().getBoolean(R.bool.enable_account)) {
+            generalCategory.removePreference(userProfile);
         }
 
         final Preference currencyPref = findPreference("currency");
@@ -127,8 +130,8 @@ public class PrefsFragment extends PreferenceFragment implements
 
         final Preference debug = findPreference("debug");
         if (!BuildConfig.DEBUG) {
-            PreferenceCategory category = (PreferenceCategory) findPreference("about");
-            category.removePreference(debug);
+            PreferenceCategory aboutCategory = (PreferenceCategory) findPreference("about");
+            aboutCategory.removePreference(debug);
         } else {
             debug.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
