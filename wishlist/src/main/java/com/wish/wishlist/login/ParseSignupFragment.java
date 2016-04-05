@@ -208,7 +208,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
               loadingFinish();
               signupSuccess();
             } else {
-              String message = "A link has been sent to " + username + ". Please click the link to verify your email before sign in";
+              String message = "Please check " + username + " to verify your email. Once verified, you can login and enjoy:";
               verifyEmail(message);
             }
           } else {

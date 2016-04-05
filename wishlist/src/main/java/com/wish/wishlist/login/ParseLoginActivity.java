@@ -33,9 +33,11 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
@@ -176,24 +178,38 @@ public class ParseLoginActivity extends FragmentActivity implements
   }
 
   @Override
-  public void onVerifyEmail(String message, boolean fromSignup) {
+  public void onVerifyEmail(String message, final boolean fromSignup) {
+    final AlertDialog.Builder builder = new AlertDialog.Builder(this, AppCompatAlertDialogStyle);
     if (fromSignup) {
-      onBackPressed();
-    }
+      View v = getLayoutInflater().inflate(R.layout.welcome_dialog, null);
+      TextView txtTitle = (TextView) v.findViewById(R.id.welcome_title);
+      txtTitle.setText("Welcome!");
 
-    AlertDialog.Builder builder = new AlertDialog.Builder(this, AppCompatAlertDialogStyle);
-    builder.setMessage(message);
-    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int id) {
-      }
-    });
+      TextView txtMessage = (TextView) v.findViewById(R.id.welcome_message);
+      txtMessage.setText(message);
+
+      // Fixme: should open email client to view email instead of sending an email to myself!
+      Linkify.addLinks(txtMessage, Linkify.EMAIL_ADDRESSES);
+
+      builder.setView(v);
+      builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {
+          onLoginSkip();
+        }
+      });
+    } else {
+      builder.setMessage(message);
+    }
 
     AlertDialog dialog;
     dialog = builder.create();
+
+    // do not allow dismiss on touching outside the dialog if it is from signup, force user to click OK to enter mywishview
+    dialog.setCanceledOnTouchOutside(!fromSignup);
     dialog.setOnShowListener(new DialogInterface.OnShowListener() {
       @Override
       public void onShow(DialogInterface dialog) {
-          ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_NEGATIVE).setVisibility(View.GONE);
+        ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE).setVisibility(View.GONE);
       }
     });
     dialog.show();
