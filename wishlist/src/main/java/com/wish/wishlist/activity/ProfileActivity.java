@@ -206,11 +206,7 @@ public class ProfileActivity extends ActivityBase implements
                             showLoginOption.save();
 
                             // re-launch the app
-                            Intent i = getBaseContext().getPackageManager()
-                                    .getLaunchIntentForPackage(getBaseContext().getPackageName());
-
-                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(i);
+                            WishlistApplication.restart();
                         } else {
                             Toast.makeText(ProfileActivity.this, "Fail to logout, check network?", Toast.LENGTH_LONG).show();
                         }

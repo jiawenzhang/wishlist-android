@@ -2,6 +2,7 @@ package com.wish.wishlist;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.facebook.FacebookSdk;
@@ -61,10 +62,11 @@ public class WishlistApplication extends Application {
             Parse.initialize(new Parse.Configuration.Builder(getAppContext())
                     .applicationId("myAppId")
                     .clientKey("foo")
-                    //.server("http://localhost:1337/parse")
-                    //.server("https://fast-badlands-99020.herokuapp.com/parse/")
+                            //.server("http://localhost:1337/parse")
+                            //.server("https://fast-badlands-99020.herokuapp.com/parse/")
                     .server("http://parse.beanswishlist.com:1337/parse/")
-                    .addNetworkInterceptor(new ParseLogInterceptor())
+                            //.server("http://192.168.1.68:1337/parse/")
+                            //.addNetworkInterceptor(new ParseLogInterceptor())
                     .build());
 
             Parse.setLogLevel(Parse.LOG_LEVEL_VERBOSE);
@@ -94,6 +96,15 @@ public class WishlistApplication extends Application {
 
     public static Context getAppContext() {
         return mContext;
+    }
+
+    public static void restart() {
+        // re-launch the app
+        Intent i = mContext.getPackageManager()
+                .getLaunchIntentForPackage(mContext.getPackageName());
+
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        mContext.startActivity(i);
     }
 
     public synchronized Tracker getTracker(TrackerName trackerId) {

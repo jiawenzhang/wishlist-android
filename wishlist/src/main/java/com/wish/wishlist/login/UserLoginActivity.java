@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.ProfileChangeEvent;
@@ -83,16 +84,11 @@ public class UserLoginActivity extends Activity {
 
     private void onLoginSkip() {
         Log.d(TAG, "login skip");
-        if (mFromSplash) {
-            // Don't show login again on next startup
-            Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup(0);
-            showLoginOption.save();
+        // Don't show login again on next startup
+        Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup(0);
+        showLoginOption.save();
 
-            startActivity(new Intent(this, MyWishActivity.class));
-        } else {
-            // from Settings->ProfileActivity
-            startActivity(new Intent(getApplication(), ProfileActivity.class));
-        }
+        startActivity(new Intent(this, MyWishActivity.class));
         finish();
     }
 
@@ -113,9 +109,8 @@ public class UserLoginActivity extends Activity {
         if (mFromSplash) {
             startActivity(new Intent(this, MyWishActivity.class));
         } else {
-            // event will notify navigation drawer to update username, email and profile image
-            EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.all));
-            startActivity(new Intent(getApplication(), ProfileActivity.class));
+            // from tapping "Profile" in Settings
+            WishlistApplication.restart();
         }
         finish();
     }
