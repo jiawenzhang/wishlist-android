@@ -492,7 +492,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         super.showItemInfo();
         final ImageView privateImage = (ImageView) findViewById(R.id.imgPrivate);
 
-        if (getResources().getBoolean(R.bool.enable_account)) {
+        if (getResources().getBoolean(R.bool.enable_friend)) {
             if (mItem.getAccess() == mItem.PRIVATE) {
                 privateImage.setVisibility(View.VISIBLE);
             } else {

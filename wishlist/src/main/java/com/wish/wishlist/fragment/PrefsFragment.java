@@ -52,7 +52,7 @@ public class PrefsFragment extends PreferenceFragment implements
             }
         });
 
-        if (!getResources().getBoolean(R.bool.enable_account)) {
+        if (!getResources().getBoolean(R.bool.enable_friend)) {
             final Preference p = findPreference("wishDefaultPrivate");
             PreferenceCategory category = (PreferenceCategory) findPreference("general");
             category.removePreference(p);

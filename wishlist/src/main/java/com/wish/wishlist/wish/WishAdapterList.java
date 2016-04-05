@@ -136,7 +136,7 @@ public class WishAdapterList extends WishAdapter {
             holder.imgComplete.setVisibility(View.GONE);
         }
 
-        if (WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_account)) {
+        if (WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_friend)) {
             int access = wish.getAccess();
             if (access == wish.PRIVATE) {
                 holder.imgPrivate.setVisibility(View.VISIBLE);

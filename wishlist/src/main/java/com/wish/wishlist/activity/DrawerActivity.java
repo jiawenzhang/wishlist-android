@@ -45,7 +45,7 @@ public abstract class DrawerActivity extends ActivityBase {
     protected abstract void setContentView();
 
     protected void prepareDrawerList() {
-        if (!getResources().getBoolean(R.bool.enable_account)) {
+        if (!getResources().getBoolean(R.bool.enable_friend)) {
             mNavigationView.getMenu().findItem(R.id.friends).setVisible(false);
         }
     }
