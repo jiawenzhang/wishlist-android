@@ -1,69 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/bodyBackground_light_grey"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <include
-        layout="@layout/tool_bar"
-        android:id="@+id/profile_toolbar"
-        />
-
-    <ScrollView
+    <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:background="@color/bodyBackground_light_grey"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <include
+            layout="@layout/tool_bar"
+            android:id="@+id/profile_toolbar"
+            />
+
+        <ScrollView
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             >
 
-            <RelativeLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/drawer_header_layout"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="190dp"
-                android:background="@color/material_dark"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 >
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/profile_image"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:layout_gravity="center"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginBottom="40dp"
-                    android:src="@drawable/default_profile_image"
+                <RelativeLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/drawer_header_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:background="@color/material_dark"
+                    android:orientation="vertical"
+                    >
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:layout_gravity="center"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="40dp"
+                        android:layout_marginBottom="40dp"
+                        android:src="@drawable/default_profile_image"
+                        />
+
+                </RelativeLayout>
+
+                <include
+                    android:id="@+id/profile_username"
+                    android:clickable="false"
+                    layout="@layout/profile_item"
                     />
 
-            </RelativeLayout>
+                <include
+                    android:id="@+id/profile_name"
+                    layout="@layout/profile_item"/>
 
-            <include
-                android:id="@+id/profile_username"
-                android:clickable="false"
-                layout="@layout/profile_item"
-                />
+                <include
+                    android:id="@+id/profile_email"
+                    layout="@layout/profile_item"/>
 
-            <include
-                android:id="@+id/profile_name"
-                layout="@layout/profile_item"/>
+                <include
+                    android:id="@+id/profile_change_password"
+                    layout="@layout/profile_item"/>
 
-            <include
-                android:id="@+id/profile_email"
-                layout="@layout/profile_item"/>
-
-            <include
-                android:id="@+id/profile_change_password"
-                layout="@layout/profile_item"/>
-
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.app.DialogFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
@@ -29,6 +30,7 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 import com.path.android.jobqueue.JobManager;
+import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.event.ProfileChangeEvent;
@@ -36,6 +38,8 @@ import com.wish.wishlist.fragment.EmailFragmentDialog;
 import com.wish.wishlist.fragment.NameFragmentDialog;
 import com.wish.wishlist.job.UploadProfileImageJob;
 import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.sync.SyncAgent;
+import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ProfileUtil;
 
@@ -58,6 +62,7 @@ public class ProfileActivity extends ActivityBase implements
     private TextView mNameTextView;
     private TextView mEmailTextView;
     private TextView mPasswordTextView;
+    protected SwipeRefreshLayout mSwipeRefreshLayout;
 
     private ProgressDialog mProgressDialog = null;
 
@@ -73,8 +78,29 @@ public class ProfileActivity extends ActivityBase implements
             return;
         }
 
+        // listen for ProfileChange event, triggered by push or swipe down to sync
+        EventBus.getInstance().register(this);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        // the refresh listener. this would be called when the layout is pulled down
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+                    Toast.makeText(ProfileActivity.this, "Check network", Toast.LENGTH_LONG).show();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    return;
+                }
+                Log.d(TAG, "refresh");
+                // we immediately stop spinning instead of waiting for sync to finish
+                // so that if there is sync error, we won't end up having an infinite spinning
+                mSwipeRefreshLayout.setRefreshing(false);
+                SyncAgent.getInstance().updateProfileFromParse();
+            }
+        });
+
         ProfileUtil.downloadProfileImageIfNotExists();
-        showProfileImage();
+        setProfileImage();
         ImageView profileImage = (ImageView) findViewById(R.id.profile_image);
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,6 +203,12 @@ public class ProfileActivity extends ActivityBase implements
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getInstance().unregister(this);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         if (mUser != null) {
@@ -237,7 +269,7 @@ public class ProfileActivity extends ActivityBase implements
         }
     }
 
-    private void showProfileImage() {
+    private void setProfileImage() {
         Bitmap bitmap = ProfileUtil.profileImageBitmap();
         if (bitmap != null) {
             ImageView profileImageView = (ImageView) findViewById(R.id.profile_image);
@@ -248,7 +280,7 @@ public class ProfileActivity extends ActivityBase implements
     private void saveProfileImageToParse () {
         JobManager jobManager = ((WishlistApplication) getApplication()).getJobManager();
         jobManager.addJobInBackground(new UploadProfileImageJob());
-        showProfileImage();
+        setProfileImage();
     }
 
     /**
@@ -353,6 +385,23 @@ public class ProfileActivity extends ActivityBase implements
             mUser.saveEventually();
             mEmailTextView.setText(email);
             EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.email));
+        }
+    }
+
+    @Subscribe
+    public void profileChanged(ProfileChangeEvent event) {
+        Log.d(TAG, "profileChanged " + event.type.toString());
+        mUser = ParseUser.getCurrentUser();
+        if (event.type == ProfileChangeEvent.ProfileChangeType.email) {
+            mEmailTextView.setText(mUser.getEmail());
+        } else if (event.type == ProfileChangeEvent.ProfileChangeType.name) {
+            mNameTextView.setText(mUser.getString("name"));
+        } else if (event.type == ProfileChangeEvent.ProfileChangeType.image) {
+            setProfileImage();
+        } else if (event.type == ProfileChangeEvent.ProfileChangeType.all) {
+            mEmailTextView.setText(mUser.getEmail());
+            mNameTextView.setText(mUser.getString("name"));
+            setProfileImage();
         }
     }
 }
