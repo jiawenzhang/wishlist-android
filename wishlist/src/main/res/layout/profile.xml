@@ -34,7 +34,7 @@
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/drawer_header_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="170dp"
+                    android:layout_height="150dp"
                     android:background="@color/material_dark"
                     android:orientation="vertical"
                     >
