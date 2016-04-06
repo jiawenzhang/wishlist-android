@@ -34,7 +34,7 @@
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/drawer_header_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="190dp"
+                    android:layout_height="170dp"
                     android:background="@color/material_dark"
                     android:orientation="vertical"
                     >
@@ -44,13 +44,39 @@
                         android:layout_width="96dp"
                         android:layout_height="96dp"
                         android:layout_gravity="center"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="40dp"
-                        android:layout_marginBottom="40dp"
                         android:src="@drawable/default_profile_image"
-                        />
+                        android:layout_centerInParent="true"/>
 
                 </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp"
+                    android:background="@color/material_dark"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="10dp">
+
+                    <TextView
+                        android:id="@+id/wish_count"
+                        style="@style/WishStatsTextView"
+                        android:text="15\nWishes"
+                        />
+
+                    <TextView
+                        android:id="@+id/completed_count"
+                        style="@style/WishStatsTextView"
+                        android:text="5\nCompleted"
+                        />
+
+                    <TextView
+                        android:id="@+id/wish_value"
+                        style="@style/WishStatsTextView"
+                        android:text="256\n$Value"
+                        />
+                </LinearLayout>
 
                 <include
                     android:id="@+id/profile_username"

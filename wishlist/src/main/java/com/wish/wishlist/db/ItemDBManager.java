@@ -158,7 +158,6 @@ public class ItemDBManager extends DBManager {
 
 	/** Returns the number of Items with image*/
 	public static int getImageItemsCount() {
-
 		Cursor c = null;
 		try {
 			c = DBAdapter.getInstance().db().rawQuery(
@@ -180,11 +179,52 @@ public class ItemDBManager extends DBManager {
 
 	/** Returns the number of Items */
 	public static int getItemsCount() {
-
 		Cursor c = null;
 		try {
 			c = DBAdapter.getInstance().db().rawQuery(
 					"SELECT count(*) FROM Item WHERE deleted=0", null);
+			if (0 >= c.getCount()) {
+				return 0;
+			}
+			c.moveToFirst();
+			return c.getInt(0);
+		} finally {
+			if (null != c) {
+				try {
+					c.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+	}
+
+	/** Returns the number of completed Items */
+	public static int getCompletedItemsCount() {
+		Cursor c = null;
+		try {
+			c = DBAdapter.getInstance().db().rawQuery(
+					"SELECT count(*) FROM Item WHERE deleted=0 AND + " + KEY_COMPLETE + "=1", null);
+			if (0 >= c.getCount()) {
+				return 0;
+			}
+			c.moveToFirst();
+			return c.getInt(0);
+		} finally {
+			if (null != c) {
+				try {
+					c.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+	}
+
+	/** Returns the total value of Items */
+	public static int getTotalValue() {
+		Cursor c = null;
+		try {
+			c = DBAdapter.getInstance().db().rawQuery(
+					"SELECT sum(price) FROM Item WHERE deleted=0", null);
 			if (0 >= c.getCount()) {
 				return 0;
 			}

@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.app.DialogFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -33,6 +34,7 @@ import com.path.android.jobqueue.JobManager;
 import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.fragment.EmailFragmentDialog;
 import com.wish.wishlist.fragment.NameFragmentDialog;
@@ -108,6 +110,23 @@ public class ProfileActivity extends ActivityBase implements
                 startActivityForResult(getPickImageChooserIntent(), CHOOSE_IMAGE);
             }
         });
+
+        TextView wish_count = (TextView) findViewById(R.id.wish_count);
+        int count = ItemDBManager.getItemsCount();
+        String txt = count > 1 ? "Wishes" : "Wish";
+        wish_count.setText(count + "\n" + txt);
+
+        int completedCount = ItemDBManager.getCompletedItemsCount();
+        TextView completed_count = (TextView) findViewById(R.id.completed_count);
+        completed_count.setText(completedCount + "\nCompleted");
+
+        double value = ItemDBManager.getTotalValue();
+        TextView wish_value = (TextView) findViewById(R.id.wish_value);
+        String currency = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).getString("currency", "");
+        if (currency.isEmpty()) {
+            currency = "Value";
+        }
+        wish_value.setText((int)value + "\n" + currency);
 
         FrameLayout profile_username = (FrameLayout) findViewById(R.id.profile_username);
         FrameLayout profile_name = (FrameLayout) findViewById(R.id.profile_name);
