@@ -23,7 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:maxWidth="270dp"
-        android:text="Sign up to sync your wishes to cloud and see wishes from friends"
+        android:text="Sign up to backup wishes to cloud and sync among different devices"
         android:textSize="@dimen/text_size_small"
         android:textColor="@color/less_white" />
+    <!--android:text="Sign up to sync your wishes to cloud and see wishes from friends"-->
 </LinearLayout>
