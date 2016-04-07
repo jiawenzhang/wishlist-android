@@ -100,8 +100,7 @@ public class UploadTask {
         });
     }
 
-    private void uploadParseObject(final ParseObject wishObject, final long item_id, final boolean isNew)
-    {
+    private void uploadParseObject(final ParseObject wishObject, final long item_id, final boolean isNew) {
         wishObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(com.parse.ParseException e) {
@@ -133,8 +132,7 @@ public class UploadTask {
         });
     }
 
-    private void addToParse(final WishItem item)
-    {
+    private void addToParse(final WishItem item) {
         Log.d(TAG, "Adding new item " + item.getName() + " to Parse");
         final ParseObject wishObject = item.toParseObject();
         if (item.getWebImgMetaJSON() != null || item.getThumbPicPath() == null) {
@@ -146,8 +144,7 @@ public class UploadTask {
         uploadToParseWithImage(wishObject, item, true);
     }
 
-    private void updateParse(final WishItem item)
-    {
+    private void updateParse(final WishItem item) {
         Log.d(TAG, "Updating item " + item.getName() + " to Parse");
         final ParseQuery<ParseObject> query = ParseQuery.getQuery(ItemDBManager.DB_TABLE);
 

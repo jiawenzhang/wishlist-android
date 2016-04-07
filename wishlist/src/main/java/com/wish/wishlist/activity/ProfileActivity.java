@@ -41,6 +41,7 @@ import com.wish.wishlist.fragment.NameFragmentDialog;
 import com.wish.wishlist.job.UploadProfileImageJob;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.sync.SyncAgent;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ProfileUtil;
@@ -243,27 +244,47 @@ public class ProfileActivity extends ActivityBase implements
                 finish();
                 return true;
             case R.id.menu_profile_logout:
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("Logging out...");
-                mProgressDialog.setCancelable(false);
-                mProgressDialog.show();
-                mUser.logOutInBackground(new LogOutCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            // logout successful
-                            // show login on next app startup
-                            Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup(1);
-                            showLoginOption.save();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+                builder.setMessage("Are you sure to logout?");
+                builder.setCancelable(false);
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Analytics.send(Analytics.APP, "Logout", null);
 
-                            // re-launch the app
-                            WishlistApplication.restart();
-                        } else {
-                            Toast.makeText(ProfileActivity.this, "Fail to logout, check network?", Toast.LENGTH_LONG).show();
-                        }
-                        mProgressDialog.dismiss();
+                        mProgressDialog = new ProgressDialog(ProfileActivity.this);
+                        mProgressDialog.setMessage("Logging out...");
+                        mProgressDialog.setCancelable(false);
+                        mProgressDialog.show();
+                        mUser.logOutInBackground(new LogOutCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    // logout successful
+                                    // show login on next app startup
+                                    Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup(1);
+                                    showLoginOption.save();
+
+                                    // re-launch the app
+                                    WishlistApplication.restart();
+                                } else {
+                                    Toast.makeText(ProfileActivity.this, "Fail to logout, check network?", Toast.LENGTH_LONG).show();
+                                }
+                                mProgressDialog.dismiss();
+                            }
+                        });
                     }
                 });
+
+                builder.setNegativeButton("CANCEL",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog dialog;
+                dialog = builder.create();
+                dialog.show();
             default:
                 return super.onOptionsItemSelected(item);
         }
