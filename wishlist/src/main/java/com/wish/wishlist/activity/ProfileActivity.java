@@ -20,8 +20,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -99,6 +101,16 @@ public class ProfileActivity extends ActivityBase implements
                 // so that if there is sync error, we won't end up having an infinite spinning
                 mSwipeRefreshLayout.setRefreshing(false);
                 SyncAgent.getInstance().updateProfileFromParse();
+            }
+        });
+
+        final ScrollView scrollView = (ScrollView) findViewById(R.id.profile_scrollview);
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollY = scrollView.getScrollY(); //for verticalScrollView
+                // only enable swipe refresh when have scrolled to the top
+                mSwipeRefreshLayout.setEnabled(scrollY == 0);
             }
         });
 
