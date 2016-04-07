@@ -255,7 +255,7 @@ public class ProfileActivity extends ActivityBase implements
                         mProgressDialog.setMessage("Logging out...");
                         mProgressDialog.setCancelable(false);
                         mProgressDialog.show();
-                        mUser.logOutInBackground(new LogOutCallback() {
+                        ParseUser.logOutInBackground(new LogOutCallback() {
                             @Override
                             public void done(ParseException e) {
                                 if (e == null) {
