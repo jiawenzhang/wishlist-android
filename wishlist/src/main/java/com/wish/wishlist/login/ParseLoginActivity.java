@@ -217,8 +217,24 @@ public class ParseLoginActivity extends FragmentActivity implements
 
   @Override
   public void onLoginSkip() {
-    setResult(RESULT_LOGIN_SKIP);
-    finish();
+    final AlertDialog.Builder builder = new AlertDialog.Builder(this, AppCompatAlertDialogStyle);
+    builder.setMessage("Without login, you won't be able to backup wishes to cloud and sync wishes among your different devices.\n\nStill wanna skip?");
+    builder.setPositiveButton("SKIP", new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int id) {
+        setResult(RESULT_LOGIN_SKIP);
+        finish();
+      }
+    });
+
+    builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int id) {
+        dialog.cancel();
+      }
+    });
+
+    AlertDialog dialog;
+    dialog = builder.create();
+    dialog.show();
   }
 
   /**
