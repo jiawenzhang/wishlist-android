@@ -188,7 +188,9 @@ public class WishItemManager {
         item.removeImage();
         TagItemDBManager.instance().Remove_tags_by_item(itemId);
 
-        if (item.getObjectId().isEmpty()) {
+        // check null is needed because during db migration where object_id column is added, migrated wish's
+        // object_id is all null!
+        if (item.getObjectId() == null || item.getObjectId().isEmpty()) {
             // this wish has never been uploaded to parse, so it is safe to just delete it from db
             ItemDBManager.deleteItem(itemId);
             return;
