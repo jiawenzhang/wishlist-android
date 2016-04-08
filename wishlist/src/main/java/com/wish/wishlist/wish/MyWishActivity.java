@@ -171,6 +171,7 @@ public class MyWishActivity extends WishBaseActivity implements
                         return;
                     }
                     mSwipeRefreshLayout.setRefreshing(true);
+                    showSyncingText(true);
                     Log.d(TAG, "refresh");
                     SyncAgent.getInstance().sync();
                     // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation
@@ -190,8 +191,7 @@ public class MyWishActivity extends WishBaseActivity implements
             @Override
             public void run() {
                 if (SyncAgent.getInstance().downloading()) {
-                    Log.e(TAG, "set refreshing");
-                    mSwipeRefreshLayout.setRefreshing(true);
+                    showSyncingText(true);
                 }
             }
         });
@@ -688,6 +688,7 @@ public class MyWishActivity extends WishBaseActivity implements
     public void onDownloadWishDone(boolean success) {
         Log.d(TAG, "onDownloadWishDone success? " + success);
         mSwipeRefreshLayout.setRefreshing(false);
+        showSyncingText(false);
         if (!success) {
             Toast.makeText(this, "Sync error, check network", Toast.LENGTH_LONG).show();
         }
@@ -757,6 +758,14 @@ public class MyWishActivity extends WishBaseActivity implements
             return ParseUser.getCurrentUser() != null;
         } else {
             return false;
+        }
+    }
+
+    private void showSyncingText(boolean value) {
+        if (value) {
+            getSupportActionBar().setTitle(R.string.syncing);
+        } else {
+            getSupportActionBar().setTitle(R.string.app_name);
         }
     }
 }
