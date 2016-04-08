@@ -176,8 +176,6 @@ public class ImageManager
 
             File f = new File(thumbPath);
             Log.d(TAG, "Thumb file size: " + f.length()/1024 + "kB");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -191,8 +189,6 @@ public class ImageManager
             bos.write(data);
             bos.close();
             return true;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -208,8 +204,6 @@ public class ImageManager
             BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
             buf.read(bytes, 0, bytes.length);
             buf.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
