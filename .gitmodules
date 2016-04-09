@@ -9,4 +9,4 @@
 	url = https://github.com/jiawenzhang/TokenAutoComplete.git
 [submodule "third-party/Android-Cloud-TagView-Plus"]
 	path = third-party/Android-Cloud-TagView-Plus
-	url = https://github.com/kaedea/Android-Cloud-TagView-Plus
+	url = https://github.com/jiawenzhang/Android-Cloud-TagView-Plus.git
