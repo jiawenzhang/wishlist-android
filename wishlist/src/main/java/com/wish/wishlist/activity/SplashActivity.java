@@ -1,11 +1,11 @@
 package com.wish.wishlist.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.parse.ParseUser;
@@ -21,7 +21,7 @@ import com.wish.wishlist.wish.MyWishActivity;
 
 import java.io.File;
 
-public class SplashActivity extends Activity implements
+public class SplashActivity extends AppCompatActivity implements
         MigrationTask.OnMigrationDone {
     private static final String TAG = "SplashActivity";
     private ProgressDialog mProgressDialog;

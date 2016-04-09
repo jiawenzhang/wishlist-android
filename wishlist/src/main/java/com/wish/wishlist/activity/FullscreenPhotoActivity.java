@@ -4,7 +4,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wish.wishlist.R;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -21,12 +21,11 @@ import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.dimension;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-public class FullscreenPhotoActivity extends Activity {
+public class FullscreenPhotoActivity extends AppCompatActivity {
     private static final String TAG = "FullscreenPhotoAct";
     private String mPhotoPath;
     private String mPhotoUri;
@@ -92,9 +91,6 @@ public class FullscreenPhotoActivity extends Activity {
                 Uri photoUri = Uri.parse(mPhotoUri);
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
                 showPhoto(bitmap);
-            } catch (FileNotFoundException e) {
-                Log.e(TAG, e.toString());
-                finish();
             } catch (IOException e) {
                 Log.e(TAG, e.toString());
                 finish();
