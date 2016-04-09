@@ -1,8 +1,10 @@
 package com.wish.wishlist.sync;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.parse.GetCallback;
@@ -19,6 +21,9 @@ import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.ProfileUtil;
 import com.wish.wishlist.util.StringUtil;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Date;
 
 /**
@@ -39,6 +44,44 @@ public class SyncAgent implements
     private boolean mScheduleToSync = false;
     private static String TAG = "SyncAgent";
     public static String LAST_SYNCED_TIME = "lastSyncedTime";
+
+    private class CheckServerReachable extends AsyncTask<Void, Void, Boolean> {//<param, progress, result>
+        @Override
+        protected Boolean doInBackground(Void... arg) {
+            // isNetworkAvailable() only is not sufficient to tell if we have internet.
+            // it only tells us if the network interface is up. if the device is connected to a
+            // wifi hotspot that does not have internet access, isNetworkAvailable will return true, but
+            // device still does not have internet. so do an extra http connect to the parse server to check
+            // if the device can "actually" reach the server
+            if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+                Log.d(TAG, "no network, sync is not started");
+                // Fixme: shall we attempt sync later?
+                return false;
+            }
+
+            try {
+                URL urlServer = new URL(WishlistApplication.getAppContext().getString(R.string.parse_server_url));
+                HttpURLConnection urlConn = (HttpURLConnection) urlServer.openConnection();
+                urlConn.setConnectTimeout(1500);
+                urlConn.connect();
+                if (urlConn.getResponseCode() == 200) {
+                    Log.d(TAG, "parse server reachable");
+                    return true;
+                } else {
+                    Log.e(TAG, "parse server unreachable");
+                    return false;
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "parse server unreachable, error: " + e.toString());
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean reachable) {
+            serverReachable(reachable);
+        }
+    }
 
     /* listener */
     public interface OnSyncWishChangedListener {
@@ -98,14 +141,17 @@ public class SyncAgent implements
             return;
         }
 
-        if (!NetworkHelper.getInstance().isNetworkAvailable()) {
-            Log.d(TAG, "no network, sync is not started");
-            // Fixme: shall we attempt sync later?
-            return;
-        }
-
         mSyncing = true;
         mDownloading = true;
+
+        new CheckServerReachable().execute();
+    }
+
+    private void serverReachable(boolean reachable) {
+        if (!reachable) {
+            syncFailed();
+            return;
+        }
 
         // start the sync process with downloadTask, then uploadTask
         // the subsequent task will be started when the previous task is done

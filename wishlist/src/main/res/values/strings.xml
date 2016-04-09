@@ -243,5 +243,6 @@
 
     <!-- message -->
     <string name="saving_image">Saving&#x2026;</string>
+    <string name="parse_server_url">http://parse.beanswishlist.com:1337</string>
 
 </resources>

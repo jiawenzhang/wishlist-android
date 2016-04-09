@@ -64,7 +64,7 @@ public class WishlistApplication extends Application {
                     .clientKey("foo")
                             //.server("http://localhost:1337/parse")
                             //.server("https://fast-badlands-99020.herokuapp.com/parse/")
-                    .server("http://parse.beanswishlist.com:1337/parse/")
+                    .server(getString(R.string.parse_server_url) + "/parse/")
                             //.server("http://192.168.1.68:1337/parse/")
                             //.addNetworkInterceptor(new ParseLogInterceptor())
                     .build());
