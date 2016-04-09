@@ -197,7 +197,7 @@ public class WishItemManager {
         }
 
         // the wish exists on parse server, mark it as deleted so other device knows to delete it on sync
-        item.clear();
+        // item.clear();
         item.setDeleted(true);
         item.setUpdatedTime(System.currentTimeMillis());
         item.setSyncedToServer(false);
