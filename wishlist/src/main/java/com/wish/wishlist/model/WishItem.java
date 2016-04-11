@@ -37,25 +37,25 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     public static final int PUBLIC = 0;
     public static final int PRIVATE = 1;
 
-    private long _id = -1;
-    private String _object_id;
-    private int _access = PUBLIC;
-    private String _storeName;
-    private String _name;
-    private String _comments;
-    private String _desc;
-    private long _updated_time;
+    private long mId = -1;
+    private String mObjectId;
+    private int mAccess = PUBLIC;
+    private String mStoreName;
+    private String mName;
+    private String mComments;
+    private String mDescription;
+    private long mUpdatedTime;
     private String mImgMetaJSON;
-    private String _fullsizePicPath;
-    private int _priority;
-    private int _complete;
-    private String _link;
-    private double _price;
-    private double _latitude;
-    private double _longitude;
-    private String _address;
-    private boolean _deleted;
-    private boolean _synced_to_server;
+    private String mFullsizePicPath;
+    private int mPriority;
+    private int mComplete;
+    private String mLink;
+    private double mPrice;
+    private double mLatitude;
+    private double mLongitude;
+    private String mAddress;
+    private boolean mDeleted;
+    private boolean mSyncedToServer;
     private boolean mDownloadImg;
 
     public final static String PARSE_KEY_OWNDER_ID = "owner_id";
@@ -82,66 +82,66 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
             boolean deleted,
             boolean synced_to_server,
             boolean download_img) {
-        _id = itemId;
-        _object_id = object_id;
-        _access = access;
-        _fullsizePicPath = fullsizePicPath;
-        _price = price;
-        _latitude = latitude;
-        _longitude = longitude;
-        _address = address;
+        mId = itemId;
+        mObjectId = object_id;
+        mAccess = access;
+        mFullsizePicPath = fullsizePicPath;
+        mPrice = price;
+        mLatitude = latitude;
+        mLongitude = longitude;
+        mAddress = address;
         mImgMetaJSON = imgMetaJSON;
-        _storeName = storeName;
-        _name = name;
-        _desc = desc;
-        _updated_time = updated_time;
-        _priority = priority;
-        _complete = complete;
-        _link = link;
-        _deleted = deleted;
-        _synced_to_server = synced_to_server;
+        mStoreName = storeName;
+        mName = name;
+        mDescription = desc;
+        mUpdatedTime = updated_time;
+        mPriority = priority;
+        mComplete = complete;
+        mLink = link;
+        mDeleted = deleted;
+        mSyncedToServer = synced_to_server;
         mDownloadImg = download_img;
     }
 
     public long getId() {
-        return _id;
+        return mId;
     }
 
     public String getKey() {
-        if (_id == -1) {
-            return _object_id;
+        if (mId == -1) {
+            return mObjectId;
         }
-        return String.valueOf(_id);
+        return String.valueOf(mId);
     }
 
     public String getObjectId() {
-        return _object_id;
+        return mObjectId;
     }
     public void setObjectId(final String object_id) {
-        _object_id = object_id;
+        mObjectId = object_id;
     }
 
     public int getAccess() {
-        return _access;
+        return mAccess;
     }
     public void setAccess(final int access) {
-        _access = access;
+        mAccess = access;
     }
 
     public boolean getDeleted() {
-        return _deleted;
+        return mDeleted;
     }
 
     public void setDeleted(boolean value) {
-        _deleted = value;
+        mDeleted = value;
     }
 
     public boolean getSyncedToServer() {
-        return _synced_to_server;
+        return mSyncedToServer;
     }
 
     public void setSyncedToServer(boolean value) {
-        _synced_to_server = value;
+        mSyncedToServer = value;
     }
 
     public boolean getDownloadImg() {
@@ -153,27 +153,27 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     }
 
     public void setStoreName(String storeName) {
-        _storeName = storeName;
+        mStoreName = storeName;
     }
 
     public String getStoreName() {
-        return _storeName;
+        return mStoreName;
     }
 
     public void setPrice(double p) {
-        _price = p;
+        mPrice = p;
     }
 
     public double getPrice() {
-        return _price;
+        return mPrice;
     }
 
     public String getPriceAsString() {
-        if (_price == Double.MIN_VALUE) {
+        if (mPrice == Double.MIN_VALUE) {
             return null;
         } else {
             DecimalFormat Dec = new DecimalFormat("0.00");
-            String priceStr = (Dec.format(_price));
+            String priceStr = (Dec.format(mPrice));
 
             return priceStr;
         }
@@ -188,11 +188,11 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     }
 
     public double getLatitude() {
-        return _latitude;
+        return mLatitude;
     }
 
     public double getLongitude() {
-        return _longitude;
+        return mLongitude;
     }
 
     public boolean hasGeoLocation() {
@@ -200,94 +200,94 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     }
 
     public void setAddress(String add) {
-        _address = add;
+        mAddress = add;
     }
 
     public String getAddress() {
-        return _address;
+        return mAddress;
     }
 
     public void setLatitude(double lat) {
-        _latitude = lat;
+        mLatitude = lat;
     }
 
     public void setLongitude(double lng) {
-        _longitude = lng;
+        mLongitude = lng;
     }
 
     public String getPriorityStr() {
-        return Integer.toString(_priority);
+        return Integer.toString(mPriority);
     }
 
     public int getPriority() {
-        return _priority;
+        return mPriority;
     }
 
     public void setPriority(String priority) {
-        this._priority = Integer.getInteger(priority);
+        this.mPriority = Integer.getInteger(priority);
     }
 
     public int getComplete() {
-        return _complete;
+        return mComplete;
     }
 
     public void setComplete(int complete) {
-        this._complete = complete;
+        this.mComplete = complete;
     }
 
     public String getLink() {
-        return _link;
+        return mLink;
     }
 
     public void setLink(String link) {
-        _link = link;
+        mLink = link;
     }
 
     public String getName() {
-        return _name;
+        return mName;
     }
 
     public void setName(String name) {
-        this._name = name;
+        this.mName = name;
     }
 
     public long getUpdatedTime() {
-        return _updated_time;
+        return mUpdatedTime;
     }
 
     public void setUpdatedTime(long time) {
-        _updated_time = time;
+        mUpdatedTime = time;
     }
 
     public String getUpdatedTimeStr() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return sdf.format(new Date(_updated_time));
+        return sdf.format(new Date(mUpdatedTime));
     }
 
     public String getDesc() {
-        return _desc;
+        return mDescription;
     }
 
     public void setDesc(String desc) {
-        _desc = desc;
+        mDescription = desc;
     }
 
     public String getComments() {
-        return _comments;
+        return mComments;
     }
 
     public void setComments(String com) {
-        _comments = com;
+        mComments = com;
     }
 
     public String getFullsizePicPath() {
-        if (_fullsizePicPath == null) {
+        if (mFullsizePicPath == null) {
             return null;
         } //need a db migration to remove this stupid check
-        else if (_fullsizePicPath.equals(" ")) {
+        else if (mFullsizePicPath.equals(" ")) {
             return null;
         } else {
-            return _fullsizePicPath;
+            return mFullsizePicPath;
         }
     }
 
@@ -302,11 +302,11 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         if (getFullsizePicPath() == null) {
             return null;
         }
-        return _fullsizePicPath.substring(_fullsizePicPath.lastIndexOf("/") + 1);
+        return mFullsizePicPath.substring(mFullsizePicPath.lastIndexOf("/") + 1);
     }
 
     public void setFullsizePicPath(String path) {
-        _fullsizePicPath = path;
+        mFullsizePicPath = path;
     }
 
     public Uri getFullsizePicUri() {
@@ -377,22 +377,22 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     @Override
     public String toString() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
-        Date date = new Date(_updated_time);
+        Date date = new Date(mUpdatedTime);
         String dateString = sdf.format(date);
-        return "(" + dateString + ") " + _name + " " + _desc;
+        return "(" + dateString + ") " + mName + " " + mDescription;
     }
 
     public void clear() {
         // clear the attributes of a wish, called when deleting a wish,
         // so that the attributes in db can be cleared. We will keep the object_id
         // so that server still knows it
-        _name = "";
-        _desc = "";
-        _storeName = "";
-        _address = "";
-        _link = "";
+        mName = "";
+        mDescription = "";
+        mStoreName = "";
+        mAddress = "";
+        mLink = "";
 
-        _fullsizePicPath = "";
+        mFullsizePicPath = "";
         mImgMetaJSON = null;
     }
 
@@ -440,7 +440,7 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         Bitmap bitmap;
         byte[] data = null;
         if (getFullsizePicPath() != null) {
-            bitmap = ImageManager.getInstance().decodeSampledBitmapFromFile(_fullsizePicPath, width, height, true);
+            bitmap = ImageManager.getInstance().decodeSampledBitmapFromFile(mFullsizePicPath, width, height, true);
             ByteArrayOutputStream photoStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, photoStream);
             data = photoStream.toByteArray();
@@ -448,31 +448,28 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         return data;
     }
 
-    public long save()
-    {
+    public long save() {
         long id = saveToLocal();
         SyncAgent.getInstance().sync();
         return id;
     }
 
-    public long saveToLocal()
-    {
+    public long saveToLocal() {
         Log.d(TAG, "saveToLocal");
         ItemDBManager manager = new ItemDBManager();
-        if (_id == -1) { // new item
-            _id = manager.addItem(_object_id, _access, _storeName, _name, _desc, _updated_time, mImgMetaJSON, _fullsizePicPath,
-                    _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted, _synced_to_server, mDownloadImg);
+        if (mId == -1) { // new item
+            mId = manager.addItem(mObjectId, mAccess, mStoreName, mName, mDescription, mUpdatedTime, mImgMetaJSON, mFullsizePicPath,
+                    mPrice, mAddress, mLatitude, mLongitude, mPriority, mComplete, mLink, mDeleted, mSyncedToServer, mDownloadImg);
         } else { // existing item
             updateDB();
         }
-        return _id;
+        return mId;
     }
 
-    private void updateDB()
-    {
+    private void updateDB() {
         ItemDBManager manager = new ItemDBManager();
-        manager.updateItem(_id, _object_id, _access, _storeName, _name, _desc, _updated_time, mImgMetaJSON, _fullsizePicPath,
-                _price, _address, _latitude, _longitude, _priority, _complete, _link, _deleted, _synced_to_server, mDownloadImg);
+        manager.updateItem(mId, mObjectId, mAccess, mStoreName, mName, mDescription, mUpdatedTime, mImgMetaJSON, mFullsizePicPath,
+                mPrice, mAddress, mLatitude, mLongitude, mPriority, mComplete, mLink, mDeleted, mSyncedToServer, mDownloadImg);
     }
 
     public static WishItem fromParseObject(final ParseObject wishObject, long item_id) {
@@ -500,8 +497,7 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         return wishItem;
     }
 
-    public static void toParseObject(final WishItem item, ParseObject wishObject)
-    {
+    public static void toParseObject(final WishItem item, ParseObject wishObject) {
         final ParseUser user = ParseUser.getCurrentUser();
         if (user != null) {// user here should never be null
             wishObject.put(WishItem.PARSE_KEY_OWNDER_ID, user.getObjectId());
@@ -528,19 +524,17 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         wishObject.put(WishItem.PARSE_KEY_TAGS, tags);
     }
 
-    public ParseObject toParseObject()
-    {
+    public ParseObject toParseObject() {
         final ParseObject wishObject = new ParseObject(ItemDBManager.DB_TABLE);
         // Fixme how to save id?
         // Parse Keys must start with a letter, and can contain alphanumeric characters and underscores
-        //wishObject.put("id", _id);
+        //wishObject.put("id", mId);
 
         toParseObject(this, wishObject);
         return wishObject;
     }
 
-    public void removeImage()
-    {
+    public void removeImage() {
         String fullsizePicPath= getFullsizePicPath();
         if (fullsizePicPath != null) {
             File file = new File(fullsizePicPath);
@@ -570,8 +564,7 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     }
 
     @Override
-    public int compareTo(WishItem w)
-    {
+    public int compareTo(WishItem w) {
         if (getId() != -1) {
             return Long.valueOf(getId()).compareTo(Long.valueOf(w.getId()));
         } else {
@@ -580,8 +573,7 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     }
 
     @Override
-    public int compare(WishItem w1, WishItem w2)
-    {
+    public int compare(WishItem w1, WishItem w2) {
         if (w1.getId() != -1 && w2.getId() != -1) {
             return Long.valueOf(w1.getId()).compareTo(Long.valueOf(w2.getId()));
         } else {
@@ -598,25 +590,25 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
 
     // write object's data to the passed-in Parcel
     public void writeToParcel(Parcel out, int flags) {
-        out.writeLong(_id);
-        out.writeString(_object_id);
-        out.writeInt(_access);
-        out.writeString(_storeName);
-        out.writeString(_name);
-        out.writeString(_comments);
-        out.writeString(_desc);
-        out.writeLong(_updated_time);
+        out.writeLong(mId);
+        out.writeString(mObjectId);
+        out.writeInt(mAccess);
+        out.writeString(mStoreName);
+        out.writeString(mName);
+        out.writeString(mComments);
+        out.writeString(mDescription);
+        out.writeLong(mUpdatedTime);
         out.writeString(mImgMetaJSON);
-        out.writeString(_fullsizePicPath);
-        out.writeInt(_priority);
-        out.writeInt(_complete);
-        out.writeString(_link);
-        out.writeDouble(_price);
-        out.writeDouble(_latitude);
-        out.writeDouble(_longitude);
-        out.writeString(_address);
-        out.writeByte((byte) (_deleted ? 1 : 0));
-        out.writeByte((byte) (_synced_to_server ? 1 : 0));
+        out.writeString(mFullsizePicPath);
+        out.writeInt(mPriority);
+        out.writeInt(mComplete);
+        out.writeString(mLink);
+        out.writeDouble(mPrice);
+        out.writeDouble(mLatitude);
+        out.writeDouble(mLongitude);
+        out.writeString(mAddress);
+        out.writeByte((byte) (mDeleted ? 1 : 0));
+        out.writeByte((byte) (mSyncedToServer ? 1 : 0));
         out.writeByte((byte) (mDownloadImg ? 1 : 0));
     }
 
@@ -625,7 +617,6 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         public WishItem createFromParcel(Parcel in) {
             return new WishItem(in);
         }
-
         public WishItem[] newArray(int size) {
             return new WishItem[size];
         }
@@ -633,25 +624,25 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
 
     private WishItem(Parcel in) {
         // data in Parcel is FIFO, make sure to read data in the same order of write
-        _id = in.readLong();
-        _object_id = in.readString();
-        _access = in.readInt();
-        _storeName = in.readString();
-        _name = in.readString();
-        _comments = in.readString();
-        _desc = in.readString();
-        _updated_time = in.readLong();
+        mId = in.readLong();
+        mObjectId = in.readString();
+        mAccess = in.readInt();
+        mStoreName = in.readString();
+        mName = in.readString();
+        mComments = in.readString();
+        mDescription = in.readString();
+        mUpdatedTime = in.readLong();
         mImgMetaJSON = in.readString();
-        _fullsizePicPath = in.readString();
-        _priority = in.readInt();
-        _complete = in.readInt();
-        _link = in.readString();
-        _price = in.readDouble();
-        _latitude = in.readDouble();
-        _longitude = in.readDouble();
-        _address = in.readString();
-        _deleted = in.readByte() != 0;
-        _synced_to_server = in.readByte() != 0;
+        mFullsizePicPath = in.readString();
+        mPriority = in.readInt();
+        mComplete = in.readInt();
+        mLink = in.readString();
+        mPrice = in.readDouble();
+        mLatitude = in.readDouble();
+        mLongitude = in.readDouble();
+        mAddress = in.readString();
+        mDeleted = in.readByte() != 0;
+        mSyncedToServer = in.readByte() != 0;
         mDownloadImg = in.readByte() != 0;
     }
 }
