@@ -17,21 +17,18 @@ import com.wish.wishlist.model.WishItem;
  */
 public class DBAdapter {
 
+    private static final String TAG = "DBAdapter";
     private static final boolean demo = false;
-    private static DBAdapter instance = null;
+    private static final String DB_NAME = "WishList";
+    public static final int DB_VERSION = 7;
 
+    private static DBAdapter instance = null;
     public static DBAdapter getInstance() {
         if (instance == null) {
             instance = new DBAdapter();
         }
         return instance;
     }
-    //Database name
-    public static final String DB_NAME = "WishList";
-
-    //Database version
-    public static final int DB_VERSION = 7;
-    private static final String TAG = "DBAdapter";
 
     public static final Patch[] PATCHES = new Patch[] {
             new Patch() {//db version 1 already done in onCreate

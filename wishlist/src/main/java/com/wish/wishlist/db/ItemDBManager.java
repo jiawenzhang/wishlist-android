@@ -48,14 +48,7 @@ public class ItemDBManager extends DBManager {
 	public ItemDBManager() {}
 
 	/**
-	 * Add a new item to the database. The item will have a status of open.
-	 * 
-	 * @param item_id
-	 *            unique id of the item
-	 * @param name
-	 *            The item name
-	 * @param description
-	 *            The name description
+	 * Add a new item to the database.
 	 */
 	public long addItem(
 			String object_id,
@@ -76,12 +69,7 @@ public class ItemDBManager extends DBManager {
 			boolean deleted,
 			boolean synced_to_server,
 			boolean download_img) {
-		// String sql = String.format(
-		// "INSERT INTO ITEM (_id, name, description, create_date, store_id,  picture, price, location, priority) "
-		// +
-		// "VALUES ( NULL, '%s', '%s', '%s', '%d', '%s', '%f', '%s', '%d')",
-		// name, description, date, store_id, picture_uri, price, location,
-		// priority);
+
 		ContentValues initialValues = new ContentValues();
 
 		initialValues.put(KEY_OBJECT_ID, object_id);
@@ -108,14 +96,7 @@ public class ItemDBManager extends DBManager {
 	}
 
 	/**
-	 * Update a item in the database.
-	 * 
-	 * @param _id
-	 *            The id of the existing item
-	 * @param name
-	 *            The item name
-	 * @param description
-	 *            The item description
+	 * Update an existing item in the database.
 	 */
 	public void updateItem(
 			long _id,
@@ -163,10 +144,7 @@ public class ItemDBManager extends DBManager {
 	}
 
 	/**
-	 * Delete a item from the database.
-	 * 
-	 * @param _id
-	 *            The id of the item to delete
+	 * Delete an item from the database.
 	 */
 	public static void deleteItem(long _id) {
 		//delete from item table
@@ -303,8 +281,7 @@ public class ItemDBManager extends DBManager {
 		}
 
 		if (where == null || where.isEmpty()) {
-		}
-		else {
+		} else {
 			//right now, we assume there is only one entry in where
 			String field = "";
 			String value = "";
@@ -566,5 +543,4 @@ public class ItemDBManager extends DBManager {
 
 		return locationC;
 	}
-
 }
