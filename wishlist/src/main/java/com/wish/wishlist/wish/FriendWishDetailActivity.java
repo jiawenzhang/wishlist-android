@@ -38,10 +38,8 @@ abstract public class FriendWishDetailActivity extends WishDetailActivity implem
         imageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mItem.getWebImgMeta() != null) {
-                    showFullScreenPhoto(FullscreenPhotoActivity.PHOTO_URL, mItem.getWebImgMeta().mUrl);
-                } else if (mItem.getParseImgMeta() != null) {
-                    showFullScreenPhoto(FullscreenPhotoActivity.PHOTO_URL, mItem.getParseImgMeta().mUrl);
+                if (mItem.getImgMeta() != null) {
+                    showFullScreenPhoto(FullscreenPhotoActivity.PHOTO_URL, mItem.getImgMeta().mUrl);
                 }
             }
         });
@@ -49,14 +47,9 @@ abstract public class FriendWishDetailActivity extends WishDetailActivity implem
 
     @Override
     protected void showPhoto() {
-        if (mItem.getWebImgMeta() != null) {
-            // we have the photo somewhere on the internet
+        if (mItem.getImgMeta() != null) {
             mPhotoView.setVisibility(View.VISIBLE);
-            Picasso.with(this).load(mItem.getWebImgMeta().mUrl).fit().centerCrop().into(mPhotoView);
-        } else if (mItem.getParseImgMeta() != null) {
-            // we have the photo on Parse
-            mPhotoView.setVisibility(View.VISIBLE);
-            Picasso.with(this).load(mItem.getParseImgMeta().mUrl).fit().centerCrop().into(mPhotoView);
+            Picasso.with(this).load(mItem.getImgMeta().mUrl).fit().centerCrop().into(mPhotoView);
         } else {
             mPhotoView.setVisibility(View.GONE);
         }

@@ -174,7 +174,7 @@ public class AddWishActivity extends MyWishDetailActivity
     protected void newImageSaved() {
         dismissProgressDialog();
         mItem = createNewWish();
-        mItem.setWebImgMeta(null, 0, 0);
+        mItem.setImgMeta(null, null, 0, 0);
         mItem.saveToLocal();
         getWishAddressInBackground(mItem);
         wishSaved();
@@ -193,7 +193,6 @@ public class AddWishActivity extends MyWishDetailActivity
                 input.mDescription,
                 System.currentTimeMillis(),
                 null,
-                null,
                 mFullsizePhotoPath,
                 input.mPrice,
                 mLat,
@@ -202,6 +201,7 @@ public class AddWishActivity extends MyWishDetailActivity
                 0,
                 input.mComplete,
                 input.mLink,
+                false,
                 false,
                 false);
     }

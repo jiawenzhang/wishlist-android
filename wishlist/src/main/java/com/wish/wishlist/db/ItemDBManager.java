@@ -25,7 +25,7 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_NAME = "item_name";
 	public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_UPDATED_TIME = "updated_time"; // ms, migrated from data_time:String
-	public static final String KEY_WEB_IMG_META_JSON = "picture";
+	public static final String KEY_IMG_META_JSON = "picture";
 	public static final String KEY_FULLSIZE_PHOTO_PATH = "fullsize_picture";
 	public static final String KEY_PRICE = "price";
 	public static final String KEY_ADDRESS = "location";
@@ -36,6 +36,7 @@ public class ItemDBManager extends DBManager {
     public static final String KEY_LINK = "link";
 	public static final String KEY_DELETED = "deleted";
 	public static final String KEY_SYNCED_TO_SERVER = "synced_to_server";
+	public static final String KEY_DOWNLOAD_IMG = "download_img"; // this item needs to download image from server
 
 	public static final String DB_TABLE = "Item";
 	private static final String TAG = "ItemDBManager";
@@ -56,9 +57,25 @@ public class ItemDBManager extends DBManager {
 	 * @param description
 	 *            The name description
 	 */
-	public long addItem(String object_id, int access, String store_name, String name, String description, long updated_time,
-			String picture_url, String fullsize_picture_path, double price, String address, double latitude, double longitude,
-			int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
+	public long addItem(
+			String object_id,
+			int access,
+			String store_name,
+			String name,
+			String description,
+			long updated_time,
+			String picture_url,
+			String fullsize_picture_path,
+			double price,
+			String address,
+			double latitude,
+			double longitude,
+			int priority,
+			int complete,
+			String link,
+			boolean deleted,
+			boolean synced_to_server,
+			boolean download_img) {
 		// String sql = String.format(
 		// "INSERT INTO ITEM (_id, name, description, create_date, store_id,  picture, price, location, priority) "
 		// +
@@ -73,7 +90,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
 		initialValues.put(KEY_UPDATED_TIME, updated_time);
-		initialValues.put(KEY_WEB_IMG_META_JSON, picture_url);
+		initialValues.put(KEY_IMG_META_JSON, picture_url);
 		initialValues.put(KEY_FULLSIZE_PHOTO_PATH, fullsize_picture_path);
 		initialValues.put(KEY_PRICE, price);
 		initialValues.put(KEY_ADDRESS, address);
@@ -84,6 +101,7 @@ public class ItemDBManager extends DBManager {
         initialValues.put(KEY_LINK, link);
 		initialValues.put(KEY_DELETED, deleted);
 		initialValues.put(KEY_SYNCED_TO_SERVER, synced_to_server);
+		initialValues.put(KEY_DOWNLOAD_IMG, download_img);
 
 		long id = DBAdapter.getInstance().db().insert(DB_TABLE, null, initialValues);
 		return id;
@@ -99,20 +117,26 @@ public class ItemDBManager extends DBManager {
 	 * @param description
 	 *            The item description
 	 */
-	public void updateItem(long _id, String object_id, int access, String store_name, String name, String description, long updated_time,
-			String picture_url, String fullsize_picture_path, double price, String address, double latitude, double longitude,
-			int priority, int complete, String link, boolean deleted, boolean synced_to_server) {
+	public void updateItem(
+			long _id,
+			String object_id,
+			int access,
+			String store_name,
+			String name,
+			String description,
+			long updated_time,
+			String picture_url,
+			String fullsize_picture_path,
+			double price, String address,
+			double latitude,
+			double longitude,
+			int priority,
+			int complete,
+			String link,
+			boolean deleted,
+			boolean synced_to_server,
+			boolean download_img) {
 
-//		String sql = String.format("UPDATE Item " + "SET item_name = '%s',  "
-//				+ " description = '%s', " + " updated_time = '%s', "
-//				+ " store_id = '%d' " + "WHERE _id = '%d' ", name, description,
-//				date, store_id, _id);
-//		try {
-//			writableDB().execSQL(sql);
-//		} catch (SQLException e) {
-//			Log.e("Error writing an exsiting item", e.toString());
-//		}
-		
 		ContentValues initialValues = new ContentValues();
 
         initialValues.put(KEY_OBJECT_ID, object_id);
@@ -121,7 +145,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
 		initialValues.put(KEY_UPDATED_TIME, updated_time);
-		initialValues.put(KEY_WEB_IMG_META_JSON, picture_url);
+		initialValues.put(KEY_IMG_META_JSON, picture_url);
 		initialValues.put(KEY_FULLSIZE_PHOTO_PATH, fullsize_picture_path);
 		initialValues.put(KEY_PRICE, price);
 		initialValues.put(KEY_ADDRESS, address);
@@ -132,6 +156,7 @@ public class ItemDBManager extends DBManager {
         initialValues.put(KEY_LINK, link);
 		initialValues.put(KEY_DELETED, deleted);
 		initialValues.put(KEY_SYNCED_TO_SERVER, synced_to_server);
+		initialValues.put(KEY_DOWNLOAD_IMG, download_img);
 
 		String where = String.format("_id = '%d'", _id);
 		DBAdapter.getInstance().db().update(DB_TABLE, initialValues, where, null);
@@ -248,7 +273,7 @@ public class ItemDBManager extends DBManager {
                 KEY_DESCRIPTION + ", " +
                 KEY_UPDATED_TIME + ", " +
                 KEY_STORE_ID + ", " +
-				KEY_WEB_IMG_META_JSON + ", " +
+				KEY_IMG_META_JSON + ", " +
                 KEY_FULLSIZE_PHOTO_PATH + ", " +
                 KEY_PRICE + ", " +
                 KEY_ADDRESS + ", " +
@@ -391,8 +416,28 @@ public class ItemDBManager extends DBManager {
 		else return -1;
 	}
 
-	public ArrayList<Long> getAllItemIds(){
-		String sql = String.format("SELECT _id FROM Item");
+	static public ArrayList<Long> getItemIdsToDownloadImg() {
+		String sql = "SELECT _id FROM Item where " +
+				KEY_DELETED + "=0 AND " +
+				KEY_DOWNLOAD_IMG + "=1";
+		SQLiteDatabase d = DBAdapter.getInstance().db();
+		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
+				new ItemsCursor.Factory(), sql, null, null);
+
+		ArrayList<Long> ids = new ArrayList<>();
+		if (c != null) {
+			c.moveToFirst();
+			while (!c.isAfterLast()){
+				long id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
+				ids.add(id);
+				c.moveToNext();
+			}
+		}
+		return ids;
+	}
+
+	public ArrayList<Long> getAllItemIds() {
+		String sql = "SELECT _id FROM Item";
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
@@ -410,7 +455,7 @@ public class ItemDBManager extends DBManager {
 	}
 
 	public ArrayList<Long> getItemsWithLocation(){
-		String sql = String.format("SELECT _id, latitude, longitude FROM Item where deleted = 0");
+		String sql = "SELECT _id, latitude, longitude FROM Item where deleted = 0";
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
@@ -454,7 +499,7 @@ public class ItemDBManager extends DBManager {
 
 	public ArrayList<Long> getItemsNotSyncedToServer()
 	{
-		String sql = String.format("SELECT _id FROM Item WHERE synced_to_server = 0");
+		String sql = "SELECT _id FROM Item WHERE synced_to_server = 0";
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(new ItemsCursor.Factory(), sql, null, null);
 
@@ -477,8 +522,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	//
 	public Cursor getItemStoreCursor(long _id){
-		String sql = String.format("SELECT store_id FROM Item " + "WHERE _id = '%d' ",
-				_id);
+		String sql = String.format("SELECT store_id FROM Item " + "WHERE _id = '%d' ", _id);
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor itemC = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);

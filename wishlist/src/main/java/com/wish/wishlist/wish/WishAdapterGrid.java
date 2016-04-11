@@ -11,7 +11,6 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,18 +100,12 @@ public class WishAdapterGrid extends WishAdapter {
             Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(mCardWidth, 0).transform(mTransform).into(holder.imgPhoto);
         } else {
             // we are loading friend wish
-            final WebImgMeta webImgMeta = wish.getWebImgMeta();
-            final WebImgMeta parseImgMeta = wish.getParseImgMeta();
-            if (webImgMeta != null) {
-                final float ratio = (float) webImgMeta.mHeight / (float) webImgMeta.mWidth;
+            final ImgMeta imgMeta = wish.getImgMeta();
+            if (imgMeta != null) {
+                final float ratio = (float) imgMeta.mHeight / (float) imgMeta.mWidth;
                 holder.imgPhoto.setHeightRatio(ratio);
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(webImgMeta.mUrl).resize(mCardWidth, 0).transform(mTransform).into(holder.imgPhoto);
-            } else if (parseImgMeta != null) {
-                final float ratio = (float) parseImgMeta.mHeight / (float) parseImgMeta.mWidth;
-                holder.imgPhoto.setHeightRatio(ratio);
-                holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(parseImgMeta.mUrl).resize(mCardWidth, 0).transform(mTransform).into(holder.imgPhoto);
+                Picasso.with(holder.imgPhoto.getContext()).load(imgMeta.mUrl).resize(mCardWidth, 0).transform(mTransform).into(holder.imgPhoto);
             } else {
                 holder.imgPhoto.setVisibility(View.GONE);
             }

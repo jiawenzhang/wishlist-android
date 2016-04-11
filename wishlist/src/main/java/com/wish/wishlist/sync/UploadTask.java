@@ -13,7 +13,7 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.wish.WebImgMeta;
+import com.wish.wishlist.wish.ImgMeta;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -88,9 +88,9 @@ public class UploadTask {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    Log.e(TAG, "parse img url " + parseImage.getUrl());
+                    Log.d(TAG, "parse img url " + parseImage.getUrl());
                     wishObject.put(WishItem.PARSE_KEY_IMAGE, parseImage);
-                    wishObject.put(WishItem.PARSE_KEY_IMG_META_JSON, new WebImgMeta(parseImage.getUrl(), w, h).toJSON());
+                    wishObject.put(ItemDBManager.KEY_IMG_META_JSON, new ImgMeta(ImgMeta.PARSE, parseImage.getUrl(), w, h).toJSON());
                     uploadParseObject(wishObject, item.getId(), isNew);
                 } else {
                     Log.e(TAG, "save ParseFile failed " + e.toString());
@@ -135,7 +135,7 @@ public class UploadTask {
     private void addToParse(final WishItem item) {
         Log.d(TAG, "Adding new item " + item.getName() + " to Parse");
         final ParseObject wishObject = item.toParseObject();
-        if (item.getWebImgMetaJSON() != null || item.getThumbPicPath() == null) {
+        if (item.getImgMetaJSON() != null || item.getThumbPicPath() == null) {
             // if we have an web url for the photo, we don't upload the photo to Parse so that we can save server space
             // when the other device sync down the wish, it will download the photo from the web url
             uploadParseObject(wishObject, item.getId(), true);

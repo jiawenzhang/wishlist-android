@@ -10,7 +10,6 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,14 +90,10 @@ public class WishAdapterList extends WishAdapter {
             holder.imgPhoto.setVisibility(View.VISIBLE);
         } else {
             // we are loading friend wish
-            final WebImgMeta webImgMeta = wish.getWebImgMeta();
-            final WebImgMeta parseImgMeta = wish.getParseImgMeta();
-            if (webImgMeta != null) {
+            final ImgMeta imgMeta = wish.getImgMeta();
+            if (imgMeta != null) {
                 holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(webImgMeta.mUrl).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
-            } else if (parseImgMeta != null) {
-                holder.imgPhoto.setVisibility(View.VISIBLE);
-                Picasso.with(holder.imgPhoto.getContext()).load(parseImgMeta.mUrl).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
+                Picasso.with(holder.imgPhoto.getContext()).load(imgMeta.mUrl).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
             } else {
                 holder.imgPhoto.setVisibility(View.GONE);
             }

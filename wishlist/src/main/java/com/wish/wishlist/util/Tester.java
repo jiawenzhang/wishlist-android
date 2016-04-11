@@ -6,7 +6,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.model.WishItem;
-import com.wish.wishlist.wish.WebImgMeta;
+import com.wish.wishlist.wish.ImgMeta;
 import com.wish.wishlist.wish.WishImageDownloader;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
             int height = 256 + r.nextInt(256); // 256 - 512
             //String webPicUrl = "http://placehold.it/" + String.valueOf(width) + "x" + String.valueOf(height) + ".jpg";
             String webPicUrl = "http://loremflickr.com/" + String.valueOf(width) + "/" + String.valueOf(height);
-            String webImgMetaJSON = new WebImgMeta(webPicUrl, width, height).toJSON();
+            String imgMetaJSON = new ImgMeta(ImgMeta.WEB, webPicUrl, width, height).toJSON();
             Double itemPrice = r.nextDouble();
 
             LatLng randomLatLng = getLocation(-79, 44, 1000);
@@ -85,8 +85,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
                     itemName,
                     itemDesc,
                     System.currentTimeMillis(),
-                    webImgMetaJSON,
-                    null,
+                    imgMetaJSON,
                     null,
                     itemPrice,
                     lat,
@@ -96,7 +95,8 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
                     itemComplete,
                     itemLink,
                     false,
-                    false);
+                    false,
+                    true);
 
             mItems.add(item);
         }
@@ -115,6 +115,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
             int itemCompleted = r.nextInt(2);
             item.setComplete(itemCompleted);
 
+            item.setDownloadImg(false);
             item.saveToLocal();
             Log.d(TAG, "item saved");
         }

@@ -259,7 +259,7 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         } else {
             mItem = newItem;
         }
-        mItem.setWebImgMeta(null, 0, 0);
+        mItem.setImgMeta(null, null, 0, 0);
         mItem.saveToLocal();
         wishSaved();
     }

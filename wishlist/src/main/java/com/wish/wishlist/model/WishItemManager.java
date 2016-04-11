@@ -143,7 +143,7 @@ public class WishItemManager {
                 .getColumnIndexOrThrow(ItemDBManager.KEY_STORENAME));
 
         String picture_str = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_WEB_IMG_META_JSON));
+                .getColumnIndexOrThrow(ItemDBManager.KEY_IMG_META_JSON));
 
         String fullsize_pic_path = wishItemCursor.getString(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_FULLSIZE_PHOTO_PATH));
@@ -175,9 +175,12 @@ public class WishItemManager {
         boolean synced_to_server = wishItemCursor.getInt(wishItemCursor
                 .getColumnIndexOrThrow(ItemDBManager.KEY_SYNCED_TO_SERVER)) == 1;
 
+        boolean download_img = wishItemCursor.getInt(wishItemCursor
+                .getColumnIndexOrThrow(ItemDBManager.KEY_DOWNLOAD_IMG)) == 1;
+
         WishItem item = new WishItem(itemId, objectId, access, storeName, itemName, itemDesc,
-                updated_time, picture_str, null, fullsize_pic_path, itemPrice, latitude, longitude,
-                itemLocation, itemPriority, itemComplete, itemLink, deleted, synced_to_server);
+                updated_time, picture_str, fullsize_pic_path, itemPrice, latitude, longitude,
+                itemLocation, itemPriority, itemComplete, itemLink, deleted, synced_to_server, download_img);
 
         return item;
     }

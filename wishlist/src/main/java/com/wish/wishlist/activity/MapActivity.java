@@ -34,8 +34,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.wish.ExistingWishDetailActivity;
 import com.wish.wishlist.wish.FriendWishDetailActivity;
-import com.wish.wishlist.wish.MyWishDetailActivity;
-import com.wish.wishlist.wish.WebImgMeta;
+import com.wish.wishlist.wish.ImgMeta;
 import com.wish.wishlist.wish.WishLoader;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
@@ -158,20 +157,14 @@ public class MapActivity extends Activity {
                 }
 
                 // we are showing friend's wish
-                final WebImgMeta webImgMeta = item.getWebImgMeta();
-                final WebImgMeta parseImgMeta = item.getParseImgMeta();
-                if (webImgMeta == null && parseImgMeta == null) {
+                final ImgMeta imgMeta = item.getImgMeta();
+                if (imgMeta == null) {
                     thumb.setVisibility(View.GONE);
                     return v;
                 }
 
                 final String picURL;
-                if (webImgMeta != null) {
-                    // try to use pic from internet first
-                    picURL = webImgMeta.mUrl;
-                } else {
-                    picURL = parseImgMeta.mUrl;
-                }
+                picURL = imgMeta.mUrl;
 
                 MarkerCallback callback = new MarkerCallback(marker);
                 thumb.setTag(callback);

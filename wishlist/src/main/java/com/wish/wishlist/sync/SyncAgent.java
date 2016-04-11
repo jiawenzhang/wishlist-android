@@ -1,7 +1,6 @@
 package com.wish.wishlist.sync;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -30,14 +29,16 @@ import java.util.Date;
  * Created by jiawen on 15-07-11.
  */
 public class SyncAgent implements
-        DownloadTask.DownloadTaskDoneListener,
-        UploadTask.UploadTaskDoneListener {
+        DownloadMetaTask.DownloadMetaTaskDoneListener,
+        UploadTask.UploadTaskDoneListener,
+        DownloadImageTask.DownloadImageTaskDoneListener {
     private static SyncAgent instance = null;
     private OnSyncWishChangedListener mSyncWishChangedListener;
     private OnDownloadWishDoneListener mDownloadWishDoneListener;
     private Date mSyncedTime;
-    private DownloadTask mDownloadTask = new DownloadTask();
+    private DownloadMetaTask mDownloadMetaTask = new DownloadMetaTask();
     private UploadTask mUploadTask = new UploadTask();
+    private DownloadImageTask mDownloadImageTask = new DownloadImageTask();
 
     private boolean mDownloading = false;
     private boolean mSyncing = false;
@@ -113,8 +114,9 @@ public class SyncAgent implements
     }
 
     private SyncAgent() {
-        mDownloadTask.registerListener(this);
+        mDownloadMetaTask.registerListener(this);
         mUploadTask.registerListener(this);
+        mDownloadImageTask.registerListener(this);
     }
 
     public boolean downloading() {
@@ -156,11 +158,11 @@ public class SyncAgent implements
         // start the sync process with downloadTask, then uploadTask
         // the subsequent task will be started when the previous task is done
         // if error occurs in any of the tasks, syncFailed will be called and LAST_SYNCED_TIME is not updated
-        mDownloadTask.run();
+        mDownloadMetaTask.run();
     }
 
     @Override
-    public void downloadTaskDone(boolean success, Date syncedTime) {
+    public void downloadMetaTaskDone(boolean success, Date syncedTime) {
         mDownloading = false;
         mSyncedTime = syncedTime;
 
@@ -184,6 +186,24 @@ public class SyncAgent implements
     public void uploadTaskDone(boolean success, Date syncedTime) {
         mSyncedTime = syncedTime;
         if (success) {
+            // both download and upload is done, sync is finished
+            // save the last synced down time
+            Log.d(TAG, "sync finished at " + mSyncedTime.getTime() + " " + StringUtil.UTCDate(mSyncedTime));
+            final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putLong(LAST_SYNCED_TIME, mSyncedTime.getTime());
+            editor.commit();
+
+            // start downloading image task
+            mDownloadImageTask.run();
+        } else {
+            syncFailed();
+        }
+    }
+
+    @Override
+    public void downloadImageTaskDone(boolean success) {
+        if (success) {
             syncDone();
         } else {
             syncFailed();
@@ -191,14 +211,7 @@ public class SyncAgent implements
     }
 
     private void syncDone() {
-        // both download and upload is done, sync is finished
-        Log.d(TAG, "sync finished at " + mSyncedTime.getTime() + " " + StringUtil.UTCDate(mSyncedTime));
-        // all items are downloaded, save the last synced down time
-        final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putLong(LAST_SYNCED_TIME, mSyncedTime.getTime());
-        editor.commit();
-
+        Log.d(TAG, "syncDone");
         mSyncing = false;
         if (mScheduleToSync) {
             mScheduleToSync = false;

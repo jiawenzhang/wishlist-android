@@ -30,7 +30,7 @@ public class DBAdapter {
     public static final String DB_NAME = "WishList";
 
     //Database version
-    public static final int DB_VERSION = 6;
+    public static final int DB_VERSION = 7;
     private static final String TAG = "DBAdapter";
 
     public static final Patch[] PATCHES = new Patch[] {
@@ -48,7 +48,7 @@ public class DBAdapter {
             String sql = "DELETE FROM "
                     + ItemDBManager.DB_TABLE
                     + " WHERE "
-                    + ItemDBManager.KEY_WEB_IMG_META_JSON
+                    + ItemDBManager.KEY_IMG_META_JSON
                     + " LIKE '%sample'";
 
             db.execSQL(sql);
@@ -140,6 +140,17 @@ public class DBAdapter {
             }
         }
     }
+            , new Patch() {//db version 7, 1.2.7 -> ?
+        public void apply(SQLiteDatabase db) {
+            //add wish download_img column in the Item table
+            //if true, the wish needs to download image from server
+            String sql = "ALTER TABLE "
+                    + ItemDBManager.DB_TABLE
+                    + " ADD COLUMN download_img INTEGER NOT NULL DEFAULT(0)";
+
+            db.execSQL(sql);
+        }
+    }
     };
 
     //Query string to create table "Item"
@@ -153,7 +164,7 @@ public class DBAdapter {
             + ItemDBManager.KEY_NAME 		+ " TEXT, "
             + ItemDBManager.KEY_DESCRIPTION + " TEXT, "
             + ItemDBManager.KEY_UPDATED_TIME+ " INTEGER, "
-            + ItemDBManager.KEY_WEB_IMG_META_JSON + " TEXT, "
+            + ItemDBManager.KEY_IMG_META_JSON + " TEXT, "
             + ItemDBManager.KEY_FULLSIZE_PHOTO_PATH 	+ " TEXT, "
             + ItemDBManager.KEY_PRICE 		+ " REAL, "
             + ItemDBManager.KEY_ADDRESS 	+ " TEXT, "
@@ -163,7 +174,8 @@ public class DBAdapter {
             + ItemDBManager.KEY_COMPLETE 	+ " INTEGER, "
             + ItemDBManager.KEY_LINK 	    + " TEXT, "
             + ItemDBManager.KEY_DELETED 	+ " INTEGER, "
-            + ItemDBManager.KEY_SYNCED_TO_SERVER 	+ " INTEGER"
+            + ItemDBManager.KEY_SYNCED_TO_SERVER 	+ " INTEGER, "
+            + ItemDBManager.KEY_DOWNLOAD_IMG 	+ " INTEGER NOT NULL DEFAULT(0)"
             + ");";
 
     //Query string to create table "Tag"
@@ -242,6 +254,7 @@ public class DBAdapter {
                         0,
                         "",
                         false,
+                        false,
                         false);
 
                 mItemDBManager.addItem(
@@ -261,6 +274,7 @@ public class DBAdapter {
                         3,
                         1,
                         "",
+                        false,
                         false,
                         false);
 
@@ -282,6 +296,7 @@ public class DBAdapter {
                         0,
                         "",
                         false,
+                        false,
                         false);
 
                 mItemDBManager.addItem(
@@ -301,6 +316,7 @@ public class DBAdapter {
                         1,
                         0,
                         "",
+                        false,
                         false,
                         false);
 
@@ -322,6 +338,7 @@ public class DBAdapter {
                         1,
                         "",
                         false,
+                        false,
                         false);
 
                 mItemDBManager.addItem(
@@ -341,6 +358,7 @@ public class DBAdapter {
                         1,
                         0,
                         "",
+                        false,
                         false,
                         false);
             }

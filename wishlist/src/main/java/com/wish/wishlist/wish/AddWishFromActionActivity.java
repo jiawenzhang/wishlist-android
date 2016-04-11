@@ -383,7 +383,7 @@ public class AddWishFromActionActivity extends AddWishActivity
             ImageManager.saveBitmapToThumb(mWebBitmap, mFullsizePhotoPath);
 
             mItem = createNewWish();
-            mItem.setWebImgMeta(mWebPicUrl, mWebBitmap.getWidth(), mWebBitmap.getHeight());
+            mItem.setImgMeta(ImgMeta.WEB, mWebPicUrl, mWebBitmap.getWidth(), mWebBitmap.getHeight());
             mItem.saveToLocal();
             wishSaved();
         } else if (mSelectedPicUri != null) {
@@ -393,7 +393,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         } else {
             // no image
             mItem = createNewWish();
-            mItem.setWebImgMeta(null, 0, 0);
+            mItem.setImgMeta(null, null, 0, 0);
 
             mItem.saveToLocal();
             wishSaved();
