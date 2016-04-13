@@ -49,9 +49,6 @@ public class DBAdapter {
                     + " LIKE '%sample'";
 
             db.execSQL(sql);
-
-            //add user table
-            db.execSQL(CREATE_TABLE_USER);
         }
     }
 
@@ -139,13 +136,7 @@ public class DBAdapter {
     }
             , new Patch() {//db version 7, 1.2.7 -> ?
         public void apply(SQLiteDatabase db) {
-            //add wish download_img column in the Item table
-            //if true, the wish needs to download image from server
-            String sql = "ALTER TABLE "
-                    + ItemDBManager.DB_TABLE
-                    + " ADD COLUMN download_img INTEGER NOT NULL DEFAULT(0)";
-
-            db.execSQL(sql);
+            DBMigrationTo_7.run(db);
         }
     }
     };
@@ -155,7 +146,7 @@ public class DBAdapter {
             + ItemDBManager.DB_TABLE + " ("
             + ItemDBManager.KEY_ID			+ " INTEGER PRIMARY KEY, "
             + ItemDBManager.KEY_OBJECT_ID	+ " TEXT, "
-            + ItemDBManager.KEY_ACCESS	    + " INTEGER, "
+            + ItemDBManager.KEY_ACCESS	    + " INTEGER NOT NULL DEFAULT(0), " // default to PUBLIC
             + ItemDBManager.KEY_STORE_ID 	+ " INTEGER, "
             + ItemDBManager.KEY_STORENAME	+ " TEXT, "
             + ItemDBManager.KEY_NAME 		+ " TEXT, "
@@ -168,10 +159,10 @@ public class DBAdapter {
             + ItemDBManager.KEY_LATITUDE 	+ " REAL, "
             + ItemDBManager.KEY_LONGITUDE 	+ " REAL, "
             + ItemDBManager.KEY_PRIORITY 	+ " INTEGER, "
-            + ItemDBManager.KEY_COMPLETE 	+ " INTEGER, "
+            + ItemDBManager.KEY_COMPLETE 	+ " INTEGER NOT NULL DEFAULT(0), "
             + ItemDBManager.KEY_LINK 	    + " TEXT, "
-            + ItemDBManager.KEY_DELETED 	+ " INTEGER, "
-            + ItemDBManager.KEY_SYNCED_TO_SERVER 	+ " INTEGER, "
+            + ItemDBManager.KEY_DELETED 	+ " INTEGER NOT NULL DEFAULT(0), "
+            + ItemDBManager.KEY_SYNCED_TO_SERVER 	+ " INTEGER NOT NULL DEFAULT(0), "
             + ItemDBManager.KEY_DOWNLOAD_IMG 	+ " INTEGER NOT NULL DEFAULT(0)"
             + ");";
 
@@ -186,21 +177,11 @@ public class DBAdapter {
     //Query string to create table "TagItem"
     private static final String CREATE_TABLE_TAGITEM = "create table "
             + TagItemDBManager.DB_TABLE + " ("
-            + TagItemDBManager.TAG_ID + " INTEGER, "
-            + TagItemDBManager.ITEM_ID + " INTEGER, "
+            + TagItemDBManager.TAG_ID + " INTEGER NOT NULL, "
+            + TagItemDBManager.ITEM_ID + " INTEGER NOT NULL, "
             + "FOREIGN KEY(" + TagItemDBManager.TAG_ID +")" + " REFERENCES Tag(_id), "
             + "FOREIGN KEY(" + TagItemDBManager.ITEM_ID +")" + " REFERENCES Item(_id), "
             + "PRIMARY KEY(" + TagItemDBManager.TAG_ID + ", " + TagItemDBManager.ITEM_ID + ")"
-            + ");";
-
-    //Query string to create table "user"
-    private static final String CREATE_TABLE_USER = "create table "
-            + UserDBManager.DB_TABLE + " ("
-            + UserDBManager.KEY_ID			+ " INTEGER PRIMARY KEY, "
-            + UserDBManager.USER_ID	+ " TEXT, "
-            + UserDBManager.USER_KEY	+ " TEXT, "
-            + UserDBManager.USER_DISPLAY_NAME	+ " TEXT, "
-            + UserDBManager.USER_EMAIL + " TEXT"
             + ");";
 
     private DatabaseHelper mDBHelper;
@@ -243,7 +224,7 @@ public class DBAdapter {
                         //"2012-03-11 11:30:00",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/ipad_mini.jpg",
-                        529f,
+                        529d,
                         "220 Yonge Street, Toronto, ON, M5B 2H1",
                         43.653929,
                         -79.3802132,
@@ -264,7 +245,7 @@ public class DBAdapter {
                         //"2012-03-17 18:22:35",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/bag.jpg",
-                        299.00f,
+                        299.00d,
                         "2243 Bloor ST W\nToronto, ON M6S 1N7\nCanada",
                         43.6509499,
                         -79.477205,
@@ -285,7 +266,7 @@ public class DBAdapter {
                         //"2012-06-03 03:40:50",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/tiffany.jpg",
-                        389f,
+                        389d,
                         "85 Bloor Street West, Toronto, Ontario\nM5S 1M1 Canada",
                         43.6694098,
                         -79.3904,
@@ -306,7 +287,7 @@ public class DBAdapter {
                         //"2012-05-15 08:17:38",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/shoe.jpg",
-                        289.0f,
+                        289.0d,
                         "65 Dundas Street West\nToronto, ON, M5G 2C3",
                         43.6555876,
                         -79.3835228,
@@ -327,7 +308,7 @@ public class DBAdapter {
                         //"2012-06-20 13:05:22",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/ear_ring.jpg",
-                        99.0f,
+                        99.0d,
                         "11 Sunlight Park Rd\nToronto, ON, M4M 1B5",
                         43.6561902,
                         -79.3489359,
@@ -348,7 +329,7 @@ public class DBAdapter {
                         //"2012-06-22 19:08:20",
                         "",
                         "/storage/emulated/legacy/Pictures/.WishListPhoto/wooden_lanton.jpg",
-                        59.0f,
+                        59.0d,
                         "259 Richmond Street West Toronto ON M5V 3M6",
                         43.6489324,
                         -79.3913844,
@@ -359,9 +340,6 @@ public class DBAdapter {
                         false,
                         false);
             }
-
-            //create table "user", added on version 3
-            db.execSQL(CREATE_TABLE_USER);
 
             //create table "Tag", added on version 4
             db.execSQL(CREATE_TABLE_TAG);
@@ -409,5 +387,4 @@ public class DBAdapter {
     public SQLiteDatabase db() {
         return mDb;
     }
-
 }

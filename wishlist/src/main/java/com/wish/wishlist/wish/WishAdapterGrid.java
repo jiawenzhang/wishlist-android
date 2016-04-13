@@ -113,7 +113,7 @@ public class WishAdapterGrid extends WishAdapter {
 
         holder.txtName.setText(wish.getName());
 
-        if (wish.getDesc().isEmpty()) {
+        if (wish.getDesc() == null) {
             holder.txtDescription.setVisibility(View.GONE);
         } else {
             holder.txtDescription.setText(wish.getDesc());

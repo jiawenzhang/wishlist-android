@@ -108,15 +108,14 @@ public class WishListItemCursorAdapter extends SimpleCursorAdapter {
                 //		viewPrice.setVisibility(View.GONE);
                 //	}
 
-                double price = cursor.getDouble(columnIndex);
+                Double price = cursor.isNull(columnIndex) ? null : cursor.getDouble(columnIndex);
                 //we use float.min_value to indicate price is not available
-                if (price != Double.MIN_VALUE) {
+                if (price != null) {
                     DecimalFormat Dec = new DecimalFormat("0.00");
                     String priceStr = (Dec.format(price));
                     viewPrice.setText(WishItem.priceStringWithCurrency(priceStr));
                     viewPrice.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     viewPrice.setVisibility(View.GONE);
                 }
                 return true;

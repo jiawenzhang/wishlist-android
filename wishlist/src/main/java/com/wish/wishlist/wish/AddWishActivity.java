@@ -39,8 +39,8 @@ public class AddWishActivity extends MyWishDetailActivity
     protected String mAddStr = "unknown";
     protected PositionManager mPositionManager;
     protected boolean mGettingLocation = false;
-    protected double mLat = Double.MIN_VALUE;
-    protected double mLng = Double.MIN_VALUE;
+    protected Double mLat = null;
+    protected Double mLng = null;
 
     private class GetAddressTask extends AsyncTask<Void, Void, Void> {//<param, progress, result>
         @Override
@@ -186,7 +186,7 @@ public class AddWishActivity extends MyWishDetailActivity
 
         return new WishItem(
                 -1,
-                "",
+                null,
                 input.mAccess,
                 input.mStore,
                 input.mName,
@@ -220,7 +220,7 @@ public class AddWishActivity extends MyWishDetailActivity
     }
 
     protected void getWishAddressInBackground(WishItem item) {
-        if (item.getLatitude() != Double.MIN_VALUE && item.getLongitude() != Double.MIN_VALUE && (item.getAddress().equals("unknown") || item.getAddress().equals(""))) {
+        if (item.getLatitude() != null && item.getLongitude() != null && (item.getAddress() == null)) {
             JobManager jobManager = ((WishlistApplication) getApplication()).getJobManager();
             jobManager.addJobInBackground(new GetWishAddressJob(item.getId()));
         }
@@ -298,8 +298,8 @@ public class AddWishActivity extends MyWishDetailActivity
         if (location == null){
             mAddStr = "unknown";
             //need better value to indicate it's not valid lat and lng
-            mLat = Double.MIN_VALUE;
-            mLng = Double.MIN_VALUE;
+            mLat = null;
+            mLng = null;
             mLocationView.setText(mAddStr);
             mGettingLocation = false;
         } else {

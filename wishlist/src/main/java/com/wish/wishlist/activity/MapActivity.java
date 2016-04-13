@@ -250,8 +250,8 @@ public class MapActivity extends Activity {
     private LatLngBounds addMarkers(List<WishItem> items) {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (WishItem item : items) {
-            final double lat = item.getLatitude();
-            final double lng = item.getLongitude();
+            Double lat = item.getLatitude();
+            Double lng = item.getLongitude();
             final LatLng point = new LatLng(lat, lng);
 
             Marker marker = mGoogleMap.addMarker(new MarkerOptions().position(point));
@@ -275,8 +275,8 @@ public class MapActivity extends Activity {
             finish();
             return;
         }
-        final double lat = item.getLatitude();
-        final double lng = item.getLongitude();
+        Double lat = item.getLatitude();
+        Double lng = item.getLongitude();
 
         final LatLng point = new LatLng(lat, lng);
         Marker marker = mGoogleMap.addMarker(new MarkerOptions().position(point));

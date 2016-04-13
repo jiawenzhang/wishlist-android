@@ -43,6 +43,7 @@ import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.tag.AddTagActivity;
 import com.wish.wishlist.tag.AddTagFromEditActivity;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.util.DoubleUtil;
 import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.widgets.ClearableEditText;
@@ -120,7 +121,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
                 String description,
                 String store,
                 String address,
-                double price,
+                Double price,
                 int complete,
                 int access,
                 String link) {
@@ -138,7 +139,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         String mDescription;
         String mStore;
         String mAddress;
-        double mPrice;
+        Double mPrice;
         int mComplete;
         int mAccess;
         String mLink;
@@ -327,16 +328,19 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     protected WishInput wishInput() {
         String name = mNameView.getText().toString().trim();
         String description = mDescriptionView.getText().toString().trim();
+        description = description.isEmpty() ? null : description;
         String store = mStoreView.getText().toString().trim();
+        store = store.isEmpty() ? null : store;
         String link = mLinkText.getText().toString().trim();
+        link = link.isEmpty() ? null : link;
 
         String address = mLocationView.getText().toString().trim();
-        if (address.equals("Loading location...")) {
-            address = "unknown";
+        if (address.equals("Loading location...") || address.isEmpty()) {
+            address = null;
         }
 
         String priceString = mPriceView.getText().toString().trim();
-        double price = priceString.isEmpty() ? Double.MIN_VALUE : Double.valueOf(mPriceView.getText().toString().trim());
+        Double price = priceString.isEmpty() ? null : Double.valueOf(mPriceView.getText().toString().trim());
         int complete = mCompleteCheckBox.isChecked() ? 1 : 0;
         //int access = mPrivateCheckBox.isChecked() ? WishItem.PRIVATE : WishItem.PUBLIC;
         int access = WishItem.PUBLIC;
@@ -373,7 +377,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
                 StringUtil.compare(item.getAddress(), input.mAddress) &&
                 item.getAccess() == input.mAccess &&
                 StringUtil.compare(item.getFullsizePicPath(), mFullsizePhotoPath) &&
-                item.getPrice() == input.mPrice &&
+                DoubleUtil.compare(item.getPrice(), input.mPrice) &&
                 item.getComplete() == input.mComplete &&
                 StringUtil.compare(item.getLink(), input.mLink)
                 ) {

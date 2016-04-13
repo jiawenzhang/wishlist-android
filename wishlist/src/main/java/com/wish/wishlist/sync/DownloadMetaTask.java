@@ -123,8 +123,11 @@ public class DownloadMetaTask {
         });
     }
 
-    private void updateTags(ParseObject item, long item_id) {
-        List<String> tags = item.getList(WishItem.PARSE_KEY_TAGS);
+    private void updateTags(ParseObject parseItem, long item_id) {
+        List<String> tags = parseItem.getList(WishItem.PARSE_KEY_TAGS);
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
         TagItemDBManager.instance().Update_item_tags(item_id, new ArrayList<>(tags));
     }
 

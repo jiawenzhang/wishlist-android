@@ -59,10 +59,10 @@ public class ItemDBManager extends DBManager {
 			long updated_time,
 			String picture_url,
 			String fullsize_picture_path,
-			double price,
+			Double price,
 			String address,
-			double latitude,
-			double longitude,
+			Double latitude,
+			Double longitude,
 			int priority,
 			int complete,
 			String link,
@@ -108,9 +108,10 @@ public class ItemDBManager extends DBManager {
 			long updated_time,
 			String picture_url,
 			String fullsize_picture_path,
-			double price, String address,
-			double latitude,
-			double longitude,
+			Double price,
+			String address,
+			Double latitude,
+			Double longitude,
 			int priority,
 			int complete,
 			String link,
@@ -444,9 +445,9 @@ public class ItemDBManager extends DBManager {
 			while (!c.isAfterLast()){
 				id = c.getLong(c.getColumnIndexOrThrow(KEY_ID));
 				//skip the items having unknown locations
-				double latitude = c.getDouble(c.getColumnIndexOrThrow(KEY_LATITUDE));
-				double longitude = c.getDouble(c.getColumnIndexOrThrow(KEY_LONGITUDE));
-				if (latitude != Double.MIN_VALUE && longitude != Double.MAX_VALUE) {
+				Double latitude = c.isNull(c.getColumnIndexOrThrow(KEY_LATITUDE)) ? null : c.getDouble(c.getColumnIndexOrThrow(KEY_LATITUDE));
+				Double longitude = c.isNull(c.getColumnIndexOrThrow(KEY_LONGITUDE)) ? null : c.getDouble(c.getColumnIndexOrThrow(KEY_LONGITUDE));
+				if (latitude != null && longitude!=null) {
 					ids.add(id);
 				}
 				c.moveToNext();

@@ -110,14 +110,14 @@ public class WishAdapterList extends WishAdapter {
         }
 
         String storeName = wish.getStoreName();
-        if (!storeName.isEmpty()) {
+        if (storeName != null) {
             holder.txtStore.setText(storeName);
             holder.txtStore.setVisibility(View.VISIBLE);
         } else {
             holder.txtStore.setVisibility(View.GONE);
         }
 
-        if (!wish.getDesc().isEmpty()) {
+        if (wish.getDesc() != null) {
             holder.txtDescription.setText(wish.getDesc());
             holder.txtDescription.setVisibility(View.VISIBLE);
         } else {

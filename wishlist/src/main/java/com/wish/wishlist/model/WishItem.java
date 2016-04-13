@@ -3,7 +3,6 @@ package com.wish.wishlist.model;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.Date;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -32,7 +31,7 @@ import android.preference.PreferenceManager;
 import org.json.JSONObject;
 
 
-public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<WishItem> {
+public class WishItem implements Parcelable {
     private static final String TAG = "WishItem";
     public static final int PUBLIC = 0;
     public static final int PRIVATE = 1;
@@ -50,9 +49,9 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
     private int mPriority;
     private int mComplete;
     private String mLink;
-    private double mPrice;
-    private double mLatitude;
-    private double mLongitude;
+    private Double mPrice;
+    private Double mLatitude;
+    private Double mLongitude;
     private String mAddress;
     private boolean mDeleted;
     private boolean mSyncedToServer;
@@ -72,9 +71,9 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
             long updated_time,
             String imgMetaJSON,
             String fullsizePicPath,
-            double price,
-            double latitude,
-            double longitude,
+            Double price,
+            Double latitude,
+            Double longitude,
             String address,
             int priority,
             int complete,
@@ -160,16 +159,16 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         return mStoreName;
     }
 
-    public void setPrice(double p) {
+    public void setPrice(Double p) {
         mPrice = p;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return mPrice;
     }
 
     public String getPriceAsString() {
-        if (mPrice == Double.MIN_VALUE) {
+        if (mPrice == null) {
             return null;
         } else {
             DecimalFormat Dec = new DecimalFormat("0.00");
@@ -187,16 +186,16 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         return currencySymbol + " " + price;
     }
 
-    public double getLatitude() {
+    public Double getLatitude() {
         return mLatitude;
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
         return mLongitude;
     }
 
     public boolean hasGeoLocation() {
-        return (getLatitude() != Double.MIN_VALUE && getLongitude() != Double.MAX_VALUE);
+        return (getLatitude() != null && getLongitude() != null);
     }
 
     public void setAddress(String add) {
@@ -207,11 +206,11 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         return mAddress;
     }
 
-    public void setLatitude(double lat) {
+    public void setLatitude(Double lat) {
         mLatitude = lat;
     }
 
-    public void setLongitude(double lng) {
+    public void setLongitude(Double lng) {
         mLongitude = lng;
     }
 
@@ -386,13 +385,13 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         // clear the attributes of a wish, called when deleting a wish,
         // so that the attributes in db can be cleared. We will keep the object_id
         // so that server still knows it
-        mName = "";
-        mDescription = "";
-        mStoreName = "";
-        mAddress = "";
-        mLink = "";
+        mName = null;
+        mDescription = null;
+        mStoreName = null;
+        mAddress = null;
+        mLink = null;
 
-        mFullsizePicPath = "";
+        mFullsizePicPath = null;
         mImgMetaJSON = null;
     }
 
@@ -414,18 +413,18 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
 
         //used as a note
         String descrptStr = getDesc();
-        if (!descrptStr.equals("")) {
+        if (descrptStr != null) {
             message += (descrptStr + "\n");
         }
 
         String storeName = getStoreName();
-        if (!storeName.equals("")) {
+        if (storeName != null) {
             message += ("At " + getStoreName() + "\n");
         }
 
         String address = getAddress();
-        if (!address.equals("unknown") && !address.equals("")) {
-            if (storeName.equals("")) {
+        if (address != null) {
+            if (storeName == null) {
                 address = "At " + address;
             }
             message += (address + "\n");
@@ -458,8 +457,25 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         Log.d(TAG, "saveToLocal");
         ItemDBManager manager = new ItemDBManager();
         if (mId == -1) { // new item
-            mId = manager.addItem(mObjectId, mAccess, mStoreName, mName, mDescription, mUpdatedTime, mImgMetaJSON, mFullsizePicPath,
-                    mPrice, mAddress, mLatitude, mLongitude, mPriority, mComplete, mLink, mDeleted, mSyncedToServer, mDownloadImg);
+            mId = manager.addItem(
+                    mObjectId,
+                    mAccess,
+                    mStoreName,
+                    mName,
+                    mDescription,
+                    mUpdatedTime,
+                    mImgMetaJSON,
+                    mFullsizePicPath,
+                    mPrice,
+                    mAddress,
+                    mLatitude,
+                    mLongitude,
+                    mPriority,
+                    mComplete,
+                    mLink,
+                    mDeleted,
+                    mSyncedToServer,
+                    mDownloadImg);
         } else { // existing item
             updateDB();
         }
@@ -468,12 +484,36 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
 
     private void updateDB() {
         ItemDBManager manager = new ItemDBManager();
-        manager.updateItem(mId, mObjectId, mAccess, mStoreName, mName, mDescription, mUpdatedTime, mImgMetaJSON, mFullsizePicPath,
-                mPrice, mAddress, mLatitude, mLongitude, mPriority, mComplete, mLink, mDeleted, mSyncedToServer, mDownloadImg);
+        manager.updateItem(
+                mId,
+                mObjectId,
+                mAccess,
+                mStoreName,
+                mName,
+                mDescription,
+                mUpdatedTime,
+                mImgMetaJSON,
+                mFullsizePicPath,
+                mPrice,
+                mAddress,
+                mLatitude,
+                mLongitude,
+                mPriority,
+                mComplete,
+                mLink,
+                mDeleted,
+                mSyncedToServer,
+                mDownloadImg);
     }
 
     public static WishItem fromParseObject(final ParseObject wishObject, long item_id) {
-        WishItem wishItem = new WishItem(
+        // wishObject.getDouble() will return 0 if the double is null on server,
+        // use getNumber so we can check null
+        Number priceNumber = wishObject.getNumber(ItemDBManager.KEY_PRICE);
+        Number latNumber = wishObject.getNumber(ItemDBManager.KEY_LATITUDE);
+        Number lngNumber = wishObject.getNumber(ItemDBManager.KEY_LONGITUDE);
+
+        return new WishItem(
                 item_id,
                 wishObject.getObjectId(),
                 wishObject.getInt(ItemDBManager.KEY_ACCESS),
@@ -482,19 +522,17 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
                 wishObject.getString(ItemDBManager.KEY_DESCRIPTION),
                 wishObject.getLong(ItemDBManager.KEY_UPDATED_TIME),
                 wishObject.getString(ItemDBManager.KEY_IMG_META_JSON),
-                null, // _fullsizePhotoPath,
-                wishObject.getDouble(ItemDBManager.KEY_PRICE),
-                wishObject.getDouble(ItemDBManager.KEY_LATITUDE),
-                wishObject.getDouble(ItemDBManager.KEY_LONGITUDE),
+                null, // _fullsizePhotoPath, will be updated when we save the image
+                priceNumber == null ? null : priceNumber.doubleValue(),
+                latNumber == null ? null : latNumber.doubleValue(),
+                lngNumber == null ? null : lngNumber.doubleValue(),
                 wishObject.getString(ItemDBManager.KEY_ADDRESS),
-                0, // priority
+                0, // priority, not used
                 wishObject.getInt(ItemDBManager.KEY_COMPLETE),
                 wishObject.getString(ItemDBManager.KEY_LINK),
                 wishObject.getBoolean(ItemDBManager.KEY_DELETED),
                 true,
                 false);
-
-        return wishItem;
     }
 
     public static void toParseObject(final WishItem item, ParseObject wishObject) {
@@ -502,26 +540,22 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
         if (user != null) {// user here should never be null
             wishObject.put(WishItem.PARSE_KEY_OWNDER_ID, user.getObjectId());
         }
-        wishObject.put(ItemDBManager.KEY_ACCESS, item.getAccess());
-        wishObject.put(ItemDBManager.KEY_STORENAME, item.getStoreName());
-        wishObject.put(ItemDBManager.KEY_NAME, item.getName());
-        wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc());
-        wishObject.put(ItemDBManager.KEY_UPDATED_TIME, item.getUpdatedTime());
-        if (item.getImgMetaJSON() != null) {
-            wishObject.put(ItemDBManager.KEY_IMG_META_JSON, item.getImgMetaJSON());
-        } else {
-            wishObject.put(ItemDBManager.KEY_IMG_META_JSON, JSONObject.NULL);
-        }
 
-        wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice());
-        wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude());
-        wishObject.put(ItemDBManager.KEY_LONGITUDE, item.getLongitude());
-        wishObject.put(ItemDBManager.KEY_ADDRESS, item.getAddress());
+        wishObject.put(ItemDBManager.KEY_ACCESS, item.getAccess());
+        wishObject.put(ItemDBManager.KEY_STORENAME, item.getStoreName() == null ? JSONObject.NULL : item.getStoreName());
+        wishObject.put(ItemDBManager.KEY_NAME, item.getName() == null ? JSONObject.NULL : item.getName());
+        wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc() == null ? JSONObject.NULL : item.getDesc());
+        wishObject.put(ItemDBManager.KEY_UPDATED_TIME, item.getUpdatedTime());
+        wishObject.put(ItemDBManager.KEY_IMG_META_JSON, item.getImgMetaJSON() == null ? JSONObject.NULL : item.getImgMetaJSON());
+        wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice() == null ? JSONObject.NULL : item.getPrice());
+        wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude() == null ? JSONObject.NULL : item.getLatitude());
+        wishObject.put(ItemDBManager.KEY_LONGITUDE, item.getLongitude() == null ? JSONObject.NULL : item.getLongitude());
+        wishObject.put(ItemDBManager.KEY_ADDRESS, item.getAddress() == null ? JSONObject.NULL : item.getAddress());
         wishObject.put(ItemDBManager.KEY_COMPLETE, item.getComplete());
-        wishObject.put(ItemDBManager.KEY_LINK, item.getLink());
+        wishObject.put(ItemDBManager.KEY_LINK, item.getLink() == null ? JSONObject.NULL : item.getLink());
         wishObject.put(ItemDBManager.KEY_DELETED, item.getDeleted());
         List<String> tags = TagItemDBManager.instance().tags_of_item(item.getId());
-        wishObject.put(WishItem.PARSE_KEY_TAGS, tags);
+        wishObject.put(WishItem.PARSE_KEY_TAGS, tags.isEmpty() ? JSONObject.NULL : tags);
     }
 
     public ParseObject toParseObject() {
@@ -561,24 +595,6 @@ public class WishItem implements Parcelable, Comparable<WishItem>, Comparator<Wi
 
         setFullsizePicPath(null);
         saveToLocal();
-    }
-
-    @Override
-    public int compareTo(WishItem w) {
-        if (getId() != -1) {
-            return Long.valueOf(getId()).compareTo(Long.valueOf(w.getId()));
-        } else {
-            return getObjectId().compareTo(w.getObjectId());
-        }
-    }
-
-    @Override
-    public int compare(WishItem w1, WishItem w2) {
-        if (w1.getId() != -1 && w2.getId() != -1) {
-            return Long.valueOf(w1.getId()).compareTo(Long.valueOf(w2.getId()));
-        } else {
-            return w1.getObjectId().compareTo(w2.getObjectId());
-        }
     }
 
     /****************** everything below here is for implementing Parcelable *********************/

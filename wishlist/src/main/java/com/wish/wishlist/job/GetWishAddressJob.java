@@ -12,6 +12,7 @@ import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.StringUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,9 +50,9 @@ public class GetWishAddressJob extends Job {
             return;
         }
 
-        double lat = item.getLatitude();
-        double lng = item.getLongitude();
-        String address;
+        Double lat = item.getLatitude();
+        Double lng = item.getLongitude();
+        String address = null;
 
         //we have a location by gps, but don't have an address
         Geocoder gc = new Geocoder(WishlistApplication.getAppContext(), Locale.getDefault());
@@ -64,13 +65,13 @@ public class GetWishAddressJob extends Job {
                     sb.append(add.getAddressLine(k)).append("\n");
             }
             address = sb.toString();
+            address = address.isEmpty()? null : address;
         } catch (IOException e) {
             Log.e(TAG, e.toString());
-            address = "unknown";
         }
 
         Log.d(TAG, "got address " + address);
-        if (!item.getAddress().equals(address)) {
+        if (!StringUtil.compare(item.getAddress(), address)) {
             item.setAddress(address);
             item.setUpdatedTime(System.currentTimeMillis());
             item.save();

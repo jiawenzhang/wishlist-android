@@ -127,7 +127,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
 
         //used as a note
         String description = mItem.getDesc();
-        if (!description.isEmpty()) {
+        if (description != null) {
             mDescriptionView.setText(description);
             mDescriptionView.setVisibility(View.VISIBLE);
         } else {
@@ -135,7 +135,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         }
 
         String storeName = mItem.getStoreName();
-        if (!storeName.isEmpty()) {
+        if (storeName != null) {
             mStoreView.setText(storeName);
             mStoreView.setVisibility(View.VISIBLE);
         } else {
@@ -143,7 +143,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         }
 
         String address = mItem.getAddress();
-        if (!address.equals("unknown") && !address.isEmpty()) {
+        if (address != null) {
             mLocationView.setText(address);
             mLocationView.setVisibility(View.VISIBLE);
         } else {
@@ -151,7 +151,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         }
 
         String link = mItem.getLink();
-        if (link != null && !link.isEmpty()) {
+        if (link != null) {
             String url = mItem.getLink();
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "http://" + url;
@@ -197,7 +197,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     }
 
     protected void showOnMap() {
-        if (mItem.getLatitude() == Double.MIN_VALUE && mItem.getLongitude() == Double.MIN_VALUE) {
+        if (mItem.getLatitude() == null && mItem.getLongitude() == null) {
             Toast toast = Toast.makeText(this, "location unknown", Toast.LENGTH_SHORT);
             toast.show();
         } else {

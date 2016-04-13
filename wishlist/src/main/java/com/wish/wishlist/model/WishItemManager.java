@@ -121,68 +121,55 @@ public class WishItemManager {
         return itemFromCursor(wishItemCursor);
     }
 
-    private WishItem itemFromCursor(ItemsCursor wishItemCursor)
-    {
-        long itemId = wishItemCursor.getLong(wishItemCursor.getColumnIndexOrThrow(ItemDBManager.KEY_ID));
+    private WishItem itemFromCursor(ItemsCursor c) {
+        long itemId = c.getLong(c.getColumnIndexOrThrow(ItemDBManager.KEY_ID));
+        int access = c.getInt(c.getColumnIndexOrThrow(ItemDBManager.KEY_ACCESS));
 
-        int access = wishItemCursor.getInt(wishItemCursor.getColumnIndexOrThrow(ItemDBManager.KEY_ACCESS));
+        int latColIndex = c.getColumnIndexOrThrow(ItemDBManager.KEY_LATITUDE);
+        Double latitude = c.isNull(latColIndex) ?  null : c.getDouble(latColIndex);
 
-        double latitude = wishItemCursor.getDouble(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_LATITUDE));
+        int lngColIndex = c.getColumnIndexOrThrow(ItemDBManager.KEY_LONGITUDE);
+        Double longitude = c.isNull(lngColIndex) ? null : c.getDouble(lngColIndex);
 
-        double longitude = wishItemCursor.getDouble(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_LONGITUDE));
+        String itemLocation = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_ADDRESS));
+        String objectId = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_OBJECT_ID));
+        String storeName = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_STORENAME));
+        String picture_str = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_IMG_META_JSON));
+        String fullsize_pic_path = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_FULLSIZE_PHOTO_PATH));
+        String itemName = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_NAME));
+        String itemDesc = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_DESCRIPTION));
+        long updated_time = c.getLong(c.getColumnIndexOrThrow(ItemDBManager.KEY_UPDATED_TIME));
 
-        String itemLocation = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_ADDRESS));
+        int priceColIndex = c.getColumnIndexOrThrow(ItemDBManager.KEY_PRICE);
+        Double itemPrice = c.isNull(priceColIndex) ? null : c.getDouble(priceColIndex);
 
-        String objectId = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_OBJECT_ID));
+        int itemPriority = c.getInt(c.getColumnIndexOrThrow(ItemDBManager.KEY_PRIORITY));
+        int itemComplete = c.getInt(c.getColumnIndexOrThrow(ItemDBManager.KEY_COMPLETE));
+        String itemLink = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_LINK));
+        boolean deleted = c.getInt(c.getColumnIndexOrThrow(ItemDBManager.KEY_DELETED)) == 1;
+        boolean synced_to_server = c.getInt(c.getColumnIndexOrThrow(ItemDBManager.KEY_SYNCED_TO_SERVER)) == 1;
+        boolean download_img = c.getInt(c.getColumnIndexOrThrow(ItemDBManager.KEY_DOWNLOAD_IMG)) == 1;
 
-        String storeName = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_STORENAME));
-
-        String picture_str = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_IMG_META_JSON));
-
-        String fullsize_pic_path = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_FULLSIZE_PHOTO_PATH));
-
-        String itemName = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_NAME));
-
-        String itemDesc = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_DESCRIPTION));
-
-        long updated_time = wishItemCursor.getLong(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_UPDATED_TIME));
-
-        double itemPrice = wishItemCursor.getDouble(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_PRICE));
-
-        int itemPriority = wishItemCursor.getInt(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_PRIORITY));
-
-        int itemComplete = wishItemCursor.getInt(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_COMPLETE));
-
-        String itemLink = wishItemCursor.getString(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_LINK));
-
-        boolean deleted = wishItemCursor.getInt(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_DELETED)) == 1;
-
-        boolean synced_to_server = wishItemCursor.getInt(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_SYNCED_TO_SERVER)) == 1;
-
-        boolean download_img = wishItemCursor.getInt(wishItemCursor
-                .getColumnIndexOrThrow(ItemDBManager.KEY_DOWNLOAD_IMG)) == 1;
-
-        WishItem item = new WishItem(itemId, objectId, access, storeName, itemName, itemDesc,
-                updated_time, picture_str, fullsize_pic_path, itemPrice, latitude, longitude,
-                itemLocation, itemPriority, itemComplete, itemLink, deleted, synced_to_server, download_img);
-
-        return item;
+        return new WishItem(
+                itemId,
+                objectId,
+                access,
+                storeName,
+                itemName,
+                itemDesc,
+                updated_time,
+                picture_str,
+                fullsize_pic_path,
+                itemPrice,
+                latitude,
+                longitude,
+                itemLocation,
+                itemPriority,
+                itemComplete,
+                itemLink,
+                deleted,
+                synced_to_server,
+                download_img);
     }
 
     public void deleteItemById(long itemId) {
@@ -191,9 +178,7 @@ public class WishItemManager {
         item.removeImage();
         TagItemDBManager.instance().Remove_tags_by_item(itemId);
 
-        // check null is needed because during db migration where object_id column is added, migrated wish's
-        // object_id is all null!
-        if (item.getObjectId() == null || item.getObjectId().isEmpty()) {
+        if (item.getObjectId() == null) {
             // this wish has never been uploaded to parse, so it is safe to just delete it from db
             ItemDBManager.deleteItem(itemId);
             return;

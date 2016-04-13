@@ -55,7 +55,7 @@ public class UploadTask {
         }
 
         for (WishItem item : items) {
-            if (item.getObjectId().isEmpty()) { // parse does not have this item
+            if (item.getObjectId() == null) { // parse does not have this item
                 Log.d(TAG, "item " + item.getName() + " does not exist on Parse, add to parse");
                 addToParse(item);
             } else { // parse already has this item, update it
