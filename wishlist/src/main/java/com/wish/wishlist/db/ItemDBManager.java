@@ -1,6 +1,7 @@
 package com.wish.wishlist.db;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 import android.content.ContentValues;
@@ -140,7 +141,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_SYNCED_TO_SERVER, synced_to_server);
 		initialValues.put(KEY_DOWNLOAD_IMG, download_img);
 
-		String where = String.format("_id = '%d'", _id);
+		String where = String.format(Locale.US, "_id = '%d'", _id);
 		DBAdapter.getInstance().db().update(DB_TABLE, initialValues, where, null);
 	}
 
@@ -149,7 +150,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public static void deleteItem(long _id) {
 		//delete from item table
-		String sql = String.format("DELETE FROM Item " + "WHERE _id = '%d' ", _id);
+		String sql = String.format(Locale.US, "DELETE FROM Item " + "WHERE _id = '%d' ", _id);
 		try {
 			DBAdapter.getInstance().db().execSQL(sql);
 		} catch (SQLException e) {
@@ -340,7 +341,7 @@ public class ItemDBManager extends DBManager {
 	 * @return
 	 */
 	public ItemsCursor getItem(long _id) {
-		String sql = String.format("SELECT * FROM Item " + "WHERE _id = '%d' ", _id);
+		String sql = String.format(Locale.US, "SELECT * FROM Item " + "WHERE _id = '%d' ", _id);
 		ItemsCursor c = (ItemsCursor) DBAdapter.getInstance().db().rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 
@@ -459,7 +460,7 @@ public class ItemDBManager extends DBManager {
     public ArrayList<Long> getItemsSinceLastSynced()
     {
 		long last_synced_time = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE).getLong("last_synced_time", 0);
-        String sql = String.format("SELECT _id FROM Item WHERE updated_time > '%d'", last_synced_time);
+        String sql = String.format(Locale.US, "SELECT _id FROM Item WHERE updated_time > '%d'", last_synced_time);
         SQLiteDatabase d = DBAdapter.getInstance().db();
         ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(new ItemsCursor.Factory(), sql, null, null);
 
@@ -500,7 +501,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	//
 	public Cursor getItemStoreCursor(long _id){
-		String sql = String.format("SELECT store_id FROM Item " + "WHERE _id = '%d' ", _id);
+		String sql = String.format(Locale.US, "SELECT store_id FROM Item " + "WHERE _id = '%d' ", _id);
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor itemC = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
