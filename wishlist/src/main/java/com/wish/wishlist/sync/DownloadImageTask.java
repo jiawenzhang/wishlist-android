@@ -132,7 +132,7 @@ public class DownloadImageTask {
                     ImageManager.saveBitmapToFile(bitmap, PhotoFileCreater.getInstance().thumbFilePath(fullsizePicPath));
                 } else if (imgMeta.mLocation.equals(ImgMeta.WEB)) {
                     Log.d(TAG, "image downloaded from web " + url);
-                    fullsizePicPath = ImageManager.saveBitmapToFile(ImageManager.getScaleDownBitmap(bitmap, 1024));
+                    fullsizePicPath = ImageManager.saveBitmapToFile(bitmap);
                     ImageManager.saveBitmapToThumb(bitmap, fullsizePicPath);
                 } else {
                     Log.e(TAG, "imgMeta location unknown");
@@ -188,7 +188,7 @@ public class DownloadImageTask {
             };
 
             mTargets.put(result.url, target);
-            Picasso.with(WishlistApplication.getAppContext()).load(result.url).into(target);
+            Picasso.with(WishlistApplication.getAppContext()).load(result.url).resize(ImageManager.IMG_WIDTH, 0).into(target);
         } else if (result.code == result.NO_FILE) {
             // invalid url, clear the wish's ImgMeta so we won't try to download from this url again
             WishItem item = WishItemManager.getInstance().getItemById(result.itemId);

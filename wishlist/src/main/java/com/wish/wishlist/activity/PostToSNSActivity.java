@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 
@@ -103,7 +104,7 @@ public class PostToSNSActivity extends Activity {
         Log.d("JSON", "run try {");
         WishItem wish_item = WishItemManager.getInstance().getItemById(_itemId);
         _message = wish_item.getShareMessage(true);
-        _photoData = wish_item.getPhotoData();
+        _photoData = ImageManager.readFile(wish_item.getFullsizePicPath());
 
         if (_photoData == null) {
             postTextWish(_message);

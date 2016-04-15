@@ -433,20 +433,6 @@ public class WishItem implements Parcelable {
         return message;
     }
 
-    public byte[] getPhotoData() {
-        int width = 1024;
-        int height = 1024;
-        Bitmap bitmap;
-        byte[] data = null;
-        if (getFullsizePicPath() != null) {
-            bitmap = ImageManager.getInstance().decodeSampledBitmapFromFile(mFullsizePicPath, width, height, true);
-            ByteArrayOutputStream photoStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, photoStream);
-            data = photoStream.toByteArray();
-        }
-        return data;
-    }
-
     public long save() {
         long id = saveToLocal();
         SyncAgent.getInstance().sync();

@@ -88,7 +88,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     protected class saveTempPhoto extends AsyncTask<Void, Void, Void> {//<param, progress, result>
         @Override
         protected Void doInBackground(Void... arg) {
-            final Bitmap bitmap = ImageManager.decodeSampledBitmapFromFile(mTempPhotoPath, 1024);
+            final Bitmap bitmap = ImageManager.decodeSampledBitmapFromFile(mTempPhotoPath, ImageManager.IMG_WIDTH);
             mFullsizePhotoPath = ImageManager.saveBitmapToFile(bitmap);
             ImageManager.saveBitmapToThumb(bitmap, mFullsizePhotoPath);
             return null;
@@ -103,7 +103,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     protected class saveSelectedPhotoTask extends AsyncTask<Void, Void, Void> {//<param, progress, result>
         @Override
         protected Void doInBackground(Void... arg) {
-            final Bitmap bitmap = ImageManager.decodeSampledBitmapFromUri(mSelectedPicUri, 1024);
+            final Bitmap bitmap = ImageManager.decodeSampledBitmapFromUri(mSelectedPicUri, ImageManager.IMG_WIDTH);
             mFullsizePhotoPath = ImageManager.saveBitmapToFile(bitmap);
             ImageManager.saveBitmapToThumb(bitmap, mFullsizePhotoPath);
             return null;

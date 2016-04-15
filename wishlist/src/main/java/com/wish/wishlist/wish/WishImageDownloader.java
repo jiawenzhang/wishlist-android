@@ -81,7 +81,7 @@ public class WishImageDownloader {
         };
 
         m_targets.put(picURL, target);
-        Picasso.with(WishlistApplication.getAppContext()).load(picURL).into(target);
+        Picasso.with(WishlistApplication.getAppContext()).load(picURL).resize(ImageManager.IMG_WIDTH, 0).into(target);
     }
 
     private void bitmapFailed(final String picUrl) {
@@ -96,7 +96,7 @@ public class WishImageDownloader {
         String fullsizePath = null;
         if (bitmap != null) {
             // save the bitmap and a thumbnail as a local file
-            fullsizePath = ImageManager.saveBitmapToFile(ImageManager.getScaleDownBitmap(bitmap, 1024));
+            fullsizePath = ImageManager.saveBitmapToFile(bitmap);
             ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
         }
 

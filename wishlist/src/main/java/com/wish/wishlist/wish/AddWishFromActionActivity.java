@@ -349,7 +349,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         final Target target = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                mWebBitmap = ImageManager.getScaleDownBitmap(bitmap, 1024);
+                mWebBitmap = bitmap;
                 mPhotoView.setImageBitmap(mWebBitmap);
                 setPhotoVisible(true);
                 mImageFrame.setVisibility(View.VISIBLE);
@@ -368,7 +368,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         };
         mPhotoView.setTag(target);
 
-        Picasso.with(this).load(url).into(target);
+        Picasso.with(this).load(url).resize(ImageManager.IMG_WIDTH, 0).into(target);
         mFullsizePhotoPath = null;
         mSelectedPicUri = null;
         mSelectedPic = false;
