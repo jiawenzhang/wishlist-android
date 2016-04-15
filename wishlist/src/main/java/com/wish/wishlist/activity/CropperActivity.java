@@ -62,7 +62,7 @@ public class CropperActivity extends ActivityBase {
                 return true;
             case R.id.menu_cropper_crop:
                 final Bitmap croppedImage = mCropImageView.getCroppedBitmap();
-                final Bitmap scaledCroppedImage = ImageManager.getThumb(croppedImage);
+                final Bitmap scaledCroppedImage = ImageManager.getScaleDownBitmap(croppedImage, 256);
                 ProfileUtil.saveProfileImageToFile(scaledCroppedImage);
                 setResult(RESULT_OK);
                 finish();
