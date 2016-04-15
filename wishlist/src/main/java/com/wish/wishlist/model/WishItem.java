@@ -4,10 +4,8 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -21,7 +19,6 @@ import com.parse.ParseUser;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
-import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.image.PhotoFileCreater;
 import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.wish.ImgMeta;
@@ -540,6 +537,7 @@ public class WishItem implements Parcelable {
         wishObject.put(ItemDBManager.KEY_COMPLETE, item.getComplete());
         wishObject.put(ItemDBManager.KEY_LINK, item.getLink() == null ? JSONObject.NULL : item.getLink());
         wishObject.put(ItemDBManager.KEY_DELETED, item.getDeleted());
+        wishObject.put(WishItem.PARSE_KEY_IMAGE, JSONObject.NULL); // will be overwritten if we do have an image to upload
         List<String> tags = TagItemDBManager.instance().tags_of_item(item.getId());
         wishObject.put(WishItem.PARSE_KEY_TAGS, tags.isEmpty() ? JSONObject.NULL : tags);
     }
