@@ -139,8 +139,8 @@ public class ImageManager
             return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     public static String saveBitmapToFile(Bitmap bitmap, String fileName, int compress) {
@@ -161,11 +161,16 @@ public class ImageManager
             return path;
         } catch (IOException e) {
             Log.e(TAG, e.toString());
+            return null;
         }
-        return null;
     }
 
     public static void saveBitmapToThumb(Bitmap bitmap, String fullsizePath) {
+        if (fullsizePath == null) {
+            Log.e(TAG, "fullsizePath null!");
+            return;
+        }
+
         try {
             String thumbPath = PhotoFileCreater.getInstance().thumbFilePath(fullsizePath);
             Bitmap thumbBitmap = getThumb(bitmap);
