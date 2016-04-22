@@ -59,14 +59,6 @@ import org.apache.commons.lang3.ArrayUtils;
  * view and providing access to functions of manipulating items such as adding,
  * deleting and editing items, sorting items, searching items, viewing item
  * detailed info. and etc.
- *
- * Item display is via binding the list view or grid view to the Item table in
- * the database using WishListItemCursorAdapter
- *
- * switching between list and grid view is realized using viewflipper
- *
- * sorting items is via "SELECT ... ORDER BY" query to the database
- *
  */
 public class MyWishActivity extends WishBaseActivity implements
         SyncAgent.OnSyncWishChangedListener,
