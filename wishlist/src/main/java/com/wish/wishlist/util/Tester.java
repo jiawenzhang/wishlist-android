@@ -28,7 +28,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
 
     private Tester() {}
 
-    private LatLng getLocation(double x0, double y0, int radius/*meters*/) {
+    private static LatLng getLocation(double x0, double y0, int radius/*meters*/) {
         Random random = new Random();
 
         // Convert radius from meters to degrees
@@ -50,6 +50,52 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         return new LatLng(foundLatitude, foundLongitude);
     }
 
+    public static WishItem generateWish() {
+        // create a new item
+        Random r = new Random();
+
+        int itemAccess = r.nextInt(2); // int between [0, 2);
+        String itemStoreName = "Store";
+        String itemName = "Name";
+        String itemDesc = "Description";
+
+        int width = 256 + r.nextInt(256); // 256 - 512
+        int height = 256 + r.nextInt(256); // 256 - 512
+        //String webPicUrl = "http://placehold.it/" + String.valueOf(width) + "x" + String.valueOf(height) + ".jpg";
+        String webPicUrl = "http://loremflickr.com/" + String.valueOf(width) + "/" + String.valueOf(height);
+        String imgMetaJSON = new ImgMeta(ImgMeta.WEB, webPicUrl, width, height).toJSON();
+        Double itemPrice = r.nextDouble();
+
+        LatLng randomLatLng = getLocation(-79, 44, 1000);
+        Double lat = randomLatLng.latitude;
+        Double lng = randomLatLng.longitude;
+        String addStr = "Address";
+        int itemPriority = 1;
+        int itemComplete = r.nextInt(2);
+        String itemLink = "";
+
+        return new WishItem(
+                -1,
+                "", // object_id
+                itemAccess,
+                itemStoreName,
+                itemName,
+                itemDesc,
+                System.currentTimeMillis(),
+                imgMetaJSON,
+                null,
+                itemPrice,
+                lat,
+                lng,
+                addStr,
+                itemPriority,
+                itemComplete,
+                itemLink,
+                false,
+                false,
+                true);
+    }
+
     public void addWishes() {
         mImageDownloader.setWishImageDownloadDoneListener(this);
         // create a new item
@@ -57,48 +103,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         int n = 20;
 
         for (int i=0; i < n; i++ ) {
-            int itemAccess = r.nextInt(2); // int between [0, 2);
-            String itemStoreName = "Store";
-            String itemName = "Name";
-            String itemDesc = "Description";
-
-            int width = 256 + r.nextInt(256); // 256 - 512
-            int height = 256 + r.nextInt(256); // 256 - 512
-            //String webPicUrl = "http://placehold.it/" + String.valueOf(width) + "x" + String.valueOf(height) + ".jpg";
-            String webPicUrl = "http://loremflickr.com/" + String.valueOf(width) + "/" + String.valueOf(height);
-            String imgMetaJSON = new ImgMeta(ImgMeta.WEB, webPicUrl, width, height).toJSON();
-            Double itemPrice = r.nextDouble();
-
-            LatLng randomLatLng = getLocation(-79, 44, 1000);
-            Double lat = randomLatLng.latitude;
-            Double lng = randomLatLng.longitude;
-            String addStr = "Address";
-            int itemPriority = 1;
-            int itemComplete = r.nextInt(2);
-            String itemLink = "";
-
-            WishItem item = new WishItem(
-                    -1,
-                    "", // object_id
-                    itemAccess,
-                    itemStoreName,
-                    itemName,
-                    itemDesc,
-                    System.currentTimeMillis(),
-                    imgMetaJSON,
-                    null,
-                    itemPrice,
-                    lat,
-                    lng,
-                    addStr,
-                    itemPriority,
-                    itemComplete,
-                    itemLink,
-                    false,
-                    false,
-                    true);
-
-            mItems.add(item);
+            mItems.add(generateWish());
         }
 
         mImageDownloader.download(mItems);
