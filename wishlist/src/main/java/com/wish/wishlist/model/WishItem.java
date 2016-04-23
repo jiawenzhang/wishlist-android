@@ -21,6 +21,8 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.image.PhotoFileCreater;
 import com.wish.wishlist.sync.SyncAgent;
+import com.wish.wishlist.util.DoubleUtil;
+import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.wish.ImgMeta;
 
 import android.preference.PreferenceManager;
@@ -579,6 +581,42 @@ public class WishItem implements Parcelable {
 
         setFullsizePicPath(null);
         saveToLocal();
+    }
+
+    @Override
+    public boolean equals(Object item) {
+        if (item == null) {
+            return false;
+        }
+
+        if (item.getClass() != getClass()) {
+            return false;
+        }
+
+        if (item == this) {
+            return true;
+        }
+
+        WishItem other = (WishItem) item;
+
+        return (other.getId() == getId() &&
+                StringUtil.compare(other.getObjectId(), getObjectId()) &&
+                StringUtil.compare(other.getName(), getName()) &&
+                StringUtil.compare(other.getDesc(), getDesc()) &&
+                StringUtil.compare(other.getImgMetaJSON(), getImgMetaJSON()) &&
+                other.getUpdatedTime() == getUpdatedTime()) &&
+                StringUtil.compare(other.getStoreName(), getStoreName()) &&
+                StringUtil.compare(other.getAddress(), getAddress()) &&
+                other.getAccess() == getAccess() &&
+                StringUtil.compare(other.getFullsizePicPath(), getFullsizePicPath()) &&
+                DoubleUtil.compare(other.getPrice(), getPrice()) &&
+                DoubleUtil.compare(other.getLatitude(), getLatitude()) &&
+                DoubleUtil.compare(other.getLongitude(), getLongitude()) &&
+                other.getDeleted() == getDeleted() &&
+                other.getSyncedToServer() == getSyncedToServer() &&
+                other.getDownloadImg() == getDownloadImg() &&
+                other.getComplete() == getComplete() &&
+                StringUtil.compare(other.getLink(), getLink());
     }
 
     /****************** everything below here is for implementing Parcelable *********************/
