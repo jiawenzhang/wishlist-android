@@ -35,6 +35,7 @@ public class SyncAgent implements
     private static SyncAgent instance = null;
     private OnSyncWishChangedListener mSyncWishChangedListener;
     private OnDownloadWishDoneListener mDownloadWishDoneListener;
+    private OnSyncDoneListener mSyncDoneListener;
     private Date mSyncedTime;
     private DownloadMetaTask mDownloadMetaTask = new DownloadMetaTask();
     private UploadTask mUploadTask = new UploadTask();
@@ -104,6 +105,23 @@ public class SyncAgent implements
         }
     }
     /* listener */
+
+
+    /* OnSyncDone listener */
+    public interface OnSyncDoneListener {
+        void onSyncDone(boolean success);
+    }
+
+    public void registerSyncDoneListener(Object obj) {
+        try {
+            mSyncDoneListener = (OnSyncDoneListener) obj;
+        }
+        catch (final ClassCastException e) {
+            Log.e(TAG, "fail to registerListener");
+            throw new ClassCastException(obj.toString() + " must implement OnSyncDone");
+        }
+    }
+    /* OnSyncDone listener */
 
 
     public static SyncAgent getInstance() {
@@ -213,6 +231,11 @@ public class SyncAgent implements
     private void syncDone() {
         Log.d(TAG, "syncDone");
         mSyncing = false;
+
+        if (mSyncDoneListener != null) {
+            mSyncDoneListener.onSyncDone(true);
+        }
+
         if (mScheduleToSync) {
             mScheduleToSync = false;
             sync();
