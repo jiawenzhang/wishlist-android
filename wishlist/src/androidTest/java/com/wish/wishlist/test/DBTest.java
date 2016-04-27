@@ -10,7 +10,6 @@ import android.test.suitebuilder.annotation.SmallTest;
 
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
-import com.wish.wishlist.util.Tester;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

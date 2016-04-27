@@ -22,7 +22,6 @@ import com.parse.SignUpCallback;
 import com.wish.wishlist.R;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.sync.SyncAgent;
-import com.wish.wishlist.util.Tester;
 
 import org.junit.Test;
 

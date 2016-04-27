@@ -362,6 +362,18 @@ public class ItemDBManager extends DBManager {
         return c;
     }
 
+	static public Long getRandomItemId() {
+		String sql = "SELECT _id FROM Item WHERE deleted = 0 ORDER BY RANDOM() LIMIT 1";
+		ItemsCursor c = (ItemsCursor) DBAdapter.getInstance().db().rawQueryWithFactory(
+				new ItemsCursor.Factory(), sql, null, null);
+
+		if (c != null) {
+			c.moveToFirst();
+			return c.getLong(c.getColumnIndexOrThrow(KEY_ID));
+		}
+		return null;
+	}
+
 	/**
 	 * Return a sorted ItemsCursor matching the search quest by name
 	 * ordered by sortBy
