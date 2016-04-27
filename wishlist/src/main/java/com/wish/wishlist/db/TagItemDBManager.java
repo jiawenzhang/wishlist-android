@@ -73,7 +73,7 @@ public class TagItemDBManager extends DBManager {
         }
     }
 
-    Boolean tagExists(long tagId) {
+    private Boolean tagExists(long tagId) {
         Cursor cursor = DBAdapter.getInstance().db().query(true, DB_TABLE, new String[]{TAG_ID}, TAG_ID + "=" + tagId, null, null, null, null, null);
         Boolean exists = cursor.getCount() >= 1;
         return exists;
@@ -123,8 +123,7 @@ public class TagItemDBManager extends DBManager {
         for (String tag : oldTags) {
             if (!tags.contains(tag)) {
                 TagItemDBManager.instance().Untag_item(tag, itemId);
-            }
-            else {
+            } else {
                 //Remove the tags we already have so the following for loop will not tag them again
                 tags.remove(tag);
             }

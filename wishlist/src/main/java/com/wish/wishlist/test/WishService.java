@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.wish.wishlist.db.ItemDBManager;
+import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.model.WishItem;
@@ -110,6 +111,7 @@ public class WishService extends IntentService {
             WishItem item = Tester.generateWish();
             item.setUpdatedTime(System.currentTimeMillis());
             item.save();
+            TagItemDBManager.instance().Update_item_tags(item.getId(), Tester.randomTags());
         }
     }
 

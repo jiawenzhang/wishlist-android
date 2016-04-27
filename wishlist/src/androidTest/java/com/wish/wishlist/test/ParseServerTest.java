@@ -20,6 +20,7 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.wish.wishlist.R;
+import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.sync.SyncAgent;
 
@@ -194,6 +195,7 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
             // don't test downloading image yet
             item.setDownloadImg(false);
             item.saveToLocal();
+            TagItemDBManager.instance().Update_item_tags(item.getId(), Tester.randomTags());
         }
         SyncAgent.getInstance().sync();
     }

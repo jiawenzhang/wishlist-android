@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.android.gms.common.images.WebImage;
 import com.google.android.gms.maps.model.LatLng;
+import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.model.WishItem;
@@ -105,6 +106,17 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         return System.currentTimeMillis() - new Random().nextInt(30) * 3600L * 24L * 1000L; // 30 days
     }
 
+    public static ArrayList<String> randomTags() {
+        Random r = new Random();
+        ArrayList<String> tags = new ArrayList<>();
+        int tagCount = r.nextInt(3);
+        for (int i=0; i<tagCount; i++) {
+            tags.add(loremIpsum.getWords(r.nextInt(6)));
+        }
+        Log.d(TAG, "random tags " + tags);
+        return tags;
+    }
+
     public static WishItem generateWish() {
         // create a new item filled with random data
         ImgMeta imgMeta = randomImgMeta();
@@ -203,6 +215,11 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
             item.setComplete(item.getComplete() == 0 ? 1 : 0);
             changed = true;
         }
+        if (new Random().nextDouble() <= 0.1) {
+            Log.d(TAG, "change tags");
+            TagItemDBManager.instance().Update_item_tags(item.getId(), Tester.randomTags());
+            changed = true;
+        }
 
         if (!changed) {
             // we are really unlucky, nothing changed, so let's just change the name for sure
@@ -216,18 +233,15 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
     @Override
     public void onWishImageDownloadDone(boolean success) {
         // WishImageDownload set the access to default settings and completed to 0, and updated time to now, let's reset it to random
-        Random r = new Random();
         for (WishItem item : mItems) {
-            int itemAccess = r.nextInt(2); // int between [0, 2);
-            item.setAccess(itemAccess);
-
-            int itemCompleted = r.nextInt(2);
-            item.setComplete(itemCompleted);
-
-            item.setUpdatedTime(System.currentTimeMillis() - r.nextInt(30) * 3600L * 24L * 1000L); // 30 days
+            item.setAccess(randomAccess());
+            item.setComplete(randomComplete());
+            item.setUpdatedTime(randomUpdatedTime());
 
             item.setDownloadImg(false);
             item.saveToLocal();
+
+            TagItemDBManager.instance().Update_item_tags(item.getId(), randomTags());
             Log.d(TAG, "item saved");
         }
 
