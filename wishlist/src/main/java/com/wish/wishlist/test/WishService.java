@@ -2,16 +2,23 @@ package com.wish.wishlist.test;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Handler;
+import android.graphics.Bitmap;
+import android.os.SystemClock;
 import android.util.Log;
 
+import com.squareup.picasso.Picasso;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
+import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.sync.SyncAgent;
+import com.wish.wishlist.util.StringUtil;
 
+import java.io.IOException;
 import java.util.Random;
 
 /**
@@ -19,12 +26,11 @@ import java.util.Random;
  */
 public class WishService extends IntentService {
     static final String TAG = "WishService";
-    final Handler mHandler = new Handler();
-    private int mWishCount = 3;
     private int mWishChanged = 0;
-    private int mPeriodMin = 1; //second
-    private int mPeriodMax = 5; //second
+    private final static int mWishCount = 3;
     final private static int SECOND = 1000;
+    private final static int mPeriodMin = 1; //second
+    private final static int mPeriodMax = 5; //second
 
     enum WishAction {
         Add,
@@ -46,30 +52,24 @@ public class WishService extends IntentService {
     }
 
     private void changeWishLater() {
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                WishAction action = wishAction();
-                int count = wishCount();
-                if (action == WishAction.Add) {
-                    addWish(count);
-                } else if (action == WishAction.Update) {
-                    updateWish(count);
-                } else if (action == WishAction.Delete){
-                    deleteWish(count);
-                } else {
-                    Log.e(TAG, "error, unknown wish action!");
-                }
+        if (mWishChanged++ == mWishCount) {
+            Log.d(TAG, mWishCount + " wishes changed, done");
+            return;
+        }
 
-                EventBus.getInstance().post(new MyWishChangeEvent());
+        SystemClock.sleep(randomDuration());
 
-                if (++mWishChanged < mWishCount) {
-                    changeWishLater();
-                } else {
-                    Log.d(TAG, mWishCount + " wishes changed, done");
-                }
-            }
-        }, randomDuration());
+        WishAction action = wishAction();
+        int count = wishCount();
+        if (action == WishAction.Add) {
+            addWish(count);
+        } else if (action == WishAction.Update) {
+            updateWish(count);
+        } else if (action == WishAction.Delete){
+            deleteWish(count);
+        } else {
+            Log.e(TAG, "error, unknown wish action!");
+        }
     }
 
     private int randomDuration() {
@@ -78,6 +78,71 @@ public class WishService extends IntentService {
         int duration = SECOND * mPeriodMin + SECOND * random.nextInt(mPeriodMax);
         Log.d(TAG, "random duration " + duration/1000 + "s");
         return duration;
+    }
+
+    private void updateWish(int count) {
+        Log.e(TAG, "update " + count + " wish");
+        // pick count wishes randomly and update them
+        for (int i=0; i<count; i++) {
+            Long id = ItemDBManager.getRandomItemId();
+            if (id == null) {
+                continue;
+            }
+
+            WishItem item = WishItemManager.getInstance().getItemById(id);
+            String imgMetaJSON = item.getImgMetaJSON();
+            item = Tester.updateWish(item);
+            if (!StringUtil.compare(item.getImgMetaJSON(), imgMetaJSON)) {
+                // image changed, remove the old one and download new one if necessary
+                item.removeImage();
+                if (item.getImgMetaJSON() != null) {
+                    downloadWishImage(item);
+                }
+            }
+            item.setSyncedToServer(false);
+            item.setUpdatedTime(System.currentTimeMillis());
+            item.saveToLocal();
+        }
+
+        EventBus.getInstance().post(new MyWishChangeEvent());
+        SyncAgent.getInstance().sync();
+        changeWishLater();
+    }
+
+    private void addWish(int count) {
+        Log.e(TAG, "add " + count + " wish");
+        for (int i=0; i<count; i++) {
+            WishItem item = Tester.generateWish();
+            if (item.getImgMetaJSON() != null) {
+                downloadWishImage(item);
+            }
+            item.setSyncedToServer(false);
+            item.setUpdatedTime(System.currentTimeMillis());
+            item.saveToLocal();
+            TagItemDBManager.instance().Update_item_tags(item.getId(), Tester.randomTags());
+        }
+
+        EventBus.getInstance().post(new MyWishChangeEvent());
+        SyncAgent.getInstance().sync();
+        changeWishLater();
+    }
+
+    private void downloadWishImage(WishItem item) {
+        try {
+            // we are in a background thread, so load the image synchronously
+            Bitmap bitmap = Picasso.with(WishlistApplication.getAppContext()).load(item.getImgMeta().mUrl).resize(ImageManager.IMG_WIDTH, 0).get();
+            String fullsizePath;
+            if (bitmap != null) {
+                // save the bitmap and a thumbnail as a local file
+                fullsizePath = ImageManager.saveBitmapToFile(bitmap);
+                ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
+                item.setFullsizePicPath(fullsizePath);
+            } else {
+                Log.e(TAG, "bitmap null");
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "fail to download image " + e.toString());
+        }
     }
 
     private void deleteWish(int count) {
@@ -89,30 +154,10 @@ public class WishService extends IntentService {
                 WishItemManager.getInstance().deleteItemById(id);
             }
         }
-    }
 
-    private void updateWish(int count) {
-        Log.e(TAG, "update " + count + " wish");
-        // pick count wishes randomly and update them
-        for (int i=0; i<count; i++) {
-            Long id = ItemDBManager.getRandomItemId();
-            if (id != null) {
-                WishItem item = WishItemManager.getInstance().getItemById(id);
-                item = Tester.updateWish(item);
-                item.setUpdatedTime(System.currentTimeMillis());
-                item.save();
-            }
-        }
-    }
-
-    private void addWish(int count) {
-        Log.e(TAG, "add " + count + " wish");
-        for (int i=0; i<count; i++) {
-            WishItem item = Tester.generateWish();
-            item.setUpdatedTime(System.currentTimeMillis());
-            item.save();
-            TagItemDBManager.instance().Update_item_tags(item.getId(), Tester.randomTags());
-        }
+        EventBus.getInstance().post(new MyWishChangeEvent());
+        SyncAgent.getInstance().sync();
+        changeWishLater();
     }
 
     private WishAction wishAction() {
