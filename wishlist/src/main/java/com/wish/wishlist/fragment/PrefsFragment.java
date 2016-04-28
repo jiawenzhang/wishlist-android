@@ -15,13 +15,13 @@ import com.parse.ParseUser;
 import com.wish.wishlist.BuildConfig;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.activity.DebugActivity;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.feature.NewFeatureFragmentActivity;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Analytics;
-import com.wish.wishlist.util.Tester;
 import com.wish.wishlist.view.ReleaseNotesView;
 
 /**
@@ -135,7 +135,7 @@ public class PrefsFragment extends PreferenceFragment implements
         } else {
             debug.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
-                    Tester.getInstance().addWishes();
+                    startActivity(new Intent(getActivity(), DebugActivity.class));
                     return true;
                 }
             });
