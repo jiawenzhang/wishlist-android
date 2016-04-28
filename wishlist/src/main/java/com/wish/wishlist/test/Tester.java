@@ -99,7 +99,10 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         int height = 256 + r.nextInt(256); // 256 - 512
         //String webPicUrl = "http://placehold.it/" + String.valueOf(width) + "x" + String.valueOf(height) + ".jpg";
         String webPicUrl = "http://loremflickr.com/" + String.valueOf(width) + "/" + String.valueOf(height);
-        return r.nextInt(5) == 0 ? null : new ImgMeta(ImgMeta.WEB, webPicUrl, width, height);
+
+        // 10% chance to get an invalid url
+        String url = r.nextInt(10) == 0 ? "http://" + loremIpsum.getWords(r.nextInt(2)) : webPicUrl;
+        return r.nextInt(5) == 0 ? null : new ImgMeta(ImgMeta.WEB, url, width, height);
     }
 
     public static long randomUpdatedTime() {

@@ -141,7 +141,7 @@ public class WishService extends IntentService {
                 Log.e(TAG, "bitmap null");
             }
         } catch (IOException e) {
-            Log.e(TAG, "fail to download image " + e.toString());
+            Log.e(TAG, "fail to download image: " + e.toString());
         }
     }
 
