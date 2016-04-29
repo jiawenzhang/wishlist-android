@@ -2,14 +2,13 @@ package com.wish.wishlist.test;
 
 import android.util.Log;
 
-import com.google.android.gms.common.images.WebImage;
 import com.google.android.gms.maps.model.LatLng;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.model.WishItem;
-import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.wish.ImgMeta;
+import com.wish.wishlist.wish.ImgMetaArray;
 import com.wish.wishlist.wish.WishImageDownloader;
 
 import java.util.ArrayList;
@@ -123,7 +122,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
     public static WishItem generateWish() {
         // create a new item filled with random data
         ImgMeta imgMeta = randomImgMeta();
-        String imgMetaJSON = imgMeta == null ? null : imgMeta.toJSON();
+        String imgMetaJSON = imgMeta == null ? null : new ImgMetaArray(imgMeta).toJSON();
         String itemLink = imgMeta == null ? null : imgMeta.mUrl;
 
         LatLng randomLatLng = getLocation(-79, 44, 1000);
@@ -195,10 +194,12 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
             Log.d(TAG, "change image");
             ImgMeta imgMeta = randomImgMeta();
             if (imgMeta == null) {
-                item.setImgMeta(null, null, 0, 0);
+                item.setImgMetaArray(null);
                 item.setLink(null);
             } else {
-                item.setImgMeta(ImgMeta.WEB, imgMeta.mUrl, imgMeta.mWidth, imgMeta.mHeight);
+                ArrayList<ImgMeta> metaArray = new ArrayList<>();
+                metaArray.add(imgMeta);
+                item.setImgMetaArray(metaArray);
                 item.setLink(imgMeta.mUrl);
             }
             changed = true;

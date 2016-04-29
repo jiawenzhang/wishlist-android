@@ -50,7 +50,7 @@ public class WishImageDownloader {
     }
 
     private void download(final WishItem item) {
-        final ImgMeta imgMeta = item.getImgMeta();
+        ImgMeta imgMeta = item.getImgMetaArray() == null ? null : item.getImgMetaArray().get(0);
         if (imgMeta == null) {
             // wish does not have a picture
             bitmapLoaded(null, null, item);

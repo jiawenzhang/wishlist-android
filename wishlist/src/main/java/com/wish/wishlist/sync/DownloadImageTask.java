@@ -93,7 +93,7 @@ public class DownloadImageTask {
         ArrayList<Long> ids = ItemDBManager.getItemIdsToDownloadImg();
         for (Long item_id : ids) {
             WishItem item = WishItemManager.getInstance().getItemById(item_id);
-            ImgMeta imgMeta = item.getImgMeta();
+            ImgMeta imgMeta = item.getImgMetaArray() == null ? null : item.getImgMetaArray().get(0);
             if (imgMeta != null) {
                 // this wish's image needs to be downloaded
                 Log.d(TAG, "item \"" + item.getName() + "\" need to download image");
@@ -121,7 +121,7 @@ public class DownloadImageTask {
 
         WishItem item = WishItemManager.getInstance().getItemById(itemId);
         if (item != null && bitmap != null) {
-            ImgMeta imgMeta = item.getImgMeta();
+            ImgMeta imgMeta = item.getImgMetaArray() == null ? null : item.getImgMetaArray().get(0);
             if (imgMeta != null) {
                 String fullsizePicPath = null;
                 if (imgMeta.mLocation.equals(ImgMeta.PARSE) ) {
@@ -192,7 +192,7 @@ public class DownloadImageTask {
         } else if (result.code == result.NO_FILE) {
             // invalid url, clear the wish's ImgMeta so we won't try to download from this url again
             WishItem item = WishItemManager.getInstance().getItemById(result.itemId);
-            item.setImgMeta(null, null, 0, 0);
+            item.setImgMetaArray(null);
             item.setDownloadImg(false);
             item.saveToLocal();
 

@@ -157,7 +157,7 @@ public class MapActivity extends Activity {
                 }
 
                 // we are showing friend's wish
-                final ImgMeta imgMeta = item.getImgMeta();
+                ImgMeta imgMeta = item.getImgMetaArray() == null ? null : item.getImgMetaArray().get(0);
                 if (imgMeta == null) {
                     thumb.setVisibility(View.GONE);
                     return v;

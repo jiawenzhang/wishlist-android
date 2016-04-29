@@ -3,6 +3,7 @@ package com.wish.wishlist.model;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,11 +25,11 @@ import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.util.DoubleUtil;
 import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.wish.ImgMeta;
+import com.wish.wishlist.wish.ImgMetaArray;
 
 import android.preference.PreferenceManager;
 
 import org.json.JSONObject;
-
 
 public class WishItem implements Parcelable {
     private static final String TAG = "WishItem";
@@ -58,7 +59,7 @@ public class WishItem implements Parcelable {
 
     public final static String PARSE_KEY_OWNDER_ID = "owner_id";
     public final static String PARSE_KEY_TAGS = "tags";
-    public final static String PARSE_KEY_IMAGE = "image";
+    public final static String PARSE_KEY_IMAGES = "images";
 
     public WishItem(
             long itemId,
@@ -357,19 +358,19 @@ public class WishItem implements Parcelable {
         return mImgMetaJSON;
     }
 
-    public ImgMeta getImgMeta() {
+    public ArrayList<ImgMeta> getImgMetaArray() {
         if (mImgMetaJSON == null) {
             return null;
         }
-        return ImgMeta.fromJSON(mImgMetaJSON);
+        return ImgMetaArray.fromJSON(mImgMetaJSON);
     }
 
-    public void setImgMeta(String location, String url, int w, int h) {
-        if (url == null) {
+    public void setImgMetaArray(ArrayList<ImgMeta> metaArray) {
+        if (metaArray == null) {
             mImgMetaJSON = null;
             return;
         }
-        mImgMetaJSON = new ImgMeta(location, url, w, h).toJSON();
+        mImgMetaJSON = new ImgMetaArray(metaArray).toJSON();
     }
 
     @Override
@@ -539,7 +540,7 @@ public class WishItem implements Parcelable {
         wishObject.put(ItemDBManager.KEY_COMPLETE, item.getComplete());
         wishObject.put(ItemDBManager.KEY_LINK, item.getLink() == null ? JSONObject.NULL : item.getLink());
         wishObject.put(ItemDBManager.KEY_DELETED, item.getDeleted());
-        wishObject.put(WishItem.PARSE_KEY_IMAGE, JSONObject.NULL); // will be overwritten if we do have an image to upload
+        wishObject.put(WishItem.PARSE_KEY_IMAGES, JSONObject.NULL); // will be overwritten if we do have an image to upload
         List<String> tags = TagItemDBManager.instance().tags_of_item(item.getId());
         wishObject.put(WishItem.PARSE_KEY_TAGS, tags.isEmpty() ? JSONObject.NULL : tags);
     }

@@ -14,9 +14,11 @@ import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.wish.ImgMeta;
+import com.wish.wishlist.wish.ImgMetaArray;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jiawen on 2016-04-03.
@@ -89,8 +91,12 @@ public class UploadTask {
             public void done(ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "parse img url " + parseImage.getUrl());
-                    wishObject.put(WishItem.PARSE_KEY_IMAGE, parseImage);
-                    wishObject.put(ItemDBManager.KEY_IMG_META_JSON, new ImgMeta(ImgMeta.PARSE, parseImage.getUrl(), w, h).toJSON());
+                    List<ParseFile>  parseImageList = new ArrayList<>();
+                    parseImageList.add(parseImage);
+                    wishObject.put(WishItem.PARSE_KEY_IMAGES, parseImageList);
+                    ImgMeta meta = new ImgMeta(ImgMeta.PARSE, parseImage.getUrl(), w, h);
+                    String imgMetaJSON = new ImgMetaArray(meta).toJSON();
+                    wishObject.put(ItemDBManager.KEY_IMG_META_JSON, imgMetaJSON);
                     uploadParseObject(wishObject, item.getId(), isNew);
                 } else {
                     Log.e(TAG, "save ParseFile failed " + e.toString());
@@ -156,8 +162,9 @@ public class UploadTask {
                     if (!item.getDeleted()) {
                         // if we are deleting the wish, we don't need to save the image
                         String parseImageName = null;
-                        ParseFile pf = wishObject.getParseFile(WishItem.PARSE_KEY_IMAGE);
-                        if (pf != null) {
+                        List<ParseFile> pFileList = (ArrayList<ParseFile>) wishObject.get(WishItem.PARSE_KEY_IMAGES);
+                        if (pFileList != null) {
+                            ParseFile pf = pFileList.get(0);
                             parseImageName = pf.getName();
                         }
                         if (parseImageName == null) {

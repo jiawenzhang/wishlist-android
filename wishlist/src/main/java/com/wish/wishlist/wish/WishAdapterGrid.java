@@ -100,7 +100,7 @@ public class WishAdapterGrid extends WishAdapter {
             Picasso.with(holder.imgPhoto.getContext()).load(new File(thumb_path)).resize(mCardWidth, 0).transform(mTransform).into(holder.imgPhoto);
         } else {
             // we are loading friend wish
-            final ImgMeta imgMeta = wish.getImgMeta();
+            ImgMeta imgMeta = wish.getImgMetaArray() == null ? null : wish.getImgMetaArray().get(0);
             if (imgMeta != null) {
                 final float ratio = (float) imgMeta.mHeight / (float) imgMeta.mWidth;
                 holder.imgPhoto.setHeightRatio(ratio);

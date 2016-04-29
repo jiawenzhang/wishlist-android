@@ -174,7 +174,7 @@ public class AddWishActivity extends MyWishDetailActivity
     protected void newImageSaved() {
         dismissProgressDialog();
         mItem = createNewWish();
-        mItem.setImgMeta(null, null, 0, 0);
+        mItem.setImgMetaArray(null);
         mItem.saveToLocal();
         getWishAddressInBackground(mItem);
         wishSaved();

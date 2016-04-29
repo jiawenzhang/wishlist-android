@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.wish.wishlist.wish.ImgMeta;
+import com.wish.wishlist.wish.ImgMetaArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -146,7 +147,7 @@ public class DBMigrationTo_7 {
                     String json_7 = null;
                     if (imgMeta6 != null) {
                         ImgMeta imgMeta7 = new ImgMeta(ImgMeta.WEB, imgMeta6.mUrl, imgMeta6.mWidth, imgMeta6.mHeight);
-                        json_7 = imgMeta7.toJSON();
+                        json_7 = new ImgMetaArray(imgMeta7).toJSON();
                     }
                     cv.put(ItemDBManager.KEY_IMG_META_JSON, json_7);
                     String where = String.format(Locale.US, "_id = '%d'", id);

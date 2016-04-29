@@ -90,7 +90,7 @@ public class WishAdapterList extends WishAdapter {
             holder.imgPhoto.setVisibility(View.VISIBLE);
         } else {
             // we are loading friend wish
-            final ImgMeta imgMeta = wish.getImgMeta();
+            ImgMeta imgMeta = wish.getImgMetaArray() == null ? null : wish.getImgMetaArray().get(0);
             if (imgMeta != null) {
                 holder.imgPhoto.setVisibility(View.VISIBLE);
                 Picasso.with(holder.imgPhoto.getContext()).load(imgMeta.mUrl).fit().centerCrop().transform(mTransform).into(holder.imgPhoto);
