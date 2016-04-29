@@ -367,7 +367,7 @@ public class ItemDBManager extends DBManager {
 		ItemsCursor c = (ItemsCursor) DBAdapter.getInstance().db().rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
 
-		if (c != null) {
+		if (c != null && c.getCount() > 0) {
 			c.moveToFirst();
 			return c.getLong(c.getColumnIndexOrThrow(KEY_ID));
 		}
