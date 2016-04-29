@@ -36,7 +36,7 @@ public class AddWishActivity extends MyWishDetailActivity
         implements Observer {
 
     private static final String TAG = "AddWishActivity";
-    protected String mAddStr = "unknown";
+    protected String mAddStr = null;
     protected PositionManager mPositionManager;
     protected boolean mGettingLocation = false;
     protected Double mLat = null;
@@ -52,10 +52,12 @@ public class AddWishActivity extends MyWishDetailActivity
 
         @Override
         protected void onPostExecute(Void result) {
-            if (mAddStr.equals("unknown")) {
+            if (mAddStr == null) {
                 Toast.makeText(AddWishActivity.this, "Location unavailable", Toast.LENGTH_LONG).show();
+                mLocationView.setText("");
+            } else {
+                mLocationView.setText(mAddStr);
             }
-            mLocationView.setText(mAddStr);
             mGettingLocation = false;
         }
     }
@@ -296,17 +298,16 @@ public class AddWishActivity extends MyWishDetailActivity
         // get the location
         Location location = mPositionManager.getCurrentLocation();
         if (location == null){
-            mAddStr = "unknown";
             //need better value to indicate it's not valid lat and lng
             mLat = null;
             mLng = null;
-            mLocationView.setText(mAddStr);
             mGettingLocation = false;
+            mLocationView.setText("");
         } else {
             //get current latitude and longitude
             mLat = location.getLatitude();
             mLng = location.getLongitude();
-            Log.d(TAG, "execute GetAddressTAsk");
+            Log.d(TAG, "execute GetAddressTask");
             new GetAddressTask().execute();
         }
     }

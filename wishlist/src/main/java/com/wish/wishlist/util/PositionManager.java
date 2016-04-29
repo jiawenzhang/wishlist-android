@@ -19,11 +19,10 @@ import com.wish.wishlist.WishlistApplication;
 
 public class PositionManager extends Observable {
 	private static final String TAG = "PositionManager";
-	private static final String UNKNOWN = "unknown";
 
 	private LocationManager mLocationManager;
 	private Location mCurrentBestLocation = null;
-	private String mAddressString = UNKNOWN;
+	private String mAddressString = null;
 	private LocationListener mLocationListenerGPS;
 	private LocationListener mLocationListenerNetwork;
 	private static final int LISTEN_INTERVAL = 1000 * 60;//1 min
@@ -211,8 +210,7 @@ public class PositionManager extends Observable {
 			mAddressString = sb.toString().trim();
 			return mAddressString;
 		} catch (IOException e) {
-			mAddressString = UNKNOWN;
-			return mAddressString;
+			return null;
 		}
 	}
 }
