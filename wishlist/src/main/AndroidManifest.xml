@@ -201,7 +201,11 @@
             android:name=".activity.PreferenceActivity"
             android:label="Settings"
             android:theme="@style/Theme.WishlistTheme" >
-
+        </activity>
+        <activity
+            android:name=".activity.DebugActivity"
+            android:label="Debug"
+            android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
             android:name=".wish.ExistingWishDetailActivity"
@@ -409,6 +413,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
+        <service
+            android:name=".test.WishService"
+            android:exported="false"/>
     </application>
 
 </manifest>
