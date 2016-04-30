@@ -16,6 +16,8 @@ import com.wish.wishlist.model.WishItemManager;
 import com.wish.wishlist.wish.ImgMeta;
 import com.wish.wishlist.wish.ImgMetaArray;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -162,8 +164,10 @@ public class UploadTask {
                     if (!item.getDeleted()) {
                         // if we are deleting the wish, we don't need to save the image
                         String parseImageName = null;
-                        List<ParseFile> pFileList = (ArrayList<ParseFile>) wishObject.get(WishItem.PARSE_KEY_IMAGES);
-                        if (pFileList != null) {
+                        Object list = wishObject.get(WishItem.PARSE_KEY_IMAGES);
+                        if (list != JSONObject.NULL) {
+                            @SuppressWarnings("unchecked")
+                            List<ParseFile> pFileList = (List<ParseFile>) list;
                             ParseFile pf = pFileList.get(0);
                             parseImageName = pf.getName();
                         }
