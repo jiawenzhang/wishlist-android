@@ -49,7 +49,7 @@ public class WishLoader {
         mFriendId = friendId;
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
         query.whereEqualTo(WishItem.PARSE_KEY_OWNDER_ID, friendId);
-        query.whereEqualTo(ItemDBManager.KEY_DELETED, false);
+        query.whereEqualTo(WishItem.PARSE_KEY_DELETED, false);
         query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> wishList, com.parse.ParseException e) {

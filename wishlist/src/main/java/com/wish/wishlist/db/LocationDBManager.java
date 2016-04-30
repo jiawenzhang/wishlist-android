@@ -1,6 +1,5 @@
 package com.wish.wishlist.db;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 

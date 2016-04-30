@@ -57,9 +57,22 @@ public class WishItem implements Parcelable {
     private boolean mSyncedToServer;
     private boolean mDownloadImg;
 
-    public final static String PARSE_KEY_OWNDER_ID = "owner_id";
+    public final static String PARSE_KEY_OWNDER_ID = "ownerId";
     public final static String PARSE_KEY_TAGS = "tags";
     public final static String PARSE_KEY_IMAGES = "images";
+    public static final String PARSE_KEY_ACCESS = "access";
+    public static final String PARSE_KEY_STORE_NAME = "storeName";
+    public static final String PARSE_KEY_NAME = "itemName";
+    public static final String PARSE_KEY_DESCRIPTION = "description";
+    public static final String PARSE_KEY_UPDATED_TIME = "updatedTime"; // ms, migrated from data_time:String
+    public static final String PARSE_KEY_IMG_META_JSON = "picture";
+    public static final String PARSE_KEY_PRICE = "price";
+    public static final String PARSE_KEY_ADDRESS = "location";
+    public static final String PARSE_KEY_LATITUDE = "latitude";
+    public static final String PARSE_KEY_LONGITUDE = "longitude";
+    public static final String PARSE_KEY_COMPLETE = "complete";
+    public static final String PARSE_KEY_LINK = "link";
+    public static final String PARSE_KEY_DELETED = "deleted";
 
     public WishItem(
             long itemId,
@@ -495,28 +508,28 @@ public class WishItem implements Parcelable {
     public static WishItem fromParseObject(final ParseObject wishObject, long item_id) {
         // wishObject.getDouble() will return 0 if the double is null on server,
         // use getNumber so we can check null
-        Number priceNumber = wishObject.getNumber(ItemDBManager.KEY_PRICE);
-        Number latNumber = wishObject.getNumber(ItemDBManager.KEY_LATITUDE);
-        Number lngNumber = wishObject.getNumber(ItemDBManager.KEY_LONGITUDE);
+        Number priceNumber = wishObject.getNumber(WishItem.PARSE_KEY_PRICE);
+        Number latNumber = wishObject.getNumber(WishItem.PARSE_KEY_LATITUDE);
+        Number lngNumber = wishObject.getNumber(WishItem.PARSE_KEY_LONGITUDE);
 
         return new WishItem(
                 item_id,
                 wishObject.getObjectId(),
-                wishObject.getInt(ItemDBManager.KEY_ACCESS),
-                wishObject.getString(ItemDBManager.KEY_STORENAME),
-                wishObject.getString(ItemDBManager.KEY_NAME),
-                wishObject.getString(ItemDBManager.KEY_DESCRIPTION),
-                wishObject.getLong(ItemDBManager.KEY_UPDATED_TIME),
-                wishObject.getString(ItemDBManager.KEY_IMG_META_JSON),
+                wishObject.getInt(WishItem.PARSE_KEY_ACCESS),
+                wishObject.getString(WishItem.PARSE_KEY_STORE_NAME),
+                wishObject.getString(WishItem.PARSE_KEY_NAME),
+                wishObject.getString(WishItem.PARSE_KEY_DESCRIPTION),
+                wishObject.getLong(WishItem.PARSE_KEY_UPDATED_TIME),
+                wishObject.getString(WishItem.PARSE_KEY_IMG_META_JSON),
                 null, // _fullsizePhotoPath, will be updated when we save the image
                 priceNumber == null ? null : priceNumber.doubleValue(),
                 latNumber == null ? null : latNumber.doubleValue(),
                 lngNumber == null ? null : lngNumber.doubleValue(),
-                wishObject.getString(ItemDBManager.KEY_ADDRESS),
+                wishObject.getString(WishItem.PARSE_KEY_ADDRESS),
                 0, // priority, not used
-                wishObject.getInt(ItemDBManager.KEY_COMPLETE),
-                wishObject.getString(ItemDBManager.KEY_LINK),
-                wishObject.getBoolean(ItemDBManager.KEY_DELETED),
+                wishObject.getInt(WishItem.PARSE_KEY_COMPLETE),
+                wishObject.getString(WishItem.PARSE_KEY_LINK),
+                wishObject.getBoolean(WishItem.PARSE_KEY_DELETED),
                 true,
                 false);
     }
@@ -527,19 +540,19 @@ public class WishItem implements Parcelable {
             wishObject.put(WishItem.PARSE_KEY_OWNDER_ID, user.getObjectId());
         }
 
-        wishObject.put(ItemDBManager.KEY_ACCESS, item.getAccess());
-        wishObject.put(ItemDBManager.KEY_STORENAME, item.getStoreName() == null ? JSONObject.NULL : item.getStoreName());
-        wishObject.put(ItemDBManager.KEY_NAME, item.getName() == null ? JSONObject.NULL : item.getName());
-        wishObject.put(ItemDBManager.KEY_DESCRIPTION, item.getDesc() == null ? JSONObject.NULL : item.getDesc());
-        wishObject.put(ItemDBManager.KEY_UPDATED_TIME, item.getUpdatedTime());
-        wishObject.put(ItemDBManager.KEY_IMG_META_JSON, item.getImgMetaJSON() == null ? JSONObject.NULL : item.getImgMetaJSON());
-        wishObject.put(ItemDBManager.KEY_PRICE, item.getPrice() == null ? JSONObject.NULL : item.getPrice());
-        wishObject.put(ItemDBManager.KEY_LATITUDE, item.getLatitude() == null ? JSONObject.NULL : item.getLatitude());
-        wishObject.put(ItemDBManager.KEY_LONGITUDE, item.getLongitude() == null ? JSONObject.NULL : item.getLongitude());
-        wishObject.put(ItemDBManager.KEY_ADDRESS, item.getAddress() == null ? JSONObject.NULL : item.getAddress());
-        wishObject.put(ItemDBManager.KEY_COMPLETE, item.getComplete());
-        wishObject.put(ItemDBManager.KEY_LINK, item.getLink() == null ? JSONObject.NULL : item.getLink());
-        wishObject.put(ItemDBManager.KEY_DELETED, item.getDeleted());
+        wishObject.put(WishItem.PARSE_KEY_ACCESS, item.getAccess());
+        wishObject.put(WishItem.PARSE_KEY_STORE_NAME, item.getStoreName() == null ? JSONObject.NULL : item.getStoreName());
+        wishObject.put(WishItem.PARSE_KEY_NAME, item.getName() == null ? JSONObject.NULL : item.getName());
+        wishObject.put(WishItem.PARSE_KEY_DESCRIPTION, item.getDesc() == null ? JSONObject.NULL : item.getDesc());
+        wishObject.put(WishItem.PARSE_KEY_UPDATED_TIME, item.getUpdatedTime());
+        wishObject.put(WishItem.PARSE_KEY_IMG_META_JSON, item.getImgMetaJSON() == null ? JSONObject.NULL : item.getImgMetaJSON());
+        wishObject.put(WishItem.PARSE_KEY_PRICE, item.getPrice() == null ? JSONObject.NULL : item.getPrice());
+        wishObject.put(WishItem.PARSE_KEY_LATITUDE, item.getLatitude() == null ? JSONObject.NULL : item.getLatitude());
+        wishObject.put(WishItem.PARSE_KEY_LONGITUDE, item.getLongitude() == null ? JSONObject.NULL : item.getLongitude());
+        wishObject.put(WishItem.PARSE_KEY_ADDRESS, item.getAddress() == null ? JSONObject.NULL : item.getAddress());
+        wishObject.put(WishItem.PARSE_KEY_COMPLETE, item.getComplete());
+        wishObject.put(WishItem.PARSE_KEY_LINK, item.getLink() == null ? JSONObject.NULL : item.getLink());
+        wishObject.put(WishItem.PARSE_KEY_DELETED, item.getDeleted());
         wishObject.put(WishItem.PARSE_KEY_IMAGES, JSONObject.NULL); // will be overwritten if we do have an image to upload
         List<String> tags = TagItemDBManager.instance().tags_of_item(item.getId());
         wishObject.put(WishItem.PARSE_KEY_TAGS, tags.isEmpty() ? JSONObject.NULL : tags);

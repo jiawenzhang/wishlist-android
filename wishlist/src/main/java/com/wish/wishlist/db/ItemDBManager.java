@@ -22,7 +22,7 @@ public class ItemDBManager extends DBManager {
 	public static final String KEY_OBJECT_ID = "object_id";
 	public static final String KEY_ACCESS = "access";
 	public static final String KEY_STORE_ID = "store_id";
-	public static final String KEY_STORENAME = "store_name";
+	public static final String KEY_STORE_NAME = "store_name";
 	public static final String KEY_NAME = "item_name";
 	public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_UPDATED_TIME = "updated_time"; // ms, migrated from data_time:String
@@ -75,7 +75,7 @@ public class ItemDBManager extends DBManager {
 
 		initialValues.put(KEY_OBJECT_ID, object_id);
 		initialValues.put(KEY_ACCESS, access);
-		initialValues.put(KEY_STORENAME, store_name);
+		initialValues.put(KEY_STORE_NAME, store_name);
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
 		initialValues.put(KEY_UPDATED_TIME, updated_time);
@@ -124,7 +124,7 @@ public class ItemDBManager extends DBManager {
 
         initialValues.put(KEY_OBJECT_ID, object_id);
 		initialValues.put(KEY_ACCESS, access);
-		initialValues.put(KEY_STORENAME, store_name);
+		initialValues.put(KEY_STORE_NAME, store_name);
 		initialValues.put(KEY_NAME, name);
 		initialValues.put(KEY_DESCRIPTION, description);
 		initialValues.put(KEY_UPDATED_TIME, updated_time);
@@ -249,7 +249,7 @@ public class ItemDBManager extends DBManager {
 		private static final String QUERY = "SELECT " +
                 KEY_ID + ", " +
                 KEY_NAME + ", " +
-                KEY_STORENAME + ", " +
+				KEY_STORE_NAME + ", " +
                 KEY_DESCRIPTION + ", " +
                 KEY_UPDATED_TIME + ", " +
                 KEY_STORE_ID + ", " +

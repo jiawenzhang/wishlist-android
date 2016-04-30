@@ -133,7 +133,7 @@ public class WishItemManager {
 
         String itemLocation = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_ADDRESS));
         String objectId = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_OBJECT_ID));
-        String storeName = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_STORENAME));
+        String storeName = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_STORE_NAME));
         String picture_str = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_IMG_META_JSON));
         String fullsize_pic_path = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_FULLSIZE_PHOTO_PATH));
         String itemName = c.getString(c.getColumnIndexOrThrow(ItemDBManager.KEY_NAME));

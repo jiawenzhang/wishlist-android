@@ -69,13 +69,13 @@ public class DownloadMetaTask {
 
                         WishItem item = WishItemManager.getInstance().getItemByObjectId(parseItem.getObjectId());
                         if (item == null) {
-                            if (parseItem.getBoolean(ItemDBManager.KEY_DELETED)) {
+                            if (parseItem.getBoolean(WishItem.PARSE_KEY_DELETED)) {
                                 // item on parse is deleted, and we don't have the item locally either,
                                 // so just ignore this item.
                                 itemDownloadDone();
                                 continue;
                             }
-                            Log.d(TAG, "item " + parseItem.getString(ItemDBManager.KEY_NAME) + " does not exist locally, saving it");
+                            Log.d(TAG, "item " + parseItem.getString(WishItem.PARSE_KEY_NAME) + " does not exist locally, saving it");
                             item = WishItem.fromParseObject(parseItem, -1);
 
                             // it is a new item, we need to try to download it image.
@@ -87,7 +87,7 @@ public class DownloadMetaTask {
                             //    itemDownloadDone();
                             //    continue;
                             //}
-                            if (parseItem.getBoolean(ItemDBManager.KEY_DELETED)) {
+                            if (parseItem.getBoolean(WishItem.PARSE_KEY_DELETED)) {
                                 Log.d(TAG, "item " + item.getName() + " exists locally, deleting local one");
 
                                 TagItemDBManager.instance().Remove_tags_by_item(item.getId());
@@ -99,7 +99,7 @@ public class DownloadMetaTask {
                             }
 
                             Log.d(TAG, "item " + item.getName() + " exists locally, overwrite local one");
-                            String newImgMetaJSON = parseItem.getString(ItemDBManager.KEY_IMG_META_JSON);
+                            String newImgMetaJSON = parseItem.getString(WishItem.PARSE_KEY_IMG_META_JSON);
 
                             boolean downloadImg = false;
                             if (!StringUtil.compare(newImgMetaJSON, item.getImgMetaJSON())) {

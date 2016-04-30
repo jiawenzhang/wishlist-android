@@ -87,8 +87,8 @@ public class DBMigrationTo_7 {
 
         String sql3 = "UPDATE "
                 + ItemDBManager.DB_TABLE
-                + " SET " + ItemDBManager.KEY_STORENAME
-                + " = NULL WHERE " + ItemDBManager.KEY_STORENAME + "=''";
+                + " SET " + ItemDBManager.KEY_STORE_NAME
+                + " = NULL WHERE " + ItemDBManager.KEY_STORE_NAME + "=''";
 
         String sql4 = "UPDATE "
                 + ItemDBManager.DB_TABLE

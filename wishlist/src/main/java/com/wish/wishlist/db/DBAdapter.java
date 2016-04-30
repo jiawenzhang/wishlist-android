@@ -148,7 +148,7 @@ public class DBAdapter {
             + ItemDBManager.KEY_OBJECT_ID	+ " TEXT, "
             + ItemDBManager.KEY_ACCESS	    + " INTEGER NOT NULL DEFAULT(0), " // default to PUBLIC
             + ItemDBManager.KEY_STORE_ID 	+ " INTEGER, "
-            + ItemDBManager.KEY_STORENAME	+ " TEXT, "
+            + ItemDBManager.KEY_STORE_NAME + " TEXT, "
             + ItemDBManager.KEY_NAME 		+ " TEXT, "
             + ItemDBManager.KEY_DESCRIPTION + " TEXT, "
             + ItemDBManager.KEY_UPDATED_TIME+ " INTEGER, "
