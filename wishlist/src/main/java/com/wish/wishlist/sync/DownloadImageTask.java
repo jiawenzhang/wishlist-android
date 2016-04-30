@@ -50,7 +50,7 @@ public class DownloadImageTask {
                 HttpURLConnection con =  (HttpURLConnection) new URL(result.url).openConnection();
                 con.setRequestMethod("HEAD");
                 if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    Log.e(TAG, "file exists");
+                    Log.d(TAG, "file exists");
                     result.code = result.EXISTS;
                 } else {
                     // server responds with non http 200 code, it is likely the url has become invalid,
@@ -62,7 +62,8 @@ public class DownloadImageTask {
             } catch (Exception e) {
                 // we may have a network error like timeout or java.net.UnknownHostException
                 // need more experiments to test what other exception is possible
-                Log.e(TAG, "check file error " + e.toString());
+                Log.e(TAG, "check file exception " + e.toString());
+                Analytics.send(Analytics.DEBUG, "CheckFileException", e.toString());
                 result.code = result.NETWORK_ERROR;
             }
             return result;
