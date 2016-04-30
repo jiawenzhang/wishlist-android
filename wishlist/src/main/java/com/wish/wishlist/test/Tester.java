@@ -64,7 +64,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
     }
 
     public static String randomName() {
-        return loremIpsum.getWords(new Random().nextInt(20)); // text between 0-20 characters;
+        return loremIpsum.getWords(1 + new Random().nextInt(20)); // text between 1-20 characters;
     }
 
     public static String randomDesc() {
@@ -113,7 +113,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         ArrayList<String> tags = new ArrayList<>();
         int tagCount = r.nextInt(3);
         for (int i=0; i<tagCount; i++) {
-            tags.add(loremIpsum.getWords(r.nextInt(6)));
+            tags.add(loremIpsum.getWords(1 + r.nextInt(6)));
         }
         Log.d(TAG, "random tags " + tags);
         return tags;
