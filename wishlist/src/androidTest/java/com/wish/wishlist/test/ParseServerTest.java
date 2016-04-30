@@ -50,11 +50,12 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
         mMockContext = new RenamingDelegatingContext(InstrumentationRegistry.getInstrumentation().getTargetContext(), "test_");
 
         for (int i = 0; i < mUserCount; i++) {
-            final ParseUser user = new ParseUser();
-            final String username = "username_" + i;
-            user.setUsername(username);
+            ParseUser user = new ParseUser();
+            String email = "user_" + 11 + "@test.com";
+            user.setUsername(email);
             user.setPassword("123456");
-            user.setEmail("user_" + i + "@test.com");
+            user.put("name", "name_" + i);
+            user.setEmail(email);
             mUsers.add(user);
         }
     }
