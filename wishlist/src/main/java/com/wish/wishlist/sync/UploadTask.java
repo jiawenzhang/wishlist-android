@@ -13,6 +13,7 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.wish.ImgMeta;
 import com.wish.wishlist.wish.ImgMetaArray;
 
@@ -160,27 +161,36 @@ public class UploadTask {
         query.getInBackground(item.getObjectId(), new GetCallback<ParseObject>() {
             public void done(final ParseObject wishObject, com.parse.ParseException e) {
                 if (e == null) {
-                    boolean saveImage = false;
+                    boolean uploadImage = false;
                     if (!item.getDeleted()) {
-                        // if we are deleting the wish, we don't need to save the image
-                        String parseImageName = null;
+                        // if we are deleting the wish, we don't need to upload the image
                         Object list = wishObject.get(WishItem.PARSE_KEY_IMAGES);
                         if (list != JSONObject.NULL) {
+                            // there is an image on parse
                             @SuppressWarnings("unchecked")
                             List<ParseFile> pFileList = (List<ParseFile>) list;
                             ParseFile pf = pFileList.get(0);
-                            parseImageName = pf.getName();
-                        }
-                        if (parseImageName == null) {
-                            if (item.getPicName() != null) {
-                                saveImage = true;
+                            String parseImageName = pf.getName();
+                            // upload if local has an image and its name is different from parse image name
+                            if (item.getPicName() != null &&
+                                !StringUtil.compare(SyncAgent.parseFileNameToLocal(parseImageName), item.getPicName())) {
+                                uploadImage = true;
                             }
-                        } else if (!SyncAgent.parseFileNameToLocal(parseImageName).equals(item.getPicName())) {
-                            saveImage = true;
+                        } else {
+                            // there is no image on parse
+                            // upload if local has an image and it is not from web
+                            if (item.getPicName() != null) {
+                                if (item.getImgMetaArray() == null) {
+                                    uploadImage = true;
+                                } else if (!item.getImgMetaArray().get(0).mLocation.equals(ImgMeta.WEB)) {
+                                    uploadImage = true;
+                                }
+                            }
                         }
                     }
+
                     WishItem.toParseObject(item, wishObject);
-                    if (saveImage) {
+                    if (uploadImage) {
                         uploadToParseWithImage(wishObject, item, false);
                     } else {
                         uploadParseObject(wishObject, item.getId(), false);
