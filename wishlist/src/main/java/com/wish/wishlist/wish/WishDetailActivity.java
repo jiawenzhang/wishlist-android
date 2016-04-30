@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.view.ActionMode;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -81,7 +80,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         mImgComplete = (ImageView) findViewById(R.id.completeImageView);
         mTextComplete = (TextView) findViewById(R.id.completeTextView);
         mNameView = (ClearableEditText) findViewById(R.id.itemNameDetail);
-        mDescriptionView = (ClearableEditText) findViewById(R.id.itemDesription);
+        mDescriptionView = (ClearableEditText) findViewById(R.id.itemDescription);
         mDateView = (TextView) findViewById(R.id.itemDateDetail);
         mPriceView = (ClearableEditText) findViewById(R.id.itemPrice);
         mStoreView = (ClearableEditText) findViewById(R.id.itemStore);

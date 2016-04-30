@@ -99,7 +99,7 @@
             </LinearLayout>
 
             <com.wish.wishlist.widgets.ClearableEditText
-                android:id="@+id/itemDesription"
+                android:id="@+id/itemDescription"
                 android:hint="Description"
                 style="@style/ItemInfoText"
                 android:layout_below="@+id/itemNameLayout"
@@ -114,7 +114,7 @@
                 style="@style/ItemInfoText"
                 android:inputType="numberDecimal"
                 android:fontFamily="sans-serif-light"
-                android:layout_below="@+id/itemDesription"
+                android:layout_below="@+id/itemDescription"
                 />
 
             <com.wish.wishlist.widgets.ClearableEditText
