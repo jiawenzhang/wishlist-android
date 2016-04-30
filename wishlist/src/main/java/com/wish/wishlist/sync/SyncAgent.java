@@ -45,7 +45,7 @@ public class SyncAgent implements
     private boolean mSyncing = false;
     private boolean mScheduleToSync = false;
     private static String TAG = "SyncAgent";
-    public static String LAST_SYNCED_TIME = "lastSyncedTime";
+    public final static String LAST_SYNCED_TIME = "lastSyncedTime";
 
     private class CheckServerReachable extends AsyncTask<Void, Void, Boolean> {//<param, progress, result>
         @Override
@@ -209,7 +209,7 @@ public class SyncAgent implements
             Log.d(TAG, "sync finished at " + mSyncedTime.getTime() + " " + StringUtil.UTCDate(mSyncedTime));
             final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putLong(LAST_SYNCED_TIME, mSyncedTime.getTime());
+            editor.putLong(lastSyncedTimeKey(), mSyncedTime.getTime());
             editor.commit();
 
             // start downloading image task
@@ -287,12 +287,21 @@ public class SyncAgent implements
         });
     }
 
-    static public String parseFileNameToLocal(String parseFileName) {
+    public static String parseFileNameToLocal(String parseFileName) {
         // when we save file to parse (aws s3), its file name will be prefixed by a server generated random string.
         // for example:
         // file name we uploaded                    IMG173391503.jpg
         // file name actually saved on server       4ab50fb811da73520a71bf6a6e7c8844_IMG173391503.jpg
         return parseFileName.substring(parseFileName.indexOf('_') + 1);
+    }
+
+    public static String lastSyncedTimeKey() {
+        if (ParseUser.getCurrentUser() == null) {
+            // this shall never happen
+            Log.e(TAG, "user null");
+            return LAST_SYNCED_TIME;
+        }
+        return ParseUser.getCurrentUser().getUsername() + "-" + LAST_SYNCED_TIME;
     }
 }
 

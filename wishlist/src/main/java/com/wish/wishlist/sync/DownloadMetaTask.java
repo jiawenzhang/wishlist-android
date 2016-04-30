@@ -45,7 +45,7 @@ public class DownloadMetaTask {
 
         // get from parse the items with updated time > last synced time
         final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
-        final Date lastSyncedTime = new Date(sharedPref.getLong(SyncAgent.LAST_SYNCED_TIME, 0));
+        final Date lastSyncedTime = new Date(sharedPref.getLong(SyncAgent.lastSyncedTimeKey(), 0));
         Log.d(TAG, "lastSyncedTime " + lastSyncedTime.getTime() + " " + StringUtil.UTCDate(lastSyncedTime));
         mSyncedTime = lastSyncedTime;
 
