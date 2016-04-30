@@ -79,6 +79,7 @@
                     style="@style/ItemInfoText"
                     android:textSize="18sp"
                     android:textColor="@color/dark_grey"
+                    android:maxLength="@integer/item_name_length"
                     android:gravity="center_horizontal|left"
                     android:paddingTop="20dp"
                     android:imeOptions="flagNoExtractUi"
@@ -103,7 +104,9 @@
                 style="@style/ItemInfoText"
                 android:layout_below="@+id/itemNameLayout"
                 android:textSize="15sp"
-                android:text=""/>
+                android:text=""
+                android:maxLength="@integer/item_description_length"
+                />
 
             <com.wish.wishlist.widgets.ClearableEditText
                 android:id="@+id/itemPrice"

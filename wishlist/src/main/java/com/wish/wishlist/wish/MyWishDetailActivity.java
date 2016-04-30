@@ -326,9 +326,9 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     }
 
     protected WishInput wishInput() {
-        String name = mNameView.getText().toString().trim();
+        String name = StringUtil.ellipsize(mNameView.getText().toString().trim(), getResources().getInteger(R.integer.item_name_length)); // limit name to max 200 characters
         String description = mDescriptionView.getText().toString().trim();
-        description = description.isEmpty() ? null : description;
+        description = description.isEmpty() ? null : StringUtil.ellipsize(description, getResources().getInteger(R.integer.item_description_length)); // limit description to max 1500 characters
         String store = mStoreView.getText().toString().trim();
         store = store.isEmpty() ? null : store;
         String link = mLinkText.getText().toString().trim();
