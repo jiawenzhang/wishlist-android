@@ -61,6 +61,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * detailed info. and etc.
  */
 public class MyWishActivity extends WishBaseActivity implements
+        SyncAgent.OnSyncStartListener,
         SyncAgent.OnSyncWishChangedListener,
         SyncAgent.OnDownloadWishDoneListener {
 
@@ -143,6 +144,7 @@ public class MyWishActivity extends WishBaseActivity implements
         }
 
         SyncAgent.getInstance().registerListener(this);
+        SyncAgent.getInstance().registerSyncStartListener(this);
 
         if (refreshEnabled()) {
             // only enable swipe down refresh when the first item in recycler view is visible
@@ -163,7 +165,6 @@ public class MyWishActivity extends WishBaseActivity implements
                         return;
                     }
                     mSwipeRefreshLayout.setRefreshing(true);
-                    showSyncingText(true);
                     Log.d(TAG, "refresh");
                     SyncAgent.getInstance().sync();
                     // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation
@@ -672,11 +673,14 @@ public class MyWishActivity extends WishBaseActivity implements
         }
     }
 
+    /* SyncAgent listener */
+    @Override
     public void onSyncWishChanged() {
         Log.d(TAG, "onSyncWishChanged");
         reloadItems();
     }
 
+    @Override
     public void onDownloadWishDone(boolean success) {
         Log.d(TAG, "onDownloadWishDone success? " + success);
         mSwipeRefreshLayout.setRefreshing(false);
@@ -685,6 +689,13 @@ public class MyWishActivity extends WishBaseActivity implements
             Toast.makeText(this, "Sync error, check network", Toast.LENGTH_LONG).show();
         }
     }
+
+    @Override
+    public void onSyncStart() {
+        Log.d(TAG, "onSyncStart");
+        showSyncingText(true);
+    }
+    /* end SyncAgent listener */
 
     public void onWishTapped(WishItem item) {
         Log.d(TAG, "onWishTapped");

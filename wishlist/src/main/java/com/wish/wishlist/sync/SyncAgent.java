@@ -36,6 +36,7 @@ public class SyncAgent implements
     private OnSyncWishChangedListener mSyncWishChangedListener;
     private OnDownloadWishDoneListener mDownloadWishDoneListener;
     private OnSyncDoneListener mSyncDoneListener;
+    private OnSyncStartListener mSyncStartListener;
     private Date mSyncedTime;
     private DownloadMetaTask mDownloadMetaTask = new DownloadMetaTask();
     private UploadTask mUploadTask = new UploadTask();
@@ -124,6 +125,23 @@ public class SyncAgent implements
     /* OnSyncDone listener */
 
 
+    /* OnSyncStart listener */
+    public interface OnSyncStartListener {
+        void onSyncStart();
+    }
+
+    public void registerSyncStartListener(Object obj) {
+        try {
+            mSyncStartListener = (OnSyncStartListener) obj;
+        }
+        catch (final ClassCastException e) {
+            Log.e(TAG, "fail to registerListener");
+            throw new ClassCastException(obj.toString() + " must implement OnSyncStart");
+        }
+    }
+    /* OnSyncStart listener */
+
+
     public static SyncAgent getInstance() {
         if (instance == null) {
              instance = new SyncAgent();
@@ -163,6 +181,10 @@ public class SyncAgent implements
 
         mSyncing = true;
         mDownloading = true;
+
+        if (mSyncStartListener != null) {
+            mSyncStartListener.onSyncStart();
+        }
 
         new CheckServerReachable().execute();
     }
