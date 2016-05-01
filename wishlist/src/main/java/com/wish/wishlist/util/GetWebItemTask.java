@@ -202,7 +202,8 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                 }
 
                 try {
-                    final Bitmap image = Picasso.with(mContext).load(src).get();
+                    int width = dimension.screenWidth() / 2;
+                    final Bitmap image = Picasso.with(mContext).load(src).resize(width, 0).onlyScaleDown().get();
                     // filter out small images
                     if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
                         continue;
