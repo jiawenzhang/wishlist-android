@@ -765,10 +765,9 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     private void showSyncingText(boolean value) {
-        if (value) {
-            getSupportActionBar().setTitle(R.string.syncing);
-        } else {
-            getSupportActionBar().setTitle(R.string.app_name);
+        if (getSupportActionBar() == null) {
+            return;
         }
+        getSupportActionBar().setTitle(value ? R.string.syncing : R.string.app_name);
     }
 }
