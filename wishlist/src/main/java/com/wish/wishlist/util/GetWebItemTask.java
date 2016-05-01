@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Patterns;
+import android.webkit.MimeTypeMap;
 
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.activity.WebImage;
@@ -119,7 +120,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                         Log.d(TAG, "twitter image src " + twitter_image_src);
                         image = Picasso.with(mContext).load(twitter_image_src).get();
                     } catch (IOException e) {
-                        Log.e(TAG, e.toString());
+                        Log.e(TAG, "get twitter image error: " + e.toString());
                     }
 
                     if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
@@ -144,7 +145,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     try {
                         image = Picasso.with(mContext).load(og_image_src).get();
                     } catch (IOException e) {
-                        Log.e(TAG, e.toString());
+                        Log.e(TAG, "get og_image error: " + e.toString());
                     }
 
                     // some websites like kijiji will return us a tiny og:image
@@ -189,7 +190,14 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                 String style = el.attr("style");
 
                 // filter out hidden images, gif and png images. (gif and png are usually used for icons etc.)
-                if (src.isEmpty() || style.contains("display:none") || src.endsWith(".gif") || src.endsWith(".png")) {
+                // image file url may not ends with file extension, for example
+                // https://www.teslamotors.com/tesla_theme/assets/img/powerwall/powerwall-laptop.png?20160419
+                // MimeTypeMap.getFileExtensionFromUrl(src)) will handle this
+                String extension = MimeTypeMap.getFileExtensionFromUrl(src);
+                if (src.isEmpty() || style.contains("display:none") ||
+                        extension.equals("gif") ||
+                        extension.equals("png") ||
+                        extension.equals("svg")) {
                     continue;
                 }
 
@@ -203,10 +211,10 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     if (single_image == null) {
                         single_image = image;
                     }
-                    Log.d(TAG, "adding " + src + " " + image.getWidth() + " X " + image.getHeight());
+                    Log.d(TAG, "adding " + src + " " + image.getWidth() + " x " + image.getHeight());
                     result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), null));
                 } catch (IOException e) {
-                    Log.e(TAG, "IOException " + e.toString());
+                    Log.e(TAG, "get image error " + src + " " + e.toString());
                 }
             }
 
