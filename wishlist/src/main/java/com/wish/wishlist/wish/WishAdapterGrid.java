@@ -137,7 +137,7 @@ public class WishAdapterGrid extends WishAdapter {
 
         if (WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_friend)) {
             final int access = wish.getAccess();
-            if (access == wish.PRIVATE) {
+            if (access == WishItem.PRIVATE) {
                 holder.imgPrivate.setVisibility(View.VISIBLE);
             } else {
                 holder.imgPrivate.setVisibility(View.GONE);

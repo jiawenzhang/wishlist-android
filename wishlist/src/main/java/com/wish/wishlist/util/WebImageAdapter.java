@@ -1,6 +1,5 @@
 package com.wish.wishlist.util;
 
-import android.app.Activity;
 import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 import android.view.View.OnClickListener;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.WebImage;
@@ -19,6 +19,8 @@ import com.wish.wishlist.activity.WebImage;
 import java.util.ArrayList;
 
 public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    protected Transformation mTransform;
 
     /******************* WebImageTapListener *********************/
     private WebImageTapListener mWebImageTapListener = null;
@@ -51,8 +53,16 @@ public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public WebImageAdapter(ArrayList<WebImage> imageList, Activity fromActivity) {
+    public WebImageAdapter(ArrayList<WebImage> imageList) {
         mImageList = imageList;
+        if (Build.VERSION.SDK_INT < 21) {
+            // Image in CardView pre-LOLLIPOP (API 21) does not have rounded corner, so we need to transform the image ourselves to have
+            // round corner
+            int radius = (int) WishlistApplication.getAppContext().getResources().getDimension(R.dimen.radius); // radius is in px
+            mTransform = new RoundedCornersTransformation(radius, 0,RoundedCornersTransformation.CornerType.TOP);
+        } else {
+            mTransform = new NoTransformation();
+        }
     }
 
     @Override
@@ -78,7 +88,10 @@ public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 holder_.imageView.setVisibility(View.VISIBLE);
                 final float ratio = (float) webImage.mHeight / (float) webImage.mWidth;
                 holder_.imageView.setHeightRatio(ratio);
-                Picasso.with(holder_.imageView.getContext()).load(webImage.mUrl).fit().into(holder_.imageView);
+
+                //Fixme: ideally, we should get the exact card view width
+                int proximateCardWidth = dimension.screenWidth() / 2;
+                Picasso.with(holder_.imageView.getContext()).load(webImage.mUrl).resize(proximateCardWidth, 0).transform(mTransform).into(holder_.imageView);
 
                 holder_.textView.setText(webImage.mWidth + " x " + webImage.mHeight);
             }

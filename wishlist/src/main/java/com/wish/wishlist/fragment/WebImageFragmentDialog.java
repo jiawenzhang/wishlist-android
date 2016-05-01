@@ -58,9 +58,9 @@ public class WebImageFragmentDialog extends DialogFragment implements
         for (WebImage img : mList) {
             Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
         }
-        mAdapter = new WebImageAdapter(mList, getActivity());
+        mAdapter = new WebImageAdapter(mList);
         mAdapter.setWebImageTapListener(this);
-        mRecyclerView.swapAdapter(mAdapter, false);
+        mRecyclerView.swapAdapter(mAdapter, true);
     }
 
     @Override
@@ -153,7 +153,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
                     Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
                 }
             }
-            mAdapter = new WebImageAdapter(mList, getActivity());
+            mAdapter = new WebImageAdapter(mList);
             mAdapter.setWebImageTapListener(this);
         }
         mRecyclerView.setAdapter(mAdapter);
