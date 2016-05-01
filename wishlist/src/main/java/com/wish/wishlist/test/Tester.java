@@ -1,11 +1,17 @@
 package com.wish.wishlist.test;
 
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
+import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.wish.ImgMeta;
 import com.wish.wishlist.wish.ImgMetaArray;
@@ -24,6 +30,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
     private ArrayList<WishItem> mItems = new ArrayList<>();
     private static final String TAG = "Tester";
     private static final LoremIpsum loremIpsum = new LoremIpsum();
+    public static ArrayList<String> mGalleryFiles;
 
     private static Tester ourInstance = new Tester();
 
@@ -31,7 +38,9 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         return ourInstance;
     }
 
-    private Tester() {}
+    private Tester() {
+        mGalleryFiles = getAllImagesPath();
+    }
 
     private static LatLng getLocation(double x0, double y0, int radius/*meters*/) {
         Random random = new Random();
@@ -121,9 +130,27 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
 
     public static WishItem generateWish() {
         // create a new item filled with random data
-        ImgMeta imgMeta = randomImgMeta();
-        String imgMetaJSON = imgMeta == null ? null : new ImgMetaArray(imgMeta).toJSON();
-        String itemLink = imgMeta == null ? null : imgMeta.mUrl;
+        String imgMetaJSON = null;
+        String itemLink = null;
+        String fullsizePhotoPath = null;
+
+        if (new Random().nextInt(5) == 0) {
+            // 1/5 chance no image
+            Log.d(TAG, "no image");
+        } else if (new Random().nextInt(3) == 0) {
+            // 1/3 chance get image from local gallery
+            Log.d(TAG, "from local gallery");
+            String path = mGalleryFiles.get(new Random().nextInt(mGalleryFiles.size()));
+            Log.e(TAG, path);
+            final Bitmap bitmap = ImageManager.decodeSampledBitmapFromFile(path, ImageManager.IMG_WIDTH);
+            fullsizePhotoPath = ImageManager.saveBitmapToFile(bitmap);
+            ImageManager.saveBitmapToThumb(bitmap, fullsizePhotoPath);
+        } else {
+            // 2/3 chance get image from web
+            ImgMeta imgMeta = randomImgMeta();
+            imgMetaJSON = imgMeta == null ? null : new ImgMetaArray(imgMeta).toJSON();
+            itemLink = imgMeta == null ? null : imgMeta.mUrl;
+        }
 
         LatLng randomLatLng = getLocation(-79, 44, 1000);
         Double lat = null;
@@ -143,7 +170,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
                 randomDesc(),
                 randomUpdatedTime(),
                 imgMetaJSON,
-                null,
+                fullsizePhotoPath,
                 randomPrice(),
                 lat,
                 lng,
@@ -192,17 +219,32 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         }
         if (new Random().nextDouble() <= 0.2) {
             Log.d(TAG, "change image");
-            ImgMeta imgMeta = randomImgMeta();
-            if (imgMeta == null) {
+
+            if (new Random().nextDouble() <= 0.3) {
+                item.removeImage();
+
+                Log.d(TAG, "from local gallery");
+                String path = mGalleryFiles.get(new Random().nextInt(mGalleryFiles.size()));
+                final Bitmap bitmap = ImageManager.decodeSampledBitmapFromFile(path, ImageManager.IMG_WIDTH);
+                String fullsizePhotoPath = ImageManager.saveBitmapToFile(bitmap);
+                ImageManager.saveBitmapToThumb(bitmap, fullsizePhotoPath);
+                item.setFullsizePicPath(fullsizePhotoPath);
                 item.setImgMetaArray(null);
-                item.setLink(null);
+
+                changed = true;
             } else {
-                ArrayList<ImgMeta> metaArray = new ArrayList<>();
-                metaArray.add(imgMeta);
-                item.setImgMetaArray(metaArray);
-                item.setLink(imgMeta.mUrl);
+                ImgMeta imgMeta = randomImgMeta();
+                if (imgMeta != null) {
+                    item.removeImage();
+
+                    ArrayList<ImgMeta> metaArray = new ArrayList<>();
+                    metaArray.add(imgMeta);
+                    item.setImgMetaArray(metaArray);
+                    item.setLink(imgMeta.mUrl);
+
+                    changed = true;
+                }
             }
-            changed = true;
         }
         if (new Random().nextDouble() <= 0.2) {
             Log.d(TAG, "change price");
@@ -232,6 +274,38 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         item.setSyncedToServer(false);
 
         return item;
+    }
+
+    public static ArrayList<String> getAllImagesPath() {
+        Uri uri;
+        Cursor cursor;
+        int column_index_data;
+        int column_index_folder_name;
+        ArrayList<String> listOfAllImages = new ArrayList<>();
+        String absolutePathOfImage;
+        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+        String[] projection = {
+                MediaStore.MediaColumns.DATA,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
+
+        cursor = WishlistApplication.getAppContext().getContentResolver().query(
+                uri,
+                projection,
+                null,
+                null,
+                null);
+
+        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        column_index_folder_name = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+
+        while (cursor.moveToNext()) {
+            absolutePathOfImage = cursor.getString(column_index_data);
+            listOfAllImages.add(absolutePathOfImage);
+        }
+
+        return listOfAllImages;
     }
 
     @Override
