@@ -54,8 +54,7 @@ public final class NewFeatureFragment extends Fragment {
             View imageView = v.findViewById(R.id.newFeatureImage);
 
             switch (mPosition) {
-                case 1:
-                {
+                case 1: {
                     ImageView image_view = (ImageView) (imageView);
                     //image_view.setImageResource(R.drawable.chrome_share);
                     LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) image_view.getLayoutParams();
@@ -75,8 +74,7 @@ public final class NewFeatureFragment extends Fragment {
                         }
                     });
                     break;
-                }
-                case 2:
+                } case 2:
                     //((ImageView) imageView).setImageResource(R.drawable.etsy_share);
                     ((TextView) tv).setText("Choose Wishlist, and the items are saved directly to your wishlist");
                     ((TextView) tv_bottom).setText("Supported apps include amazon, eBay, Etsy, Fancy, Pinterest, Wish, Wanelo and much more");
