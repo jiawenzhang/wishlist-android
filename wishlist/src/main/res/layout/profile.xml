@@ -3,23 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/swipe_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bodyBackground_light_grey"
-        android:orientation="vertical">
-
-        <include
-            layout="@layout/tool_bar"
-            android:id="@+id/profile_toolbar"
-            />
+        android:background="@color/bodyBackground_light_grey">
 
         <ScrollView
             android:id="@+id/profile_scrollview"
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -31,60 +24,65 @@
                 android:orientation="vertical"
                 >
 
-                <RelativeLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/drawer_header_layout"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:background="@color/material_dark"
-                    android:orientation="vertical"
+                    android:background="@drawable/gradient_dark_background"
+                    android:layout_height="260dp"
                     >
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/profile_image"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:src="@drawable/default_profile_image"
-                        android:layout_centerInParent="true"
-                        />
+                    <RelativeLayout
+                        xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/drawer_header_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="210dp"
+                        >
 
-                    <ImageView
-                        android:id="@+id/generated_profile_image"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:src="@drawable/default_profile_image"
-                        android:layout_centerInParent="true"
-                        />
-                </RelativeLayout>
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/profile_image"
+                            android:layout_width="96dp"
+                            android:layout_height="96dp"
+                            android:src="@drawable/default_profile_image"
+                            android:layout_centerInParent="true"
+                            />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingBottom="20dp"
-                    android:background="@color/material_dark"
-                    android:paddingLeft="10dp"
-                    android:paddingTop="10dp"
-                    android:paddingRight="10dp">
+                        <ImageView
+                            android:id="@+id/generated_profile_image"
+                            android:layout_width="96dp"
+                            android:layout_height="96dp"
+                            android:src="@drawable/default_profile_image"
+                            android:layout_centerInParent="true"
+                            />
+                    </RelativeLayout>
 
-                    <TextView
-                        android:id="@+id/wish_count"
-                        style="@style/WishStatsTextView"
-                        android:text="15\nWishes"
-                        />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingBottom="20dp"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_gravity="bottom">
 
-                    <TextView
-                        android:id="@+id/completed_count"
-                        style="@style/WishStatsTextView"
-                        android:text="5\nCompleted"
-                        />
+                        <TextView
+                            android:id="@+id/wish_count"
+                            style="@style/WishStatsTextView"
+                            android:text="15\nWishes"
+                            />
 
-                    <TextView
-                        android:id="@+id/wish_value"
-                        style="@style/WishStatsTextView"
-                        android:text="256\n$Value"
-                        />
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/completed_count"
+                            style="@style/WishStatsTextView"
+                            android:text="5\nCompleted"
+                            />
+
+                        <TextView
+                            android:id="@+id/wish_value"
+                            style="@style/WishStatsTextView"
+                            android:text="256\n$Value"
+                            />
+                    </LinearLayout>
+                </FrameLayout>
 
                 <include
                     android:id="@+id/profile_username"
@@ -106,5 +104,10 @@
 
             </LinearLayout>
         </ScrollView>
-    </LinearLayout>
+
+        <include
+            layout="@layout/tool_bar"
+            android:id="@+id/profile_toolbar"
+            />
+    </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

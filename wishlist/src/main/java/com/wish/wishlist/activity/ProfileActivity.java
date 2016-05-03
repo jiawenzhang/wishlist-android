@@ -79,6 +79,9 @@ public class ProfileActivity extends ActivityBase implements
         setContentView(R.layout.profile);
         setupActionBar(R.id.profile_toolbar);
 
+        // make toolbar transparent
+        mToolbar.getBackground().setAlpha(0);
+
         mUser = ParseUser.getCurrentUser();
         if (mUser == null) {
             Log.d(TAG, "currentUser null ");
