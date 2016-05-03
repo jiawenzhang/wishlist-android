@@ -74,10 +74,10 @@ public class MigrationTask extends AsyncTask<Void, Void, Void> {//<param, progre
         if (currentVersionNumber > savedVersionNumber) {
             if (savedVersionNumber == 23) {
                 migrate_to_24();
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt(ctx.getString(R.string.version_number), currentVersionNumber);
-                editor.commit();
             }
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putInt(ctx.getString(R.string.version_number), currentVersionNumber);
+            editor.commit();
         }
     }
 
