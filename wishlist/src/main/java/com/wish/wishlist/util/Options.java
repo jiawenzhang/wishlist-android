@@ -180,6 +180,19 @@ public class Options {
         }
     }
 
+    public static class ShowOnBoarding extends Options {
+        public static final String KEY = "showOnBoarding";
+        public ShowOnBoarding(int val) {
+            super(KEY, val);
+            _defaultVal = 1;
+        }
+
+        public ShowOnBoarding() {
+            super(KEY, 1);
+            _defaultVal = 1;
+        }
+    }
+
     public static class ShowNewFriendNotification extends Options {
         public static final String KEY = "showNewFriendNotification";
         public ShowNewFriendNotification(int val) {

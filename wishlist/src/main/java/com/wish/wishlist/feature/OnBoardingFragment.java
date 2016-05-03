@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.Options;
 import com.wish.wishlist.wish.MyWishActivity;
 
 public final class OnBoardingFragment extends Fragment {
@@ -66,6 +67,10 @@ public final class OnBoardingFragment extends Fragment {
                 textView1.setText(Html.fromHtml(text));
                 button.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
+                        // make sure on boarding is not shown next time user starts the app
+                        Options.ShowOnBoarding showOnBoarding = new Options.ShowOnBoarding(0);
+                        showOnBoarding.save();
+
                         startActivity(new Intent(getActivity(), MyWishActivity.class));
                         getActivity().finish();
                     }

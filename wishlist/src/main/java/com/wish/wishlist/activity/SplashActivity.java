@@ -13,6 +13,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.db.DBAdapter;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.db.ItemDBManager;
+import com.wish.wishlist.feature.OnBoardingFragmentActivity;
 import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.MigrationTask;
@@ -102,9 +103,17 @@ public class SplashActivity extends AppCompatActivity implements
                 startActivity(new Intent(getApplication(), MyWishActivity.class));
             }
         } else {
-            startActivity(new Intent(getApplication(), MyWishActivity.class));
+            Options.ShowOnBoarding showOnBoarding = new Options.ShowOnBoarding();
+            showOnBoarding.read();
+            if (showOnBoarding.val() == 1) {
+                // user opens the app for the first time, show the on boarding pages
+                startActivity(new Intent(getApplication(), OnBoardingFragmentActivity.class));
+            } else {
+                startActivity(new Intent(getApplication(), MyWishActivity.class));
+            }
         }
 
         SplashActivity.this.finish();
+
     }
 }
