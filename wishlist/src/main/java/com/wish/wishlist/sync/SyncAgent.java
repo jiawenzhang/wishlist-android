@@ -37,7 +37,14 @@ public class SyncAgent implements
     private OnDownloadWishDoneListener mDownloadWishDoneListener;
     private OnSyncDoneListener mSyncDoneListener;
     private OnSyncStartListener mSyncStartListener;
-    private Date mSyncedTime;
+
+    // among all the items synced with the server in my previous sync, get the latest "updatedAt", and save it as lastSyncStamp
+    // we use this to identify items uploaded to or changed on the server by another device since my previous sync,
+    // so I can download them in my next sync with the server. we can trust "updatedAt" since it is a timestamp
+    // set by the server
+    public final static String LAST_SYNC_STAMP = "lastSyncStamp";
+    private Date mSyncStamp;
+
     private DownloadMetaTask mDownloadMetaTask = new DownloadMetaTask();
     private UploadTask mUploadTask = new UploadTask();
     private DownloadImageTask mDownloadImageTask = new DownloadImageTask();
@@ -46,7 +53,6 @@ public class SyncAgent implements
     private boolean mSyncing = false;
     private boolean mScheduleToSync = false;
     private static String TAG = "SyncAgent";
-    public final static String LAST_SYNCED_TIME = "lastSyncedTime";
 
     private class CheckServerReachable extends AsyncTask<Void, Void, Boolean> {//<param, progress, result>
         @Override
@@ -201,41 +207,41 @@ public class SyncAgent implements
 
         // start the sync process with downloadTask, then uploadTask
         // the subsequent task will be started when the previous task is done
-        // if error occurs in any of the tasks, syncFailed will be called and LAST_SYNCED_TIME is not updated
+        // if error occurs in any of the tasks, syncFailed will be called and LAST_SYNC_STAMP is not updated
         mDownloadMetaTask.run();
     }
 
     @Override
-    public void downloadMetaTaskDone(boolean success, Date syncedTime) {
+    public void downloadMetaTaskDone(boolean success, Date syncStamp) {
         mDownloading = false;
-        mSyncedTime = syncedTime;
+        mSyncStamp = syncStamp;
 
         if (mDownloadWishDoneListener != null) {
             mDownloadWishDoneListener.onDownloadWishDone(success);
         }
 
-        // we have finished downloading items, notify list/grid view to refresh
+        // we have finished downloading items meta, notify list/grid view to refresh
         if (mSyncWishChangedListener != null) {
             mSyncWishChangedListener.onSyncWishChanged();
         }
 
         if (success) {
-            mUploadTask.run(mSyncedTime);
+            mUploadTask.run(mSyncStamp);
         } else {
             syncFailed();
         }
     }
 
     @Override
-    public void uploadTaskDone(boolean success, Date syncedTime) {
-        mSyncedTime = syncedTime;
+    public void uploadTaskDone(boolean success, Date syncStamp) {
+        mSyncStamp = syncStamp;
         if (success) {
             // both download and upload is done, sync is finished
             // save the last synced down time
-            Log.d(TAG, "sync finished at " + mSyncedTime.getTime() + " " + StringUtil.UTCDate(mSyncedTime));
+            Log.d(TAG, "sync finished: sync stamp " + mSyncStamp.getTime() + " " + StringUtil.UTCDate(mSyncStamp));
             final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putLong(lastSyncedTimeKey(), mSyncedTime.getTime());
+            editor.putLong(lastSyncStampKey(), mSyncStamp.getTime());
             editor.commit();
 
             // start downloading image task
@@ -321,13 +327,13 @@ public class SyncAgent implements
         return parseFileName.substring(parseFileName.indexOf('_') + 1);
     }
 
-    public static String lastSyncedTimeKey() {
+    public static String lastSyncStampKey() {
         if (ParseUser.getCurrentUser() == null) {
             // this shall never happen
             Log.e(TAG, "user null");
-            return LAST_SYNCED_TIME;
+            return LAST_SYNC_STAMP;
         }
-        return ParseUser.getCurrentUser().getUsername() + "-" + LAST_SYNCED_TIME;
+        return ParseUser.getCurrentUser().getUsername() + "-" + LAST_SYNC_STAMP;
     }
 }
 

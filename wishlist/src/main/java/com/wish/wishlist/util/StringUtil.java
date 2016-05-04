@@ -24,7 +24,7 @@ public class StringUtil {
     }
 
     public static String UTCDate(Date date) {
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd'T'HH:mm:ss'Z'");
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
         return fmt.format(date);
     }

@@ -29,12 +29,12 @@ import java.util.List;
 public class UploadTask {
     private static String TAG = "UploadTask";
     private long mItemsToUpload;
-    private Date mSyncedTime;
+    private Date mSyncStamp;
 
     /* listener */
     private UploadTaskDoneListener mUploadTaskDoneListener;
     public interface UploadTaskDoneListener {
-        void uploadTaskDone(boolean success, Date syncedTime);
+        void uploadTaskDone(boolean success, Date syncStamp);
     }
 
     public void registerListener(UploadTaskDoneListener l) {
@@ -43,8 +43,8 @@ public class UploadTask {
     /* listener */
 
 
-    public void run(Date syncedTime) {
-        mSyncedTime = syncedTime;
+    public void run(Date syncStamp) {
+        mSyncStamp = syncStamp;
         mItemsToUpload = 0;
         uploadToParse();
     }
@@ -115,7 +115,9 @@ public class UploadTask {
             public void done(com.parse.ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "save wish success, object id: " + wishObject.getObjectId());
-                    mSyncedTime = wishObject.getUpdatedAt();
+                    if (wishObject.getUpdatedAt().getTime() > mSyncStamp.getTime()) {
+                        mSyncStamp = wishObject.getUpdatedAt();
+                    }
 
                     WishItem item = WishItemManager.getInstance().getItemById(item_id);
                     if (item.getDeleted()) {
@@ -221,7 +223,7 @@ public class UploadTask {
 
     private void uploadAllDone(boolean success) {
         if (mUploadTaskDoneListener != null) {
-            mUploadTaskDoneListener.uploadTaskDone(success, mSyncedTime);
+            mUploadTaskDoneListener.uploadTaskDone(success, mSyncStamp);
         }
     }
 }

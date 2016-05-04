@@ -26,12 +26,12 @@ import java.util.List;
 public class DownloadMetaTask {
     private static String TAG = "DownloadMetaTask";
     private long mItemsToDownload;
-    private Date mSyncedTime;
+    private Date mSyncStamp;
 
     /* listener */
     private DownloadMetaTaskDoneListener mDownlaodMetaTaskDoneListener;
     public interface DownloadMetaTaskDoneListener {
-        void downloadMetaTaskDone(boolean success, Date syncedTime);
+        void downloadMetaTaskDone(boolean success, Date syncStamp);
     }
 
     public void registerListener(DownloadMetaTaskDoneListener l) {
@@ -45,12 +45,12 @@ public class DownloadMetaTask {
 
         // get from parse the items with updated time > last synced time
         final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
-        final Date lastSyncedTime = new Date(sharedPref.getLong(SyncAgent.lastSyncedTimeKey(), 0));
-        Log.d(TAG, "lastSyncedTime " + lastSyncedTime.getTime() + " " + StringUtil.UTCDate(lastSyncedTime));
-        mSyncedTime = lastSyncedTime;
+        final Date lastSyncStamp = new Date(sharedPref.getLong(SyncAgent.lastSyncStampKey(), 0));
+        Log.d(TAG, "lastSyncStamp " + lastSyncStamp.getTime() + " " + StringUtil.UTCDate(lastSyncStamp));
+        mSyncStamp = lastSyncStamp;
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
-        query.whereGreaterThan("updatedAt", lastSyncedTime);
+        query.whereGreaterThan("updatedAt", lastSyncStamp);
         query.whereEqualTo(WishItem.PARSE_KEY_OWNDER_ID, ParseUser.getCurrentUser().getObjectId());
 
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -65,7 +65,9 @@ public class DownloadMetaTask {
 
                     // add/update/remove local wish
                     for (ParseObject parseItem : itemList) {
-                        mSyncedTime = parseItem.getUpdatedAt();
+                        if (parseItem.getUpdatedAt().getTime() > mSyncStamp.getTime()) {
+                            mSyncStamp = parseItem.getUpdatedAt();
+                        }
 
                         WishItem item = WishItemManager.getInstance().getItemByObjectId(parseItem.getObjectId());
                         if (item == null) {
@@ -141,7 +143,7 @@ public class DownloadMetaTask {
     private void downloadAllDone(boolean success) {
         // download from parse is finished, now upload to parse
         if (mDownlaodMetaTaskDoneListener != null) {
-            mDownlaodMetaTaskDoneListener.downloadMetaTaskDone(success, mSyncedTime);
+            mDownlaodMetaTaskDoneListener.downloadMetaTaskDone(success, mSyncStamp);
         }
     }
 }
