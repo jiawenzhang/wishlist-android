@@ -8,7 +8,7 @@ android {
     defaultConfig {
         applicationId "com.wish.wishlist"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 23
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
