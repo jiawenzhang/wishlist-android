@@ -62,6 +62,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class MyWishActivity extends WishBaseActivity implements
         SyncAgent.OnSyncStartListener,
+        SyncAgent.OnSyncDoneListener,
         SyncAgent.OnSyncWishChangedListener,
         SyncAgent.OnDownloadWishDoneListener {
 
@@ -145,6 +146,7 @@ public class MyWishActivity extends WishBaseActivity implements
 
         SyncAgent.getInstance().registerListener(this);
         SyncAgent.getInstance().registerSyncStartListener(this);
+        SyncAgent.getInstance().registerSyncDoneListener(this);
 
         if (refreshEnabled()) {
             // only enable swipe down refresh when the first item in recycler view is visible
@@ -183,7 +185,7 @@ public class MyWishActivity extends WishBaseActivity implements
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if (SyncAgent.getInstance().downloading()) {
+                if (SyncAgent.getInstance().syncing()) {
                     showSyncingText(true);
                 }
             }
@@ -684,18 +686,23 @@ public class MyWishActivity extends WishBaseActivity implements
     public void onDownloadWishDone(boolean success) {
         Log.d(TAG, "onDownloadWishDone success? " + success);
         mSwipeRefreshLayout.setRefreshing(false);
-        showSyncingText(false);
         if (!success) {
             Toast.makeText(this, "Sync error, check network", Toast.LENGTH_LONG).show();
         }
     }
+    /* end SyncAgent listener */
 
     @Override
     public void onSyncStart() {
         Log.d(TAG, "onSyncStart");
         showSyncingText(true);
     }
-    /* end SyncAgent listener */
+
+    @Override
+    public void onSyncDone(boolean success) {
+        Log.d(TAG, "onSyncDone");
+        showSyncingText(false);
+    }
 
     public void onWishTapped(WishItem item) {
         Log.d(TAG, "onWishTapped");

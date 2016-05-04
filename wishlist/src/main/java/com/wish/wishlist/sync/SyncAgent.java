@@ -159,6 +159,10 @@ public class SyncAgent implements
         return mDownloading;
     }
 
+    public boolean syncing() {
+        return mSyncing;
+    }
+
     // call sync on app start up
     // how does parse trigger sync on the client? push notification?
     public void sync() {
