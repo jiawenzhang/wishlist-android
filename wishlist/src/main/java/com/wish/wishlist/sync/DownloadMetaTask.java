@@ -27,11 +27,12 @@ public class DownloadMetaTask {
     private static String TAG = "DownloadMetaTask";
     private long mItemsToDownload;
     private Date mSyncStamp;
+    private boolean mWishMetaChanged = false;
 
     /* listener */
     private DownloadMetaTaskDoneListener mDownlaodMetaTaskDoneListener;
     public interface DownloadMetaTaskDoneListener {
-        void downloadMetaTaskDone(boolean success, Date syncStamp);
+        void downloadMetaTaskDone(boolean success, Date syncStamp, boolean wishMetaChanged);
     }
 
     public void registerListener(DownloadMetaTaskDoneListener l) {
@@ -42,6 +43,7 @@ public class DownloadMetaTask {
 
     public void run() {
         mItemsToDownload = 0;
+        mWishMetaChanged = false;
 
         // get from parse the items with updated time > last synced time
         final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
@@ -115,6 +117,7 @@ public class DownloadMetaTask {
                         item.setSyncedToServer(true);
                         long item_id = item.saveToLocal();
                         updateTags(parseItem, item_id);
+                        mWishMetaChanged = true;
                         itemDownloadDone();
                     }
                 } else {
@@ -143,7 +146,7 @@ public class DownloadMetaTask {
     private void downloadAllDone(boolean success) {
         // download from parse is finished, now upload to parse
         if (mDownlaodMetaTaskDoneListener != null) {
-            mDownlaodMetaTaskDoneListener.downloadMetaTaskDone(success, mSyncStamp);
+            mDownlaodMetaTaskDoneListener.downloadMetaTaskDone(success, mSyncStamp, mWishMetaChanged);
         }
     }
 }

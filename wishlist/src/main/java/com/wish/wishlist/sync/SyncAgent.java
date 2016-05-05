@@ -34,7 +34,7 @@ public class SyncAgent implements
         DownloadImageTask.DownloadImageTaskDoneListener {
     private static SyncAgent instance = null;
     private OnSyncWishChangedListener mSyncWishChangedListener;
-    private OnDownloadWishDoneListener mDownloadWishDoneListener;
+    private OnDownloadWishMetaDoneListener mDownloadWishMetaDoneListener;
     private OnSyncDoneListener mSyncDoneListener;
     private OnSyncStartListener mSyncStartListener;
 
@@ -97,14 +97,14 @@ public class SyncAgent implements
         void onSyncWishChanged();
     }
 
-    public interface OnDownloadWishDoneListener {
-        void onDownloadWishDone(boolean success);
+    public interface OnDownloadWishMetaDoneListener {
+        void onDownloadWishMetaDone(boolean success);
     }
 
     public void registerListener(Activity activity) {
         try {
             mSyncWishChangedListener = (OnSyncWishChangedListener) activity;
-            mDownloadWishDoneListener = (OnDownloadWishDoneListener) activity;
+            mDownloadWishMetaDoneListener = (OnDownloadWishMetaDoneListener) activity;
         }
         catch (final ClassCastException e) {
             Log.e(TAG, "fail to registerListener");
@@ -201,7 +201,7 @@ public class SyncAgent implements
 
     private void serverReachable(boolean reachable) {
         if (!reachable) {
-            syncFailed();
+            syncDone(false);
             return;
         }
 
@@ -212,23 +212,23 @@ public class SyncAgent implements
     }
 
     @Override
-    public void downloadMetaTaskDone(boolean success, Date syncStamp) {
+    public void downloadMetaTaskDone(boolean success, Date syncStamp, boolean wishMetaChanged) {
         mDownloading = false;
         mSyncStamp = syncStamp;
 
-        if (mDownloadWishDoneListener != null) {
-            mDownloadWishDoneListener.onDownloadWishDone(success);
+        if (mDownloadWishMetaDoneListener != null) {
+            mDownloadWishMetaDoneListener.onDownloadWishMetaDone(success);
         }
 
         // we have finished downloading items meta, notify list/grid view to refresh
-        if (mSyncWishChangedListener != null) {
+        if (wishMetaChanged && mSyncWishChangedListener != null) {
             mSyncWishChangedListener.onSyncWishChanged();
         }
 
         if (success) {
             mUploadTask.run(mSyncStamp);
         } else {
-            syncFailed();
+            syncDone(false);
         }
     }
 
@@ -247,45 +247,37 @@ public class SyncAgent implements
             // start downloading image task
             mDownloadImageTask.run();
         } else {
-            syncFailed();
+            syncDone(false);
         }
     }
 
     @Override
-    public void downloadImageTaskDone(boolean success) {
-        if (success) {
-            syncDone();
-        } else {
-            syncFailed();
+    public void downloadImageTaskDone(boolean success, boolean imageChanged) {
+        if (imageChanged && mSyncWishChangedListener != null) {
+            mSyncWishChangedListener.onSyncWishChanged();
         }
+        syncDone(success);
     }
 
-    private void syncDone() {
-        Log.d(TAG, "syncDone");
+    private void syncDone(boolean success) {
+        Log.d(TAG, "syncDone success? " + success);
         mSyncing = false;
+        mDownloading = false;
 
         if (mSyncDoneListener != null) {
-            mSyncDoneListener.onSyncDone(true);
+            mSyncDoneListener.onSyncDone(success);
+        }
+
+        if (!success) {
+            // when sync fails (most likely due to network unavailable), let's cancel scheduled sync
+            // and wait until the next sync is triggered
+            mScheduleToSync = false;
+            return;
         }
 
         if (mScheduleToSync) {
             mScheduleToSync = false;
             sync();
-        }
-    }
-
-    private void syncFailed() {
-        Log.e(TAG, "syncFailed");
-
-        // when sync fails (most likely network unavailable), let's just do nothing
-        // util the next sync is triggered
-        mSyncing = false;
-        mDownloading = false;
-        mScheduleToSync = false;
-
-        // notify listener to stop spinning and show an error
-        if (mDownloadWishDoneListener != null) {
-            mDownloadWishDoneListener.onDownloadWishDone(false);
         }
     }
 

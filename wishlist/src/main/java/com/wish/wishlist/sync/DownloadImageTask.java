@@ -28,6 +28,7 @@ public class DownloadImageTask {
     private static String TAG = "DownloadImageTask";
     private HashMap<Long, String> mItemUrl= new HashMap<>();
     private HashMap<String, Target> mTargets = new HashMap<>();
+    private boolean mImageChanged = false;
 
     class Result {
         // result code
@@ -78,7 +79,7 @@ public class DownloadImageTask {
     /* listener */
     private DownloadImageTaskDoneListener mDownlaodImageTaskDoneListener;
     public interface DownloadImageTaskDoneListener {
-        void downloadImageTaskDone(boolean success);
+        void downloadImageTaskDone(boolean success, boolean imageChanged);
     }
 
     public void registerListener(DownloadImageTaskDoneListener l) {
@@ -90,6 +91,7 @@ public class DownloadImageTask {
     public void run() {
         mTargets.clear();
         mItemUrl.clear();
+        mImageChanged = false;
 
         ArrayList<Long> ids = ItemDBManager.getItemIdsToDownloadImg();
         for (Long item_id : ids) {
@@ -122,6 +124,7 @@ public class DownloadImageTask {
 
         WishItem item = WishItemManager.getInstance().getItemById(itemId);
         if (item != null && bitmap != null) {
+            mImageChanged = true;
             ImgMeta imgMeta = item.getImgMetaArray() == null ? null : item.getImgMetaArray().get(0);
             if (imgMeta != null) {
                 String fullsizePicPath = null;
@@ -159,7 +162,7 @@ public class DownloadImageTask {
     private void imageAllDone(boolean success) {
         // download from parse is finished, now upload to parse
         if (mDownlaodImageTaskDoneListener != null) {
-            mDownlaodImageTaskDoneListener.downloadImageTaskDone(success);
+            mDownlaodImageTaskDoneListener.downloadImageTaskDone(success, mImageChanged);
         }
     }
 

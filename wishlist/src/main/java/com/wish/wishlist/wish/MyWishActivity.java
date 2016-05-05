@@ -64,7 +64,7 @@ public class MyWishActivity extends WishBaseActivity implements
         SyncAgent.OnSyncStartListener,
         SyncAgent.OnSyncDoneListener,
         SyncAgent.OnSyncWishChangedListener,
-        SyncAgent.OnDownloadWishDoneListener {
+        SyncAgent.OnDownloadWishMetaDoneListener {
 
     public static final String TAG = "MyWishActivity";
 
@@ -626,8 +626,7 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     @Override
-    protected boolean goBack()
-    {
+    protected boolean goBack() {
         if (mNameQuery != null || mTag.val() != null || mStatus.val() != Options.Status.ALL) {
             mNameQuery = null;
             updateFilterView(filterType.name);
@@ -683,11 +682,17 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     @Override
-    public void onDownloadWishDone(boolean success) {
-        Log.d(TAG, "onDownloadWishDone success? " + success);
-        mSwipeRefreshLayout.setRefreshing(false);
-        if (!success) {
-            Toast.makeText(this, "Sync error, check network", Toast.LENGTH_LONG).show();
+    public void onDownloadWishMetaDone(boolean success) {
+        Log.d(TAG, "onDownloadWishMetaDone success? " + success);
+
+        // stop refreshing animation when wish meta download is done, so UI is not blocked while
+        // uploading wish and downloading wish image is in progress
+        // only notify user about sync error if user explicitly swipe down to sync
+        if (mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(false);
+            if (!success) {
+                Toast.makeText(this, "Sync error, check network", Toast.LENGTH_LONG).show();
+            }
         }
     }
     /* end SyncAgent listener */
@@ -702,6 +707,14 @@ public class MyWishActivity extends WishBaseActivity implements
     public void onSyncDone(boolean success) {
         Log.d(TAG, "onSyncDone");
         showSyncingText(false);
+
+        // only notify user about sync error if user explicitly swipe down to sync
+        if (mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(false);
+            if (!success) {
+                Toast.makeText(this, "Sync error, check network", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     public void onWishTapped(WishItem item) {
