@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.viewpagerindicator.PageIndicator;
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.Analytics;
 
 public class OnBoardingFragmentActivity extends FragmentActivity {
     OnBoardingFragmentAdapter mAdapter;
@@ -17,6 +18,8 @@ public class OnBoardingFragmentActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.onboarding_pager);
+
+        Analytics.sendScreen("OnBoarding");
 
         mAdapter = new OnBoardingFragmentAdapter(getSupportFragmentManager());
 

@@ -1,6 +1,5 @@
 package com.wish.wishlist.login;
 
-import com.parse.ParseInstallation;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
