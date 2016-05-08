@@ -88,12 +88,6 @@ public class UserLoginActivity extends Activity {
         ParseUser currentUser = ParseUser.getCurrentUser();
         Log.d(TAG, "You are logged in as " + currentUser.getEmail() + " " + currentUser.getString("name"));
 
-        // Installation is used to identify self devices for push notification
-        // so self device can sync wishes from Parse
-        final ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-        installation.put("user", ParseUser.getCurrentUser());
-        installation.saveEventually();
-
         ProfileUtil.downloadProfileImage();
         SyncAgent.getInstance().sync();
 
