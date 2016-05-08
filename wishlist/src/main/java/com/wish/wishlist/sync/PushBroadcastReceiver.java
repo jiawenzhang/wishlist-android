@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.parse.ParseInstallation;
 import com.parse.ParsePushBroadcastReceiver;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.friend.FriendManager;
@@ -22,6 +23,7 @@ import org.json.JSONObject;
 public class PushBroadcastReceiver extends ParsePushBroadcastReceiver {
     final static String TAG = "PushBroadcastReceiver";
 
+    final static String FROM_INSTALLATION_ID = "fromInstallationId";
     final static String SYNC_USER_PROFILE = "syncUserProfile";
     final static String SYNC_WISHES = "syncWishes";
     final static String FRIEND_REQUEST_UPDATE = "friendRequestUpdate";
@@ -38,6 +40,15 @@ public class PushBroadcastReceiver extends ParsePushBroadcastReceiver {
         try {
             JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
             Log.d(TAG, "json: " + json);
+
+            // there is a bug on parse server: if the app is uninstalled and installed again,
+            // push could be sent to self device
+            final ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            if (json.has(FROM_INSTALLATION_ID) &&
+                json.get(FROM_INSTALLATION_ID).equals(installation.getInstallationId())) {
+                Log.e(TAG, "receive push from self, ignore");
+                return;
+            }
             if (json.has(SYNC_USER_PROFILE)) {
                 SyncAgent.getInstance().updateProfileFromParse();
             } else if (json.has(SYNC_WISHES)) {
