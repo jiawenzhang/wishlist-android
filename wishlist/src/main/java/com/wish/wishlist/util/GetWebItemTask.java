@@ -45,6 +45,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
 
     WebResult getImages(WebRequest request) {
         WebResult result = new WebResult();
+        int imageWidth = dimension.screenWidth() / 2;
         try {
             //Connection.Response response = Jsoup.connect(urls[0]).followRedirects(true).execute();
             Document doc;
@@ -118,7 +119,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     Bitmap image = null;
                     try {
                         Log.d(TAG, "twitter image src " + twitter_image_src);
-                        image = Picasso.with(mContext).load(twitter_image_src).get();
+                        image = Picasso.with(mContext).load(twitter_image_src).resize(imageWidth, 0).onlyScaleDown().get();
                     } catch (IOException e) {
                         Log.e(TAG, "get twitter image error: " + e.toString());
                     }
@@ -143,7 +144,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     imageUrls.add(og_image_src);
                     Bitmap image = null;
                     try {
-                        image = Picasso.with(mContext).load(og_image_src).get();
+                        image = Picasso.with(mContext).load(og_image_src).resize(imageWidth, 0).onlyScaleDown().get();
                     } catch (IOException e) {
                         Log.e(TAG, "get og_image error: " + e.toString());
                     }
@@ -202,8 +203,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                 }
 
                 try {
-                    int width = dimension.screenWidth() / 2;
-                    final Bitmap image = Picasso.with(mContext).load(src).resize(width, 0).onlyScaleDown().get();
+                    final Bitmap image = Picasso.with(mContext).load(src).resize(imageWidth, 0).onlyScaleDown().get();
                     // filter out small images
                     if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
                         continue;
