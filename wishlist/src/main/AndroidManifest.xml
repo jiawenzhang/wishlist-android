@@ -5,17 +5,6 @@
     android:versionCode="34"
     android:versionName="1.2.8" >
 
-    <!--
-    min sdkversion earlier than 4 will implicitly require WRITE_EXTERNAL_STORAGE and READ_PHONE_STATE 
-    user permission. set the min version >= 4 to avoid that
-    -->
-    <!--
-        <uses-sdk android:minSdkVersion="8"
-            android:targetSdkVersion="17" />
-    -->
-    <!-- 8 is android 2.2.x FROYO -->
-    <!-- 17 is android 4.2.x  JELLY BEAN -->
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -45,6 +34,7 @@
       IMPORTANT: Change "com.parse.starter.permission.C2D_MESSAGE" in the lines below
       to match your app's package name + ".permission.C2D_MESSAGE".
     -->
+
     <permission
         android:enabled="@bool/enable_account"
         android:name="${applicationId}.permission.C2D_MESSAGE"
