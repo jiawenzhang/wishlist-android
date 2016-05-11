@@ -332,7 +332,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDhnVZB5q0JznTklAmGWaEu5OWj06Nz9kk" />
+            android:value="@string/google_geo_api_key" />
 
         <activity
             android:name=".login.UserLoginActivity"
