@@ -79,6 +79,8 @@ public class ProfileActivity extends ActivityBase implements
         setContentView(R.layout.profile);
         setupActionBar(R.id.profile_toolbar);
 
+        Analytics.sendScreen("Profile");
+
         // make toolbar transparent
         mToolbar.getBackground().setAlpha(0);
 
@@ -96,6 +98,7 @@ public class ProfileActivity extends ActivityBase implements
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                Analytics.send(Analytics.SYNC, "RefreshProfile", null);
                 if (!NetworkHelper.getInstance().isNetworkAvailable()) {
                     Toast.makeText(ProfileActivity.this, "Check network", Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
@@ -233,6 +236,7 @@ public class ProfileActivity extends ActivityBase implements
                                 }
                             }
                         });
+                        Analytics.send(Analytics.USER, "ResetPassword", "FromProfile");
                     }
                 });
                 builder.setNegativeButton("CANCEL",
@@ -299,6 +303,7 @@ public class ProfileActivity extends ActivityBase implements
                                 mProgressDialog.dismiss();
                             }
                         });
+                        Analytics.send(Analytics.USER, "Logout", null);
                     }
                 });
 

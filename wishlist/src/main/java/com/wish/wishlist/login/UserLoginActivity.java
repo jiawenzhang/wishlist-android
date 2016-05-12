@@ -8,6 +8,7 @@ import android.util.Log;
 import com.parse.ParseUser;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.sync.SyncAgent;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ProfileUtil;
 import com.wish.wishlist.wish.MyWishActivity;
@@ -29,6 +30,8 @@ public class UserLoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.sendScreen("UserLogin");
 
         Intent intent = getIntent();
         mFromSplash = intent.getBooleanExtra(FROM_SPLASH, false);
@@ -73,6 +76,8 @@ public class UserLoginActivity extends Activity {
     }
 
     private void onLoginSkip() {
+        Analytics.send(Analytics.USER, "SkipLogin", null);
+
         Log.d(TAG, "login skip");
         // Don't show login again on next startup
         Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup(0);
@@ -83,6 +88,8 @@ public class UserLoginActivity extends Activity {
     }
 
     private void onLogin() {
+        Analytics.send(Analytics.USER, "Login", null);
+
         Log.d(TAG, "login success");
         ParseUser currentUser = ParseUser.getCurrentUser();
         Log.d(TAG, "You are logged in as " + currentUser.getEmail() + " " + currentUser.getString("name"));

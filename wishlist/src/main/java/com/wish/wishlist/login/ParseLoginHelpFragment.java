@@ -35,6 +35,7 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.Analytics;
 
 /**
  * Fragment for the login help screen for resetting the user's password.
@@ -64,6 +65,8 @@ public class ParseLoginHelpFragment extends ParseLoginFragmentBase implements On
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                            Bundle savedInstanceState) {
+
+    Analytics.sendScreen("LoginHelp");
     config = ParseLoginConfig.fromBundle(getArguments(), getActivity());
 
     View v = inflater.inflate(R.layout.login_help_fragment,
@@ -132,6 +135,8 @@ public class ParseLoginHelpFragment extends ParseLoginFragmentBase implements On
                 }
               }
             });
+
+        Analytics.send(Analytics.USER, "ResetPassword", "FromLoginHelp");
       }
     } else {
       onLoginHelpSuccessListener.onLoginHelpSuccess();

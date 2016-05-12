@@ -161,6 +161,7 @@ public class MyWishActivity extends WishBaseActivity implements
             mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
+                    Analytics.send(Analytics.SYNC, "RefreshWish", null);
                     if (!NetworkHelper.getInstance().isNetworkAvailable()) {
                         Toast.makeText(MyWishActivity.this, "Check network", Toast.LENGTH_LONG).show();
                         mSwipeRefreshLayout.setRefreshing(false);

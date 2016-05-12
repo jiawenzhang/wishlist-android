@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import com.isseiaoki.simplecropview.CropImageView;
 import com.wish.wishlist.R;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.ProfileUtil;
 
 import java.io.FileNotFoundException;
@@ -27,6 +28,8 @@ public class CropperActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cropper);
         setupActionBar(R.id.cropper_toolbar);
+
+        Analytics.sendScreen("Cropper");
 
         Intent i = getIntent();
         String uri = i.getStringExtra(ProfileActivity.IMAGE_URI);
@@ -61,6 +64,7 @@ public class CropperActivity extends ActivityBase {
                 finish();
                 return true;
             case R.id.menu_cropper_crop:
+                Analytics.send(Analytics.USER, "ChangeAvatar", null);
                 final Bitmap croppedImage = mCropImageView.getCroppedBitmap();
                 final Bitmap scaledCroppedImage = ImageManager.getScaleDownBitmap(croppedImage, 256);
                 ProfileUtil.saveProfileImageToFile(scaledCroppedImage);

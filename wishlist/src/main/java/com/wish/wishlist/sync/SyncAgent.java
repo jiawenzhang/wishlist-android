@@ -16,6 +16,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.ProfileChangeEvent;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.ProfileUtil;
 import com.wish.wishlist.util.StringUtil;
@@ -186,11 +187,15 @@ public class SyncAgent implements
             // if we are in the process of syncing, run sync again after the current sync is finished
             Log.d(TAG, "mSync true, schedule sync");
             mScheduleToSync = true;
+
+            Analytics.send(Analytics.SYNC, "Schedule", null);
             return;
         }
 
         mSyncing = true;
         mDownloading = true;
+
+        Analytics.send(Analytics.SYNC, "Start", null);
 
         if (mSyncStartListener != null) {
             mSyncStartListener.onSyncStart();
@@ -263,6 +268,8 @@ public class SyncAgent implements
         Log.d(TAG, "syncDone success? " + success);
         mSyncing = false;
         mDownloading = false;
+
+        Analytics.send(Analytics.SYNC, "Done", success ? "Success" : "Fail");
 
         if (mSyncDoneListener != null) {
             mSyncDoneListener.onSyncDone(success);

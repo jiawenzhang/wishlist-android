@@ -3,6 +3,8 @@ package com.wish.wishlist.fragment;
 import android.app.Activity;
 import android.util.Log;
 
+import com.wish.wishlist.util.Analytics;
+
 /**
  * Created by jiawen on 15-09-16.
  */
@@ -17,6 +19,7 @@ public class NameFragmentDialog extends EditFragmentDialog {
     protected void onNameChanged(String email) {
         onNameChangedListener listener = (onNameChangedListener) getActivity();
         listener.onNameChanged(email);
+        Analytics.send(Analytics.USER, "ChangeName", null);
     }
 
     @Override

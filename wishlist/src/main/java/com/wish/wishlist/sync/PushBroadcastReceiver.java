@@ -10,6 +10,7 @@ import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.friend.FriendManager;
 import com.wish.wishlist.friend.FriendRequestActivity;
 import com.wish.wishlist.friend.FriendsActivity;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.VisibleActivityTracker;
 
@@ -51,6 +52,7 @@ public class PushBroadcastReceiver extends ParsePushBroadcastReceiver {
             if (json.has(FROM_INSTALLATION_ID) &&
                 json.get(FROM_INSTALLATION_ID).equals(installation.getInstallationId())) {
                 Log.e(TAG, "receive push from self, ignore");
+                Analytics.send(Analytics.DEBUG, "ReceivePushFromSelf", null);
                 return;
             }
 
@@ -59,6 +61,7 @@ public class PushBroadcastReceiver extends ParsePushBroadcastReceiver {
             }
 
             String pushType = json.getString(PUSH_TYPE);
+            Analytics.send(Analytics.PUSH, "type", pushType);
             switch (pushType) {
                 case SYNC_USER_PROFILE:
                     SyncAgent.getInstance().updateProfileFromParse();

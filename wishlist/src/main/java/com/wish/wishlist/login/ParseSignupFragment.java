@@ -40,6 +40,7 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.Analytics;
 
 /**
  * Fragment for the user signup screen.
@@ -75,6 +76,8 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                            Bundle savedInstanceState) {
+
+    Analytics.sendScreen("Signup");
 
     Bundle args = getArguments();
     config = ParseLoginConfig.fromBundle(args, getActivity());
@@ -242,6 +245,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
   }
 
   private void signupSuccess() {
+    Analytics.send(Analytics.USER, "Signup", null);
     onLoginSuccessListener.onLoginSuccess();
   }
 

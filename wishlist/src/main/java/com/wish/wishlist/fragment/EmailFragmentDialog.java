@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import com.wish.wishlist.util.Analytics;
+
 /**
  * Created by jiawen on 15-09-16.
  */
@@ -20,6 +22,7 @@ public class EmailFragmentDialog extends EditFragmentDialog {
     protected void onEmailChanged(String email) {
         onEmailChangedListener listener = (onEmailChangedListener) getActivity();
         listener.onEmailChanged(email);
+        Analytics.send(Analytics.USER, "ChangeEmail", null);
     }
 
     @Override
