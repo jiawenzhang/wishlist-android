@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/com_parse_ui_small_vertical_spacing"
         android:fontFamily="sans-serif"
+        android:maxLength="@integer/user_password_max_length"
         android:hint="@string/com_parse_ui_password_input_hint"
         android:inputType="textPassword"
         android:selectAllOnFocus="true" />

@@ -2,4 +2,6 @@
 <resources>
     <integer name="item_name_length">200</integer>
     <integer name="item_description_length">1500</integer>
+    <integer name="user_password_max_length">16</integer>
+    <integer name="user_display_name_max_length">16</integer>
 </resources>
