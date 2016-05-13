@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
@@ -74,6 +77,8 @@ public class MyWishActivity extends WishBaseActivity implements
     private static final int ADD_TAG = 3;
     private static final int ITEM_DETAILS = 4;
     private static final int TAKE_PICTURE = 5;
+
+    private static final int PERMISSIONS_TAKE_PHOTO = 0;
 
     private Options.Tag mTag = new Options.Tag(null);
 
@@ -490,10 +495,44 @@ public class MyWishActivity extends WishBaseActivity implements
         dialog.show();
     }
 
-    private void dispatchTakePictureIntent() {
+    private void takePhoto() {
         CameraManager c = new CameraManager();
         mTempPhotoPath = c.getPhotoPath();
         startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
+    }
+
+    private void dispatchTakePictureIntent() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSIONS_TAKE_PHOTO);
+
+            return;
+        }
+
+        takePhoto();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_TAKE_PHOTO: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 2 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    Analytics.send(Analytics.PERMISSION, "TakePhoto", "Grant");
+                    takePhoto();
+                } else {
+                    Log.e(TAG, "Take photo permission not granted");
+                    Analytics.send(Analytics.PERMISSION, "TakePhoto", "Deny");
+                }
+            }
+        }
     }
 
     @Override

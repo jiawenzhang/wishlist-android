@@ -1,16 +1,19 @@
 package com.wish.wishlist.wish;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -81,6 +84,9 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     protected static final int TAKE_PICTURE = 1;
     protected static final int SELECT_PICTURE = 2;
     protected static final int ADD_TAG = 3;
+
+    protected static final int PERMISSIONS_TAKE_PHOTO = 0;
+    protected static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
     protected static final String TEMP_PHOTO_PATH = "TEMP_PHOTO_PATH";
     protected static final String SELECTED_PIC_URL = "SELECTED_PIC_URL";
@@ -237,6 +243,40 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     }
 
     private void dispatchTakePictureIntent() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSIONS_TAKE_PHOTO);
+
+            return;
+        }
+        takePhoto();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        Log.e(TAG, "onRequestPermissionsResult");
+        Log.e(TAG, "code " + requestCode);
+        switch (requestCode) {
+            case PERMISSIONS_TAKE_PHOTO: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 2 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                    Analytics.send(Analytics.PERMISSION, "TakePhoto", "Grant");
+                    takePhoto();
+                } else {
+                    Log.e(TAG, "Take photo permission denied");
+                    Analytics.send(Analytics.PERMISSION, "TakePhoto", "Deny");
+                }
+            }
+        }
+    }
+
+    private void takePhoto() {
         CameraManager c = new CameraManager();
         mTempPhotoPath = c.getPhotoPath();
         startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);

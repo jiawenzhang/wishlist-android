@@ -1,12 +1,16 @@
 package com.wish.wishlist.wish;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -69,27 +73,26 @@ public class AddWishActivity extends MyWishDetailActivity
         Analytics.sendScreen("AddWish");
 
         if (loadLocation()) {
-            //mMapImageButton.setOnClickListener(new OnClickListener() {
-            //    @Override
-            //    public void onClick(View view) {
-            //        //get the location
-            //        if (!mGettingLocation) {
-            //            mPositionManager.startLocationUpdates();
-            //            mGettingLocation = true;
-            //            mLocationEditText.setText("Loading location...");
-            //        }
-            //    }
-            //});
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            mPositionManager = new PositionManager();
-            mPositionManager.addObserver(this);
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        PERMISSIONS_REQUEST_LOCATION);
 
-            // Get the location in background
-            final boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true);
-            if (tagLocation) {
-                mPositionManager.startLocationUpdates();
-                mGettingLocation = true;
-                mLocationView.setText("Loading location...");
+            } else {
+                //mMapImageButton.setOnClickListener(new OnClickListener() {
+                //    @Override
+                //    public void onClick(View view) {
+                //        //get the location
+                //        if (!mGettingLocation) {
+                //            mPositionManager.startLocationUpdates();
+                //            mGettingLocation = true;
+                //            mLocationEditText.setText("Loading location...");
+                //        }
+                //    }
+                //});
+                getLocation();
             }
         }
 
@@ -132,6 +135,40 @@ public class AddWishActivity extends MyWishDetailActivity
         //} else {
         //    mPrivateCheckBox.setChecked(false);
         //}
+    }
+
+    private void getLocation() {
+        mPositionManager = new PositionManager();
+        mPositionManager.addObserver(this);
+
+        // Get the location in background
+        final boolean tagLocation = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("autoLocation", true);
+        if (tagLocation) {
+            mPositionManager.startLocationUpdates();
+            mGettingLocation = true;
+            mLocationView.setText("Loading location...");
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.e(TAG, "code " + requestCode);
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 2 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                    Analytics.send(Analytics.PERMISSION, "Location", "Grant");
+                    getLocation();
+                } else {
+                    Analytics.send(Analytics.PERMISSION, "Location", "Deny");
+                    Log.e(TAG, "Location permission denied");
+                }
+            }
+        }
     }
 
     @Override

@@ -19,6 +19,7 @@ public class Analytics {
     public static final String SYNC = "Sync";
     public static final String PUSH = "Push";
     public static final String DEBUG = "Debug";
+    public static final String PERMISSION = "PERMISSION";
 
     public static void send(String category, String action, String label) {
         Tracker t = ((WishlistApplication) WishlistApplication.getAppContext()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
