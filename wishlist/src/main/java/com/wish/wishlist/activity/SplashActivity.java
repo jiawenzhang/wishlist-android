@@ -89,31 +89,30 @@ public class SplashActivity extends AppCompatActivity implements
     public void onMigrationDone() {
         Log.d(TAG, "onMigrationDone");
         dismissProgressDialog();
-        if (getResources().getBoolean(R.bool.enable_account)) {
-            Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup();
-            showLoginOption.read();
-            if (ParseUser.getCurrentUser() == null && showLoginOption.val() == 1) {
-                // User is not logged in and he has not skipped login before
-
-                Intent intent = new Intent(getApplication(), UserLoginActivity.class);
-                intent.putExtra(UserLoginActivity.FROM_SPLASH, true);
-                intent.putExtra(UserLoginActivity.ALLOW_SKIP, true);
-                startActivity(intent);
-            } else {
-                startActivity(new Intent(getApplication(), MyWishActivity.class));
-            }
+        Options.ShowOnBoarding showOnBoarding = new Options.ShowOnBoarding();
+        showOnBoarding.read();
+        if (showOnBoarding.val() == 1) {
+            // user opens the app for the first time, show the on boarding pages
+            startActivity(new Intent(getApplication(), OnBoardingFragmentActivity.class));
         } else {
-            Options.ShowOnBoarding showOnBoarding = new Options.ShowOnBoarding();
-            showOnBoarding.read();
-            if (showOnBoarding.val() == 1) {
-                // user opens the app for the first time, show the on boarding pages
-                startActivity(new Intent(getApplication(), OnBoardingFragmentActivity.class));
+            if (getResources().getBoolean(R.bool.enable_account)) {
+                Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup();
+                showLoginOption.read();
+                if (ParseUser.getCurrentUser() == null && showLoginOption.val() == 1) {
+                    // User is not logged in and he has not skipped login before
+
+                    Intent intent = new Intent(getApplication(), UserLoginActivity.class);
+                    intent.putExtra(UserLoginActivity.FROM_SPLASH, true);
+                    intent.putExtra(UserLoginActivity.ALLOW_SKIP, true);
+                    startActivity(intent);
+                } else {
+                    startActivity(new Intent(getApplication(), MyWishActivity.class));
+                }
             } else {
                 startActivity(new Intent(getApplication(), MyWishActivity.class));
             }
         }
 
         SplashActivity.this.finish();
-
     }
 }

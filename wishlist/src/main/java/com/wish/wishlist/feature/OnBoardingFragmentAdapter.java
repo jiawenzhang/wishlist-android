@@ -4,9 +4,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-class OnBoardingFragmentAdapter extends FragmentPagerAdapter {
-    private int mCount = 3;
+import com.wish.wishlist.R;
+import com.wish.wishlist.WishlistApplication;
 
+class OnBoardingFragmentAdapter extends FragmentPagerAdapter {
     public OnBoardingFragmentAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -18,7 +19,10 @@ class OnBoardingFragmentAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return mCount;
+        if (WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_account)) {
+            return 4;
+        }
+        return 3;
     }
 
     @Override
