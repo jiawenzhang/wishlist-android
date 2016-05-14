@@ -172,6 +172,14 @@ public class MyWishActivity extends WishBaseActivity implements
                         mSwipeRefreshLayout.setRefreshing(false);
                         return;
                     }
+
+                    if (SyncAgent.getInstance().syncing()) {
+                        // animation ends when we finish downloading wish meta. we could still be uploading
+                        // wishes or downloading images, and do not start the animation until sync is done
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        return;
+                    }
+
                     mSwipeRefreshLayout.setRefreshing(true);
                     Log.d(TAG, "refresh");
                     SyncAgent.getInstance().sync();
