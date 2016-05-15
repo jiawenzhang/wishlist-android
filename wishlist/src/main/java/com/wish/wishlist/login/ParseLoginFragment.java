@@ -323,7 +323,9 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
     facebookLoginButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-        loadingStart(false); // Facebook login pop-up already has a spinner
+        // Facebook login pop-up already has a spinner, but we still show a spinner here so when facebook login success
+        // and its login view disappears, we can still have a spinner before entering the app
+        loadingStart(true);
         if (config.isFacebookLoginNeedPublishPermissions()) {
           ParseFacebookUtils.logInWithPublishPermissionsInBackground(getActivity(),
                   config.getFacebookLoginPermissions(), facebookLoginCallbackV4);
