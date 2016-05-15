@@ -133,14 +133,14 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
       onLoginSuccessListener = (ParseOnLoginSuccessListener) activity;
     } else {
       throw new IllegalArgumentException(
-          "Activity must implemement ParseOnLoginSuccessListener");
+          "Activity must implement ParseOnLoginSuccessListener");
     }
 
     if (activity instanceof ParseOnLoadingListener) {
       onLoadingListener = (ParseOnLoadingListener) activity;
     } else {
       throw new IllegalArgumentException(
-          "Activity must implemement ParseOnLoadingListener");
+          "Activity must implement ParseOnLoadingListener");
     }
   }
 

@@ -1,9 +1,3 @@
-[submodule "third-party/facebook-android-sdk"]
-	path = third-party/facebook-android-sdk
-	url = https://github.com/facebook/facebook-android-sdk.git
-[submodule "third-party/Parse"]
-	path = third-party/Parse
-	url = https://github.com/jiawenzhang/Parse.git
 [submodule "third-party/TokenAutoComplete"]
 	path = third-party/TokenAutoComplete
 	url = https://github.com/jiawenzhang/TokenAutoComplete.git

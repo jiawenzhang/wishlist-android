@@ -1,5 +1,3 @@
-include ':third-party:facebook-android-sdk:facebook'
-include ':third-party:Parse'
 include ':third-party:ParseUI-Android:ParseLoginUI'
 include ':third-party:TokenAutoComplete:library'
 include ':third-party:Android-Cloud-TagView-Plus:library'
