@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             >
 
-            <!-- framelayout is for tap effect -->
+            <!-- FrameLayout is for tap effect -->
             <FrameLayout
                 android:id="@+id/imagePhotoDetailFrame"
                 android:layout_width="match_parent"

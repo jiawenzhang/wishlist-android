@@ -54,6 +54,7 @@ import com.wish.wishlist.widgets.ClearableEditText;
 import java.io.File;
 import java.util.ArrayList;
 
+import me.kaede.tagview.OnTagClickListener;
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
 
@@ -229,6 +230,14 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         mTagView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "tagView click");
+                startAddTagIntent();
+            }
+        });
+
+        mTagView.setOnTagClickListener(new OnTagClickListener() {
+            @Override
+            public void onTagClick(Tag tag, int position) {
                 Log.d(TAG, "tag click");
                 startAddTagIntent();
             }
