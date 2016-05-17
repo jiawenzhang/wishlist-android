@@ -1,12 +1,10 @@
 package com.wish.wishlist.fragment;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Gravity;
-import android.widget.Toast;
 
+import com.parse.ParseUser;
 import com.wish.wishlist.util.Analytics;
 
 /**
@@ -36,6 +34,7 @@ public class EmailFragmentDialog extends EditFragmentDialog {
     protected void configEditText() {
         mEditText.setHint("Change email");
         mEditText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        setText(ParseUser.getCurrentUser().getEmail());
     }
 
     public boolean onOK(String text) {

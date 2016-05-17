@@ -59,7 +59,6 @@ public class ProfileActivity extends ActivityBase implements
         EmailFragmentDialog.onEmailChangedListener,
         NameFragmentDialog.onNameChangedListener {
     final static String TAG = "ProfileActivity";
-    private ParseUser mUser;
 
     public static final String IMAGE_URI = "IMAGE_URI";
     private static final int CHOOSE_IMAGE = 1;
@@ -84,8 +83,8 @@ public class ProfileActivity extends ActivityBase implements
         // make toolbar transparent
         mToolbar.getBackground().setAlpha(0);
 
-        mUser = ParseUser.getCurrentUser();
-        if (mUser == null) {
+        final ParseUser user = ParseUser.getCurrentUser();
+        if (user == null) {
             Log.d(TAG, "currentUser null ");
             return;
         }
@@ -164,7 +163,7 @@ public class ProfileActivity extends ActivityBase implements
         FrameLayout profile_email = (FrameLayout) findViewById(R.id.profile_email);
         FrameLayout profile_change_password = (FrameLayout) findViewById(R.id.profile_change_password);
 
-        if (ParseFacebookUtils.isLinked(mUser)) {
+        if (ParseFacebookUtils.isLinked(user)) {
             Log.d(TAG, "user linked to facebook");
             // when user logs in via Facebook, username is an array of characters meaningless to display
             profile_username.setVisibility(View.GONE);
@@ -178,12 +177,12 @@ public class ProfileActivity extends ActivityBase implements
             // verify the email
             profile_email.setVisibility(View.GONE);
             ((TextView) profile_username.findViewById(R.id.title)).setText("Username");
-            ((TextView) profile_username.findViewById(R.id.value)).setText(mUser.getUsername());
+            ((TextView) profile_username.findViewById(R.id.value)).setText(user.getUsername());
         }
 
         ((TextView) profile_name.findViewById(R.id.title)).setText("Name");
         mNameTextView = ((TextView) profile_name.findViewById(R.id.value));
-        mNameTextView.setText(mUser.getString("name"));
+        mNameTextView.setText(user.getString("name"));
 
         profile_name.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
@@ -194,7 +193,7 @@ public class ProfileActivity extends ActivityBase implements
 
         ((TextView) profile_email.findViewById(R.id.title)).setText("Email");
         mEmailTextView = ((TextView) profile_email.findViewById(R.id.value));
-        mEmailTextView.setText(mUser.getEmail());
+        mEmailTextView.setText(user.getEmail());
 
         profile_email.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
@@ -225,7 +224,7 @@ public class ProfileActivity extends ActivityBase implements
                         });
                         mProgressDialog.show();
 
-                        ParseUser.requestPasswordResetInBackground(mUser.getUsername(), new RequestPasswordResetCallback() {
+                        ParseUser.requestPasswordResetInBackground(user.getUsername(), new RequestPasswordResetCallback() {
                             public void done(ParseException e) {
                                 mProgressDialog.dismiss();
                                 if (e == null) {
@@ -262,7 +261,7 @@ public class ProfileActivity extends ActivityBase implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if (mUser != null) {
+        if (ParseUser.getCurrentUser() != null) {
             getMenuInflater().inflate(R.menu.menu_profile, menu);
         }
         return true;
@@ -451,9 +450,10 @@ public class ProfileActivity extends ActivityBase implements
     @Override
     public void onNameChanged(String name) {
         Log.d(TAG, "name changed to: " + name);
-        if (!name.equals(mUser.getString("name"))) {
-            mUser.put("name", name);
-            mUser.saveEventually();
+        ParseUser user = ParseUser.getCurrentUser();
+        if (!name.equals(user.getString("name"))) {
+            user.put("name", name);
+            user.saveEventually();
             mNameTextView.setText(name);
             EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.name));
         }
@@ -462,9 +462,10 @@ public class ProfileActivity extends ActivityBase implements
     @Override
     public void onEmailChanged(String email) {
         Log.d(TAG, "email changed to: " + email);
-        if (!email.equals(mUser.getEmail())) {
-            mUser.setEmail(email);
-            mUser.saveEventually();
+        ParseUser user = ParseUser.getCurrentUser();
+        if (!email.equals(user.getEmail())) {
+            user.setEmail(email);
+            user.saveEventually();
             mEmailTextView.setText(email);
             EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.email));
         }
@@ -473,11 +474,11 @@ public class ProfileActivity extends ActivityBase implements
     @Subscribe
     public void profileChanged(ProfileChangeEvent event) {
         Log.d(TAG, "profileChanged " + event.type.toString());
-        mUser = ParseUser.getCurrentUser();
+        ParseUser user = ParseUser.getCurrentUser();
         if (event.type == ProfileChangeEvent.ProfileChangeType.email) {
-            mEmailTextView.setText(mUser.getEmail());
+            mEmailTextView.setText(user.getEmail());
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.name) {
-            mNameTextView.setText(mUser.getString("name"));
+            mNameTextView.setText(user.getString("name"));
             if (mGeneratedProfileImageView.getVisibility() == View.VISIBLE) {
                 // re-generate default profile image because it is based on name
                 setProfileImage();
@@ -485,8 +486,8 @@ public class ProfileActivity extends ActivityBase implements
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.image) {
             setProfileImage();
         } else if (event.type == ProfileChangeEvent.ProfileChangeType.all) {
-            mEmailTextView.setText(mUser.getEmail());
-            mNameTextView.setText(mUser.getString("name"));
+            mEmailTextView.setText(user.getEmail());
+            mNameTextView.setText(user.getString("name"));
             setProfileImage();
         }
     }

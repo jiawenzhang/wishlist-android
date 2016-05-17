@@ -3,6 +3,7 @@ package com.wish.wishlist.fragment;
 import android.app.Activity;
 import android.util.Log;
 
+import com.parse.ParseUser;
 import com.wish.wishlist.util.Analytics;
 
 /**
@@ -32,6 +33,7 @@ public class NameFragmentDialog extends EditFragmentDialog {
 
     protected void configEditText() {
         mEditText.setHint("Change name");
+        setText(ParseUser.getCurrentUser().getString("name"));
     }
 
     public boolean onOK(String text) {

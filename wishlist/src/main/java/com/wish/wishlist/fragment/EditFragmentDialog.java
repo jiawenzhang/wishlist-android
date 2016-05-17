@@ -26,6 +26,13 @@ public class EditFragmentDialog extends DialogFragment {
 
     protected void configEditText() {}
 
+    protected void setText(String text) {
+        if (text != null) {
+            mEditText.setText(text);
+            mEditText.setSelection(text.length());
+        }
+    }
+
     protected boolean onOK(String text) { return true; }
 
     protected void showError(String error) {

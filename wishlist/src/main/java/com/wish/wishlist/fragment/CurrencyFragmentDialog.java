@@ -1,6 +1,9 @@
 package com.wish.wishlist.fragment;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+
+import com.wish.wishlist.WishlistApplication;
 
 /**
  * Created by jiawen on 15-09-16.
@@ -23,7 +26,11 @@ public class CurrencyFragmentDialog extends EditFragmentDialog {
     }
 
     protected void configEditText() {
+        String currency = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).getString("currency", "");
         mEditText.setHint("Currency symbol");
+        if (!currency.isEmpty()) {
+            setText(currency);
+        }
     }
 
     public boolean onOK(String text) {
