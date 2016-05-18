@@ -33,6 +33,7 @@ import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
+import com.parse.SaveCallback;
 import com.path.android.jobqueue.JobManager;
 import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
@@ -48,6 +49,7 @@ import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ProfileUtil;
+import com.wish.wishlist.util.ScreenOrientation;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -213,6 +215,7 @@ public class ProfileActivity extends ActivityBase implements
                 builder.setMessage(message);
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        ScreenOrientation.lock(ProfileActivity.this);
                         mProgressDialog = new ProgressDialog(ProfileActivity.this);
                         mProgressDialog.setMessage("Sending email...");
                         mProgressDialog.setCancelable(true);
@@ -227,6 +230,7 @@ public class ProfileActivity extends ActivityBase implements
                         ParseUser.requestPasswordResetInBackground(user.getUsername(), new RequestPasswordResetCallback() {
                             public void done(ParseException e) {
                                 mProgressDialog.dismiss();
+                                ScreenOrientation.unlock(ProfileActivity.this);
                                 if (e == null) {
                                     Toast.makeText(ProfileActivity.this, "Email sent", Toast.LENGTH_LONG).show();
                                 } else {
@@ -448,27 +452,77 @@ public class ProfileActivity extends ActivityBase implements
     }
 
     @Override
-    public void onNameChanged(String name) {
-        Log.d(TAG, "name changed to: " + name);
-        ParseUser user = ParseUser.getCurrentUser();
-        if (!name.equals(user.getString("name"))) {
-            user.put("name", name);
-            user.saveEventually();
-            mNameTextView.setText(name);
-            EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.name));
+    public void onNameChanged(final String name) {
+        final ParseUser user = ParseUser.getCurrentUser();
+        final String oldName = user.getString("name");
+        if (name.equals(oldName)) {
+            Log.d(TAG, "same name, do nothing");
+            return;
         }
+
+        if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+            Toast.makeText(ProfileActivity.this, "Failed, check network", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Log.d(TAG, "name changed to: " + name);
+        user.put("name", name);
+
+        showProgressDialog("Updating name...");
+        user.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "name saved success");
+                    mNameTextView.setText(name);
+                    EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.name));
+                } else {
+                    Log.e(TAG, "name save error " + e.toString());
+                    user.put("name", oldName);
+                    Toast.makeText(ProfileActivity.this, "Failed, check network", Toast.LENGTH_LONG).show();
+                }
+                dismissProgressDialog();
+            }
+        });
     }
 
     @Override
-    public void onEmailChanged(String email) {
-        Log.d(TAG, "email changed to: " + email);
-        ParseUser user = ParseUser.getCurrentUser();
-        if (!email.equals(user.getEmail())) {
-            user.setEmail(email);
-            user.saveEventually();
-            mEmailTextView.setText(email);
-            EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.email));
+    public void onEmailChanged(final String email) {
+        final ParseUser user = ParseUser.getCurrentUser();
+        final String oldEmail = user.getEmail();
+        if (email.equals(oldEmail)) {
+            Log.d(TAG, "same email, do nothing");
+            return;
         }
+
+        if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+            Toast.makeText(ProfileActivity.this, "Failed, check network", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Log.d(TAG, "email changed to: " + email);
+        user.setEmail(email);
+
+        showProgressDialog("Updating email...");
+        user.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "email saved success");
+                    mEmailTextView.setText(email);
+                    EventBus.getInstance().post(new ProfileChangeEvent(ProfileChangeEvent.ProfileChangeType.email));
+                } else {
+                    Log.e(TAG, "email save error " + e.toString());
+                    user.setEmail(oldEmail);
+                    if (e.getCode() == ParseException.EMAIL_TAKEN) {
+                        Toast.makeText(ProfileActivity.this, "Failed, email already taken", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(ProfileActivity.this, "Failed, check network", Toast.LENGTH_LONG).show();
+                    }
+                }
+                dismissProgressDialog();
+            }
+        });
     }
 
     @Subscribe
@@ -490,5 +544,18 @@ public class ProfileActivity extends ActivityBase implements
             mNameTextView.setText(user.getString("name"));
             setProfileImage();
         }
+    }
+
+    private void showProgressDialog(final String text) {
+        ScreenOrientation.lock(this);
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(text);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+    }
+
+    private void dismissProgressDialog() {
+        mProgressDialog.dismiss();
+        ScreenOrientation.unlock(this);
     }
 }

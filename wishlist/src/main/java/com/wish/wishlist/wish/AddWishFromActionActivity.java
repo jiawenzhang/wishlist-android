@@ -31,6 +31,7 @@ import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.GetWebItemTask;
+import com.wish.wishlist.util.ScreenOrientation;
 import com.wish.wishlist.util.WebRequest;
 import com.wish.wishlist.util.WebResult;
 
@@ -240,7 +241,7 @@ public class AddWishFromActionActivity extends AddWishActivity
             WebRequest request = new WebRequest();
             request.url = mLink;
             request.getAllImages = false;
-            lockScreenOrientation();
+            ScreenOrientation.lock(this);
 
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setMessage("Loading images");
@@ -408,7 +409,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         WebImage webImage = mWebResult._webImages.get(position);
         mWebPicUrl = webImage.mUrl;
         setWebPic(mWebPicUrl);
-        unlockScreenOrientation();
+        ScreenOrientation.unlock(this);
 
         Analytics.send(Analytics.WISH, "SelectWebImage", mHost);
     }
@@ -424,14 +425,14 @@ public class AddWishFromActionActivity extends AddWishActivity
 
     public void onWebImageCancelled() {
         Log.d(TAG, "onWebImageCancelled");
-        unlockScreenOrientation();
+        ScreenOrientation.unlock(this);
 
         Analytics.send(Analytics.WISH, "CancelWebImage", mLink);
     }
 
     public void onLoadMoreFromStaticHtml() {
         Log.d(TAG, "onLoadMoreFromStaticHtml");
-        lockScreenOrientation();
+        ScreenOrientation.lock(this);
         mProgressDialog.show();
 
         Analytics.send(Analytics.WISH, "LoadMoreFromStaticHtml", mLink);
@@ -455,19 +456,6 @@ public class AddWishFromActionActivity extends AddWishActivity
         request.html = html;
         mGetWebItemTask = new GetWebItemTask(this, this);
         mGetWebItemTask.execute(request);
-    }
-
-    private void lockScreenOrientation() {
-        int currentOrientation = getResources().getConfiguration().orientation;
-        if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
-    }
-
-    private void unlockScreenOrientation() {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 
     private void loadPartialImage(String src) {
@@ -521,7 +509,7 @@ public class AddWishFromActionActivity extends AddWishActivity
             Log.d(TAG, "Got " + result._webImages.size() + " images to choose from");
             showImageDialog(!result._attemptedDynamicHtml);
         } else {
-            unlockScreenOrientation();
+            ScreenOrientation.unlock(this);
             Toast.makeText(this, "No image found", Toast.LENGTH_SHORT).show();
 
             Analytics.send(Analytics.WISH, "NoImageFound", mLink);
