@@ -18,6 +18,7 @@ import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.MigrationTask;
 import com.wish.wishlist.util.Options;
+import com.wish.wishlist.util.ScreenOrientation;
 import com.wish.wishlist.wish.MyWishActivity;
 
 import java.io.File;
@@ -54,6 +55,7 @@ public class SplashActivity extends AppCompatActivity implements
     }
 
     private void showProgressDialog(final String text) {
+        ScreenOrientation.lock(this);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(text);
         mProgressDialog.setCancelable(false);
@@ -61,6 +63,7 @@ public class SplashActivity extends AppCompatActivity implements
     }
 
     protected void dismissProgressDialog() {
+        ScreenOrientation.unlock(this);
         mProgressDialog.dismiss();
     }
 
