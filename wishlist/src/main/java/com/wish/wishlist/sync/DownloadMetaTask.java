@@ -98,6 +98,7 @@ public class DownloadMetaTask {
                                 item.removeImage();
                                 ItemDBManager.deleteItem(item.getId()); // remove from local db
 
+                                mWishMetaChanged = true;
                                 itemDownloadDone();
                                 continue;
                             }
