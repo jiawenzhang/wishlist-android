@@ -2,6 +2,7 @@ package com.wish.wishlist.model;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -180,15 +181,22 @@ public class WishItem implements Parcelable {
         return mPrice;
     }
 
-    public String getPriceAsString() {
+    public String getFormatPriceString() {
         if (mPrice == null) {
             return null;
         } else {
-            DecimalFormat Dec = new DecimalFormat("0.00");
-            String priceStr = (Dec.format(mPrice));
-
-            return priceStr;
+            NumberFormat nf = NumberFormat.getInstance();
+            nf.setMaximumFractionDigits(2);
+            nf.setMinimumFractionDigits(2);
+            return nf.format(mPrice);
         }
+    }
+
+    public String getPriceString() {
+        if (mPrice == null) {
+            return null;
+        }
+        return new DecimalFormat("0.00").format(mPrice);
     }
 
     public static String priceStringWithCurrency(String price) {
@@ -419,7 +427,7 @@ public class WishItem implements Parcelable {
         message += getName() + "\n";
 
         // format the price
-        String priceStr = getPriceAsString();
+        String priceStr = getFormatPriceString();
         if (priceStr != null) {
             message += priceStringWithCurrency(priceStr) + "\n";
         }

@@ -52,6 +52,7 @@ import com.wish.wishlist.util.ProfileUtil;
 import com.wish.wishlist.util.ScreenOrientation;
 
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -158,7 +159,10 @@ public class ProfileActivity extends ActivityBase implements
         if (currency.isEmpty()) {
             currency = "Value";
         }
-        wish_value.setText((int)value + "\n" + currency);
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(0);
+        nf.setMinimumFractionDigits(0);
+        wish_value.setText(nf.format(value) + "\n" + currency);
 
         FrameLayout profile_username = (FrameLayout) findViewById(R.id.profile_username);
         FrameLayout profile_name = (FrameLayout) findViewById(R.id.profile_name);

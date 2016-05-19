@@ -120,7 +120,7 @@ public class WishAdapterGrid extends WishAdapter {
             holder.txtDescription.setVisibility(View.VISIBLE);
         }
 
-        String priceStr = wish.getPriceAsString();
+        String priceStr = wish.getFormatPriceString();
         if (priceStr != null) {
             holder.txtPrice.setText(WishItem.priceStringWithCurrency(priceStr));
             holder.txtPrice.setVisibility(View.VISIBLE);

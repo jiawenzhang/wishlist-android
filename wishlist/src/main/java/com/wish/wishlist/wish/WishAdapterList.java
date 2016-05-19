@@ -101,7 +101,7 @@ public class WishAdapterList extends WishAdapter {
 
         holder.txtName.setText(wish.getName());
 
-        String priceStr = wish.getPriceAsString();
+        String priceStr = wish.getFormatPriceString();
         if (priceStr != null) {
             holder.txtPrice.setText(WishItem.priceStringWithCurrency(priceStr));
             holder.txtPrice.setVisibility(View.VISIBLE);

@@ -116,7 +116,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         mDateView.setText(dateTimeStrNew);
 
         // format the price
-        String priceStr = mItem.getPriceAsString();
+        String priceStr = mItem.getFormatPriceString();
         if (priceStr != null) {
             mPriceView.setText(WishItem.priceStringWithCurrency(priceStr));
             mPriceView.setVisibility(View.VISIBLE);

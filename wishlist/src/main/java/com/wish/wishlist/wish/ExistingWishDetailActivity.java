@@ -149,9 +149,9 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         mDescriptionView.setVisibility(View.VISIBLE);
         mPriceView.setVisibility(View.VISIBLE);
 
-        // price is shown with currency, remove the currency for editing mode
+        // price is shown with currency and number format, remove the currency and format for editing mode
         if (mItem != null) {
-            String priceStr = mItem.getPriceAsString();
+            String priceStr = mItem.getPriceString();
             if (priceStr != null) {
                 mPriceView.setText(priceStr);
             }

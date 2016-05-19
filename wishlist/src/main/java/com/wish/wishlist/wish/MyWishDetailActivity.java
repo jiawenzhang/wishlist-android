@@ -52,6 +52,7 @@ import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.widgets.ClearableEditText;
 
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import me.kaede.tagview.OnTagClickListener;
@@ -389,7 +390,14 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         }
 
         String priceString = mPriceView.getText().toString().trim();
-        Double price = priceString.isEmpty() ? null : Double.valueOf(mPriceView.getText().toString().trim());
+        Double price;
+        try {
+            price = NumberFormat.getInstance().parse(priceString).doubleValue();
+        } catch (java.text.ParseException e) {
+            Log.e(TAG, e.toString());
+            price = null;
+        }
+
         int complete = mCompleteCheckBox.isChecked() ? 1 : 0;
         //int access = mPrivateCheckBox.isChecked() ? WishItem.PRIVATE : WishItem.PUBLIC;
         int access = WishItem.PUBLIC;

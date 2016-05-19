@@ -548,7 +548,7 @@ public class FacebookPostActivity extends Activity {
         //wish.setProperty("image", "http://example.com/cooking-app/images/buffalo-tacos.png");
         //wish.setProperty("url", "https://example.com/cooking-app/meal/Buffalo-Tacos.html");
 
-        String priceStr = _wishItem.getPriceAsString();
+        String priceStr = _wishItem.getFormatPriceString();
         String priceWithCurrency = null;
         if (priceStr != null) {
             priceWithCurrency = _wishItem.priceStringWithCurrency(priceStr);
