@@ -280,8 +280,23 @@ public class WishItem implements Parcelable {
     }
 
     public String getUpdatedTimeStr() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return sdf.format(new Date(mUpdatedTime));
+        long diffMSecs = System.currentTimeMillis() - mUpdatedTime;
+        long diffHours = diffMSecs / (60 * 60 * 1000);
+        long diffMins =  diffMSecs / (60 * 1000);
+
+        String updatedTimeStr;
+        if (diffHours >= 24) {
+            updatedTimeStr = new SimpleDateFormat("MMM dd, yyyy").format(new Date(mUpdatedTime));
+        } else if (diffHours > 1) {
+            updatedTimeStr = Long.toString(diffHours) + " hours ago";
+        } else if (diffHours == 1) {
+            updatedTimeStr = Long.toString(diffHours) + " hour ago";
+        } else if (diffMins > 1) {
+            updatedTimeStr = Long.toString(diffMins) + " minutes ago";
+        } else {
+            updatedTimeStr = "1 minute ago";
+        }
+        return updatedTimeStr;
     }
 
     public String getDesc() {

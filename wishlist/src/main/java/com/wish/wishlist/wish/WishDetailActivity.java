@@ -30,7 +30,6 @@ import com.wish.wishlist.activity.ActivityBase;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
-import com.wish.wishlist.util.DateTimeFormatter;
 import com.wish.wishlist.social.ShareHelper;
 import com.wish.wishlist.widgets.ClearableEditText;
 
@@ -104,16 +103,13 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
             mCompleteInnerLayout.setVisibility(View.GONE);
         }
 
-        String dateTimeStr = mItem.getUpdatedTimeStr();
-        String dateTimeStrNew = DateTimeFormatter.getInstance().getDateTimeString(dateTimeStr);
+        mDateView.setText(mItem.getUpdatedTimeStr());
 
         mNameView.setText(mItem.getName());
         if (mItem.getComplete() == 1) {
             final ImageView completeImage = (ImageView) findViewById(R.id.completeImageView);
             completeImage.setVisibility(View.VISIBLE);
         }
-
-        mDateView.setText(dateTimeStrNew);
 
         // format the price
         String priceStr = mItem.getFormatPriceString();
