@@ -6,6 +6,7 @@ package com.wish.wishlist.tag;
 
 import android.content.Intent;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class AddTagFromEditActivity extends AddTagActivity {
     public final static String TAGS = "tags";
@@ -29,6 +30,7 @@ public class AddTagFromEditActivity extends AddTagActivity {
         }
         ArrayList<String> tags = new ArrayList<String>();
         tags.addAll(mCurrentTags);
+        Collections.sort(tags);
 
         //send the tags back to the EditItemInfo activity and close this activity
         Intent resultIntent = new Intent();

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /***
  * TagDBManager provides access to operations on data in ItemCategory table
@@ -90,6 +91,7 @@ public class TagItemDBManager extends DBManager {
             return new ArrayList<>();
         }
         ArrayList<String> tags = TagDBManager.instance().getTagsByIds(ids.toArray(new String[ids.size()]));
+        Collections.sort(tags);
         return tags;
     }
 
