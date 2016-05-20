@@ -2,6 +2,8 @@ package com.wish.wishlist.job;
 
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.path.android.jobqueue.Job;
@@ -44,40 +46,49 @@ public class GetWishAddressJob extends Job {
     @Override
     public void onRun() throws Throwable {
         Log.d(TAG, "onRun");
-        // Job logic goes here, upload the profile image to Parse
-        WishItem item = WishItemManager.getInstance().getItemById(mItemId);
-        if (item == null || item.getDeleted()) {
-            return;
-        }
+        // We are in an non-main thread, get a handler that can be used to post task to the main thread
+        // db access, sync is single-threaded
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                WishItem item = WishItemManager.getInstance().getItemById(mItemId);
+                if (item == null || item.getDeleted()) {
+                    return;
+                }
 
-        Double lat = item.getLatitude();
-        Double lng = item.getLongitude();
-        String address = null;
+                Double lat = item.getLatitude();
+                Double lng = item.getLongitude();
+                String address = null;
 
-        //we have a location by gps, but don't have an address
-        Geocoder gc = new Geocoder(WishlistApplication.getAppContext(), Locale.getDefault());
-        try {
-            List<Address> addresses = gc.getFromLocation(lat, lng, 1);
-            StringBuilder sb = new StringBuilder();
-            if (addresses.size() > 0) {
-                Address add = addresses.get(0);
-                for (int k = 0; k < add.getMaxAddressLineIndex()+1; k++)
-                    sb.append(add.getAddressLine(k)).append("\n");
+                //we have a location by gps, but don't have an address
+                Geocoder gc = new Geocoder(WishlistApplication.getAppContext(), Locale.getDefault());
+                try {
+                    List<Address> addresses = gc.getFromLocation(lat, lng, 1);
+                    StringBuilder sb = new StringBuilder();
+                    if (addresses.size() > 0) {
+                        Address add = addresses.get(0);
+                        for (int k = 0; k < add.getMaxAddressLineIndex()+1; k++)
+                            sb.append(add.getAddressLine(k)).append("\n");
+                    }
+                    address = sb.toString();
+                    address = address.isEmpty()? null : address;
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
+
+                Log.d(TAG, "got address " + address);
+                if (!StringUtil.compare(item.getAddress(), address)) {
+                    item.setAddress(address);
+                    item.setUpdatedTime(System.currentTimeMillis());
+                    item.save();
+                    Log.d(TAG, "post");
+                    EventBus.getInstance().post(new MyWishChangeEvent());
+                }
             }
-            address = sb.toString();
-            address = address.isEmpty()? null : address;
-        } catch (IOException e) {
-            Log.e(TAG, e.toString());
-        }
+        };
 
-        Log.d(TAG, "got address " + address);
-        if (!StringUtil.compare(item.getAddress(), address)) {
-            item.setAddress(address);
-            item.setUpdatedTime(System.currentTimeMillis());
-            item.save();
-            Log.d(TAG, "post");
-            EventBus.getInstance().post(new MyWishChangeEvent());
-        }
+        mainHandler.post(runnable);
     }
 
     @Override
