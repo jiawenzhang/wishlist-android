@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.parse.ParseInstallation;
 import com.parse.ParsePushBroadcastReceiver;
+import com.parse.ParseUser;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.friend.FriendManager;
 import com.wish.wishlist.friend.FriendRequestActivity;
@@ -42,6 +43,11 @@ public class PushBroadcastReceiver extends ParsePushBroadcastReceiver {
     @Override
     protected void onPushReceive(Context context, Intent intent) {
         Log.e(TAG, "onPushReceive");
+        if (ParseUser.getCurrentUser() == null) {
+            Log.e(TAG, "use not logged in, ignore push");
+            return;
+        }
+
         try {
             JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
             Log.d(TAG, "json: " + json);

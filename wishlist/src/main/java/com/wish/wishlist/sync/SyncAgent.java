@@ -290,6 +290,11 @@ public class SyncAgent implements
 
     // Fixme: the following functions shouldn't be here
     public void updateProfileFromParse() {
+        if (ParseUser.getCurrentUser() == null) {
+            Log.e(TAG, "user not logged in, cannot update profile");
+            return;
+        }
+
         ParseUser.getCurrentUser().fetchInBackground(new GetCallback<ParseObject>() {
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
