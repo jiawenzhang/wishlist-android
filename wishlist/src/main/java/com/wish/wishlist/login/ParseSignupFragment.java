@@ -87,8 +87,8 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
       minPasswordLength = config.getParseSignupMinPasswordLength();
     }
 
-    String username = (String) args.getString(USERNAME);
-    String password = (String) args.getString(PASSWORD);
+    String username = args.getString(USERNAME);
+    String password = args.getString(PASSWORD);
 
     View v = inflater.inflate(R.layout.signup_fragment,
         parent, false);
@@ -216,22 +216,19 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
             }
           } else {
             loadingFinish();
-            if (e != null) {
-              debugLog(getString(R.string.com_parse_ui_login_warning_parse_signup_failed) +
-                  e.toString());
-              switch (e.getCode()) {
-                case ParseException.INVALID_EMAIL_ADDRESS:
-                  showToast(R.string.com_parse_ui_invalid_email_toast);
-                  break;
-                case ParseException.USERNAME_TAKEN:
-                  showToast(R.string.com_parse_ui_username_taken_toast);
-                  break;
-                case ParseException.EMAIL_TAKEN:
-                  showToast(R.string.com_parse_ui_email_taken_toast);
-                  break;
-                default:
-                  showToast(R.string.com_parse_ui_signup_failed_unknown_toast);
-              }
+            debugLog(getString(R.string.com_parse_ui_login_warning_parse_signup_failed) + e.toString());
+            switch (e.getCode()) {
+              case ParseException.INVALID_EMAIL_ADDRESS:
+                showToast(R.string.com_parse_ui_invalid_email_toast);
+                break;
+              case ParseException.USERNAME_TAKEN:
+                showToast(R.string.com_parse_ui_username_taken_toast);
+                break;
+              case ParseException.EMAIL_TAKEN:
+                showToast(R.string.com_parse_ui_email_taken_toast);
+                break;
+              default:
+                showToast(R.string.com_parse_ui_signup_failed_unknown_toast);
             }
           }
         }
@@ -258,7 +255,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
         if (e == null) {
           onLoginSuccessListener.onVerifyEmail(message, true);
         } else {
-          showToast("Fail to sign up, please try again");
+          showToast(R.string.com_parse_ui_signup_failed_unknown_toast);
           Log.e(TAG, e.toString());
         }
       }

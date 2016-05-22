@@ -132,7 +132,7 @@ public class ParseLoginActivity extends FragmentActivity implements
    */
   @Override
   public void onSignUpClicked(String username, String password) {
-    // Show the signup form, but keep the transaction on the back stack
+    // Show the sign up form, but keep the transaction on the back stack
     // so that if the user clicks the back button, they are brought back
     // to the login form.
     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -194,7 +194,8 @@ public class ParseLoginActivity extends FragmentActivity implements
       builder.setView(v);
       builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int id) {
-          onLoginSkip();
+          // pop the sign up fragment to show login fragment again
+          getSupportFragmentManager().popBackStack();
         }
       });
     } else {
