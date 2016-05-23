@@ -102,8 +102,8 @@ public class UploadTask {
                     wishObject.put(WishItem.PARSE_KEY_IMG_META_JSON, imgMetaJSON);
                     uploadParseObject(wishObject, item.getId(), isNew);
                 } else {
-                    Log.e(TAG, "save ParseFile failed " + e.toString());
-                    uploadAllDone(false);
+                    Log.e(TAG, "upload ParseFile failed " + e.toString());
+                    itemUploadDone();
                 }
             }
         });
@@ -136,8 +136,9 @@ public class UploadTask {
                     item.saveToLocal();
                     itemUploadDone();
                 } else {
-                    Log.e(TAG, "save failed " + e.toString());
-                    uploadAllDone(false);
+                    Log.e(TAG, "upload wish meta failed " + e.toString());
+                    // we simply skip uploading the item in this sync and attempt to upload it again on next sync
+                    itemUploadDone();
                 }
             }
         });
@@ -198,17 +199,8 @@ public class UploadTask {
                         uploadParseObject(wishObject, item.getId(), false);
                     }
                 } else {
-                    if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
-                        // this can happen when user creates some wishes on account A, synced them to server, and then
-                        // logout and login with account B. the wishes created in A exists in local device but does
-                        // not exist on the server under account B. so upload these wishes to server under account B
-                        // the local wish's object_id will be replaced with the object_id under account B
-                        Log.e(TAG, "does not find item " + item.getName() + " on server" );
-                        addToParse(item);
-                        return;
-                    }
-                    Log.e(TAG, "update failed " + e.toString() + " object_id " + item.getObjectId());
-                    uploadAllDone(false);
+                    Log.e(TAG, "update wish meta failed " + e.toString() + " object_id " + item.getObjectId());
+                    itemUploadDone();
                 }
             }
         });
