@@ -80,7 +80,8 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
 
     @Override
     public void onSyncDone(boolean success) {
-        Log.e(TAG, "onSyncDone");
+        Log.e(TAG, "onSyncDone, success: " + success);
+        assertTrue(success);
         mSyncDoneSignal.countDown();
     }
 
