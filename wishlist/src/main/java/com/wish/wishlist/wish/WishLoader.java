@@ -6,7 +6,6 @@ import android.util.Log;
 import com.parse.FindCallback;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.model.WishItem;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public class WishLoader {
     public void fetchWishes(final String friendId) {
         mFriendId = friendId;
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
-        query.whereEqualTo(WishItem.PARSE_KEY_OWNDER_ID, friendId);
+        query.whereEqualTo(WishItem.PARSE_KEY_OWNER_ID, friendId);
         query.whereEqualTo(WishItem.PARSE_KEY_DELETED, false);
         query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         query.findInBackground(new FindCallback<ParseObject>() {

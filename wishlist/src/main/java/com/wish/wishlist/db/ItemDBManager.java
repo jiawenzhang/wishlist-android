@@ -16,10 +16,12 @@ import android.util.Log;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.util.Owner;
 
 public class ItemDBManager extends DBManager {
 	public static final String KEY_ID = "_id";
 	public static final String KEY_OBJECT_ID = "object_id";
+	public static final String KEY_OWNER_ID = "owner_id";
 	public static final String KEY_ACCESS = "access";
 	public static final String KEY_STORE_ID = "store_id";
 	public static final String KEY_STORE_NAME = "store_name";
@@ -53,6 +55,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public long addItem(
 			String object_id,
+			String owner_id,
 			int access,
 			String store_name,
 			String name,
@@ -74,6 +77,7 @@ public class ItemDBManager extends DBManager {
 		ContentValues initialValues = new ContentValues();
 
 		initialValues.put(KEY_OBJECT_ID, object_id);
+		initialValues.put(KEY_OWNER_ID, owner_id);
 		initialValues.put(KEY_ACCESS, access);
 		initialValues.put(KEY_STORE_NAME, store_name);
 		initialValues.put(KEY_NAME, name);
@@ -92,8 +96,7 @@ public class ItemDBManager extends DBManager {
 		initialValues.put(KEY_SYNCED_TO_SERVER, synced_to_server);
 		initialValues.put(KEY_DOWNLOAD_IMG, download_img);
 
-		long id = DBAdapter.getInstance().db().insert(DB_TABLE, null, initialValues);
-		return id;
+		return DBAdapter.getInstance().db().insert(DB_TABLE, null, initialValues);
 	}
 
 	/**
@@ -102,6 +105,7 @@ public class ItemDBManager extends DBManager {
 	public void updateItem(
 			long _id,
 			String object_id,
+			String owner_id,
 			int access,
 			String store_name,
 			String name,
@@ -123,6 +127,7 @@ public class ItemDBManager extends DBManager {
 		ContentValues initialValues = new ContentValues();
 
         initialValues.put(KEY_OBJECT_ID, object_id);
+		initialValues.put(KEY_OWNER_ID, owner_id);
 		initialValues.put(KEY_ACCESS, access);
 		initialValues.put(KEY_STORE_NAME, store_name);
 		initialValues.put(KEY_NAME, name);
@@ -156,9 +161,9 @@ public class ItemDBManager extends DBManager {
 		} catch (SQLException e) {
 			Log.e("Error deleting item", e.toString());
 		}
-        TagItemDBManager.instance().Remove_tags_by_item(_id);
 
-        //delete tags associated with this item
+		//delete tags associated with this item
+        TagItemDBManager.instance().Remove_tags_by_item(_id);
 	}
 
 	/** Returns the number of Items with image*/
@@ -166,7 +171,7 @@ public class ItemDBManager extends DBManager {
 		Cursor c = null;
 		try {
 			c = DBAdapter.getInstance().db().rawQuery(
-					"SELECT count(*) FROM Item WHERE deleted=0 AND fullsize_picture IS NOT NULL", null);
+					"SELECT count(*) FROM Item WHERE deleted=0 AND fullsize_picture IS NOT NULL AND" + ownerQuery(), null);
 			if (0 >= c.getCount()) {
 				return 0;
 			}
@@ -177,6 +182,7 @@ public class ItemDBManager extends DBManager {
 				try {
 					c.close();
 				} catch (SQLException e) {
+					Log.e(TAG, e.toString());
 				}
 			}
 		}
@@ -187,7 +193,7 @@ public class ItemDBManager extends DBManager {
 		Cursor c = null;
 		try {
 			c = DBAdapter.getInstance().db().rawQuery(
-					"SELECT count(*) FROM Item WHERE deleted=0", null);
+					"SELECT count(*) FROM Item WHERE deleted=0 AND" + ownerQuery(), null);
 			if (0 >= c.getCount()) {
 				return 0;
 			}
@@ -198,6 +204,7 @@ public class ItemDBManager extends DBManager {
 				try {
 					c.close();
 				} catch (SQLException e) {
+					Log.e(TAG, e.toString());
 				}
 			}
 		}
@@ -208,7 +215,7 @@ public class ItemDBManager extends DBManager {
 		Cursor c = null;
 		try {
 			c = DBAdapter.getInstance().db().rawQuery(
-					"SELECT count(*) FROM Item WHERE deleted=0 AND + " + KEY_COMPLETE + "=1", null);
+					"SELECT count(*) FROM Item WHERE deleted=0 AND + " + KEY_COMPLETE + "=1 AND" + ownerQuery(), null);
 			if (0 >= c.getCount()) {
 				return 0;
 			}
@@ -219,6 +226,7 @@ public class ItemDBManager extends DBManager {
 				try {
 					c.close();
 				} catch (SQLException e) {
+					Log.e(TAG, e.toString());
 				}
 			}
 		}
@@ -229,7 +237,7 @@ public class ItemDBManager extends DBManager {
 		Cursor c = null;
 		try {
 			c = DBAdapter.getInstance().db().rawQuery(
-					"SELECT sum(price) FROM Item WHERE deleted=0", null);
+					"SELECT sum(price) FROM Item WHERE deleted=0 AND" + ownerQuery(), null);
 			if (0 >= c.getCount()) {
 				return 0;
 			}
@@ -240,26 +248,13 @@ public class ItemDBManager extends DBManager {
 				try {
 					c.close();
 				} catch (SQLException e) {
+					Log.e(TAG, e.toString());
 				}
 			}
 		}
 	}
 
 	public static class ItemsCursor extends SQLiteCursor {
-		private static final String QUERY = "SELECT " +
-                KEY_ID + ", " +
-                KEY_NAME + ", " +
-				KEY_STORE_NAME + ", " +
-                KEY_DESCRIPTION + ", " +
-                KEY_UPDATED_TIME + ", " +
-                KEY_STORE_ID + ", " +
-				KEY_IMG_META_JSON + ", " +
-                KEY_FULLSIZE_PHOTO_PATH + ", " +
-                KEY_PRICE + ", " +
-                KEY_ADDRESS + ", " +
-                KEY_PRIORITY + ", " +
-                "FROM " + DB_TABLE + " ORDER_BY ";
-
 		private ItemsCursor(SQLiteDatabase db, SQLiteCursorDriver driver,
 				String editTable, SQLiteQuery query) {
 			super(db, driver, editTable, query);
@@ -310,7 +305,7 @@ public class ItemDBManager extends DBManager {
 			sortOption = "LOWER(" + KEY_NAME + ")";
 
 		}
-        sql = "SELECT * FROM Item " + WHERE + " ORDER BY " + sortOption;
+        sql = "SELECT * FROM Item " + WHERE + " AND" + ownerQuery() + " ORDER BY " + sortOption;
 
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
@@ -381,7 +376,7 @@ public class ItemDBManager extends DBManager {
 	 */
 	public ItemsCursor searchItems(String query, String sortOption) {
 		String sql = String.format("SELECT * FROM Item "
-				+ "WHERE item_name LIKE '%%%s%%' AND deleted = 0 " + "ORDER BY " + sortOption, query);
+				+ "WHERE item_name LIKE '%%%s%%' AND deleted = 0 AND" + ownerQuery() + " ORDER BY " + sortOption, query);
 		
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
@@ -398,7 +393,7 @@ public class ItemDBManager extends DBManager {
 	 * @return double[2] with [0] the latitude, [1] the longitude
 	 */
 
-	public long getlocationIdbyItemId(long _itemId){
+	public long getLocationIdByItemId(long _itemId){
 		Cursor locationC = getItemLocationCursor(_itemId);
 		if(locationC != null){
 			return locationC.getLong(locationC.
@@ -410,7 +405,8 @@ public class ItemDBManager extends DBManager {
 	static public ArrayList<Long> getItemIdsToDownloadImg() {
 		String sql = "SELECT _id FROM Item where " +
 				KEY_DELETED + "=0 AND " +
-				KEY_DOWNLOAD_IMG + "=1";
+				KEY_DOWNLOAD_IMG + "=1 AND" +
+				ownerQuery();
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
@@ -428,7 +424,7 @@ public class ItemDBManager extends DBManager {
 	}
 
 	public ArrayList<Long> getAllItemIds() {
-		String sql = "SELECT _id FROM Item";
+		String sql = "SELECT _id FROM Item where" + ownerQuery();
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
@@ -446,7 +442,7 @@ public class ItemDBManager extends DBManager {
 	}
 
 	public ArrayList<Long> getItemsWithLocation(){
-		String sql = "SELECT _id, latitude, longitude FROM Item where deleted = 0";
+		String sql = "SELECT _id, latitude, longitude FROM Item where deleted = 0 AND" + ownerQuery();
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(
 				new ItemsCursor.Factory(), sql, null, null);
@@ -472,7 +468,7 @@ public class ItemDBManager extends DBManager {
     public ArrayList<Long> getItemsSinceLastSynced()
     {
 		long last_synced_time = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE).getLong("last_synced_time", 0);
-        String sql = String.format(Locale.US, "SELECT _id FROM Item WHERE updated_time > '%d'", last_synced_time);
+        String sql = String.format(Locale.US, "SELECT _id FROM Item WHERE updated_time > '%d'" , last_synced_time) + " AND" + ownerQuery();
         SQLiteDatabase d = DBAdapter.getInstance().db();
         ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(new ItemsCursor.Factory(), sql, null, null);
 
@@ -490,7 +486,7 @@ public class ItemDBManager extends DBManager {
 
 	public ArrayList<Long> getItemsNotSyncedToServer()
 	{
-		String sql = "SELECT _id FROM Item WHERE synced_to_server = 0";
+		String sql = "SELECT _id FROM Item WHERE synced_to_server=0 AND" + ownerQuery();
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor c = (ItemsCursor) d.rawQueryWithFactory(new ItemsCursor.Factory(), sql, null, null);
 
@@ -556,5 +552,26 @@ public class ItemDBManager extends DBManager {
 		}
 
 		return locationC;
+	}
+
+	public static void migrateOwner() {
+		if (Owner.id() == null) {
+			Log.e(TAG, "owner_id null!");
+			return;
+		}
+
+		String sql = String.format("UPDATE Item SET owner_id='%s' WHERE owner_id IS NULL", Owner.id());
+		try {
+			DBAdapter.getInstance().db().execSQL(sql);
+		} catch (SQLException e) {
+			Log.e(TAG, e.toString());
+		}
+	}
+
+	private static String ownerQuery() {
+		if (Owner.id() == null) {
+			return " owner_id IS NULL";
+		}
+		return String.format(" owner_id='%s'", Owner.id());
 	}
 }

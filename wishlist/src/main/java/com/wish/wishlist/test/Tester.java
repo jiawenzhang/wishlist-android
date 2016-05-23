@@ -13,6 +13,7 @@ import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.Owner;
 import com.wish.wishlist.wish.ImgMeta;
 import com.wish.wishlist.wish.ImgMetaArray;
 import com.wish.wishlist.wish.WishImageDownloader;
@@ -163,7 +164,8 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
 
         return new WishItem(
                 -1,
-                "", // object_id
+                null, // object_id
+                Owner.id(),
                 randomAccess(),
                 randomStoreName(),
                 randomName(),

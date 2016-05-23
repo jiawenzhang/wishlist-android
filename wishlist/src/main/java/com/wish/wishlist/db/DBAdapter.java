@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.Owner;
 
 /***
  * The DBAdapter class only gets called when the app first starts 
@@ -20,7 +21,7 @@ public class DBAdapter {
     private static final String TAG = "DBAdapter";
     private static final boolean demo = false;
     private static final String DB_NAME = "WishList";
-    public static final int DB_VERSION = 7;
+    public static final int DB_VERSION = 8;
 
     private static DBAdapter instance = null;
     public static DBAdapter getInstance() {
@@ -134,9 +135,21 @@ public class DBAdapter {
             }
         }
     }
-            , new Patch() {//db version 7, 1.2.7 -> ?
+            , new Patch() {//db version 7, 1.2.7 ->1.2.8 ?
         public void apply(SQLiteDatabase db) {
             DBMigrationTo_7.run(db);
+        }
+    }
+
+            , new Patch() {//db version 8, 1.2.9 -> 1.2.10
+        public void apply(SQLiteDatabase db) {
+            // add wish owner_id column in the Item table
+            // support switching accounts
+            String sql = "ALTER TABLE "
+                    + ItemDBManager.DB_TABLE
+                    + " ADD COLUMN " + ItemDBManager.KEY_OWNER_ID + " TEXT ";
+
+            db.execSQL(sql);
         }
     }
     };
@@ -146,6 +159,7 @@ public class DBAdapter {
             + ItemDBManager.DB_TABLE + " ("
             + ItemDBManager.KEY_ID			+ " INTEGER PRIMARY KEY, "
             + ItemDBManager.KEY_OBJECT_ID	+ " TEXT, "
+            + ItemDBManager.KEY_OWNER_ID	+ " TEXT, "
             + ItemDBManager.KEY_ACCESS	    + " INTEGER NOT NULL DEFAULT(0), " // default to PUBLIC
             + ItemDBManager.KEY_STORE_ID 	+ " INTEGER, "
             + ItemDBManager.KEY_STORE_NAME + " TEXT, "
@@ -215,7 +229,8 @@ public class DBAdapter {
             if (demo) {
                 ItemDBManager mItemDBManager = new ItemDBManager();
                 mItemDBManager.addItem(
-                        "",
+                        null,
+                        Owner.id(),
                         WishItem.PUBLIC,
                         "Apple Store",
                         "iPad mini",
@@ -236,7 +251,8 @@ public class DBAdapter {
                         false);
 
                 mItemDBManager.addItem(
-                        "",
+                        null,
+                        Owner.id(),
                         WishItem.PUBLIC,
                         "Coach store",
                         "Leather bag",
@@ -257,7 +273,8 @@ public class DBAdapter {
                         false);
 
                 mItemDBManager.addItem(
-                        "",
+                        null,
+                        Owner.id(),
                         WishItem.PUBLIC,
                         "Tiffany",
                         "Starfish necklace",
@@ -278,7 +295,8 @@ public class DBAdapter {
                         false);
 
                 mItemDBManager.addItem(
-                        "",
+                        null,
+                        Owner.id(),
                         WishItem.PUBLIC,
                         "Bay Company",
                         "High hel",
@@ -299,7 +317,8 @@ public class DBAdapter {
                         false);
 
                 mItemDBManager.addItem(
-                        "",
+                        null,
+                        Owner.id(),
                         WishItem.PUBLIC,
                         "Bay Inc.",
                         "Earring",
@@ -320,7 +339,8 @@ public class DBAdapter {
                         false);
 
                 mItemDBManager.addItem(
-                        "",
+                        null,
+                        Owner.id(),
                         WishItem.PUBLIC,
                         "Indigo",
                         "Wooden lantern",

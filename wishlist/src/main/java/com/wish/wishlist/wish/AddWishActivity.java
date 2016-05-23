@@ -30,6 +30,7 @@ import com.wish.wishlist.job.GetWishAddressJob;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.util.Owner;
 import com.wish.wishlist.util.PositionManager;
 
 import java.io.File;
@@ -226,6 +227,7 @@ public class AddWishActivity extends MyWishDetailActivity
         return new WishItem(
                 -1,
                 null,
+                Owner.id(),
                 input.mAccess,
                 input.mStore,
                 input.mName,

@@ -179,7 +179,7 @@ public class SyncAgent implements
         }
 
         if (ParseUser.getCurrentUser() == null) {
-            Log.d(TAG, "user not login, sync is disabled ");
+            Log.e(TAG, "user not login, sync is disabled ");
             return;
         }
 

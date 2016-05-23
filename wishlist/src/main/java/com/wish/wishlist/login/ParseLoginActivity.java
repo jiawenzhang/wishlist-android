@@ -42,6 +42,7 @@ import android.widget.TextView;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.wish.wishlist.R;
+import com.wish.wishlist.db.ItemDBManager;
 
 import static com.wish.wishlist.R.style.AppCompatAlertDialogStyle;
 
@@ -172,8 +173,10 @@ public class ParseLoginActivity extends FragmentActivity implements
   public void onLoginSuccess() {
     // This default implementation returns to the parent activity with
     // RESULT_OK.
-    // You can change this implementation if you want a different behavior.
     setResult(RESULT_OK);
+
+    // Convert all wishes with null owner_id to the wishes owned by the current logged in user's
+    ItemDBManager.migrateOwner();
     finish();
   }
 

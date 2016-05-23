@@ -39,6 +39,7 @@ public class WishItem implements Parcelable {
 
     private long mId = -1;
     private String mObjectId;
+    private String mOwnerId;
     private int mAccess = PUBLIC;
     private String mStoreName;
     private String mName;
@@ -58,7 +59,7 @@ public class WishItem implements Parcelable {
     private boolean mSyncedToServer;
     private boolean mDownloadImg;
 
-    public final static String PARSE_KEY_OWNDER_ID = "ownerId";
+    public final static String PARSE_KEY_OWNER_ID = "ownerId";
     public final static String PARSE_KEY_TAGS = "tags";
     public final static String PARSE_KEY_IMAGES = "images";
     public static final String PARSE_KEY_ACCESS = "access";
@@ -78,6 +79,7 @@ public class WishItem implements Parcelable {
     public WishItem(
             long itemId,
             String object_id,
+            String owner_id,
             int access,
             String storeName,
             String name,
@@ -97,6 +99,7 @@ public class WishItem implements Parcelable {
             boolean download_img) {
         mId = itemId;
         mObjectId = object_id;
+        mOwnerId = owner_id;
         mAccess = access;
         mFullsizePicPath = fullsizePicPath;
         mPrice = price;
@@ -132,6 +135,13 @@ public class WishItem implements Parcelable {
     }
     public void setObjectId(final String object_id) {
         mObjectId = object_id;
+    }
+
+    public String getOwnerId() {
+        return mOwnerId;
+    }
+    public void setOwnerId(final String owner_id) {
+        mOwnerId = owner_id;
     }
 
     public int getAccess() {
@@ -481,6 +491,7 @@ public class WishItem implements Parcelable {
         if (mId == -1) { // new item
             mId = manager.addItem(
                     mObjectId,
+                    mOwnerId,
                     mAccess,
                     mStoreName,
                     mName,
@@ -509,6 +520,7 @@ public class WishItem implements Parcelable {
         manager.updateItem(
                 mId,
                 mObjectId,
+                mOwnerId,
                 mAccess,
                 mStoreName,
                 mName,
@@ -538,6 +550,7 @@ public class WishItem implements Parcelable {
         return new WishItem(
                 item_id,
                 wishObject.getObjectId(),
+                wishObject.getString(WishItem.PARSE_KEY_OWNER_ID),
                 wishObject.getInt(WishItem.PARSE_KEY_ACCESS),
                 wishObject.getString(WishItem.PARSE_KEY_STORE_NAME),
                 wishObject.getString(WishItem.PARSE_KEY_NAME),
@@ -560,7 +573,7 @@ public class WishItem implements Parcelable {
     public static void toParseObject(final WishItem item, ParseObject wishObject) {
         final ParseUser user = ParseUser.getCurrentUser();
         if (user != null) {// user here should never be null
-            wishObject.put(WishItem.PARSE_KEY_OWNDER_ID, user.getObjectId());
+            wishObject.put(WishItem.PARSE_KEY_OWNER_ID, user.getObjectId());
         }
 
         wishObject.put(WishItem.PARSE_KEY_ACCESS, item.getAccess());
@@ -638,6 +651,7 @@ public class WishItem implements Parcelable {
 
         return (other.getId() == getId() &&
                 StringUtil.compare(other.getObjectId(), getObjectId()) &&
+                StringUtil.compare(other.getOwnerId(), getOwnerId()) &&
                 StringUtil.compare(other.getName(), getName()) &&
                 StringUtil.compare(other.getDesc(), getDesc()) &&
                 StringUtil.compare(other.getImgMetaJSON(), getImgMetaJSON()) &&
@@ -667,6 +681,7 @@ public class WishItem implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeLong(mId);
         out.writeString(mObjectId);
+        out.writeString(mOwnerId);
         out.writeInt(mAccess);
         out.writeString(mStoreName);
         out.writeString(mName);
@@ -701,6 +716,7 @@ public class WishItem implements Parcelable {
         // data in Parcel is FIFO, make sure to read data in the same order of write
         mId = in.readLong();
         mObjectId = in.readString();
+        mOwnerId = in.readString();
         mAccess = in.readInt();
         mStoreName = in.readString();
         mName = in.readString();
