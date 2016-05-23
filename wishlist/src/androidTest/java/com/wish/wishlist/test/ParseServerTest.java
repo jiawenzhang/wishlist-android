@@ -51,7 +51,7 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
 
         for (int i = 0; i < mUserCount; i++) {
             ParseUser user = new ParseUser();
-            String email = "user_" + 11 + "@test.com";
+            String email = "user_" + i + "@test.com";
             user.setUsername(email);
             user.setPassword("123456");
             user.put("name", "name_" + i);
