@@ -86,6 +86,10 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
     return loginFragment;
   }
 
+  public static String tag() {
+    return TAG;
+  }
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -157,6 +161,14 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
     }
   }
 
+  public void setUsername(String username) {
+    usernameField.setText(username);
+  }
+
+  public void setPassword(String password) {
+    passwordField.setText(password);
+  }
+
   @Override
   protected String getLogTag() {
     return TAG;
@@ -178,7 +190,7 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
       @Override
       public void onClick(View v) {
         final String username = usernameField.getText().toString();
-        String password = passwordField.getText().toString();
+        final String password = passwordField.getText().toString();
 
         if (username.length() == 0) {
           if (config.isParseLoginEmailAsUsername()) {
@@ -203,7 +215,7 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
                   loginSuccess();
                 } else {
                   final String message = "Please check " + username + " to verify your email before sign in";
-                  loginVerifyEmail(message);
+                  loginVerifyEmail(message, username, password);
                 }
               } else {
                 loadingFinish();
@@ -459,14 +471,14 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
     onLoginSuccessListener.onLoginSuccess();
   }
 
-  private void loginVerifyEmail(final String message) {
+  private void loginVerifyEmail(final String message, final String username, final String password) {
     // User successfully login, but does not have his email verified,
     // let's logout the user and ask him to verify the email
     ParseUser.logOutInBackground(new LogOutCallback() {
       public void done(ParseException e) {
         loadingFinish();
         if (e == null) {
-          onLoginSuccessListener.onVerifyEmail(message, false);
+          onLoginSuccessListener.onVerifyEmail(message, username, password, false);
         } else {
           showToast("Fail to log in, please try again");
           Log.e(TAG, e.toString());

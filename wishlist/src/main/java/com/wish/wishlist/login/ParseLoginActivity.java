@@ -107,7 +107,7 @@ public class ParseLoginActivity extends FragmentActivity implements
     // Show the login form
     if (savedInstanceState == null) {
       getSupportFragmentManager().beginTransaction().add(fragmentContainer,
-          ParseLoginFragment.newInstance(configOptions)).commit();
+          ParseLoginFragment.newInstance(configOptions), ParseLoginFragment.tag()).commit();
     }
   }
 
@@ -181,7 +181,7 @@ public class ParseLoginActivity extends FragmentActivity implements
   }
 
   @Override
-  public void onVerifyEmail(String message, final boolean fromSignup) {
+  public void onVerifyEmail(String message, final String username, final String password, final boolean fromSignup) {
     final AlertDialog.Builder builder = new AlertDialog.Builder(this, AppCompatAlertDialogStyle);
     if (fromSignup) {
       View v = getLayoutInflater().inflate(R.layout.welcome_dialog, null);
@@ -198,7 +198,12 @@ public class ParseLoginActivity extends FragmentActivity implements
       builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int id) {
           // pop the sign up fragment to show login fragment again
-          getSupportFragmentManager().popBackStack();
+          getSupportFragmentManager().popBackStackImmediate();
+          ParseLoginFragment loginFragment = (ParseLoginFragment) getSupportFragmentManager().findFragmentByTag(ParseLoginFragment.tag());
+          if (loginFragment != null) {
+            loginFragment.setUsername(username);
+            loginFragment.setPassword(password);
+          }
         }
       });
     } else {
