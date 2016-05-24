@@ -109,10 +109,10 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
                                 Log.d(TAG, mMockContext.getString(R.string.com_parse_ui_invalid_email_toast));
                                 break;
                             case ParseException.USERNAME_TAKEN:
-                                Log.d(TAG, mMockContext.getString(R.string.com_parse_ui_username_taken_toast));
+                                Log.d(TAG, user.getUsername() + " " + mMockContext.getString(R.string.com_parse_ui_username_taken_toast));
                                 break;
                             case ParseException.EMAIL_TAKEN:
-                                Log.d(TAG, mMockContext.getString(R.string.com_parse_ui_email_taken_toast));
+                                Log.d(TAG, user.getEmail() + " " + mMockContext.getString(R.string.com_parse_ui_email_taken_toast));
                                 break;
                             default:
                                 Log.d(TAG, mMockContext.getString(R.string.com_parse_ui_signup_failed_unknown_toast));
@@ -209,9 +209,9 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
         for (ParseUser user : mUsers) {
             HashMap<String, String> params = new HashMap<>();
             params.put("username", user.getUsername());
-            ParseCloud.callFunctionInBackground("deleteUserByUsername", params, new FunctionCallback<HashMap<String, Object>>() {
+            ParseCloud.callFunctionInBackground("deleteUserByUsername", params, new FunctionCallback<Object>() {
                 @Override
-                public void done(HashMap<String, Object> result, ParseException e) {
+                public void done(Object result, ParseException e) {
                     if (e == null) {
                         Log.d(TAG, "delete user success");
                     } else {
