@@ -3,6 +3,8 @@ package com.wish.wishlist.test;
 import android.app.IntentService;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -27,7 +29,7 @@ import java.util.Random;
 public class WishService extends IntentService {
     static final String TAG = "WishService";
     private int mWishChanged = 0;
-    private final static int mWishCount = 3;
+    private final static int mWishCount = 20;
     final private static int SECOND = 1000;
     private final static int mPeriodMin = 1; //second
     private final static int mPeriodMax = 5; //second
@@ -45,9 +47,6 @@ public class WishService extends IntentService {
     @Override
     protected void onHandleIntent(Intent workIntent) {
         Log.d(TAG, "onHandleIntent");
-        // Gets data from the incoming Intent
-        String dataString = workIntent.getDataString();
-
         changeWishLater();
     }
 
@@ -105,7 +104,7 @@ public class WishService extends IntentService {
         }
 
         EventBus.getInstance().post(new MyWishChangeEvent());
-        SyncAgent.getInstance().sync();
+        syncInMainThread();
         changeWishLater();
     }
 
@@ -123,7 +122,7 @@ public class WishService extends IntentService {
         }
 
         EventBus.getInstance().post(new MyWishChangeEvent());
-        SyncAgent.getInstance().sync();
+        syncInMainThread();
         changeWishLater();
     }
 
@@ -157,7 +156,7 @@ public class WishService extends IntentService {
         }
 
         EventBus.getInstance().post(new MyWishChangeEvent());
-        SyncAgent.getInstance().sync();
+        syncInMainThread();
         changeWishLater();
     }
 
@@ -185,5 +184,16 @@ public class WishService extends IntentService {
         } else {
             return 3;
         }
+    }
+
+    private void syncInMainThread() {
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                SyncAgent.getInstance().sync();
+            }
+        };
+        mainHandler.post(runnable);
     }
 }
