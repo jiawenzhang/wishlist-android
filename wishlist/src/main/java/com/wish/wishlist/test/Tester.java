@@ -123,7 +123,12 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         ArrayList<String> tags = new ArrayList<>();
         int tagCount = r.nextInt(3);
         for (int i=0; i<tagCount; i++) {
-            tags.add(loremIpsum.getWords(1 + r.nextInt(6)));
+            String tag = loremIpsum.getWords(1 + r.nextInt(6));
+            while (tags.contains(tag)) {
+                // make sure tags are not duplicated
+                tag = loremIpsum.getWords(1 + r.nextInt(6));
+            }
+            tags.add(tag);
         }
         Log.d(TAG, "random tags " + tags);
         return tags;
