@@ -70,7 +70,7 @@ public class WishLoader {
     private List<WishItem> fromParseObjects(final List<ParseObject> parseWishList) {
         List<WishItem> wishList = new ArrayList<>();
         for (final ParseObject object : parseWishList) {
-            wishList.add(WishItem.fromParseObject(object, -1));
+            wishList.add(WishItem.newFromParseObject(object));
         }
         return wishList;
     }

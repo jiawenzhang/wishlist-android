@@ -123,6 +123,9 @@ public class WishItem implements Parcelable {
     public long getId() {
         return mId;
     }
+    public void setId(long id)  {
+        mId = id;
+    }
 
     public String getKey() {
         if (mId == -1) {
@@ -545,7 +548,7 @@ public class WishItem implements Parcelable {
                 mDownloadImg);
     }
 
-    public static WishItem fromParseObject(final ParseObject wishObject, long item_id) {
+    public static WishItem newFromParseObject(final ParseObject wishObject) {
         // wishObject.getDouble() will return 0 if the double is null on server,
         // use getNumber so we can check null
         Number priceNumber = wishObject.getNumber(WishItem.PARSE_KEY_PRICE);
@@ -553,7 +556,7 @@ public class WishItem implements Parcelable {
         Number lngNumber = wishObject.getNumber(WishItem.PARSE_KEY_LONGITUDE);
 
         return new WishItem(
-                item_id,
+                -1,
                 wishObject.getObjectId(),
                 wishObject.getString(WishItem.PARSE_KEY_OWNER_ID),
                 wishObject.getInt(WishItem.PARSE_KEY_ACCESS),

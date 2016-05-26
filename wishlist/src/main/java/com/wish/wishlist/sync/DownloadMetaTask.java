@@ -82,7 +82,7 @@ public class DownloadMetaTask {
                                 continue;
                             }
                             Log.d(TAG, "item " + parseItem.getString(WishItem.PARSE_KEY_NAME) + " does not exist locally, saving it");
-                            item = WishItem.fromParseObject(parseItem, -1);
+                            item = WishItem.newFromParseObject(parseItem);
 
                             // it is a new item, we need to try to download it image.
                             item.setDownloadImg(true);
@@ -113,8 +113,12 @@ public class DownloadMetaTask {
                                 // image needs to be re-downloaded
                                 downloadImg = true;
                             }
-                            item = WishItem.fromParseObject(parseItem, item.getId());
-                            item.setDownloadImg(downloadImg);
+
+                            WishItem newItem = WishItem.newFromParseObject(parseItem);
+                            newItem.setId(item.getId());
+                            newItem.setFullsizePicPath(item.getFullsizePicPath());
+                            newItem.setDownloadImg(downloadImg);
+                            item = newItem;
                         }
                         // set syncedToServer to true so the uploadTask will not upload this wish
                         item.setSyncedToServer(true);
