@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.parse.FindCallback;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -54,6 +55,7 @@ public class DownloadMetaTask {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
         query.whereGreaterThan("updatedAt", lastSyncStamp);
         query.whereEqualTo(WishItem.PARSE_KEY_OWNER_ID, ParseUser.getCurrentUser().getObjectId());
+        query.whereNotEqualTo(WishItem.PARSE_KEY_LAST_CHANGED_BY, ParseInstallation.getCurrentInstallation().getInstallationId());
 
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> itemList, com.parse.ParseException e) {

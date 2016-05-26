@@ -6,6 +6,7 @@ import android.util.Log;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
@@ -110,6 +111,7 @@ public class UploadTask {
     }
 
     private void uploadParseObject(final ParseObject wishObject, final long item_id, final boolean isNew) {
+        wishObject.put(WishItem.PARSE_KEY_LAST_CHANGED_BY, ParseInstallation.getCurrentInstallation().getInstallationId());
         wishObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(com.parse.ParseException e) {

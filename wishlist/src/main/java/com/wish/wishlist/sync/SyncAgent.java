@@ -231,6 +231,13 @@ public class SyncAgent implements
         }
 
         if (success) {
+            // download meta is done, save the last synced down stamp
+            Log.d(TAG, "sync download meta finished success: sync stamp " + mSyncStamp.getTime() + " " + StringUtil.UTCDate(mSyncStamp));
+            final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putLong(lastSyncStampKey(), mSyncStamp.getTime());
+            editor.commit();
+
             mUploadTask.run(mSyncStamp);
         } else {
             syncDone(false);
@@ -241,14 +248,6 @@ public class SyncAgent implements
     public void uploadTaskDone(boolean success, Date syncStamp) {
         mSyncStamp = syncStamp;
         if (success) {
-            // both download and upload is done, sync is finished
-            // save the last synced down time
-            Log.d(TAG, "sync finished: sync stamp " + mSyncStamp.getTime() + " " + StringUtil.UTCDate(mSyncStamp));
-            final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putLong(lastSyncStampKey(), mSyncStamp.getTime());
-            editor.commit();
-
             // start downloading image task
             mDownloadImageTask.run();
         } else {

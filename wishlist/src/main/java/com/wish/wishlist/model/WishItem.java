@@ -60,6 +60,7 @@ public class WishItem implements Parcelable {
     private boolean mDownloadImg;
 
     public final static String PARSE_KEY_OWNER_ID = "ownerId";
+    public final static String PARSE_KEY_LAST_CHANGED_BY = "lastChangedBy";
     public final static String PARSE_KEY_TAGS = "tags";
     public final static String PARSE_KEY_IMAGES = "images";
     public static final String PARSE_KEY_ACCESS = "access";
