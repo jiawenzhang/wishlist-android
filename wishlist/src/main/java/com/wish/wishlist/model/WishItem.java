@@ -405,6 +405,10 @@ public class WishItem implements Parcelable {
         return mImgMetaJSON;
     }
 
+    public void setImgMetaJSON(String imgMetaJSON) {
+        mImgMetaJSON = imgMetaJSON;
+    }
+
     public ArrayList<ImgMeta> getImgMetaArray() {
         if (mImgMetaJSON == null) {
             return null;

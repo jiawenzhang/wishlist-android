@@ -101,6 +101,8 @@ public class UploadTask {
                     ImgMeta meta = new ImgMeta(ImgMeta.PARSE, parseImage.getUrl(), w, h);
                     String imgMetaJSON = new ImgMetaArray(meta).toJSON();
                     wishObject.put(WishItem.PARSE_KEY_IMG_META_JSON, imgMetaJSON);
+                    item.setImgMetaJSON(imgMetaJSON);
+                    item.saveToLocal();
                     uploadParseObject(wishObject, item.getId(), isNew);
                 } else {
                     Log.e(TAG, "upload ParseFile failed " + e.toString());
