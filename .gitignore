@@ -35,3 +35,4 @@ build/
 # Resource file containing the third-party api keys, this file should not be
 # committed to the repository for security reason
 wishlist/src/main/res/values/application_id.xml
+wishlist/src/debug/res/values/application_id.xml
