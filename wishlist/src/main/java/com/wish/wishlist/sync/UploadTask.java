@@ -21,7 +21,6 @@ import com.wish.wishlist.wish.ImgMetaArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,12 +29,11 @@ import java.util.List;
 public class UploadTask {
     private static String TAG = "UploadTask";
     private long mItemsToUpload;
-    private Date mSyncStamp;
 
     /* listener */
     private UploadTaskDoneListener mUploadTaskDoneListener;
     public interface UploadTaskDoneListener {
-        void uploadTaskDone(boolean success, Date syncStamp);
+        void uploadTaskDone(boolean success);
     }
 
     public void registerListener(UploadTaskDoneListener l) {
@@ -44,8 +42,7 @@ public class UploadTask {
     /* listener */
 
 
-    public void run(Date syncStamp) {
-        mSyncStamp = syncStamp;
+    public void run() {
         mItemsToUpload = 0;
         uploadToParse();
     }
@@ -119,9 +116,6 @@ public class UploadTask {
             public void done(com.parse.ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "save wish success, object id: " + wishObject.getObjectId());
-                    if (wishObject.getUpdatedAt().getTime() > mSyncStamp.getTime()) {
-                        mSyncStamp = wishObject.getUpdatedAt();
-                    }
 
                     WishItem item = WishItemManager.getInstance().getItemById(item_id);
                     if (item.getDeleted()) {
@@ -219,7 +213,7 @@ public class UploadTask {
 
     private void uploadAllDone(boolean success) {
         if (mUploadTaskDoneListener != null) {
-            mUploadTaskDoneListener.uploadTaskDone(success, mSyncStamp);
+            mUploadTaskDoneListener.uploadTaskDone(success);
         }
     }
 }

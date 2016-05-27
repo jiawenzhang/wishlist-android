@@ -39,12 +39,10 @@ public class SyncAgent implements
     private OnSyncDoneListener mSyncDoneListener;
     private OnSyncStartListener mSyncStartListener;
 
-    // among all the items synced with the server in my previous sync, get the latest "updatedAt", and save it as lastSyncStamp
-    // we use this to identify items uploaded to or changed on the server by another device since my previous sync,
+    // among all the items synced with the server in my previous sync, get the latest "updatedAt", and save it as lastDownloadStamp
+    // we use this to identify items uploaded to or changed on the server by another device since my previous sync down,
     // so I can download them in my next sync with the server. we can trust "updatedAt" since it is a timestamp
     // set by the server
-    public final static String LAST_SYNC_STAMP = "lastSyncStamp";
-    private Date mSyncStamp;
 
     private DownloadMetaTask mDownloadMetaTask = new DownloadMetaTask();
     private UploadTask mUploadTask = new UploadTask();
@@ -210,16 +208,15 @@ public class SyncAgent implements
             return;
         }
 
-        // start the sync process with downloadTask, then uploadTask
-        // the subsequent task will be started when the previous task is done
-        // if error occurs in any of the tasks, syncFailed will be called and LAST_SYNC_STAMP is not updated
+        // start the sync process with downloadMetaTask, then uploadTask, then DownloadImageTask
+        // the next task will be started when the previous task is done
+        // if error occurs in any of the tasks, syncDone will be called with success = false
         mDownloadMetaTask.run();
     }
 
     @Override
-    public void downloadMetaTaskDone(boolean success, Date syncStamp, boolean wishMetaChanged) {
+    public void downloadMetaTaskDone(boolean success, boolean wishMetaChanged) {
         mDownloading = false;
-        mSyncStamp = syncStamp;
 
         if (mDownloadWishMetaDoneListener != null) {
             mDownloadWishMetaDoneListener.onDownloadWishMetaDone(success);
@@ -231,22 +228,14 @@ public class SyncAgent implements
         }
 
         if (success) {
-            // download meta is done, save the last synced down stamp
-            Log.d(TAG, "sync download meta finished success: sync stamp " + mSyncStamp.getTime() + " " + StringUtil.UTCDate(mSyncStamp));
-            final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putLong(lastSyncStampKey(), mSyncStamp.getTime());
-            editor.commit();
-
-            mUploadTask.run(mSyncStamp);
+            mUploadTask.run();
         } else {
             syncDone(false);
         }
     }
 
     @Override
-    public void uploadTaskDone(boolean success, Date syncStamp) {
-        mSyncStamp = syncStamp;
+    public void uploadTaskDone(boolean success) {
         if (success) {
             // start downloading image task
             mDownloadImageTask.run();
@@ -328,15 +317,6 @@ public class SyncAgent implements
         // file name we uploaded                    IMG173391503.jpg
         // file name actually saved on server       4ab50fb811da73520a71bf6a6e7c8844_IMG173391503.jpg
         return parseFileName.substring(parseFileName.indexOf('_') + 1);
-    }
-
-    public static String lastSyncStampKey() {
-        if (ParseUser.getCurrentUser() == null) {
-            // this shall never happen
-            Log.e(TAG, "user null");
-            return LAST_SYNC_STAMP;
-        }
-        return ParseUser.getCurrentUser().getUsername() + "-" + LAST_SYNC_STAMP;
     }
 }
 

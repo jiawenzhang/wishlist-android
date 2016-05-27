@@ -27,13 +27,13 @@ import java.util.List;
 public class DownloadMetaTask {
     private static String TAG = "DownloadMetaTask";
     private long mItemsToDownload;
-    private Date mSyncStamp;
+    private Date mDownloadStamp;
     private boolean mWishMetaChanged = false;
 
     /* listener */
     private DownloadMetaTaskDoneListener mDownlaodMetaTaskDoneListener;
     public interface DownloadMetaTaskDoneListener {
-        void downloadMetaTaskDone(boolean success, Date syncStamp, boolean wishMetaChanged);
+        void downloadMetaTaskDone(boolean success, boolean wishMetaChanged);
     }
 
     public void registerListener(DownloadMetaTaskDoneListener l) {
@@ -48,12 +48,12 @@ public class DownloadMetaTask {
 
         // get from parse the items with updated time > last synced time
         final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
-        final Date lastSyncStamp = new Date(sharedPref.getLong(SyncAgent.lastSyncStampKey(), 0));
-        Log.d(TAG, "lastSyncStamp " + lastSyncStamp.getTime() + " " + StringUtil.UTCDate(lastSyncStamp));
-        mSyncStamp = lastSyncStamp;
+        final Date lastDownloadStamp = new Date(sharedPref.getLong(lastDownloadStampKey(), 0));
+        Log.d(TAG, "lastDownloadStamp " + lastDownloadStamp.getTime() + " " + StringUtil.UTCDate(lastDownloadStamp));
+        mDownloadStamp = lastDownloadStamp;
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Item");
-        query.whereGreaterThan("updatedAt", lastSyncStamp);
+        query.whereGreaterThan("updatedAt", lastDownloadStamp);
         query.whereEqualTo(WishItem.PARSE_KEY_OWNER_ID, ParseUser.getCurrentUser().getObjectId());
         query.whereNotEqualTo(WishItem.PARSE_KEY_LAST_CHANGED_BY, ParseInstallation.getCurrentInstallation().getInstallationId());
 
@@ -69,8 +69,8 @@ public class DownloadMetaTask {
 
                     // add/update/remove local wish
                     for (ParseObject parseItem : itemList) {
-                        if (parseItem.getUpdatedAt().getTime() > mSyncStamp.getTime()) {
-                            mSyncStamp = parseItem.getUpdatedAt();
+                        if (parseItem.getUpdatedAt().getTime() > mDownloadStamp.getTime()) {
+                            mDownloadStamp = parseItem.getUpdatedAt();
                         }
 
                         WishItem item = WishItemManager.getInstance().getItemByObjectId(parseItem.getObjectId());
@@ -150,10 +150,28 @@ public class DownloadMetaTask {
         }
     }
 
+    private String lastDownloadStampKey() {
+        final String LAST_DOWNLOAD_STAMP = "lastDownloadStamp";
+        if (ParseUser.getCurrentUser() == null) {
+            // this shall never happen
+            Log.e(TAG, "user null");
+            return LAST_DOWNLOAD_STAMP;
+        }
+        return ParseUser.getCurrentUser().getUsername() + "-" + LAST_DOWNLOAD_STAMP;
+    }
+
     private void downloadAllDone(boolean success) {
-        // download from parse is finished, now upload to parse
+        if (success) {
+            // download meta is done, save the last download stamp
+            Log.d(TAG, "sync download meta finished success: download stamp " + mDownloadStamp.getTime() + " " + StringUtil.UTCDate(mDownloadStamp));
+            final SharedPreferences sharedPref = WishlistApplication.getAppContext().getSharedPreferences(WishlistApplication.getAppContext().getString(R.string.app_name), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putLong(lastDownloadStampKey(), mDownloadStamp.getTime());
+            editor.commit();
+        }
+
         if (mDownlaodMetaTaskDoneListener != null) {
-            mDownlaodMetaTaskDoneListener.downloadMetaTaskDone(success, mSyncStamp, mWishMetaChanged);
+            mDownlaodMetaTaskDoneListener.downloadMetaTaskDone(success, mWishMetaChanged);
         }
     }
 }
