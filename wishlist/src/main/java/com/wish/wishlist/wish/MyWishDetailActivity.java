@@ -1,19 +1,16 @@
 package com.wish.wishlist.wish;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -38,7 +35,6 @@ import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
-import com.wish.wishlist.image.CameraManager;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
@@ -47,6 +43,7 @@ import com.wish.wishlist.tag.AddTagActivity;
 import com.wish.wishlist.tag.AddTagFromEditActivity;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.DoubleUtil;
+import com.wish.wishlist.util.ImagePicker;
 import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.widgets.ClearableEditText;
@@ -83,15 +80,13 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     protected Uri mSelectedPicUri = null;
     protected Boolean mSelectedPic = false;
     protected Boolean mEditDone = false;
-    protected static final int TAKE_PICTURE = 1;
-    protected static final int SELECT_PICTURE = 2;
     protected static final int ADD_TAG = 3;
 
-    protected static final int PERMISSIONS_TAKE_PHOTO = 0;
     protected static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
     protected static final String TEMP_PHOTO_PATH = "TEMP_PHOTO_PATH";
     protected static final String SELECTED_PIC_URL = "SELECTED_PIC_URL";
+    private ImagePicker mImagePicker;
     private ProgressDialog mProgressDialog;
     protected class saveTempPhoto extends AsyncTask<Void, Void, Void> {//<param, progress, result>
         @Override
@@ -252,51 +247,11 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         });
     }
 
-    private void dispatchTakePictureIntent() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PERMISSIONS_TAKE_PHOTO);
-
-            return;
-        }
-        takePhoto();
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        Log.e(TAG, "onRequestPermissionsResult");
-        Log.e(TAG, "code " + requestCode);
-        switch (requestCode) {
-            case PERMISSIONS_TAKE_PHOTO: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length == 2 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-
-                    Analytics.send(Analytics.PERMISSION, "TakePhoto", "Grant");
-                    takePhoto();
-                } else {
-                    Log.e(TAG, "Take photo permission denied");
-                    Analytics.send(Analytics.PERMISSION, "TakePhoto", "Deny");
-                }
-            }
+        if (mImagePicker != null) {
+            mImagePicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-    }
-
-    private void takePhoto() {
-        CameraManager c = new CameraManager();
-        mTempPhotoPath = c.getPhotoPath();
-        startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
-    }
-
-    private void dispatchImportPictureIntent() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
     }
 
     protected Boolean setTakenPhoto() {
@@ -346,23 +301,12 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         startActivityForResult(i, ADD_TAG);
     }
 
-    protected void showChangePhotoDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-
-        final CharSequence[] items = {"Take a photo", "From gallery"};
-        builder.setItems(items, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // The 'which' argument contains the index position
-                // of the selected item
-                if (which == 0) {
-                    dispatchTakePictureIntent();
-                } else if (which == 1) {
-                    dispatchImportPictureIntent();
-                }
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+    protected void startImagePicker() {
+        if (mImagePicker == null) {
+            mImagePicker = new ImagePicker(this);
+        }
+        mTempPhotoPath = mImagePicker.getPhotoPath();
+        mImagePicker.start();
     }
 
     protected void clearFocus() {
@@ -512,8 +456,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         }
     }
 
-    protected void newImageSaved() {
-    }
+    protected void newImageSaved() {}
 
     protected void removeItemImage() {
         if (mItem != null) {
@@ -643,7 +586,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case TAKE_PICTURE: {
+            case ImagePicker.TAKE_PICTURE: {
                 if (resultCode == RESULT_OK) {
                     Analytics.send(Analytics.WISH, "TakenPicture", "FromEditItemCameraButton");
 
@@ -655,7 +598,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
                 }
                 break;
             }
-            case SELECT_PICTURE: {
+            case ImagePicker.SELECT_PICTURE: {
                 if (resultCode == RESULT_OK) {
                     mSelectedPicUri = data.getData();
                     Analytics.send(Analytics.WISH, "SelectedPicture", null);

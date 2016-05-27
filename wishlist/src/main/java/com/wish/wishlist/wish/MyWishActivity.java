@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
@@ -50,9 +47,9 @@ import com.wish.wishlist.social.ShareHelper;
 import com.wish.wishlist.tag.AddTagActivity;
 import com.wish.wishlist.tag.FindTagActivity;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.util.ImagePicker;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
-import com.wish.wishlist.image.CameraManager;
 import com.wish.wishlist.sync.SyncAgent;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -71,18 +68,14 @@ public class MyWishActivity extends WishBaseActivity implements
 
     public static final String TAG = "MyWishActivity";
 
+    private ImagePicker mImagePicker;
     private static final int EDIT_ITEM = 0;
     private static final int ADD_ITEM = 1;
     private static final int FIND_TAG = 2;
     private static final int ADD_TAG = 3;
     private static final int ITEM_DETAILS = 4;
-    private static final int TAKE_PICTURE = 5;
-
-    private static final int PERMISSIONS_TAKE_PHOTO = 0;
 
     private Options.Tag mTag = new Options.Tag(null);
-
-    private String mTempPhotoPath = null;
 
     private String mNameQuery = null;
     private Button mAddNewButton;
@@ -138,16 +131,6 @@ public class MyWishActivity extends WishBaseActivity implements
                 startActivityForResult(addItem, ADD_ITEM);
             }
         });
-
-        if (savedInstanceState != null) {
-            Log.d(TAG, "savedInstanceState != null");
-            // restore the current selected item in the list
-            mTempPhotoPath = savedInstanceState.getString(AddWishActivity.TEMP_PHOTO_PATH);
-
-            Log.d(TAG, "mTempPhotoPath " + mTempPhotoPath);
-        } else{
-            Log.d(TAG, "savedInstanceState == null");
-        }
 
         SyncAgent.getInstance().registerListener(this);
         SyncAgent.getInstance().registerSyncStartListener(this);
@@ -503,43 +486,10 @@ public class MyWishActivity extends WishBaseActivity implements
         dialog.show();
     }
 
-    private void takePhoto() {
-        CameraManager c = new CameraManager();
-        mTempPhotoPath = c.getPhotoPath();
-        startActivityForResult(c.getCameraIntent(), TAKE_PICTURE);
-    }
-
-    private void dispatchTakePictureIntent() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PERMISSIONS_TAKE_PHOTO);
-
-            return;
-        }
-
-        takePhoto();
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_TAKE_PHOTO: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length == 2 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    Analytics.send(Analytics.PERMISSION, "TakePhoto", "Grant");
-                    takePhoto();
-                } else {
-                    Log.e(TAG, "Take photo permission not granted");
-                    Analytics.send(Analytics.PERMISSION, "TakePhoto", "Deny");
-                }
-            }
+        if (mImagePicker != null) {
+            mImagePicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -555,7 +505,10 @@ public class MyWishActivity extends WishBaseActivity implements
                 return true;
             case R.id.menu_add:
                 // let user generate a wish item
-                dispatchTakePictureIntent();
+                if (mImagePicker == null) {
+                    mImagePicker = new ImagePicker(this);
+                }
+                mImagePicker.dispatchTakePictureIntent();
                 return true;
             case R.id.menu_sort:
                 showDialog(DIALOG_SORT);
@@ -570,22 +523,6 @@ public class MyWishActivity extends WishBaseActivity implements
             default:
                 return false;
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString(AddWishActivity.TEMP_PHOTO_PATH, mTempPhotoPath);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
-            return;
-        }
-
-        mTempPhotoPath = savedInstanceState.getString(AddWishActivity.TEMP_PHOTO_PATH);
-        super.onRestoreInstanceState(savedInstanceState);
     }
 
     private void updateItemIdsForTag() {
@@ -656,12 +593,12 @@ public class MyWishActivity extends WishBaseActivity implements
                 }
                 break;
             }
-            case TAKE_PICTURE: {
+            case ImagePicker.TAKE_PICTURE: {
                 if (resultCode == RESULT_OK) {
                     Log.d(TAG, "TAKE_PICTURE: RESULT_OK");
-                    Log.d("TAKE PICTURE ", mTempPhotoPath);
+                    Log.d("TAKE PICTURE ", mImagePicker.getPhotoPath());
                     Intent i = new Intent(this, AddWishActivity.class);
-                    i.putExtra(AddWishActivity.TEMP_PHOTO_PATH, mTempPhotoPath);
+                    i.putExtra(AddWishActivity.TEMP_PHOTO_PATH, mImagePicker.getPhotoPath());
 
                     Analytics.send(Analytics.WISH, "TakenPicture", "FromActionBarCameraButton");
                     startActivityForResult(i, EDIT_ITEM);

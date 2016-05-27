@@ -46,6 +46,7 @@ import com.wish.wishlist.job.UploadProfileImageJob;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.util.ImagePicker;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ProfileUtil;
@@ -74,6 +75,7 @@ public class ProfileActivity extends ActivityBase implements
     protected SwipeRefreshLayout mSwipeRefreshLayout;
 
     private ProgressDialog mProgressDialog = null;
+    private ImagePicker mImagePicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +132,7 @@ public class ProfileActivity extends ActivityBase implements
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(getPickImageChooserIntent(), CHOOSE_IMAGE);
+                startImagePicker();
             }
         });
 
@@ -138,7 +140,7 @@ public class ProfileActivity extends ActivityBase implements
         mGeneratedProfileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(getPickImageChooserIntent(), CHOOSE_IMAGE);
+                startImagePicker();
             }
         });
 
@@ -329,6 +331,19 @@ public class ProfileActivity extends ActivityBase implements
         }
     }
 
+    private void startCropperActivity(Uri picUri) {
+        Intent intent = new Intent(this, CropperActivity.class);
+        intent.putExtra(IMAGE_URI, picUri.toString());
+        startActivityForResult(intent, PROFILE_IMAGE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (mImagePicker != null) {
+            mImagePicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
@@ -337,15 +352,23 @@ public class ProfileActivity extends ActivityBase implements
                     saveProfileImageToParse();
                     break;
                 }
-                case CHOOSE_IMAGE: {
-                    Uri imageUri = getPickImageResultUri(data);
-                    Intent intent = new Intent(getApplication(), CropperActivity.class);
-                    intent.putExtra(IMAGE_URI, imageUri.toString());
-                    startActivityForResult(intent, PROFILE_IMAGE);
+                case ImagePicker.TAKE_PICTURE: {
+                    startCropperActivity(mImagePicker.getPhotoUri());
+                    break;
+                }
+                case ImagePicker.SELECT_PICTURE: {
+                    startCropperActivity(data.getData());
                     break;
                 }
             }
         }
+    }
+
+    private void startImagePicker() {
+        if (mImagePicker == null) {
+            mImagePicker = new ImagePicker(this);
+        }
+        mImagePicker.start();
     }
 
     private void setProfileImage() {

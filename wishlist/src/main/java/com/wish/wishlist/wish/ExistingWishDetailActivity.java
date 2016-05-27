@@ -178,7 +178,7 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         mImageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showChangePhotoDialog();
+                startImagePicker();
             }
         });
 
