@@ -70,7 +70,7 @@ public class SyncAgent implements
             try {
                 URL urlServer = new URL(WishlistApplication.getAppContext().getString(R.string.parse_server_url));
                 HttpURLConnection urlConn = (HttpURLConnection) urlServer.openConnection();
-                urlConn.setConnectTimeout(1500);
+                urlConn.setConnectTimeout(5000); // http request from countries like China can take several seconds
                 urlConn.connect();
                 if (urlConn.getResponseCode() == 200) {
                     Log.d(TAG, "parse server reachable");
