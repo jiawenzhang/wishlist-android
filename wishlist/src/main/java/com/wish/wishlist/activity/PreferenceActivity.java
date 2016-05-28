@@ -12,7 +12,7 @@ public class PreferenceActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wishlist_preference);
-        getFragmentManager().beginTransaction().replace(R.id.pref_frame, new PrefsFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.pref_frame, new PrefsFragment()).commit();
         setupActionBar(R.id.pref_toolbar);
 
         Analytics.sendScreen("Preference");

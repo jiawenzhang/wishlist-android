@@ -238,7 +238,6 @@
 
 
 
-
     <style name="Theme.WishlistTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowContentTransitions">true</item>
         <!--
@@ -261,8 +260,11 @@
         <!---->
         <item name="windowActionModeOverlay">true</item>
 
-        <!-- The rest of your attributes -->
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
+
+    <!-- this is needed as preference_category_material layout is using this color as the text color -->
+    <color name="preference_fallback_accent_color">@color/wishlist_yellow_color</color>
 
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
@@ -381,5 +383,6 @@
         <item name="android:textColorHint">@color/less_dark_grey</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
+
 
 </resources>

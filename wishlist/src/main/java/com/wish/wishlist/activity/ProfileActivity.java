@@ -14,7 +14,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -195,7 +195,7 @@ public class ProfileActivity extends ActivityBase implements
         profile_name.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
                 DialogFragment newFragment = new NameFragmentDialog();
-                newFragment.show(getFragmentManager(), "dialog");
+                newFragment.show(getSupportFragmentManager(), "dialog");
             }
         });
 
@@ -206,7 +206,7 @@ public class ProfileActivity extends ActivityBase implements
         profile_email.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
                 DialogFragment newFragment = new EmailFragmentDialog();
-                newFragment.show(getFragmentManager(), "dialog");
+                newFragment.show(getSupportFragmentManager(), "dialog");
             }
         });
 
