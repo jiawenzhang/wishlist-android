@@ -30,9 +30,9 @@ public class WishService extends IntentService {
     static final String TAG = "WishService";
     private int mWishChanged = 0;
     private final static int mWishCount = 20;
-    final private static int SECOND = 1000;
-    private final static int mPeriodMin = 1; //second
-    private final static int mPeriodMax = 5; //second
+    final private static int MS_PER_SECOND = 1000;
+    private final static int mPeriodMin = 1; //10; //second
+    private final static int mPeriodMaxVariation = 5; //1; //second
 
     enum WishAction {
         Add,
@@ -74,7 +74,7 @@ public class WishService extends IntentService {
     private int randomDuration() {
         Random random = new Random();
 
-        int duration = SECOND * mPeriodMin + SECOND * random.nextInt(mPeriodMax);
+        int duration = MS_PER_SECOND * mPeriodMin + MS_PER_SECOND * random.nextInt(mPeriodMaxVariation);
         Log.d(TAG, "random duration " + duration/1000 + "s");
         return duration;
     }
