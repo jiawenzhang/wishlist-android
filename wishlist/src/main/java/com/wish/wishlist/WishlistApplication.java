@@ -17,7 +17,6 @@ import com.parse.Parse;
 import com.parse.ParseACL;
 //import com.parse.ParseCrashReporting;
 import com.parse.ParseFacebookUtils;
-import com.parse.ParseInstallation;
 //import com.parse.interceptors.ParseLogInterceptor;
 import com.path.android.jobqueue.JobManager;
 
@@ -58,7 +57,6 @@ public class WishlistApplication extends Application {
                     .applicationId(getResources().getString(R.string.parse_application_id))
                     .clientKey(getResources().getString(R.string.parse_client_key))
                             //.server("http://localhost:1337/parse")
-                            //.server("https://fast-badlands-99020.herokuapp.com/parse/")
                     .server(getString(R.string.parse_server_url) + "/parse/")
                             //.server("http://192.168.1.68:1337/parse/")
                             //.addNetworkInterceptor(new ParseLogInterceptor())
