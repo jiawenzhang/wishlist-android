@@ -1,8 +1,6 @@
 package com.wish.wishlist.sync;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -19,12 +17,10 @@ import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.ProfileUtil;
-import com.wish.wishlist.util.StringUtil;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Date;
 
 /**
  * Created by jiawen on 15-07-11.

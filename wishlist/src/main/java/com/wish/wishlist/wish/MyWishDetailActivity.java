@@ -305,7 +305,6 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         if (mImagePicker == null) {
             mImagePicker = new ImagePicker(this);
         }
-        mTempPhotoPath = mImagePicker.getPhotoPath();
         mImagePicker.start();
     }
 
@@ -590,6 +589,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
                 if (resultCode == RESULT_OK) {
                     Analytics.send(Analytics.WISH, "TakenPicture", "FromEditItemCameraButton");
 
+                    mTempPhotoPath = mImagePicker.getPhotoPath();
                     setTakenPhoto();
                     mTxtInstruction.setText(getResources().getString(R.string.tap_here_to_change_photo));
                 } else {

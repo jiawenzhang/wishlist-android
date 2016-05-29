@@ -32,7 +32,6 @@ public class ImagePicker {
 
     public ImagePicker(Activity activity) {
         mActivity = activity;
-        mPhotoFile = PhotoFileCreater.getInstance().getTempImageFile();
     }
 
     public void start() {
@@ -75,6 +74,7 @@ public class ImagePicker {
         Intent intent =  new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // we need to supply EXTRA_OUTPUT for the camera to save a high-quality photo
+        mPhotoFile = PhotoFileCreater.getInstance().getTempImageFile();
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
         mActivity.startActivityForResult(intent, TAKE_PICTURE);
     }
@@ -100,7 +100,7 @@ public class ImagePicker {
     }
 
     public String getPhotoPath() {
-        return mPhotoFile.getAbsolutePath();
+        return mPhotoFile == null? null : mPhotoFile.getAbsolutePath();
     }
 
     public Uri getPhotoUri() {
