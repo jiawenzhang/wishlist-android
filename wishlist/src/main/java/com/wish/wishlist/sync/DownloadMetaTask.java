@@ -15,6 +15,7 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.StringUtil;
 
 import java.util.ArrayList;
@@ -129,6 +130,7 @@ public class DownloadMetaTask {
                     }
                 } else {
                     Log.e(TAG, "Error: " + e.getMessage());
+                    Analytics.send(Analytics.DEBUG, "FetchWishMetaFailedDownload", e.getMessage());
                     downloadAllDone(false);
                 }
             }

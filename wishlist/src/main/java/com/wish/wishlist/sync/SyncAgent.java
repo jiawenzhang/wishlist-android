@@ -72,11 +72,13 @@ public class SyncAgent implements
                     Log.d(TAG, "parse server reachable");
                     return true;
                 } else {
-                    Log.e(TAG, "parse server unreachable");
+                    Log.e(TAG, "parse server unreachable " + urlConn.getResponseMessage());
+                    Analytics.send(Analytics.DEBUG, "ParseServerUnreachable", urlConn.getResponseMessage());
                     return false;
                 }
             } catch (IOException e) {
                 Log.e(TAG, "parse server unreachable, error: " + e.toString());
+                Analytics.send(Analytics.DEBUG, "ParseServerUnreachable", e.toString());
                 return false;
             }
         }
@@ -117,8 +119,7 @@ public class SyncAgent implements
     public void registerSyncDoneListener(Object obj) {
         try {
             mSyncDoneListener = (OnSyncDoneListener) obj;
-        }
-        catch (final ClassCastException e) {
+        } catch (final ClassCastException e) {
             Log.e(TAG, "fail to registerListener");
             throw new ClassCastException(obj.toString() + " must implement OnSyncDone");
         }
@@ -134,8 +135,7 @@ public class SyncAgent implements
     public void registerSyncStartListener(Object obj) {
         try {
             mSyncStartListener = (OnSyncStartListener) obj;
-        }
-        catch (final ClassCastException e) {
+        } catch (final ClassCastException e) {
             Log.e(TAG, "fail to registerListener");
             throw new ClassCastException(obj.toString() + " must implement OnSyncStart");
         }
@@ -296,12 +296,14 @@ public class SyncAgent implements
                                     ProfileUtil.saveProfileImageToFile(data);
                                 } else {
                                     Log.e(TAG, "fail to get profile image data " + e.toString());
+                                    Analytics.send(Analytics.DEBUG, "FetchProfileImageFail", e.toString());
                                 }
                             }
                         });
                     }
                 } else {
                     Log.e(TAG, "fail to fetch Parse user");
+                    Analytics.send(Analytics.DEBUG, "FetchParseUserFail", e.toString());
                 }
             }
         });

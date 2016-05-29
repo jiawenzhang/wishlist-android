@@ -14,6 +14,7 @@ import com.wish.wishlist.db.ItemDBManager;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.wish.ImgMeta;
 import com.wish.wishlist.wish.ImgMetaArray;
@@ -103,6 +104,7 @@ public class UploadTask {
                     uploadParseObject(wishObject, item.getId(), isNew);
                 } else {
                     Log.e(TAG, "upload ParseFile failed " + e.toString());
+                    Analytics.send(Analytics.DEBUG, "UploadParseFileFailed", e.toString());
                     itemUploadDone();
                 }
             }
@@ -135,6 +137,7 @@ public class UploadTask {
                     itemUploadDone();
                 } else {
                     Log.e(TAG, "upload wish meta failed " + e.toString());
+                    Analytics.send(Analytics.DEBUG, "UploadWishMetaFailed", e.toString());
                     // we simply skip uploading the item in this sync and attempt to upload it again on next sync
                     itemUploadDone();
                 }
@@ -197,7 +200,8 @@ public class UploadTask {
                         uploadParseObject(wishObject, item.getId(), false);
                     }
                 } else {
-                    Log.e(TAG, "update wish meta failed " + e.toString() + " object_id " + item.getObjectId());
+                    Analytics.send(Analytics.DEBUG, "FetchWishMetaFailed", e.toString());
+                    Log.e(TAG, "Fetch wish meta failed " + e.toString() + " object_id " + item.getObjectId());
                     itemUploadDone();
                 }
             }

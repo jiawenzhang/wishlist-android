@@ -146,6 +146,7 @@ public class DownloadImageTask {
                 item.setDownloadImg(false);
                 item.saveToLocal();
             } else {
+                Analytics.send(Analytics.DEBUG, "ImgMetaNull", "JSON?");
                 Log.e(TAG, "imgMeta null, JSON parse error?");
             }
         }
@@ -179,6 +180,7 @@ public class DownloadImageTask {
                         Log.e(TAG, "downloadWebImage->onBitmapLoaded null bitmap");
                     }
                     imageDownloaded(bitmap, result.itemId, result.url);
+                    Analytics.send(Analytics.DEBUG, "BitmapNull", result.url);
                 }
 
                 @Override
@@ -187,6 +189,7 @@ public class DownloadImageTask {
                 @Override
                 public void onBitmapFailed(Drawable errorDrawable) {
                     Log.e(TAG, "onBitmapFailed");
+                    Analytics.send(Analytics.DEBUG, "OnBitmapFailed", result.url);
                     imageDownloaded(null, result.itemId, result.url);
                 }
             };

@@ -308,6 +308,7 @@ public class ProfileActivity extends ActivityBase implements
                                     WishlistApplication.restart();
                                 } else {
                                     Toast.makeText(ProfileActivity.this, "Fail to logout, check network?", Toast.LENGTH_LONG).show();
+                                    Analytics.send(Analytics.DEBUG, "LogoutFailed", e.getMessage());
                                 }
                                 mProgressDialog.dismiss();
                             }
@@ -326,6 +327,7 @@ public class ProfileActivity extends ActivityBase implements
                 AlertDialog dialog;
                 dialog = builder.create();
                 dialog.show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -507,6 +509,7 @@ public class ProfileActivity extends ActivityBase implements
                     Log.e(TAG, "name save error " + e.toString());
                     user.put("name", oldName);
                     Toast.makeText(ProfileActivity.this, "Failed, check network", Toast.LENGTH_LONG).show();
+                    Analytics.send(Analytics.DEBUG, "SaveUserNameFail", e.getMessage());
                 }
                 dismissProgressDialog();
             }
@@ -546,6 +549,7 @@ public class ProfileActivity extends ActivityBase implements
                     } else {
                         Toast.makeText(ProfileActivity.this, "Failed, check network", Toast.LENGTH_LONG).show();
                     }
+                    Analytics.send(Analytics.DEBUG, "SaveUserEmailFail", e.getMessage());
                 }
                 dismissProgressDialog();
             }
