@@ -15,36 +15,36 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <!--&lt;!&ndash; permission for Parse push notification &ndash;&gt;-->
-    <!--<uses-permission-->
-        <!--android:enabled="@bool/enable_account"-->
-        <!--android:name="android.permission.WAKE_LOCK" />-->
-    <!--<uses-permission-->
-        <!--android:enabled="@bool/enable_account"-->
-        <!--android:name="android.permission.VIBRATE" />-->
-    <!--<uses-permission-->
-        <!--android:enabled="@bool/enable_account"-->
-        <!--android:name="android.permission.RECEIVE_BOOT_COMPLETED" />-->
-    <!--<uses-permission-->
-        <!--android:enabled="@bool/enable_account"-->
-        <!--android:name="android.permission.GET_ACCOUNTS" />-->
-    <!--<uses-permission-->
-        <!--android:enabled="@bool/enable_account"-->
-        <!--android:name="com.google.android.c2dm.permission.RECEIVE" />-->
+    <!-- permission for Parse push notification -->
+    <uses-permission
+        android:enabled="@bool/enable_account"
+        android:name="android.permission.WAKE_LOCK" />
+    <uses-permission
+        android:enabled="@bool/enable_account"
+        android:name="android.permission.VIBRATE" />
+    <uses-permission
+        android:enabled="@bool/enable_account"
+        android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission
+        android:enabled="@bool/enable_account"
+        android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission
+        android:enabled="@bool/enable_account"
+        android:name="com.google.android.c2dm.permission.RECEIVE" />
 
-    <!--&lt;!&ndash;-->
-      <!--IMPORTANT: Change "com.parse.starter.permission.C2D_MESSAGE" in the lines below-->
-      <!--to match your app's package name + ".permission.C2D_MESSAGE".-->
-    <!--&ndash;&gt;-->
+    <!--
+      IMPORTANT: Change "com.parse.starter.permission.C2D_MESSAGE" in the lines below
+      to match your app's package name + ".permission.C2D_MESSAGE".
+    -->
 
-    <!--<permission-->
-        <!--android:enabled="@bool/enable_account"-->
-        <!--android:name="${applicationId}.permission.C2D_MESSAGE"-->
-        <!--android:protectionLevel="signature" />-->
+    <permission
+        android:enabled="@bool/enable_account"
+        android:name="${applicationId}.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
 
-    <!--<uses-permission-->
-        <!--android:enabled="@bool/enable_account"-->
-        <!--android:name="${applicationId}.permission.C2D_MESSAGE" />-->
+    <uses-permission
+        android:enabled="@bool/enable_account"
+        android:name="${applicationId}.permission.C2D_MESSAGE" />
 
 
     <uses-feature
