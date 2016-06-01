@@ -247,6 +247,6 @@
     <!-- DigitalOcean
     <string name="parse_server_url">http://parse.beanswishlist.com:1337</string>
     -->
-    <string name="parse_server_url">http://parse.beanswishlist.com</string>
+    <string name="parse_server_url">https://parse.beanswishlist.com</string>
 
 </resources>
