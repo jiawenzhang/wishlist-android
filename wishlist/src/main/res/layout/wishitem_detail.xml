@@ -73,16 +73,16 @@
                 android:layout_below="@+id/imagePhotoDetailFrame"
                 android:orientation="horizontal">
 
-                <com.wish.wishlist.widgets.ClearableEditText
+                <com.wish.wishlist.widgets.ActionNextClearableEditText
                     android:id="@+id/itemNameDetail"
                     android:hint="Name"
                     style="@style/ItemInfoText"
                     android:textSize="18sp"
+                    android:imeOptions="flagNoExtractUi|actionNext"
                     android:textColor="@color/dark_grey"
                     android:maxLength="@integer/item_name_length"
                     android:gravity="center_horizontal|left"
                     android:paddingTop="20dp"
-                    android:imeOptions="flagNoExtractUi"
                     android:text=""/>
 
                 <ImageView
@@ -117,10 +117,11 @@
                 android:layout_below="@+id/itemDescription"
                 />
 
-            <com.wish.wishlist.widgets.ClearableEditText
+            <com.wish.wishlist.widgets.ActionNextClearableEditText
                 android:id="@+id/itemStore"
                 android:hint="Store"
                 style="@style/ItemInfoText"
+                android:imeOptions="flagNoExtractUi|actionNext"
                 android:layout_below="@+id/itemPrice"
                 android:fontFamily="sans-serif-light"
                 android:text=""/>
@@ -153,10 +154,11 @@
                     android:visibility="visible"
                     android:layout_gravity="left"/>
 
-                <com.wish.wishlist.widgets.ClearableEditText
+                <com.wish.wishlist.widgets.ActionNextClearableEditText
                     android:hint="Link url"
                     android:id="@+id/itemLinkText"
                     style="@style/ItemInfoText"
+                    android:imeOptions="flagNoExtractUi|actionNext"
                     android:paddingTop="0dp"
                     android:paddingBottom="0dp"
                     android:text=""/>
