@@ -15,7 +15,7 @@
         android:imeOptions="flagNoExtractUi"
         android:textColor="@android:color/darker_gray"
         android:textSize="@dimen/text_size_medium"
-        android:hint="Enter a tag...">
+        android:hint="Find tags...">
         <requestFocus />
     </EditText>
 

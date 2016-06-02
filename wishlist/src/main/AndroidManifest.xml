@@ -238,19 +238,19 @@
         </activity>
         <activity
             android:name=".tag.FindTagActivity"
-            android:label="@string/app_name"
+            android:label="Filter By Tag"
             android:theme="@style/Theme.WishlistTheme" >
         </activity>
         <activity
             android:name=".tag.AddTagActivity"
-            android:label="@string/app_name"
+            android:label="Edit Tag"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
             <!-- TagsCompletionView crashes on screen orientation, this is a workaround -->
         </activity>
         <activity
             android:name=".tag.AddTagFromEditActivity"
-            android:label="@string/app_name"
+            android:label="Edit Tag"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WishlistTheme" >
             <!-- TagsCompletionView crashes on screen orientation, this is a workaround -->
