@@ -126,10 +126,11 @@
                 android:fontFamily="sans-serif-light"
                 android:text=""/>
 
-            <com.wish.wishlist.widgets.ClearableEditText
+            <com.wish.wishlist.widgets.ActionNextClearableEditText
                 android:id="@+id/itemLocation"
                 android:hint="Location"
                 style="@style/ItemInfoText"
+                android:imeOptions="flagNoExtractUi|actionNext"
                 android:layout_below="@+id/itemStore"
                 android:text=""/>
 
