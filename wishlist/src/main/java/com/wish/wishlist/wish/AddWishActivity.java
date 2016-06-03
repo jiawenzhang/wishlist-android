@@ -114,8 +114,8 @@ public class AddWishActivity extends MyWishDetailActivity
         mLocationView.setVisibility(View.VISIBLE);
 
         mLinkLayout.setVisibility(View.VISIBLE);
-        mLinkView.setVisibility(View.GONE);
-        mLinkText.setVisibility(View.VISIBLE);
+        mLinkTextView.setVisibility(View.GONE);
+        mLinkView.setVisibility(View.VISIBLE);
 
         mCompleteInnerLayout.setVisibility(View.GONE);
         mCompleteCheckBox.setVisibility(View.VISIBLE);
@@ -136,6 +136,10 @@ public class AddWishActivity extends MyWishDetailActivity
         //} else {
         //    mPrivateCheckBox.setChecked(false);
         //}
+    }
+
+    @Override
+    protected void initEditText() {
     }
 
     private void getLocation() {

@@ -2,11 +2,13 @@ package com.wish.wishlist.wish;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.view.ActionMode;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
@@ -31,7 +33,8 @@ import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.social.ShareHelper;
-import com.wish.wishlist.widgets.ClearableEditText;
+
+import java.util.HashMap;
 
 
 public abstract class WishDetailActivity extends ActivityBase implements ObservableScrollViewCallbacks {
@@ -47,16 +50,18 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     protected ImageView mImgComplete;
     protected LinearLayout mCompleteInnerLayout;
     protected TextView mTextComplete;
-    protected ClearableEditText mNameView;
-    protected ClearableEditText mDescriptionView;
+    protected AppCompatEditText mNameView;
+    protected AppCompatEditText mDescriptionView;
     protected TextView mDateView;
-    protected ClearableEditText mPriceView;
-    protected ClearableEditText mStoreView;
-    protected ClearableEditText mLocationView;
-    protected TextView mLinkView;
+    protected AppCompatEditText mPriceView;
+    protected AppCompatEditText mStoreView;
+    protected AppCompatEditText mLocationView;
+    protected AppCompatEditText mLinkView;
+    protected TextView mLinkTextView;
     protected LinearLayout mLinkLayout;
     protected WishItem mItem;
     protected int mComplete = -1;
+    protected HashMap<Integer, Drawable> mEditTextBackground = new HashMap<>();
 
     protected abstract boolean myWish();
 
@@ -78,14 +83,48 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         mCompleteInnerLayout = (LinearLayout) findViewById(R.id.completeInnerLayout);
         mImgComplete = (ImageView) findViewById(R.id.completeImageView);
         mTextComplete = (TextView) findViewById(R.id.completeTextView);
-        mNameView = (ClearableEditText) findViewById(R.id.itemNameDetail);
-        mDescriptionView = (ClearableEditText) findViewById(R.id.itemDescription);
+        mNameView = (AppCompatEditText) findViewById(R.id.itemNameDetail);
+        mDescriptionView = (AppCompatEditText) findViewById(R.id.itemDescription);
         mDateView = (TextView) findViewById(R.id.itemDateDetail);
-        mPriceView = (ClearableEditText) findViewById(R.id.itemPrice);
-        mStoreView = (ClearableEditText) findViewById(R.id.itemStore);
-        mLocationView = (ClearableEditText) findViewById(R.id.itemLocation);
-        mLinkView = (TextView) findViewById(R.id.itemLink);
+        mPriceView = (AppCompatEditText) findViewById(R.id.itemPrice);
+        mStoreView = (AppCompatEditText) findViewById(R.id.itemStore);
+        mLocationView = (AppCompatEditText) findViewById(R.id.itemLocation);
+        mLinkView = (AppCompatEditText) findViewById(R.id.itemLinkText);
+        mLinkTextView = (TextView) findViewById(R.id.itemLink);
         mLinkLayout = (LinearLayout) findViewById(R.id.linkLayout);
+
+        initEditText();
+    }
+
+    protected void initEditText() {
+        removeEditTextBottomLine();
+    }
+
+    protected void removeEditTextBottomLine() {
+        mEditTextBackground.put(mNameView.hashCode(), mNameView.getBackground());
+        mEditTextBackground.put(mDescriptionView.hashCode(), mDescriptionView.getBackground());
+        mEditTextBackground.put(mPriceView.hashCode(), mPriceView.getBackground());
+        mEditTextBackground.put(mStoreView.hashCode(), mStoreView.getBackground());
+        mEditTextBackground.put(mLocationView.hashCode(), mLocationView.getBackground());
+        mEditTextBackground.put(mLinkView.hashCode(), mLinkView.getBackground());
+
+        mNameView.setBackgroundDrawable(null);
+        mDescriptionView.setBackgroundDrawable(null);
+        mPriceView.setBackgroundDrawable(null);
+        mStoreView.setBackgroundDrawable(null);
+        mLocationView.setBackgroundDrawable(null);
+        mLinkView.setBackgroundDrawable(null);
+    }
+
+    protected void restoreEditTextBottomLine() {
+        if (mEditTextBackground != null && !mEditTextBackground.isEmpty()) {
+            mNameView.setBackgroundDrawable(mEditTextBackground.get(mNameView.hashCode()));
+            mDescriptionView.setBackgroundDrawable(mEditTextBackground.get(mDescriptionView.hashCode()));
+            mPriceView.setBackgroundDrawable(mEditTextBackground.get(mPriceView.hashCode()));
+            mStoreView.setBackgroundDrawable(mEditTextBackground.get(mStoreView.hashCode()));
+            mLocationView.setBackgroundDrawable(mEditTextBackground.get(mLocationView.hashCode()));
+            mLinkView.setBackgroundDrawable(mEditTextBackground.get(mLinkView.hashCode()));
+        }
     }
 
     protected void showPhoto() {}
@@ -152,12 +191,12 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
                 url = "http://" + url;
             }
             String text = "<a href=\"" + url + "\">LINK</a>";
-            mLinkView.setText(Html.fromHtml(text));
-            mLinkView.setMovementMethod(LinkMovementMethod.getInstance());
-            mLinkView.setVisibility(View.VISIBLE);
+            mLinkTextView.setText(Html.fromHtml(text));
+            mLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
+            mLinkTextView.setVisibility(View.VISIBLE);
             mLinkLayout.setVisibility(View.VISIBLE);
         } else {
-            mLinkView.setVisibility(View.GONE);
+            mLinkTextView.setVisibility(View.GONE);
             mLinkLayout.setVisibility(View.GONE);
         }
     }
