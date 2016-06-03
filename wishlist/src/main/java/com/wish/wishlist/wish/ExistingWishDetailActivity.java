@@ -40,7 +40,7 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         addTags();
 
         mFullsizePhotoPath = mItem.getFullsizePicPath();
-        mLinkView.setText(mItem.getLink());
+        mLinkText.setText(mItem.getLink());
         mComplete = mItem.getComplete();
         if (mComplete == 1) {
             mCompleteCheckBox.setChecked(true);
@@ -111,10 +111,10 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         mLinkLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLinkView.setVisibility(View.VISIBLE);
-                mLinkView.requestFocus();
+                mLinkText.setVisibility(View.VISIBLE);
+                mLinkText.requestFocus();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(mLinkTextView, InputMethodManager.SHOW_FORCED);
+                imm.showSoftInput(mLinkView, InputMethodManager.SHOW_FORCED);
                 enterEditMode();
             }
         });
@@ -144,7 +144,6 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         }
 
         Analytics.send(Analytics.WISH, "EnterEdit", null);
-        restoreEditTextBottomLine();
 
         mInstructionLayout.setVisibility(View.VISIBLE);
         mDescriptionView.setVisibility(View.VISIBLE);
@@ -162,12 +161,12 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         mLocationView.setVisibility(View.VISIBLE);
 
         mLinkLayout.setVisibility(View.VISIBLE);
-        mLinkView.setVisibility(View.VISIBLE);
+        mLinkText.setVisibility(View.VISIBLE);
 
         if (mItem != null) {
             String link = mItem.getLink();
             if (link != null && !link.isEmpty()) {
-                mLinkView.setText(link);
+                mLinkText.setText(link);
             }
         }
 
@@ -231,7 +230,7 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
                 clearFocus();
 
                 mInstructionLayout.setVisibility(View.GONE);
-                mLinkView.setVisibility(View.GONE);
+                mLinkText.setVisibility(View.GONE);
                 mTagLayout.setVisibility(View.GONE);
                 mCompleteCheckBox.setVisibility(View.GONE);
                 mCompleteInnerLayout.setVisibility(mItem != null && mItem.getComplete() == 1 ? View.VISIBLE : View.GONE);
@@ -245,8 +244,6 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
                         }
                     }
                 });
-
-                removeEditTextBottomLine();
             }
         });
     }

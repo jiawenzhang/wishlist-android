@@ -258,7 +258,6 @@
         <item name="colorControlNormal">#c5c5c5</item>
         <item name="colorControlActivated">@color/wishlist_yellow_color</item>
         <item name="colorControlHighlight">@color/wishlist_yellow_color</item>
-        <item name="android:textColorHint">@color/light_grey</item>
         <!---->
         <item name="windowActionModeOverlay">true</item>
 
@@ -306,6 +305,7 @@
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/medium_grey</item>
         <item name="android:textColorHint">@color/light_grey</item>
+        <item name="android:background">@null</item>
         <item name="android:paddingLeft">15dp</item>
         <item name="android:paddingRight">15dp</item>
         <item name="android:paddingTop">8dp</item>

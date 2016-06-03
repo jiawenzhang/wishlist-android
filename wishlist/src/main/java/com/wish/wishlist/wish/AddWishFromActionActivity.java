@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -96,7 +98,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         mInstructionLayout.setVisibility(View.GONE);
         setPhotoVisible(false);
         mImageFrame.setVisibility(View.GONE);
-        mLinkTextView.setVisibility(View.GONE);
+        mLinkView.setVisibility(View.GONE);
 
         if (savedInstanceState == null) {
             if (Intent.ACTION_SEND.equals(action) && type != null) {
@@ -233,8 +235,8 @@ public class AddWishFromActionActivity extends AddWishActivity
                 Analytics.send(Analytics.WISH, "ShareFrom_Text", mHost);
             }
 
-            mLinkView.setText(mLink);
-            mLinkView.setEnabled(false);
+            mLinkText.setText(mLink);
+            mLinkText.setEnabled(false);
 
             WebRequest request = new WebRequest();
             request.url = mLink;

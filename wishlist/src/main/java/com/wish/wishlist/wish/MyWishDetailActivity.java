@@ -46,6 +46,7 @@ import com.wish.wishlist.util.DoubleUtil;
 import com.wish.wishlist.util.ImagePicker;
 import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.util.dimension;
+import com.wish.wishlist.widgets.ClearableEditText;
 
 import java.io.File;
 import java.text.NumberFormat;
@@ -67,6 +68,7 @@ import me.kaede.tagview.TagView;
 public abstract class MyWishDetailActivity extends WishDetailActivity implements TokenCompleteTextView.TokenListener {
     private static final String TAG = "MyWishDetailActivity";
     protected LinearLayout mInstructionLayout;
+    protected ClearableEditText mLinkText;
     protected TagView mTagView;
     protected View mImageFrame;
     protected TextView mTxtInstruction;
@@ -190,7 +192,8 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         mTxtInstruction = (TextView) findViewById(R.id.txtInstruction);
         mInstructionLayout = (LinearLayout) findViewById(R.id.instructionLayout);
         mTagLayout = (LinearLayout) findViewById(R.id.tagLayout);
-        mLinkView.setVisibility(View.GONE);
+        mLinkText = (ClearableEditText) findViewById(R.id.itemLinkText);
+        mLinkText.setVisibility(View.GONE);
         mCompleteCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
 
         mTagView = (TagView) findViewById(R.id.tag_view);
@@ -321,7 +324,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         description = description.isEmpty() ? null : StringUtil.ellipsize(description, getResources().getInteger(R.integer.item_description_length)); // limit description to max 1500 characters
         String store = mStoreView.getText().toString().trim();
         store = store.isEmpty() ? null : store;
-        String link = mLinkView.getText().toString().trim();
+        String link = mLinkText.getText().toString().trim();
         link = link.isEmpty() ? null : link;
 
         String address = mLocationView.getText().toString().trim();
@@ -404,7 +407,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
             return false;
         }
 
-        String link = mLinkView.getText().toString().trim();
+        String link = mLinkText.getText().toString().trim();
         if (!link.isEmpty() && !Patterns.WEB_URL.matcher(link).matches()) {
             showErrorToast("Link invalid");
             return false;
