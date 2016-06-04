@@ -178,9 +178,9 @@ public class DownloadImageTask {
                     if (bitmap == null) {
                         //Fixme: on what circumstances will this be triggered? no network? url invalid?
                         Log.e(TAG, "downloadWebImage->onBitmapLoaded null bitmap");
+                        Analytics.send(Analytics.DEBUG, "BitmapNull", result.url);
                     }
                     imageDownloaded(bitmap, result.itemId, result.url);
-                    Analytics.send(Analytics.DEBUG, "BitmapNull", result.url);
                 }
 
                 @Override
