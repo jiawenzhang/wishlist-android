@@ -94,6 +94,34 @@ public class ImagePicker {
                 } else {
                     Log.e(TAG, "Take photo permission denied");
                     Analytics.send(Analytics.PERMISSION, "TakePhoto", "Deny");
+
+                    // Should we show an explanation?
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
+                        ActivityCompat.shouldShowRequestPermissionRationale(mActivity, Manifest.permission.CAMERA)) {
+                        //Show permission explanation dialog...
+                        Analytics.send(Analytics.PERMISSION, "TakePhoto", "ExplainDialog");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity, R.style.AppCompatAlertDialogStyle);
+                        builder.setMessage("Cannot take photos without the permissions.").setCancelable(
+                                false).setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    } else {
+                        //Never ask again selected, or device policy prohibits the app from having that permission.
+                        Analytics.send(Analytics.PERMISSION, "TakePhoto", "NeverAskAgain");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity, R.style.AppCompatAlertDialogStyle);
+                        builder.setMessage("To allow taking photos, please go to System Settings -> Apps -> Wishlist -> Permissions and enable Camera and Storage.").setCancelable(
+                                false).setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
                 }
             }
         }

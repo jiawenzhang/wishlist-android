@@ -165,8 +165,20 @@ public class AddWishActivity extends MyWishDetailActivity
                     Analytics.send(Analytics.PERMISSION, "Location", "Grant");
                     getLocation();
                 } else {
-                    Analytics.send(Analytics.PERMISSION, "Location", "Deny");
-                    Log.e(TAG, "Location permission denied");
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION) ||
+                            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                        //Show permission explanation dialog...
+                        Analytics.send(Analytics.PERMISSION, "Location", "ExplainDialog");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+                        builder.setMessage("Wish won't auto record the current location without the permission.").setCancelable(
+                                false).setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
                 }
             }
         }
