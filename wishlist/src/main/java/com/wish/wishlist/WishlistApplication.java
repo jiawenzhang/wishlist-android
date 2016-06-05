@@ -3,12 +3,10 @@ package com.wish.wishlist;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.github.stkent.amplify.tracking.Amplify;
 import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.HashMap;
@@ -19,6 +17,8 @@ import com.parse.ParseACL;
 import com.parse.ParseFacebookUtils;
 //import com.parse.interceptors.ParseLogInterceptor;
 import com.path.android.jobqueue.JobManager;
+import com.wish.wishlist.util.Options;
+import com.wish.wishlist.util.Util;
 
 /**
  * Created by jiawen on 14-12-23.
@@ -43,6 +43,12 @@ public class WishlistApplication extends Application {
         super.onCreate();
 
         mContext = getApplicationContext();
+        Options.DeviceCountry deviceCountry = new Options.DeviceCountry(null);
+        deviceCountry.read();
+        if (deviceCountry.val() == null) {
+            deviceCountry.setVal(Util.getDeviceCountry(this));
+            deviceCountry.save();
+        }
 
         // Initialize Crash Reporting.
         //ParseCrashReporting.enable(this);

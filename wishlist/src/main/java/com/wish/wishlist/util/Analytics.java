@@ -16,6 +16,7 @@ public class Analytics {
     public static final String SOCIAL = "Social";
     public static final String MAP = "Map";
     public static final String USER = "User";
+    public static final String DEVICE = "Device";
     public static final String SYNC = "Sync";
     public static final String PUSH = "Push";
     public static final String DEBUG = "Debug";

@@ -119,6 +119,35 @@ public class Options {
         }
     }
 
+    public static class DeviceCountry {
+        public static final String KEY = "DeviceCountry";
+        private String _key;
+        private String _val;
+
+        public DeviceCountry(String val) {
+            _key = KEY;
+            _val = val;
+        }
+
+        public String val() {
+            return _val;
+        }
+
+        public void setVal(String val) {
+            _val = val;
+        }
+
+        public void read() {
+            _val = pref().getString(_key, null);
+        }
+
+        public void save() {
+            SharedPreferences.Editor editor = pref().edit();
+            editor.putString(_key, _val);
+            editor.commit();
+        }
+    }
+
     /**
      * Created by jiawen on 15-08-24.
      */
