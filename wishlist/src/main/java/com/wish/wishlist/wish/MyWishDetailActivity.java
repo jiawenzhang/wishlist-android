@@ -449,7 +449,9 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
             WishItem newItem = populateItem();
             if (newItem == null) {
                 // wish has not changed
-                mActionMode.finish();
+                if (mActionMode != null) {
+                    mActionMode.finish();
+                }
                 return;
             }
             mItem = newItem;
@@ -474,7 +476,9 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         Analytics.send(Analytics.WISH, "Save", "Existing");
 
         clearPhotoState();
-        mActionMode.finish();
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
     }
 
     protected void clearPhotoState() {
