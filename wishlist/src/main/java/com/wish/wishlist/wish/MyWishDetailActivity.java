@@ -44,6 +44,7 @@ import com.wish.wishlist.tag.AddTagFromEditActivity;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.DoubleUtil;
 import com.wish.wishlist.util.ImagePicker;
+import com.wish.wishlist.util.ScreenOrientation;
 import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.widgets.ClearableEditText;
@@ -357,6 +358,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     }
 
     protected void showProgressDialog(final String text) {
+        ScreenOrientation.lock(this);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(text);
         mProgressDialog.setCancelable(false);
@@ -365,6 +367,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
 
     protected void dismissProgressDialog() {
         mProgressDialog.dismiss();
+        ScreenOrientation.unlock(this);
     }
 
     protected WishItem populateItem() {
