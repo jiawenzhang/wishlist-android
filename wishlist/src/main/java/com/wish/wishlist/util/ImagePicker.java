@@ -71,6 +71,8 @@ public class ImagePicker {
     }
 
     public void takePhoto() {
+        // prevent screen orientation to re-create activity, in which case we lose the state of ImagePicker
+        ScreenOrientation.lock(mActivity);
         Intent intent =  new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // we need to supply EXTRA_OUTPUT for the camera to save a high-quality photo

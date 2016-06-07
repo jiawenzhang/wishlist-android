@@ -246,13 +246,13 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
                 startAddTagIntent();
             }
         });
+
+        mImagePicker = new ImagePicker(this);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        if (mImagePicker != null) {
-            mImagePicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
+        mImagePicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     protected Boolean setTakenPhoto() {
@@ -303,9 +303,6 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     }
 
     protected void startImagePicker() {
-        if (mImagePicker == null) {
-            mImagePicker = new ImagePicker(this);
-        }
         mImagePicker.start();
     }
 
@@ -593,6 +590,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case ImagePicker.TAKE_PICTURE: {
+                ScreenOrientation.unlock(this);
                 if (resultCode == RESULT_OK) {
                     Analytics.send(Analytics.WISH, "TakenPicture", "FromEditItemCameraButton");
 

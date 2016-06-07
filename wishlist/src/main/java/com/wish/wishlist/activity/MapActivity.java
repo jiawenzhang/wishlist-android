@@ -194,8 +194,7 @@ public class MapActivity extends Activity {
         });
     }
 
-    boolean markAllItems()
-    {
+    boolean markAllItems() {
         // Read all items that have location from db
         final String friendId = getIntent().getStringExtra(FRIEND_ID);
         List<WishItem> items_to_show = new ArrayList<>();
@@ -230,8 +229,7 @@ public class MapActivity extends Activity {
         return true;
     }
 
-    void moveToBounds()
-    {
+    void moveToBounds() {
         double width = mBounds.northeast.latitude - mBounds.southwest.latitude;
         double height = mBounds.northeast.longitude - mBounds.southwest.longitude;
         double larger = Math.max(Math.abs(width), Math.abs(height));

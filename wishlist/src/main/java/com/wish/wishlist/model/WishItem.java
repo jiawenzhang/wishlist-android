@@ -681,11 +681,13 @@ public class WishItem implements Parcelable {
     /****************** everything below here is for implementing Parcelable *********************/
 
     // 99.9% of the time you can just ignore this
+    @Override
     public int describeContents() {
         return 0;
     }
 
     // write object's data to the passed-in Parcel
+    @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeLong(mId);
         out.writeString(mObjectId);

@@ -348,20 +348,25 @@ public class ProfileActivity extends ActivityBase implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case PROFILE_IMAGE: {
+        switch (requestCode) {
+            case PROFILE_IMAGE: {
+                if (resultCode == Activity.RESULT_OK) {
                     saveProfileImageToParse();
-                    break;
                 }
-                case ImagePicker.TAKE_PICTURE: {
+                break;
+            }
+            case ImagePicker.TAKE_PICTURE: {
+                ScreenOrientation.unlock(this);
+                if (resultCode == Activity.RESULT_OK) {
                     startCropperActivity(mImagePicker.getPhotoUri());
-                    break;
                 }
-                case ImagePicker.SELECT_PICTURE: {
+                break;
+            }
+            case ImagePicker.SELECT_PICTURE: {
+                if (resultCode == Activity.RESULT_OK) {
                     startCropperActivity(data.getData());
-                    break;
                 }
+                break;
             }
         }
     }

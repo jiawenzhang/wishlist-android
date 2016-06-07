@@ -51,6 +51,7 @@ import com.wish.wishlist.util.ImagePicker;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.sync.SyncAgent;
+import com.wish.wishlist.util.ScreenOrientation;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -594,6 +595,7 @@ public class MyWishActivity extends WishBaseActivity implements
                 break;
             }
             case ImagePicker.TAKE_PICTURE: {
+                ScreenOrientation.unlock(this);
                 if (resultCode == RESULT_OK) {
                     Log.d(TAG, "TAKE_PICTURE: RESULT_OK");
                     Log.d("TAKE PICTURE ", mImagePicker.getPhotoPath());
