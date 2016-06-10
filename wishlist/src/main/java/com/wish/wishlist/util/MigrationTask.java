@@ -92,7 +92,12 @@ public class MigrationTask extends AsyncTask<Void, Void, Void> {//<param, progre
 
         for (Long id : ids) {
             ItemDBManager.ItemsCursor wishItemCursor = itemDBManager.getItem(id);
-            long storeID = wishItemCursor.getLong(wishItemCursor.getColumnIndexOrThrow(ItemDBManager.KEY_STORE_ID));
+            int columnIndex = wishItemCursor.getColumnIndex(ItemDBManager.KEY_STORE_ID);
+            if (columnIndex == -1) {
+                continue;
+            }
+
+            long storeID = wishItemCursor.getLong(columnIndex);
             if (storeID == -1) {
                 continue;
             }
@@ -101,7 +106,11 @@ public class MigrationTask extends AsyncTask<Void, Void, Void> {//<param, progre
             StoreDBManager storeDBManager = new StoreDBManager();
             Cursor storeCursor = storeDBManager.getStore(storeID);
 
-            long locationID = storeCursor.getLong(storeCursor.getColumnIndexOrThrow(StoreDBManager.KEY_LOCATION_ID));
+            columnIndex = storeCursor.getColumnIndex(StoreDBManager.KEY_LOCATION_ID);
+            if (columnIndex == -1) {
+                continue;
+            }
+            long locationID = storeCursor.getLong(columnIndex);
 
             LocationDBManager locationDBManager = new LocationDBManager();
             double latitude = locationDBManager.getLatitude(locationID);
@@ -121,8 +130,16 @@ public class MigrationTask extends AsyncTask<Void, Void, Void> {//<param, progre
             SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             c.moveToFirst();
             while (!c.isAfterLast()){
-                long id = c.getLong(c.getColumnIndexOrThrow("_id"));
-                String updated_time_str = c.getString(c.getColumnIndexOrThrow("date_time"));
+                int columnIndex = c.getColumnIndex("_id");
+                if (columnIndex == -1) {
+                    continue;
+                }
+                long id = c.getLong(columnIndex);
+                columnIndex = c.getColumnIndex("date_time");
+                if (columnIndex == -1) {
+                    continue;
+                }
+                String updated_time_str = c.getString(columnIndex);
                 long updated_time;
                 try {
                     Date date = f.parse(updated_time_str);
