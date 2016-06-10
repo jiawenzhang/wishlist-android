@@ -369,7 +369,7 @@ public class AddWishFromActionActivity extends AddWishActivity
         };
         mPhotoView.setTag(target);
 
-        Picasso.with(this).load(url).resize(ImageManager.IMG_WIDTH, 0).onlyScaleDown().into(target);
+        Picasso.with(this).load(url).resize(ImageManager.IMG_WIDTH, 2048).centerInside().onlyScaleDown().into(target);
         mFullsizePhotoPath = null;
         mSelectedPicUri = null;
         mSelectedPic = false;

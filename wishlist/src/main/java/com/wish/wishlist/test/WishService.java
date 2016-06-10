@@ -129,7 +129,7 @@ public class WishService extends IntentService {
     private void downloadWishImage(WishItem item) {
         try {
             // we are in a background thread, so load the image synchronously
-            Bitmap bitmap = Picasso.with(WishlistApplication.getAppContext()).load(item.getImgMetaArray().get(0).mUrl).resize(ImageManager.IMG_WIDTH, 0).get();
+            Bitmap bitmap = Picasso.with(WishlistApplication.getAppContext()).load(item.getImgMetaArray().get(0).mUrl).resize(ImageManager.IMG_WIDTH, 2048).centerInside().onlyScaleDown().get();
             String fullsizePath;
             if (bitmap != null) {
                 // save the bitmap and a thumbnail as a local file

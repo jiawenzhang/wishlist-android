@@ -45,7 +45,6 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
 
     WebResult getImages(WebRequest request) {
         WebResult result = new WebResult();
-        int imageWidth = dimension.screenWidth() / 2;
         try {
             //Connection.Response response = Jsoup.connect(urls[0]).followRedirects(true).execute();
             Document doc;
@@ -117,12 +116,8 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                 twitter_image_src = getValidImageUrl(twitter_image_src);
                 if (!twitter_image_src.isEmpty()) {
                     Bitmap image = null;
-                    try {
-                        Log.d(TAG, "twitter image src " + twitter_image_src);
-                        image = Picasso.with(mContext).load(twitter_image_src).resize(imageWidth, 0).onlyScaleDown().get();
-                    } catch (IOException e) {
-                        Log.e(TAG, "get twitter image error: " + e.toString());
-                    }
+                    Log.d(TAG, "twitter image src " + twitter_image_src);
+                    image = scaleDownBitmap(twitter_image_src);
 
                     if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
                         Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "X" + image.getHeight());
@@ -142,13 +137,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                 og_image_src = getValidImageUrl(og_image_src);
                 if (!og_image_src.isEmpty() && !imageUrls.contains(og_image_src)) {
                     imageUrls.add(og_image_src);
-                    Bitmap image = null;
-                    try {
-                        image = Picasso.with(mContext).load(og_image_src).resize(imageWidth, 0).onlyScaleDown().get();
-                    } catch (IOException e) {
-                        Log.e(TAG, "get og_image error: " + e.toString());
-                    }
-
+                    Bitmap image = scaleDownBitmap(og_image_src);
                     // some websites like kijiji will return us a tiny og:image
                     // let's try to get more images if this happens.
                     if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
@@ -202,21 +191,17 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     continue;
                 }
 
-                try {
-                    final Bitmap image = Picasso.with(mContext).load(src).resize(imageWidth, 0).onlyScaleDown().get();
-                    // filter out small images
-                    if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
-                        continue;
-                    }
-
-                    if (single_image == null) {
-                        single_image = image;
-                    }
-                    Log.d(TAG, "adding " + src + " " + image.getWidth() + " x " + image.getHeight());
-                    result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), null));
-                } catch (IOException e) {
-                    Log.e(TAG, "get image error " + src + " " + e.toString());
+                final Bitmap image = scaleDownBitmap(src);
+                // filter out small images
+                if (image == null || image.getWidth() <= 100 || image.getHeight() <= 100) {
+                    continue;
                 }
+
+                if (single_image == null) {
+                    single_image = image;
+                }
+                Log.d(TAG, "adding " + src + " " + image.getWidth() + " x " + image.getHeight());
+                result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), null));
             }
 
             // when there is only one image, we need to pass the bitmap, because we set the bitmap on the ImageView
@@ -280,6 +265,23 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             src = "";
         }
         return src;
+    }
+
+    private Bitmap scaleDownBitmap(String url) {
+        final int maxImageWidth = dimension.screenWidth() / 2;
+        final int maxImageHeight = dimension.screenHeight() / 2;
+
+        //final Bitmap image = Picasso.with(mContext).load(src).resize(imageWidth, 0).centerInside().onlyScaleDown().get();
+        // onlyScaleDown() has no effect when working together with resize(targetWidth, 0) on Android 5.1, 6.0
+        // it works on Android 4.4
+
+        // workaround the issue by using centerInside
+        try {
+            return Picasso.with(mContext).load(url).resize(maxImageWidth, maxImageHeight).centerInside().onlyScaleDown().get();
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+            return null;
+        }
     }
 }
 

@@ -81,7 +81,7 @@ public class WishImageDownloader {
         };
 
         m_targets.put(picURL, target);
-        Picasso.with(WishlistApplication.getAppContext()).load(picURL).resize(ImageManager.IMG_WIDTH, 0).into(target);
+        Picasso.with(WishlistApplication.getAppContext()).load(picURL).resize(ImageManager.IMG_WIDTH, 2048).centerInside().onlyScaleDown().into(target);
     }
 
     private void bitmapFailed(final String picUrl) {

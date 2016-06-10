@@ -24,5 +24,12 @@ public class dimension {
         display.getSize(screenSize);
         return screenSize.x;
     }
+
+    public static int screenHeight() {
+        Display display = ((WindowManager) WishlistApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        Point screenSize = new Point();
+        display.getSize(screenSize);
+        return screenSize.y;
+    }
 }
 

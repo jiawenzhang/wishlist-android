@@ -195,7 +195,7 @@ public class DownloadImageTask {
             };
 
             mTargets.put(result.url, target);
-            Picasso.with(WishlistApplication.getAppContext()).load(result.url).resize(ImageManager.IMG_WIDTH, 0).into(target);
+            Picasso.with(WishlistApplication.getAppContext()).load(result.url).resize(ImageManager.IMG_WIDTH, 2048).centerInside().onlyScaleDown().into(target);
         } else if (result.code == result.NO_FILE) {
             // invalid url, clear the wish's ImgMeta so we won't try to download from this url again
             WishItem item = WishItemManager.getInstance().getItemById(result.itemId);
