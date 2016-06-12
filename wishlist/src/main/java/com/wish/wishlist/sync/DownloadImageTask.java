@@ -64,7 +64,7 @@ public class DownloadImageTask {
                 // we may have a network error like timeout or java.net.UnknownHostException
                 // need more experiments to test what other exception is possible
                 Log.e(TAG, "check file exception " + e.toString());
-                Analytics.send(Analytics.DEBUG, "CheckFileException", e.toString());
+                Analytics.send(Analytics.DEBUG, "CheckFileException", e.toString() + " " + result.url);
                 result.code = result.NETWORK_ERROR;
             }
             return result;
