@@ -32,6 +32,7 @@ public class FullscreenPhotoActivity extends AppCompatActivity {
     private String mPhotoUrl;
     private ImageView mImageItem;
     private PhotoViewAttacher mAttacher;
+    private Target mTarget;
     private class GetBitmapTask extends AsyncTask<Void, Void, Bitmap> {//<param, progress, result>
         @Override
         protected Bitmap doInBackground(Void... arg) {
@@ -98,7 +99,7 @@ public class FullscreenPhotoActivity extends AppCompatActivity {
         } else if (mPhotoPath != null) {
             new GetBitmapTask().execute();
         } else if (mPhotoUrl != null) {
-            Target target = new Target() {
+            mTarget = new Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     if (bitmap != null) {
@@ -115,11 +116,12 @@ public class FullscreenPhotoActivity extends AppCompatActivity {
 
                 @Override
                 public void onBitmapFailed(Drawable errorDrawable) {
+                    Log.e(TAG, "onBitmapFailed");
                     finish();
                 }
             };
 
-            Picasso.with(this).load(mPhotoUrl).into(target);
+            Picasso.with(this).load(mPhotoUrl).resize(dimension.screenWidth(), dimension.screenHeight()).centerInside().onlyScaleDown().into(mTarget);
         } else {
             finish();
         }
