@@ -115,12 +115,12 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                 String twitter_image_src = twitter_image_element.first().attr("content");
                 twitter_image_src = getValidImageUrl(twitter_image_src);
                 if (!twitter_image_src.isEmpty()) {
-                    Bitmap image = null;
+                    Bitmap image;
                     Log.d(TAG, "twitter image src " + twitter_image_src);
                     image = scaleDownBitmap(twitter_image_src);
 
                     if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
-                        Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "X" + image.getHeight());
+                        Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "x" + image.getHeight());
                         result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), "", image));
                         if (!request.getAllImages) {
                             return result;

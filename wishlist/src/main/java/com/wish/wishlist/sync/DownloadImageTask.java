@@ -56,7 +56,7 @@ public class DownloadImageTask {
                 } else {
                     // server responds with non http 200 code, it is likely the url has become invalid,
                     // like image has been removed or moved to a different url.
-                    Log.e(TAG, "file does not exist, response code: " + con.getResponseCode());
+                    Log.e(TAG, "file does not exist, response code: " + con.getResponseCode() + " " + result.url);
                     result.code = result.NO_FILE;
                     Analytics.send(Analytics.DEBUG, "NoFile", con.getResponseMessage() + " " + result.url);
                 }
