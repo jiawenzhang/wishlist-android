@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+import com.wish.wishlist.BuildConfig;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.WebImage;
@@ -93,7 +94,11 @@ public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 int proximateCardWidth = dimension.screenWidth() / 2;
                 Picasso.with(holder_.imageView.getContext()).load(webImage.mUrl).resize(proximateCardWidth, 0).transform(mTransform).into(holder_.imageView);
 
-                holder_.textView.setText(webImage.mWidth + " x " + webImage.mHeight);
+                if (BuildConfig.DEBUG) {
+                    holder_.textView.setText(webImage.mWidth + " x " + webImage.mHeight);
+                } else {
+                    holder_.textView.setVisibility(View.GONE);
+                }
             }
         }
 
