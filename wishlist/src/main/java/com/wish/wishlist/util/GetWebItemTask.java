@@ -122,6 +122,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
                         Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "x" + image.getHeight());
                         result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), "", image));
+                        Analytics.send(Analytics.DEBUG, "GotImage", "Twitter");
                         if (!request.getAllImages) {
                             return result;
                         }
@@ -141,8 +142,9 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     // some websites like kijiji will return us a tiny og:image
                     // let's try to get more images if this happens.
                     if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
-                        Log.d(TAG, "og:image src: " + og_image_src + " " + image.getWidth() + "X" + image.getHeight());
+                        Log.d(TAG, "og:image src: " + og_image_src + " " + image.getWidth() + "x" + image.getHeight());
                         result._webImages.add(new WebImage(og_image_src, image.getWidth(), image.getHeight(), "", image));
+                        Analytics.send(Analytics.DEBUG, "GotImage", "OG");
                         if (!request.getAllImages) {
                             return result;
                         }
@@ -214,6 +216,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             Log.e(TAG, e.toString());
         }
 
+        Analytics.send(Analytics.DEBUG, "GotImage", "All " + result._webImages.size());
         return result;
     }
 
