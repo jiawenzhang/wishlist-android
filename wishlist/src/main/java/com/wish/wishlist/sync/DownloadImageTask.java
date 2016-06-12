@@ -17,6 +17,7 @@ import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.wish.ImgMeta;
 
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class DownloadImageTask {
         public int EXISTS = 0;
         public int NO_FILE = 1;
         public int NETWORK_ERROR = 2;
+        public int MALFORMEDURL = 3;
 
         Long itemId;
         public String url;
@@ -46,10 +48,12 @@ public class DownloadImageTask {
         protected Result doInBackground(Result... params) {
             Result result = params[0];
 
+            HttpURLConnection.setFollowRedirects(false);
+            HttpURLConnection con = null;
             try {
-                HttpURLConnection.setFollowRedirects(false);
-                HttpURLConnection con =  (HttpURLConnection) new URL(result.url).openConnection();
+                con = (HttpURLConnection) new URL(result.url).openConnection();
                 con.setRequestMethod("HEAD");
+                con.getInputStream().close();
                 if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     Log.d(TAG, "file exists");
                     result.code = result.EXISTS;
@@ -60,12 +64,20 @@ public class DownloadImageTask {
                     result.code = result.NO_FILE;
                     Analytics.send(Analytics.DEBUG, "NoFile", con.getResponseMessage() + " " + result.url);
                 }
+            } catch (MalformedURLException e) {
+                Log.e(TAG, "MalformedURLException " + e.toString());
+                result.code = result.MALFORMEDURL;
+                Analytics.send(Analytics.DEBUG, "CheckFileException", e.toString() + " " + result.url);
             } catch (Exception e) {
                 // we may have a network error like timeout or java.net.UnknownHostException
                 // need more experiments to test what other exception is possible
                 Log.e(TAG, "check file exception " + e.toString());
                 Analytics.send(Analytics.DEBUG, "CheckFileException", e.toString() + " " + result.url);
                 result.code = result.NETWORK_ERROR;
+            } finally {
+                if (con != null) {
+                    con.disconnect();
+                }
             }
             return result;
         }
@@ -196,7 +208,7 @@ public class DownloadImageTask {
 
             mTargets.put(result.url, target);
             Picasso.with(WishlistApplication.getAppContext()).load(result.url).resize(ImageManager.IMG_WIDTH, 2048).centerInside().onlyScaleDown().into(target);
-        } else if (result.code == result.NO_FILE) {
+        } else if (result.code == result.NO_FILE || result.code == result.MALFORMEDURL) {
             // invalid url, clear the wish's ImgMeta so we won't try to download from this url again
             WishItem item = WishItemManager.getInstance().getItemById(result.itemId);
             item.setImgMetaArray(null);
