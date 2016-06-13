@@ -17,19 +17,14 @@
 
     <!-- permission for Parse push notification -->
     <uses-permission
-        android:enabled="@bool/enable_account"
         android:name="android.permission.WAKE_LOCK" />
     <uses-permission
-        android:enabled="@bool/enable_account"
         android:name="android.permission.VIBRATE" />
     <uses-permission
-        android:enabled="@bool/enable_account"
         android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission
-        android:enabled="@bool/enable_account"
         android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission
-        android:enabled="@bool/enable_account"
         android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <!--
@@ -38,12 +33,10 @@
     -->
 
     <permission
-        android:enabled="@bool/enable_account"
         android:name="${applicationId}.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <uses-permission
-        android:enabled="@bool/enable_account"
         android:name="${applicationId}.permission.C2D_MESSAGE" />
 
 
@@ -366,11 +359,9 @@
             android:value="@string/facebook_app_id" />
 
         <service
-            android:enabled="@bool/enable_account"
             android:name="com.parse.PushService" />
         <!-- Fixme: use our own receiver for non GCM push -->
         <receiver
-            android:enabled="@bool/enable_account"
             android:name="com.parse.ParseBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -379,7 +370,6 @@
         </receiver>
         <!-- <receiver android:name="com.parse.ParsePushBroadcastReceiver" -->
         <receiver
-            android:enabled="@bool/enable_account"
             android:name=".sync.PushBroadcastReceiver"
             android:exported="false" >
             <intent-filter>
@@ -389,7 +379,6 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:enabled="@bool/enable_account"
             android:name="com.parse.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>

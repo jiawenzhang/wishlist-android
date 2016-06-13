@@ -19,6 +19,7 @@ import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.MigrationTask;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ScreenOrientation;
+import com.wish.wishlist.util.Util;
 import com.wish.wishlist.wish.MyWishActivity;
 
 import java.io.File;
@@ -98,7 +99,7 @@ public class SplashActivity extends AppCompatActivity implements
             // user opens the app for the first time, show the on boarding pages
             startActivity(new Intent(getApplication(), OnBoardingFragmentActivity.class));
         } else {
-            if (getResources().getBoolean(R.bool.enable_account)) {
+            if (Util.deviceAccountEnabled()) {
                 Options.ShowLoginOnStartup showLoginOption = new Options.ShowLoginOnStartup();
                 showLoginOption.read();
                 if (ParseUser.getCurrentUser() == null && showLoginOption.val() == 1) {

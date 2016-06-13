@@ -9,7 +9,7 @@ import com.wish.wishlist.WishlistApplication;
  */
 public class Owner {
     public static String id() {
-        if (!WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_account)) {
+        if (!Util.deviceAccountEnabled()) {
             return null;
         }
 

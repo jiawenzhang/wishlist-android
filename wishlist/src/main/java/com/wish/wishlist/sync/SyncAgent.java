@@ -17,6 +17,7 @@ import com.wish.wishlist.event.ProfileChangeEvent;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.ProfileUtil;
+import com.wish.wishlist.util.Util;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -169,7 +170,7 @@ public class SyncAgent implements
     // how does parse trigger sync on the client? push notification?
     public void sync() {
         Log.d(TAG, "sync");
-        if (!WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_account)) {
+        if (!Util.deviceAccountEnabled()) {
             return;
         }
 

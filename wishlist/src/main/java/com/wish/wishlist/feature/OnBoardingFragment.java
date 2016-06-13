@@ -14,6 +14,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Options;
+import com.wish.wishlist.util.Util;
 import com.wish.wishlist.wish.MyWishActivity;
 
 public final class OnBoardingFragment extends Fragment {
@@ -50,7 +51,7 @@ public final class OnBoardingFragment extends Fragment {
                 showShareView();
                 break;
             } case 2: {
-                if (WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_account)) {
+                if (Util.deviceAccountEnabled()) {
                     showSyncView();
                 } else {
                     showCompleteView();
@@ -107,7 +108,7 @@ public final class OnBoardingFragment extends Fragment {
                 Options.ShowOnBoarding showOnBoarding = new Options.ShowOnBoarding(0);
                 showOnBoarding.save();
 
-                if (getResources().getBoolean(R.bool.enable_account)) {
+                if (Util.deviceAccountEnabled()) {
                     Intent intent = new Intent(getActivity(), UserLoginActivity.class);
                     intent.putExtra(UserLoginActivity.FROM_SPLASH, true);
                     intent.putExtra(UserLoginActivity.ALLOW_SKIP, true);

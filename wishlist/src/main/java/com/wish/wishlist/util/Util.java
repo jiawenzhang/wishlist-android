@@ -4,6 +4,7 @@ import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 /**
@@ -12,6 +13,7 @@ import java.util.Locale;
 public class Util {
 
     final private static String TAG = "Util";
+    private static boolean deviceAccountEnabled = false;
     /**
      * Get ISO 3166-1 alpha-2 country code for this device
      * @param context Context reference to get the TelephonyManager instance from
@@ -40,5 +42,20 @@ public class Util {
         String country = context.getResources().getConfiguration().locale.getCountry();
         Analytics.send(Analytics.DEVICE, "Locale", country);
         return country;
+    }
+
+    public static void initDeviceAccountEnabled() {
+        Options.DeviceCountry deviceCountry = new Options.DeviceCountry(null);
+        deviceCountry.read();
+        ArrayList<String> enabledCountryList = new ArrayList<>();
+        enabledCountryList.add("US");
+        enabledCountryList.add("CA");
+        if (deviceCountry.val() != null && enabledCountryList.contains(deviceCountry.val())) {
+            deviceAccountEnabled = true;
+        }
+    }
+
+    public static boolean deviceAccountEnabled() {
+        return deviceAccountEnabled;
     }
 }

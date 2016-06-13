@@ -3,6 +3,7 @@ package com.wish.wishlist;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.github.stkent.amplify.tracking.Amplify;
@@ -50,6 +51,8 @@ public class WishlistApplication extends Application {
             deviceCountry.save();
         }
 
+        Util.initDeviceAccountEnabled();
+
         // Initialize Crash Reporting.
         //ParseCrashReporting.enable(this);
 
@@ -58,13 +61,12 @@ public class WishlistApplication extends Application {
 
         // Add your initialization code here
 
-        if (getResources().getBoolean(R.bool.enable_account)) {
+        if (Util.deviceAccountEnabled()) {
             Parse.initialize(new Parse.Configuration.Builder(getAppContext())
                     .applicationId(getResources().getString(R.string.parse_application_id))
                     .clientKey(getResources().getString(R.string.parse_client_key))
                             //.server("http://localhost:1337/parse")
                     .server(getString(R.string.parse_server_url) + "/parse/")
-                            //.server("http://192.168.1.68:1337/parse/")
                             //.addNetworkInterceptor(new ParseLogInterceptor())
                     .build());
 

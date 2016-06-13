@@ -22,6 +22,7 @@ import com.wish.wishlist.feature.NewFeatureFragmentActivity;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.util.Util;
 import com.wish.wishlist.view.ReleaseNotesView;
 
 /**
@@ -58,7 +59,7 @@ public class PrefsFragment extends PreferenceFragment implements
             generalCategory.removePreference(p);
         }
 
-        if (!getResources().getBoolean(R.bool.enable_account)) {
+        if (!Util.deviceAccountEnabled()) {
             generalCategory.removePreference(userProfile);
         }
 

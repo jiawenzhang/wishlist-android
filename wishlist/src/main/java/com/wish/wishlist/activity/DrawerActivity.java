@@ -26,6 +26,7 @@ import com.wish.wishlist.friend.FriendsActivity;
 import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ProfileUtil;
+import com.wish.wishlist.util.Util;
 import com.wish.wishlist.wish.MyWishActivity;
 
 import static com.wish.wishlist.R.style.AppCompatAlertDialogStyle;
@@ -186,7 +187,7 @@ public abstract class DrawerActivity extends ActivityBase {
     protected void setupNavigationDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-        if (getResources().getBoolean(R.bool.enable_account)) {
+        if (Util.deviceAccountEnabled()) {
             mNavigationViewHeader = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
             mGeneratedProfileImageView = (ImageView) mNavigationViewHeader.findViewById(R.id.generated_profile_image);
             mHeaderLayout = (RelativeLayout) mNavigationViewHeader.findViewById(R.id.drawer_header_layout);

@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.util.Util;
 
 class OnBoardingFragmentAdapter extends FragmentPagerAdapter {
     public OnBoardingFragmentAdapter(FragmentManager fm) {
@@ -19,7 +20,7 @@ class OnBoardingFragmentAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        if (WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_account)) {
+        if (Util.deviceAccountEnabled()) {
             return 4;
         }
         return 3;

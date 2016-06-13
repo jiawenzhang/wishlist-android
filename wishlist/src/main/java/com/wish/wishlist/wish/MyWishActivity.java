@@ -52,6 +52,7 @@ import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.util.ScreenOrientation;
+import com.wish.wishlist.util.Util;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -764,7 +765,7 @@ public class MyWishActivity extends WishBaseActivity implements
     }
 
     private Boolean refreshEnabled() {
-        if (getResources().getBoolean(R.bool.enable_account)) {
+        if (Util.deviceAccountEnabled()) {
             return ParseUser.getCurrentUser() != null;
         } else {
             return false;
