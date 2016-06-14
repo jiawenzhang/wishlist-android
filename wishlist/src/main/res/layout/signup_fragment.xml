@@ -29,6 +29,6 @@
         android:gravity="center"
         android:textColor="@color/less_dark_grey"
         android:textSize="@dimen/text_size_smaller"
-        android:text="By signing up, you agree to our Terms and Privacy Policy"/>
+        android:text="By signing up, you agree to our Privacy Policy"/>
 
 </LinearLayout>

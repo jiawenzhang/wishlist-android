@@ -112,8 +112,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
     }
 
     String privacyUrl = "http://beanswishlist.com/privacy.html";
-    String termsUrl = "http://beanswishlist.com/privacy.html";
-    String text = "By signing up, you agree to our <a href=\"" + termsUrl + "\">Terms</a> & <a href=\"" + privacyUrl + "\">Privacy Policy</a>";
+    String text = "By signing up, you agree to our <a href=\"" + privacyUrl + "\">Privacy Policy</a>";
     TextView terms = (TextView) v.findViewById(R.id.txt_terms_privacy);
     terms.setText(Html.fromHtml(text));
     terms.setMovementMethod(LinkMovementMethod.getInstance());
