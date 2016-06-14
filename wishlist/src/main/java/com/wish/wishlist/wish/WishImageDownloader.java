@@ -100,7 +100,7 @@ public class WishImageDownloader {
             ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
         }
 
-        item.setObjectId("");
+        item.setObjectId(null);
 
         final boolean wishDefaultPrivate = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).getBoolean("wishDefaultPrivate", false);
         if (wishDefaultPrivate) {
