@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <releaseNote>
+    <release versionName="1.3.0" versionCode="60">
+        <note>Support account registration</note>
+        <note>Allow backup wishes to cloud</note>
+        <note>Sync wishes across devices</note>
+    </release>
     <release versionName="1.2.6" versionCode="31">
         <note>View switching animations for Android Lollipop and up</note>
     </release>
