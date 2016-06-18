@@ -48,6 +48,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
                 >
 
                 <Button
@@ -60,12 +62,23 @@
                     android:bottomLeftRadius="10dp"
                     android:topLeftRadius="10dp"
                     android:topRightRadius="10dp"
-                    android:text="Make your first wish"
+                    android:text="Make a wish"
                     android:textSize="16.0sp"
                     android:clickable="true"
                     android:textColor="@color/grey"
                     android:background="@drawable/dotted_button"
-                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
+                    />
+
+                <TextView
+                    android:id="@+id/newWishByShare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/addNewWishButton"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/less_dark_grey"
+                    android:textSize="16sp"
+                    android:gravity="center"
                     />
             </RelativeLayout>
         </ScrollView>

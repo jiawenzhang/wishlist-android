@@ -7,8 +7,10 @@ import java.util.List;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.content.Intent;
@@ -18,11 +20,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.SpannableStringBuilder;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
@@ -126,13 +131,23 @@ public class MyWishActivity extends WishBaseActivity implements
             updateFilterView(filterType.tag);
         }
 
-        mAddNewButton = (Button) findViewById(R.id.addNewWishButton);
-        mAddNewButton.setOnClickListener(new android.view.View.OnClickListener() {
+        Button addNewButton = (Button) findViewById(R.id.addNewWishButton);
+        addNewButton.setOnClickListener(new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
                 Intent addItem = new Intent(MyWishActivity.this, AddWishActivity.class);
                 startActivityForResult(addItem, ADD_ITEM);
             }
         });
+
+        TextView t = (TextView)  findViewById(R.id.newWishByShare);
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append("Or save a wish by sharing  ");
+        Drawable d = ResourcesCompat.getDrawable(getResources(), R.drawable.share_96, null);
+        d.setBounds(0, 0, t.getLineHeight(), t.getLineHeight());
+        builder.setSpan(new ImageSpan(d), builder.length() - 1, builder.length(), 0);
+        builder.append("  one from your browser or apps like amazon and ebay");
+
+        t.setText(builder);
 
         SyncAgent.getInstance().registerListener(this);
         SyncAgent.getInstance().registerSyncStartListener(this);
