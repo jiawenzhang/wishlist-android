@@ -362,14 +362,14 @@
         <service
             android:name="com.parse.PushService" />
         <!-- Fixme: use our own receiver for non GCM push -->
-        <receiver
-            android:name="com.parse.ParseBroadcastReceiver" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
-        <!-- <receiver android:name="com.parse.ParsePushBroadcastReceiver" -->
+        <!-- disable ParseBroadcastReceiver, it will cause crash for users whose build does not have Parse initialized -->
+        <!--<receiver-->
+        <!--android:name="com.parse.ParseBroadcastReceiver" >-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
+        <!--<action android:name="android.intent.action.USER_PRESENT" />-->
+        <!--</intent-filter>-->
+        <!--</receiver>-->
         <receiver
             android:name=".sync.PushBroadcastReceiver"
             android:exported="false" >
