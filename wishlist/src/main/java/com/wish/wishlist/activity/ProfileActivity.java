@@ -86,7 +86,7 @@ public class ProfileActivity extends ActivityBase implements
         Analytics.sendScreen("Profile");
 
         // make toolbar transparent
-        mToolbar.getBackground().setAlpha(0);
+        mToolbar.setBackgroundResource(android.R.color.transparent);
 
         final ParseUser user = ParseUser.getCurrentUser();
         if (user == null) {
