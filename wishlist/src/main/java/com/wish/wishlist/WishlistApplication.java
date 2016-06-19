@@ -3,7 +3,6 @@ package com.wish.wishlist;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.github.stkent.amplify.tracking.Amplify;
@@ -42,8 +41,12 @@ public class WishlistApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         mContext = getApplicationContext();
+
+        ApplicationLifecycleHandler handler = new ApplicationLifecycleHandler();
+        registerActivityLifecycleCallbacks(handler);
+        registerComponentCallbacks(handler);
+
         Options.DeviceCountry deviceCountry = new Options.DeviceCountry(null);
         deviceCountry.read();
         if (deviceCountry.val() == null) {
@@ -74,10 +77,10 @@ public class WishlistApplication extends Application {
 
             // Optional - If you don't want to allow Twitter login, you can
             // remove this line (and other related ParseTwitterUtils calls)
-            //ParseTwitterUtils.initialize(getString(R.string.twitter_consumer_key),
-            //getString(R.string.twitter_consumer_secret));
+            // ParseTwitterUtils.initialize(getString(R.string.twitter_consumer_key),
+            // getString(R.string.twitter_consumer_secret));
 
-//        ParseUser.enableAutomaticUser();
+            // ParseUser.enableAutomaticUser();
             ParseACL defaultACL = new ParseACL();
             // Optionally enable public read access.
             // defaultACL.setPublicReadAccess(true);

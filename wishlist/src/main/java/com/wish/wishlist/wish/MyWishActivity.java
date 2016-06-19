@@ -85,7 +85,6 @@ public class MyWishActivity extends WishBaseActivity implements
     private Options.Tag mTag = new Options.Tag(null);
 
     private String mNameQuery = null;
-    private Button mAddNewButton;
     private ArrayList<Long> mItemIds = new ArrayList<>();
     private MenuItem mMenuSearch;
 
