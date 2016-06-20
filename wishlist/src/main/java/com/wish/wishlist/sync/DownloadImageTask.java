@@ -3,6 +3,7 @@ package com.wish.wishlist.sync;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 
 import com.squareup.picasso.Picasso;
@@ -53,7 +54,12 @@ public class DownloadImageTask {
             try {
                 con = (HttpURLConnection) new URL(result.url).openConnection();
                 con.setRequestMethod("HEAD");
-                con.getInputStream().close();
+                if (Build.VERSION.SDK_INT < 21) {
+                    // Android's HttpURLConnection throws EOFException on HEAD requests for some urls
+                    // failure url example: "http://img.canadacomputers.com/Products/300x300/008473/334.jpg"
+                    // discussion: http://stackoverflow.com/questions/17638398/androids-httpurlconnection-throws-eofexception-on-head-requests
+                    con.setRequestProperty("Accept-Encoding", "");
+                }
                 if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     Log.d(TAG, "file exists");
                     result.code = result.EXISTS;
@@ -71,7 +77,7 @@ public class DownloadImageTask {
             } catch (Exception e) {
                 // we may have a network error like timeout or java.net.UnknownHostException
                 // need more experiments to test what other exception is possible
-                Log.e(TAG, "check file exception " + e.toString());
+                Log.e(TAG, "check file exception " + e.toString() + " " + result.url);
                 Analytics.send(Analytics.DEBUG, "CheckFileException", e.toString() + " " + result.url);
                 result.code = result.NETWORK_ERROR;
             } finally {
