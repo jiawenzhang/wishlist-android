@@ -1,5 +1,6 @@
 package com.wish.wishlist.wish;
 
+import android.annotation.TargetApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.app.ProgressDialog;
@@ -13,6 +14,8 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -194,6 +197,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
     }
 
     private void getGeneratedHtml() {
+        Log.d(TAG, "getGeneratedHtml");
         mWebView = new WebView(AddWishFromLinkActivity.this);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.addJavascriptInterface(new MyJavaScriptInterface(this), "HtmlViewer");
@@ -207,11 +211,19 @@ public class AddWishFromLinkActivity extends AddWishActivity
                         "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
             }
 
+            @SuppressWarnings("deprecation")
             @Override
-            public void onReceivedError(WebView view, int errorCode,
-                                        String description, String failingUrl) {
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                // Handle the error
                 Log.e(TAG, "onReceivedError " + description);
                 super.onReceivedError(view, errorCode, description, failingUrl);
+            }
+
+            @TargetApi(android.os.Build.VERSION_CODES.M)
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError error) {
+                // Redirect to deprecated method, so you can use it in all SDK versions
+                onReceivedError(view, error.getErrorCode(), error.getDescription().toString(), req.getUrl().toString());
             }
         });
 
