@@ -99,15 +99,26 @@ public class ProfileUtil {
     }
 
     public static Drawable generateProfileImage() {
-        if (ParseUser.getCurrentUser() == null) {
+        ParseUser user = ParseUser.getCurrentUser();
+        if (user == null) {
             return null;
+        }
+
+        String name = user.getString("name");
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+
+        String username = user.getUsername();
+        if (username == null) {
+            username = "magic@username.com";
         }
 
         // generate color based on a key (same key returns the same color), useful for list/grid views
         ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
-        int color = generator.getColor(ParseUser.getCurrentUser().getUsername());
+        int color = generator.getColor(username);
 
         return TextDrawable.builder()
-                .buildRound(ParseUser.getCurrentUser().getString("name").substring(0,1).toUpperCase(), color);
+                .buildRound(name.substring(0,1).toUpperCase(), color);
     }
 }
