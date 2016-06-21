@@ -69,7 +69,6 @@ public class SyncAgent implements
                 HttpURLConnection urlConn = (HttpURLConnection) urlServer.openConnection();
                 urlConn.setRequestMethod("HEAD");
                 urlConn.setConnectTimeout(5000); // http request from countries like China can take several seconds
-                urlConn.connect();
                 if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     Log.d(TAG, "parse server reachable");
                     return true;
