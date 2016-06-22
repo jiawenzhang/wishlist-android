@@ -44,7 +44,7 @@ public class UserLoginActivity extends Activity {
                 .setParseLoginButtonText("Login")
                 .setParseSignupButtonText("Sign up")
                 .setParseLoginHelpText("Forgot password?")
-                .setParseLoginInvalidCredentialsToastText("You email and/or password is not correct")
+                .setParseLoginInvalidCredentialsToastText("Your email and/or password is not correct")
                 .setParseLoginEmailAsUsername(true)
                 .setParseSignupSubmitButtonText("Sign up")
                 .setFacebookLoginEnabled(true)
