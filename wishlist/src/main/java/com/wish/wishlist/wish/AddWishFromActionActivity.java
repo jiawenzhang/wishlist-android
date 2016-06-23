@@ -103,7 +103,7 @@ public class AddWishFromActionActivity extends AddWishFromLinkActivity {
         String name = sharedText.replace(links.get(0), "");
         mNameView.setText(name);
 
-        handleLinks(links);
+        handleLinks(links, "ShareFrom_Text");
     }
 
     @Override

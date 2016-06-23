@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.wish.AddWishFromLinkActivity;
 
 import java.util.ArrayList;
@@ -31,16 +32,18 @@ public class ActivityBase extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    public void showSnack(final ArrayList<String> links) {
+    public void showLinkSnack(final ArrayList<String> links) {
         View rootView = findViewById(android.R.id.content);
         if (rootView == null) {
             return;
         }
 
+        Analytics.send(Analytics.WISH, "LinkSnackbar", "Show");
         Snackbar.make(rootView, "You copied a link, add as a wish?\n" + links.get(0), Snackbar.LENGTH_LONG)
                 .setAction("ADD", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Analytics.send(Analytics.WISH, "LinkSnackbar", "TapAdd");
                         Intent intent = new Intent(ActivityBase.this, AddWishFromLinkActivity.class);
                         intent.putStringArrayListExtra(AddWishFromLinkActivity.LINKS, links);
                         startActivity(intent);

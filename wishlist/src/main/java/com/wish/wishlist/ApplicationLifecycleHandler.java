@@ -67,7 +67,7 @@ public class ApplicationLifecycleHandler implements Application.ActivityLifecycl
         // clear the clipboard so snackbar won't show up again next time
         ClipData clipData = ClipData.newPlainText("", "");
         cb.setPrimaryClip(clipData);
-        activityBase.showSnack(links);
+        activityBase.showLinkSnack(links);
     }
 
     @Override

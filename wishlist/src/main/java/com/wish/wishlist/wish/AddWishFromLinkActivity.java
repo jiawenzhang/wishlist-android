@@ -98,7 +98,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
         if (links != null && !links.isEmpty()) {
             if (savedInstanceState == null) {
                 Log.d(TAG, "got links " + links.toString());
-                handleLinks(links);
+                handleLinks(links, "ShareFrom_Link");
             }
         }
 
@@ -129,7 +129,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
         }
     }
 
-    protected void handleLinks(ArrayList<String> links) {
+    protected void handleLinks(ArrayList<String> links, String action) {
         mHost = null;
 
         // only cares about the valid first link
@@ -156,7 +156,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
         Log.d(TAG, "extracted link: " + mLink);
 
         if (mHost != null) {
-            Analytics.send(Analytics.WISH, "ShareFrom_Link", mHost);
+            Analytics.send(Analytics.WISH, action, mHost);
         }
 
         mLinkText.setText(mLink);
@@ -215,7 +215,8 @@ public class AddWishFromLinkActivity extends AddWishActivity
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 // Handle the error
-                Log.e(TAG, "onReceivedError " + description);
+                Log.e(TAG, "onReceivedError " + description + " " + failingUrl);
+                Analytics.send(Analytics.DEBUG, "WebViewLoadError", description + " " + failingUrl);
                 super.onReceivedError(view, errorCode, description, failingUrl);
             }
 
