@@ -122,6 +122,7 @@ public class WishlistApplication extends Application {
             Tracker t = analytics.newTracker(getResources().getString(R.string.analytics_property_id));
             t.setSessionTimeout(300);
             t.enableExceptionReporting(true);
+            t.enableAdvertisingIdCollection(true);
 
             mTrackers.put(trackerId, t);
         }
