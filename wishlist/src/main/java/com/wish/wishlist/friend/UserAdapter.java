@@ -4,7 +4,10 @@ package com.wish.wishlist.friend;
  * Created by jiawen on 15-10-05.
  */
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.ProfileUtil;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -103,9 +107,15 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ViewHolder holder_ = (ViewHolder) holder;
         final UserMeta userMeta = mUserMetaList.get(position);
         if (userMeta.imageUrl != null) {
-            Picasso.with(holder_.imgProfile.getContext()).load(mUserMetaList.get(position).imageUrl).fit().into(holder_.imgProfile);
+            Picasso.with(holder_.imgProfile.getContext()).load(userMeta.imageUrl).fit().into(holder_.imgProfile);
         } else {
-            holder_.imgProfile.setImageResource(R.drawable.default_profile_image);
+            int size = (int) holder_.imgProfile.getResources().getDimension(R.dimen.profile_image_size);
+            Bitmap profileBitmap = ProfileUtil.generateProfileImage(userMeta.name, userMeta.username, size);
+            if (profileBitmap != null) {
+                holder_.imgProfile.setImageBitmap(profileBitmap);
+            } else {
+                holder_.imgProfile.setImageResource(R.drawable.default_profile_image);
+            }
         }
         holder_.txtName.setText(userMeta.name);
         holder_.txtEmail.setText(userMeta.email);
