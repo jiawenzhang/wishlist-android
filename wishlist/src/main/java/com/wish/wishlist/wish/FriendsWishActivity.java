@@ -38,7 +38,6 @@ public class FriendsWishActivity extends WishBaseActivity implements
         WishImageDownloader.onWishImageDownloadDoneListener {
 
     final static String TAG = "FriendsWishActivity";
-    final static String ITEM = "Item";
     private AppBarLayout mAppBarLayout;
     private WishImageDownloader mWishImageDownloader;
     private ProgressDialog mProgressDialog = null;
@@ -318,7 +317,7 @@ public class FriendsWishActivity extends WishBaseActivity implements
     public void onWishTapped(WishItem item) {
         Log.d(TAG, "onWishTapped");
         Intent i = new Intent(this, FriendWishDetailActivity.class);
-        i.putExtra(ITEM, item);
+        i.putExtra(FriendWishDetailActivity.ITEM, item);
         startActivity(i);
     }
 

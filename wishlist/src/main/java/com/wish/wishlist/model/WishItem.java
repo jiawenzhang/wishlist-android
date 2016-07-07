@@ -703,9 +703,9 @@ public class WishItem implements Parcelable {
         out.writeInt(mPriority);
         out.writeInt(mComplete);
         out.writeString(mLink);
-        out.writeDouble(mPrice);
-        out.writeDouble(mLatitude);
-        out.writeDouble(mLongitude);
+        out.writeValue(mPrice);
+        out.writeValue(mLatitude);
+        out.writeValue(mLongitude);
         out.writeString(mAddress);
         out.writeByte((byte) (mDeleted ? 1 : 0));
         out.writeByte((byte) (mSyncedToServer ? 1 : 0));
@@ -738,9 +738,9 @@ public class WishItem implements Parcelable {
         mPriority = in.readInt();
         mComplete = in.readInt();
         mLink = in.readString();
-        mPrice = in.readDouble();
-        mLatitude = in.readDouble();
-        mLongitude = in.readDouble();
+        mPrice = (Double) in.readValue(Double.class.getClassLoader());
+        mLatitude = (Double) in.readValue(Double.class.getClassLoader());
+        mLongitude = (Double) in.readValue(Double.class.getClassLoader());
         mAddress = in.readString();
         mDeleted = in.readByte() != 0;
         mSyncedToServer = in.readByte() != 0;

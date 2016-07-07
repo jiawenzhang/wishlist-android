@@ -17,7 +17,7 @@ import com.wish.wishlist.model.WishItem;
 
 import java.util.ArrayList;
 
-abstract public class FriendWishDetailActivity extends WishDetailActivity implements
+public class FriendWishDetailActivity extends WishDetailActivity implements
         WishImageDownloader.onWishImageDownloadDoneListener {
     private static final String TAG = "FriendWishDetailAct";
     private WishImageDownloader mWishImageDownloader;
