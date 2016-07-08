@@ -24,65 +24,11 @@
                 android:orientation="vertical"
                 >
 
-                <FrameLayout
+                <include
+                    layout="@layout/profile_header"
                     android:layout_width="match_parent"
-                    android:background="@drawable/gradient_dark_background"
                     android:layout_height="260dp"
-                    >
-
-                    <RelativeLayout
-                        xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:id="@+id/drawer_header_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="210dp"
-                        >
-
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/profile_image"
-                            android:layout_width="96dp"
-                            android:layout_height="96dp"
-                            android:src="@drawable/default_profile_image"
-                            android:layout_centerInParent="true"
-                            />
-
-                        <ImageView
-                            android:id="@+id/generated_profile_image"
-                            android:layout_width="96dp"
-                            android:layout_height="96dp"
-                            android:src="@drawable/default_profile_image"
-                            android:layout_centerInParent="true"
-                            />
-                    </RelativeLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingBottom="20dp"
-                        android:paddingLeft="10dp"
-                        android:paddingTop="10dp"
-                        android:paddingRight="10dp"
-                        android:layout_gravity="bottom">
-
-                        <TextView
-                            android:id="@+id/wish_count"
-                            style="@style/WishStatsTextView"
-                            android:text="15\nWishes"
-                            />
-
-                        <TextView
-                            android:id="@+id/completed_count"
-                            style="@style/WishStatsTextView"
-                            android:text="5\nCompleted"
-                            />
-
-                        <TextView
-                            android:id="@+id/wish_value"
-                            style="@style/WishStatsTextView"
-                            android:text="256\n$Value"
-                            />
-                    </LinearLayout>
-                </FrameLayout>
+                    />
 
                 <include
                     android:id="@+id/profile_username"

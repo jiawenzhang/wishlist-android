@@ -40,6 +40,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
 
     public static final String FRIEND_ID = "FRIEND_ID";
     public static final String FRIEND_NAME = "FRIEND_NAME";
+    public static final String FRIEND_USERNAME = "FRIEND_USERNAME";
     public static final String FRIEND_IMAGE_URL = "FRIEND_IMAGE_URL";
     final static String TAG = "FriendsActivity";
     private FriendAdapter mFriendAdapter;
@@ -175,6 +176,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
         final Intent friendsWishIntent = new Intent(this, FriendsWishActivity.class);
         friendsWishIntent.putExtra(FRIEND_ID, friendMeta.objectId);
         friendsWishIntent.putExtra(FRIEND_NAME, friendMeta.name);
+        friendsWishIntent.putExtra(FRIEND_USERNAME, friendMeta.username);
         friendsWishIntent.putExtra(FRIEND_IMAGE_URL, friendMeta.imageUrl);
         startActivity(friendsWishIntent);
     }

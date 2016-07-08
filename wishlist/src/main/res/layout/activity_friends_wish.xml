@@ -32,38 +32,14 @@
                     app:expandedTitleTextAppearance="@style/ToolbarTitle"
                     app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
 
-                    <RelativeLayout
-                        xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:id="@+id/drawer_header_layout"
+                    <include
+                        layout="@layout/profile_header"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="280dp"
                         android:fitsSystemWindows="true"
-                        android:background="@color/material_dark"
                         android:scaleType="centerCrop"
                         app:layout_collapseMode="parallax"
-                        >
-
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/profile_image"
-                            android:layout_width="96dp"
-                            android:layout_height="96dp"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="60dp"
-                            android:layout_marginBottom="10dp"
-                            android:src="@drawable/default_profile_image"
-                            />
-
-                        <TextView
-                            android:id="@+id/friend_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/profile_image"
-                            android:layout_centerInParent="true"
-                            android:layout_marginBottom="40dp"
-                            android:text="User name"
-                            android:textSize="@dimen/text_size_medium"/>
-
-                    </RelativeLayout>
+                        />
 
                     <!--We don't use include here for the toolbar because it has issues,
                         the toolbar will disappear when scrolling up!
