@@ -27,6 +27,7 @@ public class ImagePicker {
     public static final int TAKE_PICTURE = 100;
     public static final int SELECT_PICTURE = 101;
     public static final int PERMISSIONS_TAKE_PHOTO = 0;
+    public static final int PERMISSIONS_READ_EXTERNAL_STORAGE = 1;
 
     private static final String TAG="ImagePicker";
 
@@ -125,6 +126,47 @@ public class ImagePicker {
                         dialog.show();
                     }
                 }
+                break;
+            }
+            case PERMISSIONS_READ_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "Write external storage permission granted");
+                    Analytics.send(Analytics.PERMISSION, "ReadExternalStorage", "Grant");
+                    startImageChooser();
+                } else {
+                    Log.e(TAG, "Write external storage permission denied");
+                    Analytics.send(Analytics.PERMISSION, "ReadExternalStorage", "Deny");
+
+                    // Should we show an explanation?
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        //Show permission explanation dialog...
+                        Analytics.send(Analytics.PERMISSION, "ReadExternalStorage", "ExplainDialog");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity, R.style.AppCompatAlertDialogStyle);
+                        builder.setMessage("Cannot select image without the permissions.").setCancelable(
+                                false).setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    } else {
+                        //Never ask again selected, or device policy prohibits the app from having that permission.
+                        Analytics.send(Analytics.PERMISSION, "ReadExternalStorage", "NeverAskAgain");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity, R.style.AppCompatAlertDialogStyle);
+                        builder.setMessage("To allow select images, please go to System Settings -> Apps -> Wishlist -> Permissions and enable Storage.").setCancelable(
+                                false).setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                }
+
+                break;
             }
         }
     }
@@ -138,6 +180,16 @@ public class ImagePicker {
     }
 
     private void dispatchImportPictureIntent() {
+        if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(mActivity,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_READ_EXTERNAL_STORAGE);
+            return;
+        }
+
+        startImageChooser();
+    }
+
+    private void startImageChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
