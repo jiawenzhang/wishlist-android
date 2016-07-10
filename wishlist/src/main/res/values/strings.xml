@@ -16,6 +16,8 @@
     <string name="syncing">Syncing&#x2026;</string>
     <string name="add_a_wish">Add a wish</string>
     <string name="save_as_my_wish">Save as my wish</string>
+    <string name="no_friend_request">When your friend sends you a friend request, it will show up here.</string>
+    <string name="no_friends">Wishlist is more fun with friends, you and your friends can see each other\'s wishes.</string>
 
     <string name="description_logo">Logo</string>
     <string name="description_back_logo">logo with back arrow</string>

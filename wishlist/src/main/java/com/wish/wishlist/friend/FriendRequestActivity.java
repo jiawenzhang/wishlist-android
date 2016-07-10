@@ -3,7 +3,6 @@ package com.wish.wishlist.friend;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wish.wishlist.R;
@@ -25,6 +24,7 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         disableDrawer();
+        loadView();
     }
 
     @Override
@@ -39,7 +39,6 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
         VisibleActivityTracker.getInstance().activityPaused();
     }
 
-    @Override
     protected void loadView() {
         FriendManager.getInstance().setFriendRequestListener(this);
         FriendManager.getInstance().fetchFriendRequest();
@@ -63,14 +62,13 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
 
         mSwipeRefreshLayout.setRefreshing(false);
 
-        TextView txtEmpty = (TextView) findViewById(R.id.empty_text);
         if (FriendRequestCache.getInstance().friendRequestList().size() == 0) {
             Log.d(TAG, "No friend request");
-            txtEmpty.setText("No friend request");
-            txtEmpty.setVisibility(View.VISIBLE);
+            mTxtEmpty.setText(R.string.no_friend_request);
+            mTxtEmpty.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
         } else {
-            txtEmpty.setVisibility(View.GONE);
+            mTxtEmpty.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
         }
     }

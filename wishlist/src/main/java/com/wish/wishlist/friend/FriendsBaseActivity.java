@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseFile;
@@ -26,6 +27,7 @@ public class FriendsBaseActivity extends DrawerActivity {
     protected LinearLayoutManager mLayoutManager;
     protected ProgressDialog mProgressDialog = null;
     protected SwipeRefreshLayout mSwipeRefreshLayout;
+    protected TextView mTxtEmpty;
 
     final static int ITEM_DECORATION_SPACE = 0;
 
@@ -69,9 +71,10 @@ public class FriendsBaseActivity extends DrawerActivity {
                 refreshFromNetwork();
                 // our swipeRefreshLayout needs to be notified when the data is returned in order for it to stop the animation
             }
+
         });
 
-        loadView();
+        mTxtEmpty = (TextView) findViewById(R.id.empty_text);
     }
 
     protected boolean swipeEnabled() {
@@ -91,8 +94,6 @@ public class FriendsBaseActivity extends DrawerActivity {
         setContentView(R.layout.activity_friends);
         setupActionBar(R.id.friends_toolbar);
     }
-
-    protected void loadView() {}
 
     protected List<UserAdapter.UserMeta> getUserMetaList(final List<ParseUser> users) {
         ArrayList<UserAdapter.UserMeta> userMetaList = new ArrayList<>();

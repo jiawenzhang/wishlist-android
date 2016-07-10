@@ -5,14 +5,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
@@ -20,7 +19,6 @@ import com.squareup.otto.Subscribe;
 import com.wish.wishlist.R;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.FriendListChangeEvent;
-import com.wish.wishlist.fragment.AddFriendOptionDialogFragment;
 import com.wish.wishlist.fragment.FriendOptionDialogFragment;
 import com.wish.wishlist.fragment.InviteFriendFragmentDialog;
 import com.wish.wishlist.util.NetworkHelper;
@@ -48,14 +46,34 @@ public class FriendsActivity extends FriendsBaseActivity implements
     final static String TAG = "FriendsActivity";
     private FriendAdapter mFriendAdapter;
     private String mSelectedFriendId;
+    private Button mAddFriendButton;
+    private Button mInviteFriendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mAddFriendButton = (Button) findViewById(R.id.addFriendButton);
+        mAddFriendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addFriend();
+            }
+        });
+
+        mInviteFriendButton = (Button) findViewById(R.id.inviteFriendButton);
+        mInviteFriendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                inviteFriend();
+            }
+        });
+
         // listen for FriendListChangeEvent
         EventBus.getInstance().register(this);
         clearRingIcon();
+
+        loadView();
     }
 
     @Override
@@ -137,14 +155,11 @@ public class FriendsActivity extends FriendsBaseActivity implements
         int id = item.getItemId();
         if (id == R.id.menu_add_friends) {
             Log.d(TAG, "onAddFriendTap");
-            final Intent findFriendIntent = new Intent(this, FindFriendsActivity.class);
-            startActivity(findFriendIntent);
+            addFriend();
             return true;
         } else if (id == R.id.menu_invite_friends) {
             Log.d(TAG, "onInviteFriendTap");
-            FragmentManager manager = getFragmentManager();
-            DialogFragment dialog = new InviteFriendFragmentDialog();
-            dialog.show(manager, "dialog");
+            inviteFriend();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -162,15 +177,18 @@ public class FriendsActivity extends FriendsBaseActivity implements
         mRecyclerView.swapAdapter(mFriendAdapter, true);
         mSwipeRefreshLayout.setRefreshing(false);
 
-        TextView txtEmpty = (TextView) findViewById(R.id.empty_text);
         if (userMetaList.size() == 0) {
             Log.d(TAG, "No friends");
-            txtEmpty.setText("You have no friends yet");
-            txtEmpty.setVisibility(View.VISIBLE);
+            mTxtEmpty.setText(R.string.no_friends);
+            mTxtEmpty.setVisibility(View.VISIBLE);
+            mAddFriendButton.setVisibility(View.VISIBLE);
+            mInviteFriendButton.setVisibility(View.VISIBLE);
             ViewGroup.LayoutParams params = mRecyclerView.getLayoutParams();
             params.height = (int) getResources().getDimension(R.dimen.recyclerview_top_button_height) + 1;
         } else {
-            txtEmpty.setVisibility(View.GONE);
+            mTxtEmpty.setVisibility(View.GONE);
+            mAddFriendButton.setVisibility(View.GONE);
+            mInviteFriendButton.setVisibility(View.GONE);
             ViewGroup.LayoutParams params = mRecyclerView.getLayoutParams();
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
         }
@@ -229,4 +247,16 @@ public class FriendsActivity extends FriendsBaseActivity implements
         final Intent friendRequestIntent = new Intent(getApplicationContext(), FriendRequestActivity.class);
         startActivity(friendRequestIntent);
     }
+
+    private void inviteFriend() {
+        FragmentManager manager = getFragmentManager();
+        DialogFragment dialog = new InviteFriendFragmentDialog();
+        dialog.show(manager, "dialog");
+    }
+
+    private void addFriend() {
+        final Intent findFriendIntent = new Intent(this, FindFriendsActivity.class);
+        startActivity(findFriendIntent);
+    }
+
 }
