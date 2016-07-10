@@ -146,25 +146,9 @@ public class ProfileActivity extends ActivityBase implements
 
         setProfileImage();
 
-        TextView wish_count = (TextView) findViewById(R.id.wish_count);
-        int count = ItemDBManager.getItemsCount();
-        String txt = count > 1 ? "Wishes" : "Wish";
-        wish_count.setText(count + "\n" + txt);
-
-        int completedCount = ItemDBManager.getCompletedItemsCount();
-        TextView completed_count = (TextView) findViewById(R.id.completed_count);
-        completed_count.setText(completedCount + "\nCompleted");
-
-        double value = ItemDBManager.getTotalValue();
-        TextView wish_value = (TextView) findViewById(R.id.wish_value);
-        String currency = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).getString("currency", "");
-        if (currency.isEmpty()) {
-            currency = "Value";
-        }
-        NumberFormat nf = NumberFormat.getInstance();
-        nf.setMaximumFractionDigits(0);
-        nf.setMinimumFractionDigits(0);
-        wish_value.setText(nf.format(value) + "\n" + currency);
+        formatWishCount(ItemDBManager.getItemsCount(), (TextView) findViewById(R.id.wish_count));
+        formatWishComplete(ItemDBManager.getCompletedItemsCount(), (TextView) findViewById(R.id.completed_count));
+        formatWishValue(ItemDBManager.getTotalValue(), (TextView) findViewById(R.id.wish_value));
 
         FrameLayout profile_username = (FrameLayout) findViewById(R.id.profile_username);
         FrameLayout profile_name = (FrameLayout) findViewById(R.id.profile_name);
@@ -594,4 +578,25 @@ public class ProfileActivity extends ActivityBase implements
         mProgressDialog.dismiss();
         ScreenOrientation.unlock(this);
     }
+
+    public static void formatWishCount (int count, TextView view) {
+        String txt = count > 1 ? "Wishes" : "Wish";
+        view.setText(count + "\n" + txt);
+    }
+
+    public static void formatWishComplete(int completedCount, TextView view) {
+        view.setText(completedCount + "\nCompleted");
+    }
+
+    public static void formatWishValue(double value, TextView view) {
+        String currency = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).getString("currency", "");
+        if (currency.isEmpty()) {
+            currency = "Value";
+        }
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(0);
+        nf.setMinimumFractionDigits(0);
+        view.setText(nf.format(value) + "\n" + currency);
+    }
+
 }

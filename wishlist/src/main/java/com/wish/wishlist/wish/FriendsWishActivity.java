@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
+import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.friend.FriendsActivity;
@@ -264,11 +265,21 @@ public class FriendsWishActivity extends WishBaseActivity implements
         }
         sortWishes(mSort.val());
 
-        // onGotWishes can be call twice, one from cached data and another from network, if we use setAdapter here,
-        // the items in the grid layout will be displaced the second time setAdapter is called.
-        // Using swapAdapter and passing false as the removeAndRecycleExistingViews flag will avoid this
         updateWishView();
         updateDrawerList();
+
+        int completedCount = 0;
+        double value = 0;
+        for (WishItem item : wishList) {
+            if (item.getComplete() == 1) {
+                completedCount++;
+            }
+            value = value + (item.getPrice() == null ? 0 : item.getPrice());
+        }
+        ProfileActivity.formatWishCount(wishList.size(), (TextView) findViewById(R.id.wish_count));
+        ProfileActivity.formatWishComplete(completedCount, (TextView) findViewById(R.id.completed_count));
+        //Fixme: use friend's currency
+        ProfileActivity.formatWishValue(value, (TextView) findViewById(R.id.wish_value));
     }
 
     @Override
@@ -280,6 +291,9 @@ public class FriendsWishActivity extends WishBaseActivity implements
             txtView.setText("No wish found");
             return;
         }
+        // onGotWishes can be call twice, one from cached data and another from network, if we use setAdapter here,
+        // the items in the grid layout will be displaced the second time setAdapter is called.
+        // Using swapAdapter and passing false as the removeAndRecycleExistingViews flag will avoid this
         super.updateWishView();
     }
 
@@ -294,8 +308,7 @@ public class FriendsWishActivity extends WishBaseActivity implements
     }
 
     @Override
-    protected boolean goBack()
-    {
+    protected boolean goBack() {
         if (mStatus.val() != Options.Status.ALL) {
             //the wishes are currently filtered status, tapping back button now should clean up the filter and show all wishes
             mStatus.setVal(Options.Status.ALL);
