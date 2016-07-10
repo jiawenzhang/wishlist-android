@@ -2,9 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/save"
-          android:title="Save as my wish"
-          android:icon="@drawable/ic_action_download_white"
-          app:showAsAction="ifRoom"
+          android:title="@string/save_as_my_wish"
+          app:showAsAction="collapseActionView"
         />
     <item android:id="@+id/share"
         android:title="@string/share"
