@@ -96,6 +96,15 @@ public class MyWishActivity extends WishBaseActivity implements
         // listen for MyWishChangeEvent
         EventBus.getInstance().register(this);
 
+        String title = "My wish";
+        if (Util.deviceAccountEnabled()) {
+            ParseUser user = ParseUser.getCurrentUser();
+            if (user != null && user.getString("name") != null) {
+                title = user.getString("name");
+            }
+        }
+        getSupportActionBar().setTitle(title);
+
         mFilterView.setOnTagDeleteListener(new OnTagDeleteListener() {
             @Override
             public void onTagDeleted(Tag tag, int position) {
