@@ -48,10 +48,10 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
     @Override
     protected void showPhoto() {
         if (mItem.getImgMetaArray() != null) {
-            mPhotoView.setVisibility(View.VISIBLE);
+            setPhotoVisible(true);
             Picasso.with(this).load(mItem.getImgMetaArray().get(0).mUrl).fit().centerCrop().into(mPhotoView);
         } else {
-            mPhotoView.setVisibility(View.GONE);
+            setPhotoVisible(false);
         }
     }
 
