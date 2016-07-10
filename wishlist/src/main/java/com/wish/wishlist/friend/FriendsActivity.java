@@ -4,6 +4,8 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
@@ -20,6 +22,7 @@ import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.FriendListChangeEvent;
 import com.wish.wishlist.fragment.AddFriendOptionDialogFragment;
 import com.wish.wishlist.fragment.FriendOptionDialogFragment;
+import com.wish.wishlist.fragment.InviteFriendFragmentDialog;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.VisibleActivityTracker;
@@ -91,17 +94,12 @@ public class FriendsActivity extends FriendsBaseActivity implements
 
     @Override
     protected void prepareDrawerList() {
-        mNavigationView.getMenu().findItem(R.id.Add).setTitle("Add friend");
+        mNavigationView.getMenu().findItem(R.id.Add).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.all_wishes).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.list_view).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.grid_view).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.map_view).setVisible(false);
         mNavigationView.getMenu().findItem(R.id.friends).setVisible(false);
-    }
-
-    protected boolean onTapAdd() {
-        showAddFriendListDialog();
-        return true;
     }
 
     protected void loadView() {
@@ -138,7 +136,15 @@ public class FriendsActivity extends FriendsBaseActivity implements
         }
         int id = item.getItemId();
         if (id == R.id.menu_add_friends) {
-            showAddFriendListDialog();
+            Log.d(TAG, "onAddFriendTap");
+            final Intent findFriendIntent = new Intent(this, FindFriendsActivity.class);
+            startActivity(findFriendIntent);
+            return true;
+        } else if (id == R.id.menu_invite_friends) {
+            Log.d(TAG, "onInviteFriendTap");
+            FragmentManager manager = getFragmentManager();
+            DialogFragment dialog = new InviteFriendFragmentDialog();
+            dialog.show(manager, "dialog");
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -222,11 +228,5 @@ public class FriendsActivity extends FriendsBaseActivity implements
     public void onFriendRequestTap() {
         final Intent friendRequestIntent = new Intent(getApplicationContext(), FriendRequestActivity.class);
         startActivity(friendRequestIntent);
-    }
-
-    private void showAddFriendListDialog() {
-        FragmentManager manager = getFragmentManager();
-        AddFriendOptionDialogFragment dialog = new AddFriendOptionDialogFragment();
-        dialog.show(manager, "dialog");
     }
 }

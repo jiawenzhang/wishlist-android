@@ -4,9 +4,13 @@
       tools:context="com.wish.wishlist.friend.FriendsActivity">
 
       <item android:id="@+id/menu_add_friends"
-            android:title="Add"
-            android:icon="@drawable/ic_action_add_friend_white"
-            app:showAsAction="always"
+            android:title="Add friend"
+            app:showAsAction="collapseActionView"
+            android:textSize="20sp"
+          />
+      <item android:id="@+id/menu_invite_friends"
+            android:title="Invite friend"
+            app:showAsAction="collapseActionView"
             android:textSize="20sp"
           />
 </menu>
