@@ -10,7 +10,7 @@
     <string name="share">Share</string>
     <string name="location">Location</string>
     <string name="help">Help</string>
-    <string name="invitations">Invitations</string>
+    <string name="friend_request">Friend request</string>
     <string name="tap_here_to_change_photo">Tap here to change photo</string>
     <string name="add_photo">Add photo</string>
     <string name="syncing">Syncing&#x2026;</string>

@@ -66,7 +66,7 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
         TextView txtEmpty = (TextView) findViewById(R.id.empty_text);
         if (FriendRequestCache.getInstance().friendRequestList().size() == 0) {
             Log.d(TAG, "No friend request");
-            txtEmpty.setText("No friend invitations");
+            txtEmpty.setText("No friend request");
             txtEmpty.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
         } else {

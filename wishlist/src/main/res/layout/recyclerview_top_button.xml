@@ -56,7 +56,7 @@
             android:layout_alignWithParentIfMissing="true"
             android:layout_toEndOf="@id/imgUsersContainer"
             android:layout_toRightOf="@id/imgUsersContainer"
-            android:text="@string/invitations"
+            android:text="@string/friend_request"
             android:textSize="18sp"
             android:layout_centerVertical="true"/>
         <ImageView
