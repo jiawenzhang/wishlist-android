@@ -63,10 +63,7 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
         mSwipeRefreshLayout.setRefreshing(false);
 
         if (FriendRequestCache.getInstance().friendRequestList().size() == 0) {
-            Log.d(TAG, "No friend request");
-            mTxtEmpty.setText(R.string.no_friend_request);
-            mTxtEmpty.setVisibility(View.VISIBLE);
-            mRecyclerView.setVisibility(View.GONE);
+            showNoRequestView();
         } else {
             mTxtEmpty.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
@@ -85,6 +82,9 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
     @Override
     public void onAcceptFriendResult(final String friendId, final boolean success) {
         handleResult(friendId, success, "Accepted", mFriendRequestAdapter);
+        if (mFriendRequestAdapter.getItemCount() == 0) {
+            showNoRequestView();
+        }
     }
 
     @Override
@@ -99,5 +99,15 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
     @Override
     public void onRejectFriendResult(final String friendId, final boolean success) {
         handleResult(friendId, success, "Rejected", mFriendRequestAdapter);
+        if (mFriendRequestAdapter.getItemCount() == 0) {
+            showNoRequestView();
+        }
+    }
+
+    private void showNoRequestView() {
+        Log.d(TAG, "No friend request");
+        mTxtEmpty.setText(R.string.no_friend_request);
+        mTxtEmpty.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
     }
 }
