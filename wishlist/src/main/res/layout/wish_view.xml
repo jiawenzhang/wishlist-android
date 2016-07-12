@@ -100,6 +100,23 @@
                 />
         </ScrollView>
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <TextView
+                android:id="@+id/noFriendWishText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:layout_gravity="center_horizontal"
+                android:text="No wish yet."
+                android:textSize="16sp"
+                />
+        </ScrollView>
+
         <!-- default listSelector in android 10 has a left/right margins, while in android >10 has no margins,
              set to null will remove these margins and make it consistent over different android version -->
 

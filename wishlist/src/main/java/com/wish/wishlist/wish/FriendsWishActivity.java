@@ -286,9 +286,7 @@ public class FriendsWishActivity extends WishBaseActivity implements
     protected void updateWishView() {
         if (mWishlist.isEmpty()) {
             // no matching wishes text
-            mViewFlipper.setDisplayedChild(NO_MATCHING_WISH_VIEW);
-            TextView txtView = (TextView) mViewFlipper.findViewById(R.id.noWishText);
-            txtView.setText("No wish found");
+            mViewFlipper.setDisplayedChild(NO_FRIEND_WISH_VIEW);
             return;
         }
         // onGotWishes can be call twice, one from cached data and another from network, if we use setAdapter here,

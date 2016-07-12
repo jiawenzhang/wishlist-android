@@ -106,6 +106,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected static final int WISH_VIEW = 0;
     protected static final int MAKE_A_WISH_VIEW = 1;
     protected static final int NO_MATCHING_WISH_VIEW = 2;
+    protected static final int NO_FRIEND_WISH_VIEW = 3;
 
     protected int mItemSpace; //px
 
