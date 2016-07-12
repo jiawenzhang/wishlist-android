@@ -178,13 +178,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
         mSwipeRefreshLayout.setRefreshing(false);
 
         if (userMetaList.size() == 0) {
-            Log.d(TAG, "No friends");
-            mTxtEmpty.setText(R.string.no_friends);
-            mTxtEmpty.setVisibility(View.VISIBLE);
-            mAddFriendButton.setVisibility(View.VISIBLE);
-            mInviteFriendButton.setVisibility(View.VISIBLE);
-            ViewGroup.LayoutParams params = mRecyclerView.getLayoutParams();
-            params.height = (int) getResources().getDimension(R.dimen.recyclerview_top_button_height) + 1;
+            showNoFriendView();
         } else {
             mTxtEmpty.setVisibility(View.GONE);
             mAddFriendButton.setVisibility(View.GONE);
@@ -216,7 +210,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
 
     public void onRemoveFriend() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, AppCompatAlertDialogStyle);
-        String message = "Sure to remove this friend?";
+        String message = "Remove this friend?";
         builder.setMessage(message);
         builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -240,6 +234,10 @@ public class FriendsActivity extends FriendsBaseActivity implements
 
     public void onRemoveFriendResult(final String friendId, final boolean success) {
         handleResult(friendId, success, "Removed", mFriendAdapter);
+        if (mFriendAdapter.getItemCount() == 1) {
+            // only the top friend request button
+            showNoFriendView();
+        }
     }
 
     public void onFriendRequestTap() {
@@ -256,5 +254,15 @@ public class FriendsActivity extends FriendsBaseActivity implements
     private void addFriend() {
         final Intent findFriendIntent = new Intent(this, FindFriendsActivity.class);
         startActivity(findFriendIntent);
+    }
+
+    private void showNoFriendView() {
+        Log.d(TAG, "No friends");
+        mTxtEmpty.setText(R.string.no_friends);
+        mTxtEmpty.setVisibility(View.VISIBLE);
+        mAddFriendButton.setVisibility(View.VISIBLE);
+        mInviteFriendButton.setVisibility(View.VISIBLE);
+        ViewGroup.LayoutParams params = mRecyclerView.getLayoutParams();
+        params.height = (int) getResources().getDimension(R.dimen.recyclerview_top_button_height) + 1;
     }
 }

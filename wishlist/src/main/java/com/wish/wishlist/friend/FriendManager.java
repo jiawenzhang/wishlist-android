@@ -275,8 +275,7 @@ public class FriendManager {
         }
     }
 
-    public void removeFriend(final String friendId)
-    {
+    public void removeFriend(final String friendId) {
         Map<String, Object> params = new HashMap<>();
         params.put("friendId", friendId);
         ParseCloud.callFunctionInBackground(REMOVE_FRIEND, params, new FunctionCallback<Map<String, Object>>() {
