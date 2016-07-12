@@ -206,7 +206,6 @@ public class FriendsActivity extends FriendsBaseActivity implements
     }
 
     public void onFriendMore(final String friendId) {
-
         mSelectedFriendId = friendId;
 
         FragmentManager manager = getFragmentManager();
@@ -258,5 +257,4 @@ public class FriendsActivity extends FriendsBaseActivity implements
         final Intent findFriendIntent = new Intent(this, FindFriendsActivity.class);
         startActivity(findFriendIntent);
     }
-
 }

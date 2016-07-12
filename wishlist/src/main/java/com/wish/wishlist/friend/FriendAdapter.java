@@ -32,8 +32,7 @@ public class FriendAdapter extends UserAdapter {
             mFriendTapListener.onFriendTap(friendMeta);
         }
     }
-    public void setFriendTapListener(final FriendTapListener listener)
-    {
+    public void setFriendTapListener(final FriendTapListener listener) {
         mFriendTapListener = listener;
     }
 
@@ -47,8 +46,7 @@ public class FriendAdapter extends UserAdapter {
             mFriendMoreListener.onFriendMore(friendId);
         }
     }
-    public void setFriendMoreListener(FriendMoreListener listener)
-    {
+    public void setFriendMoreListener(FriendMoreListener listener) {
         mFriendMoreListener = listener;
     }
 
@@ -62,8 +60,7 @@ public class FriendAdapter extends UserAdapter {
             mFriendRequestTapListener.onFriendRequestTap();
         }
     }
-    public void setFriendRequestTapListener(final FriendRequestTapListener listener)
-    {
+    public void setFriendRequestTapListener(final FriendRequestTapListener listener) {
         mFriendRequestTapListener = listener;
     }
     /*************************************************************/

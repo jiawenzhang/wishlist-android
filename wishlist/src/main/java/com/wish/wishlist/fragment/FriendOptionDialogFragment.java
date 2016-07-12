@@ -28,13 +28,11 @@ public class FriendOptionDialogFragment extends OptionDialogFragment implements
             mRemoveFriendListener.onRemoveFriend();
         }
     }
-    public void setRemoveFriendListener(RemoveFriendListener listener)
-    {
+    public void setRemoveFriendListener(RemoveFriendListener listener) {
         mRemoveFriendListener = listener;
     }
 
     @Override
-
     protected IconTextAdapter getAdapter() {
         List<IconTextAdapter.Entry> list = new ArrayList<>();
         //list.add(new IconTextAdapter.Entry("View profile", R.drawable.ic_action_profile_grey));
