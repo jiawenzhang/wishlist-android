@@ -94,7 +94,6 @@ public class FriendsActivity extends FriendsBaseActivity implements
     }
 
     private void clearRingIcon() {
-        hideRingIcon();
         Options.ShowNewFriendNotification showNotification = new Options.ShowNewFriendNotification(0);
         showNotification.save();
     }

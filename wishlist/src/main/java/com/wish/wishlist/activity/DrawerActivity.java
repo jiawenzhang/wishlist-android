@@ -88,12 +88,6 @@ public abstract class DrawerActivity extends ActivityBase {
 
         // hide different drawer menu options for different activities
         prepareDrawerList();
-
-        Options.ShowNewFriendNotification showNotification = new Options.ShowNewFriendNotification();
-        showNotification.read();
-        if (showNotification.val() == 1) {
-            showRingIcon();
-        }
     }
 
     @Override
@@ -281,6 +275,13 @@ public abstract class DrawerActivity extends ActivityBase {
             @Override
             public void onDrawerOpened(View drawerView) {
             /** Called when a drawer has settled in a completely open state. */
+                Options.ShowNewFriendNotification showNotification = new Options.ShowNewFriendNotification();
+                showNotification.read();
+                if (showNotification.val() == 1) {
+                    showRingIcon();
+                } else {
+                    hideRingIcon();
+                }
                 super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
                 drawerOpened();
