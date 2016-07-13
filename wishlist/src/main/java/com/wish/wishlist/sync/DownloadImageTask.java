@@ -34,8 +34,8 @@ public class DownloadImageTask {
 
     class Result {
         // result code
-        public int EXISTS = 0;
-        public int NO_FILE = 1;
+        public int HEAD_HTTP_OK = 0;
+        public int HEAD_HTTP_NOT_OK = 1;
         public int NETWORK_ERROR = 2;
         public int MALFORMEDURL = 3;
 
@@ -51,6 +51,7 @@ public class DownloadImageTask {
 
             HttpURLConnection.setFollowRedirects(false);
             HttpURLConnection con = null;
+
             try {
                 con = (HttpURLConnection) new URL(result.url).openConnection();
                 con.setRequestMethod("HEAD");
@@ -62,13 +63,13 @@ public class DownloadImageTask {
                 }
                 if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     Log.d(TAG, "file exists");
-                    result.code = result.EXISTS;
+                    result.code = result.HEAD_HTTP_OK;
                 } else {
                     // server responds with non http 200 code, it is likely the url has become invalid,
                     // like image has been removed or moved to a different url.
-                    Log.e(TAG, "file does not exist, response code: " + con.getResponseCode() + " " + result.url);
-                    result.code = result.NO_FILE;
-                    Analytics.send(Analytics.DEBUG, "NoFile", con.getResponseMessage() + " " + result.url);
+                    Log.e(TAG, "file may not exist, response code: " + con.getResponseCode() + " " + result.url);
+                    result.code = result.HEAD_HTTP_NOT_OK;
+                    Analytics.send(Analytics.DEBUG, "MayNoFile", con.getResponseMessage() + " " + result.url);
                 }
             } catch (MalformedURLException e) {
                 Log.e(TAG, "MalformedURLException " + e.toString());
@@ -188,8 +189,8 @@ public class DownloadImageTask {
     private void checkImageResult(final Result result) {
         //download web image could fail for various reasons - the url becomes invalid, server cannot be
         //reached, host name cannot be resolved or there is no network etc. The major problem here is
-        //the web image and the validity of its url is out of our own control, we will attempt to handle them here
-        if (result.code == result.EXISTS) {
+        //the web image and the validity of its url is out of our own control, we will attempt to as many cases as possible here
+        if (result.code == result.HEAD_HTTP_OK) {
             Target target = new Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -214,16 +215,53 @@ public class DownloadImageTask {
 
             mTargets.put(result.url, target);
             Picasso.with(WishlistApplication.getAppContext()).load(result.url).resize(ImageManager.IMG_WIDTH, 2048).centerInside().onlyScaleDown().into(target);
-        } else if (result.code == result.NO_FILE || result.code == result.MALFORMEDURL) {
-            // invalid url, clear the wish's ImgMeta so we won't try to download from this url again
-            WishItem item = WishItemManager.getInstance().getItemById(result.itemId);
-            item.setImgMetaArray(null);
-            item.setDownloadImg(false);
-            item.saveToLocal();
+        } else if (result.code == result.HEAD_HTTP_NOT_OK) {
+            // return non 200 when sending HEAD request to the url
+            // server may not support HEAD request or the HEAD request is disabled, but GET may still work
+            // For example: "http://ia.media-imdb.com/images/M/MV5BMTQ3MDQwMjQ5NV5BMl5BanBnXkFtZTgwMTY2MjAyOTE@._V1_UY1200_CR69,0,630,1200_AL_.jpg"
+            // so let's still give it a try to download the file
+            Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    if (bitmap == null) {
+                        //Fixme: on what circumstances will this be triggered? no network? url invalid?
+                        Log.e(TAG, "downloadWebImage->onBitmapLoaded null bitmap");
+                        Analytics.send(Analytics.DEBUG, "BitmapNull", result.url);
+                    }
+                    // Good! we can still download the file even HEAD request returns non 200
+                    imageDownloaded(bitmap, result.itemId, result.url);
+                }
 
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {}
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    Log.e(TAG, "onBitmapFailed");
+                    Analytics.send(Analytics.DEBUG, "OnBitmapFailed", result.url);
+                    // fail to download the image, it is likely the url has become invalid, because HEAD request returns non 200
+                    // and download fails
+                    invalidateImageUrl(result.itemId);
+                    imageDownloaded(null, result.itemId, result.url);
+                }
+            };
+
+            mTargets.put(result.url, target);
+            Picasso.with(WishlistApplication.getAppContext()).load(result.url).resize(ImageManager.IMG_WIDTH, 2048).centerInside().onlyScaleDown().into(target);
+        } else if (result.code == result.MALFORMEDURL) {
+            invalidateImageUrl(result.itemId);
             itemImageDone(result.itemId);
         } else if (result.code == result.NETWORK_ERROR) {
             itemImageDone(result.itemId);
         }
     }
+
+    private void invalidateImageUrl(long itemId) {
+        // clear the wish's ImgMeta so we won't try to download from this url again
+        WishItem item = WishItemManager.getInstance().getItemById(itemId);
+        item.setImgMetaArray(null);
+        item.setDownloadImg(false);
+        item.saveToLocal();
+    }
+
 }
