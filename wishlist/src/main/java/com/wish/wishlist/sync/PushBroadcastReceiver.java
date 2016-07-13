@@ -28,6 +28,7 @@ public class PushBroadcastReceiver extends ParsePushBroadcastReceiver {
     // push json keys
     final static String FROM_INSTALLATION_ID = "fromInstallationId";
     final static String PUSH_TYPE = "pushType";
+    final static String STATUS = "status";
 
     // push json values
     final static String SYNC_USER_PROFILE = "syncUserProfile";
@@ -77,7 +78,7 @@ public class PushBroadcastReceiver extends ParsePushBroadcastReceiver {
                     break;
                 case FRIEND_REQUEST_UPDATE: {
                     Log.d(TAG, FRIEND_REQUEST_UPDATE);
-                    int status = json.getInt(FRIEND_REQUEST_UPDATE);
+                    int status = json.getInt(STATUS);
                     if (status == FriendManager.REQUESTED) {
                         Log.d(TAG, "requested");
                         FriendManager.getInstance().fetchFriendRequestFromNetwork();
