@@ -100,7 +100,7 @@ public class ProfileUtil {
         return BitmapFactory.decodeFile(profileImageFile.getAbsolutePath());
     }
 
-    public static Drawable generateProfileImage() {
+    public static Drawable generateMyProfileDrawable() {
         ParseUser user = ParseUser.getCurrentUser();
         if (user == null) {
             return null;
@@ -147,7 +147,7 @@ public class ProfileUtil {
         return bitmap;
     }
 
-    public static Bitmap generateProfileImage(String name, String username, int size) {
+    public static Drawable generateProfileDrawable(String name, String username, int size) {
         if (name == null || name.isEmpty()) {
             return null;
         }
@@ -160,9 +160,13 @@ public class ProfileUtil {
         ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
         int color = generator.getColor(username);
 
-        Drawable d = TextDrawable.builder()
+        return TextDrawable.builder()
                 .buildRound(name.substring(0,1).toUpperCase(), color);
+    }
 
+    public static Bitmap generateProfileBitmap(String name, String username, int size) {
+        // prefer drawable to bitmap as converted bitmap is not as smooth as drawables in ImageView
+        Drawable d = generateProfileDrawable(name, username, size);
         // we need to convert the TextDrawable to Bitmap here as the TextDrawable has intrinsicWidth = -1, this will cause problems
         // when loading the drawable to a CircleImageView in the UserAdapter
         return drawableToBitmap(d, size, size);

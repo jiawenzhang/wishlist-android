@@ -5,9 +5,7 @@ package com.wish.wishlist.friend;
  */
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,7 +108,7 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             Picasso.with(holder_.imgProfile.getContext()).load(userMeta.imageUrl).fit().into(holder_.imgProfile);
         } else {
             int size = (int) holder_.imgProfile.getResources().getDimension(R.dimen.profile_image_size);
-            Bitmap profileBitmap = ProfileUtil.generateProfileImage(userMeta.name, userMeta.username, size);
+            Bitmap profileBitmap = ProfileUtil.generateProfileBitmap(userMeta.name, userMeta.username, size);
             if (profileBitmap != null) {
                 holder_.imgProfile.setImageBitmap(profileBitmap);
             } else {

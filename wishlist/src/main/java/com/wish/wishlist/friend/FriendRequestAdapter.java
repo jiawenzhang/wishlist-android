@@ -99,7 +99,7 @@ public class FriendRequestAdapter extends UserAdapter {
             Picasso.with(holder_.imgProfile.getContext()).load(meta.imageUrl).fit().into(holder_.imgProfile);
         } else {
             int size = (int) holder_.imgProfile.getResources().getDimension(R.dimen.profile_image_size);
-            holder_.imgProfile.setImageBitmap(ProfileUtil.generateProfileImage(meta.name, meta.username, size));
+            holder_.imgProfile.setImageBitmap(ProfileUtil.generateProfileBitmap(meta.name, meta.username, size));
         }
         holder_.txtName.setText(meta.name);
         holder_.txtEmail.setText(meta.email);

@@ -115,7 +115,7 @@ public class FriendsWishActivity extends WishBaseActivity implements
             generatedImageView.setVisibility(View.VISIBLE);
             profileView.setVisibility(View.GONE);
             int size = (int) getResources().getDimension(R.dimen.profile_image_size);
-            generatedImageView.setImageBitmap(ProfileUtil.generateProfileImage(friendName, friendUsername, size));
+            generatedImageView.setImageDrawable(ProfileUtil.generateProfileDrawable(friendName, friendUsername, size));
         }
 
         mFriendId = i.getStringExtra(FriendsActivity.FRIEND_ID);

@@ -155,7 +155,7 @@ public abstract class DrawerActivity extends ActivityBase {
             return;
         }
 
-        Drawable generatedProfileImage = ProfileUtil.generateProfileImage();
+        Drawable generatedProfileImage = ProfileUtil.generateMyProfileDrawable();
         if (generatedProfileImage != null) {
             mGeneratedProfileImageView.setImageDrawable(generatedProfileImage);
             mGeneratedProfileImageView.setVisibility(View.VISIBLE);
