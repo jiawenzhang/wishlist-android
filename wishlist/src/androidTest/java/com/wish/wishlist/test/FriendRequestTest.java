@@ -12,18 +12,14 @@ import android.test.RenamingDelegatingContext;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Log;
 
-import com.parse.LogInCallback;
-import com.parse.LogOutCallback;
-import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.wish.wishlist.R;
 import com.wish.wishlist.friend.FriendManager;
+import com.wish.wishlist.test.util.UserManager;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -39,29 +35,17 @@ public class FriendRequestTest extends InstrumentationTestCase implements
     private static final String TAG = "FriendTest";
     Context mMockContext;
     static public CountDownLatch mSignal = null;
-    static public int mUserCount = 5;
-    private ArrayList<ParseUser> mUsers = new ArrayList<>();
     private static final String friendUserEmail = "li.kevin@mail.com";
-    private ParseUser mCurrentUser;
 
     @Before
     public void setUp() {
         mMockContext = new RenamingDelegatingContext(InstrumentationRegistry.getInstrumentation().getTargetContext(), "test_");
-
-        for (int i = 0; i < mUserCount; i++) {
-            ParseUser user = new ParseUser();
-            String email = "user_" + i + "@test.com";
-            user.setUsername(email);
-            user.setPassword("123456");
-            user.put("name", "name_" + i);
-            user.setEmail(email);
-            mUsers.add(user);
-        }
+        UserManager.setupUserList();
     }
 
     @Test
     public void runTest() throws InterruptedException {
-        for (ParseUser user : mUsers) {
+        for (ParseUser user : UserManager.userList) {
             login(user);
             sendFriendRequest();
             logout();
@@ -70,36 +54,7 @@ public class FriendRequestTest extends InstrumentationTestCase implements
 
     private void login(ParseUser user) throws InterruptedException {
         mSignal = new CountDownLatch(1);
-
-        ParseUser.logInInBackground(user.getUsername(), "123456", new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException e) {
-                if (user != null) {
-                    Log.d(TAG, "log in success");
-                    if (user.getBoolean("emailVerified")) {
-                        //loginSuccess();
-                    } else {
-                        final String message = "Please verify your email before sign in";
-                        //loginVerifyEmail(message);
-                        //loginSuccess();
-                    }
-                    mCurrentUser = user;
-                } else {
-                    Log.d(TAG, "log in failed");
-                    if (e != null) {
-                        Log.d(TAG, mMockContext.getString(R.string.com_parse_ui_login_warning_parse_login_failed) + e.toString());
-                        if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
-                            Log.d(TAG, mMockContext.getString(R.string.com_parse_ui_parse_login_invalid_credentials_toast));
-                        } else {
-                            Log.d(TAG, mMockContext.getString(R.string.com_parse_ui_parse_login_failed_unknown_toast));
-                        }
-                    }
-                    assertTrue(false);
-                }
-                mSignal.countDown();
-            }
-        });
-
+        UserManager.login(user, mSignal, mMockContext);
         waitSignal(mSignal);
     }
 
@@ -128,7 +83,7 @@ public class FriendRequestTest extends InstrumentationTestCase implements
         FriendManager.getInstance().setRequestFriendListener(this);
 
         int REQUESTED = 0;
-        FriendManager.getInstance().setFriendRequestStatus(mCurrentUser.getObjectId(), users.get(0).getObjectId(), REQUESTED);
+        FriendManager.getInstance().setFriendRequestStatus(UserManager.currentUser.getObjectId(), users.get(0).getObjectId(), REQUESTED);
     }
 
     @Override
@@ -147,21 +102,7 @@ public class FriendRequestTest extends InstrumentationTestCase implements
 
     private void logout() {
         mSignal = new CountDownLatch(1);
-
-        ParseUser.logOutInBackground(new LogOutCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    // logout successful
-                    Log.d(TAG, "success to logout");
-                } else {
-                    Log.d(TAG, "Fail to logout");
-                    assertTrue(false);
-                }
-                mSignal.countDown();
-            }
-        });
-
+        UserManager.logout(mSignal);
         waitSignal(mSignal);
     }
 }

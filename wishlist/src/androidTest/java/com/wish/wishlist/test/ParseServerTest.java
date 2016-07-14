@@ -13,8 +13,6 @@ import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Log;
 
 import com.parse.FunctionCallback;
-import com.parse.LogInCallback;
-import com.parse.LogOutCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -23,6 +21,7 @@ import com.wish.wishlist.R;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.sync.SyncAgent;
+import com.wish.wishlist.test.util.UserManager;
 
 import org.junit.Test;
 
@@ -41,23 +40,12 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
     Context mMockContext;
     static public CountDownLatch mSignal = null;
     static public CountDownLatch mSyncDoneSignal = null;
-    static public int mUserCount = 10;
     static public int mWishCount = 20;
-    private ArrayList<ParseUser> mUsers = new ArrayList<>();
 
     @Before
     public void setUp() {
         mMockContext = new RenamingDelegatingContext(InstrumentationRegistry.getInstrumentation().getTargetContext(), "test_");
-
-        for (int i = 0; i < mUserCount; i++) {
-            ParseUser user = new ParseUser();
-            String email = "user_" + i + "@test.com";
-            user.setUsername(email);
-            user.setPassword("123456");
-            user.put("name", "name_" + i);
-            user.setEmail(email);
-            mUsers.add(user);
-        }
+        UserManager.setupUserList();
     }
 
     @Test
@@ -66,7 +54,7 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
 
         SyncAgent.getInstance().registerSyncDoneListener(this);
 
-        for (ParseUser user : mUsers) {
+        for (ParseUser user : UserManager.userList) {
             login(user);
             createWishes();
 
@@ -86,10 +74,10 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
     }
 
     private void signup() {
-        mSignal = new CountDownLatch(mUserCount);
+        mSignal = new CountDownLatch(UserManager.userCount);
 
         // Create users and sign up
-        for (final ParseUser user : mUsers) {
+        for (final ParseUser user : UserManager.userList) {
             user.signUpInBackground(new SignUpCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -137,55 +125,14 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
 
     private void login(ParseUser user) throws InterruptedException {
         mSignal = new CountDownLatch(1);
-
-        ParseUser.logInInBackground(user.getUsername(), "123456", new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException e) {
-                if (user != null) {
-                    Log.d(TAG, "log in success");
-                    if (user.getBoolean("emailVerified")) {
-                        //loginSuccess();
-                    } else {
-                        final String message = "Please verify your email before sign in";
-                        //loginVerifyEmail(message);
-                        //loginSuccess();
-                    }
-                } else {
-                    Log.d(TAG, "log in failed");
-                    if (e != null) {
-                        Log.d(TAG, mMockContext.getString(R.string.com_parse_ui_login_warning_parse_login_failed) + e.toString());
-                        if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
-                            Log.d(TAG, mMockContext.getString(R.string.com_parse_ui_parse_login_invalid_credentials_toast));
-                        } else {
-                            Log.d(TAG, mMockContext.getString(R.string.com_parse_ui_parse_login_failed_unknown_toast));
-                        }
-                    }
-                    assertTrue(false);
-                }
-                mSignal.countDown();
-            }
-        });
-
+        UserManager.login(user, mSignal, mMockContext);
         waitSignal(mSignal);
     }
 
     private void logout() {
         mSignal = new CountDownLatch(1);
 
-        ParseUser.logOutInBackground(new LogOutCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    // logout successful
-                    Log.d(TAG, "success to logout");
-                } else {
-                    Log.d(TAG, "Fail to logout");
-                    assertTrue(false);
-                }
-                mSignal.countDown();
-            }
-        });
-
+        UserManager.logout(mSignal);
         waitSignal(mSignal);
     }
 
@@ -204,9 +151,9 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
 
     private void deleteUsers() {
         // delete all the users created
-        mSignal = new CountDownLatch(mUserCount);
+        mSignal = new CountDownLatch(UserManager.userCount);
 
-        for (ParseUser user : mUsers) {
+        for (ParseUser user : UserManager.userList) {
             HashMap<String, String> params = new HashMap<>();
             params.put("username", user.getUsername());
             ParseCloud.callFunctionInBackground("deleteUserByUsername", params, new FunctionCallback<Object>() {
