@@ -125,7 +125,7 @@ public class ProfileUtil {
 
     }
 
-    private static Bitmap drawableToBitmap (Drawable drawable, int width, int height) {
+    private static Bitmap drawableToBitmap(Drawable drawable, int width, int height) {
         Bitmap bitmap;
 
         if (drawable instanceof BitmapDrawable) {

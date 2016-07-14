@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.ProfileUtil;
 
 import java.util.ListIterator;
 
@@ -97,7 +98,8 @@ public class FriendRequestAdapter extends UserAdapter {
         if (meta.imageUrl != null) {
             Picasso.with(holder_.imgProfile.getContext()).load(meta.imageUrl).fit().into(holder_.imgProfile);
         } else {
-            holder_.imgProfile.setImageResource(R.drawable.default_profile_image);
+            int size = (int) holder_.imgProfile.getResources().getDimension(R.dimen.profile_image_size);
+            holder_.imgProfile.setImageBitmap(ProfileUtil.generateProfileImage(meta.name, meta.username, size));
         }
         holder_.txtName.setText(meta.name);
         holder_.txtEmail.setText(meta.email);
