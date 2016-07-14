@@ -33,6 +33,7 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
         mItem = i.getParcelableExtra(ITEM);
 
         showItemInfo();
+        mLinkText.setVisibility(View.GONE);
 
         final View imageFrame = findViewById(R.id.imagePhotoDetailFrame);
         imageFrame.setOnClickListener(new View.OnClickListener() {

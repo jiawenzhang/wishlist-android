@@ -69,7 +69,6 @@ import me.kaede.tagview.TagView;
 public abstract class MyWishDetailActivity extends WishDetailActivity implements TokenCompleteTextView.TokenListener {
     private static final String TAG = "MyWishDetailActivity";
     protected LinearLayout mInstructionLayout;
-    protected ClearableEditText mLinkText;
     protected TagView mTagView;
     protected View mImageFrame;
     protected TextView mTxtInstruction;
@@ -193,7 +192,6 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         mTxtInstruction = (TextView) findViewById(R.id.txtInstruction);
         mInstructionLayout = (LinearLayout) findViewById(R.id.instructionLayout);
         mTagLayout = (LinearLayout) findViewById(R.id.tagLayout);
-        mLinkText = (ClearableEditText) findViewById(R.id.itemLinkText);
         mLinkText.setVisibility(View.GONE);
         mCompleteCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
 

@@ -55,6 +55,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     protected ClearableEditText mLocationView;
     protected TextView mLinkView;
     protected LinearLayout mLinkLayout;
+    protected ClearableEditText mLinkText;
     protected WishItem mItem;
     protected int mComplete = -1;
 
@@ -86,6 +87,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         mLocationView = (ClearableEditText) findViewById(R.id.itemLocation);
         mLinkView = (TextView) findViewById(R.id.itemLink);
         mLinkLayout = (LinearLayout) findViewById(R.id.linkLayout);
+        mLinkText = (ClearableEditText) findViewById(R.id.itemLinkText);
     }
 
     protected void showPhoto() {}
