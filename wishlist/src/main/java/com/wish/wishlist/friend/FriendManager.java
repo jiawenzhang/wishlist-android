@@ -62,7 +62,7 @@ public class FriendManager {
         }
     }
 
-    public void setFoundUserListener(final Activity a) {
+    public void setFoundUserListener(final Object a) {
         mFoundUserListener = (onFoundUserListener) a;
     }
 
@@ -116,7 +116,7 @@ public class FriendManager {
         }
     }
 
-    public void setRequestFriendListener(final Activity a) {
+    public void setRequestFriendListener(final Object a) {
         mRequestFriendListener = (onRequestFriendListener) a;
     }
 
@@ -392,8 +392,7 @@ public class FriendManager {
         });
     }
 
-    public void fetchUsers(final String text, int skip)
-    {
+    public void fetchUsers(final String text, int skip) {
         // text could be email or display name
         // exclude self
 
