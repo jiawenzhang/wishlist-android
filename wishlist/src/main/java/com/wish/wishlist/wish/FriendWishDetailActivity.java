@@ -44,6 +44,13 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
                 }
             }
         });
+
+        // Friend's wish is not edible, so make EditText not edible
+        mNameView.setFocusableInTouchMode(false);
+        mDescriptionView.setFocusableInTouchMode(false);
+        mPriceView.setFocusableInTouchMode(false);
+        mStoreView.setFocusableInTouchMode(false);
+        mLocationView.setFocusableInTouchMode(false);
     }
 
     @Override
