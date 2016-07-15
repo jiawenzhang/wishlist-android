@@ -29,7 +29,7 @@ import java.util.HashMap;
 public class DownloadImageTask {
     private static String TAG = "DownloadImageTask";
     private HashMap<Long, String> mItemUrl= new HashMap<>();
-    private HashMap<String, Target> mTargets = new HashMap<>();
+    private HashMap<Long, Target> mTargets = new HashMap<>();
     private boolean mImageChanged = false;
 
     class Result {
@@ -139,7 +139,7 @@ public class DownloadImageTask {
     }
 
     private void imageDownloaded(final Bitmap bitmap, Long itemId, String url) {
-        mTargets.remove(url);
+        mTargets.remove(itemId);
 
         WishItem item = WishItemManager.getInstance().getItemById(itemId);
         if (item != null && bitmap != null) {
@@ -213,7 +213,7 @@ public class DownloadImageTask {
                 }
             };
 
-            mTargets.put(result.url, target);
+            mTargets.put(result.itemId, target);
             Picasso.with(WishlistApplication.getAppContext()).load(result.url).resize(ImageManager.IMG_WIDTH, 2048).centerInside().onlyScaleDown().into(target);
         } else if (result.code == result.HEAD_HTTP_NOT_OK) {
             // return non 200 when sending HEAD request to the url
@@ -246,7 +246,7 @@ public class DownloadImageTask {
                 }
             };
 
-            mTargets.put(result.url, target);
+            mTargets.put(result.itemId, target);
             Picasso.with(WishlistApplication.getAppContext()).load(result.url).resize(ImageManager.IMG_WIDTH, 2048).centerInside().onlyScaleDown().into(target);
         } else if (result.code == result.MALFORMEDURL) {
             invalidateImageUrl(result.itemId);
