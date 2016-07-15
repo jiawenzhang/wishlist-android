@@ -74,7 +74,7 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.save:
-                Log.d(TAG, "save");
+                Log.d(TAG, "save as my own wish");
                 showProgressDialog("Saving...");
                 mWishImageDownloader = new WishImageDownloader();
                 mWishImageDownloader.setWishImageDownloadDoneListener(this);

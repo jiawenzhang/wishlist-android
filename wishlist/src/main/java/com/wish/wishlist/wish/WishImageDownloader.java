@@ -10,6 +10,7 @@ import com.squareup.picasso.Target;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.Owner;
 
 import java.util.HashMap;
 import java.util.List;
@@ -99,7 +100,9 @@ public class WishImageDownloader {
             fullsizePath = ImageManager.saveBitmapToFile(bitmap);
             ImageManager.saveBitmapToThumb(bitmap, fullsizePath);
         }
+        item.setFullsizePicPath(fullsizePath);
 
+        item.setOwnerId(Owner.id());
         item.setObjectId(null);
 
         final boolean wishDefaultPrivate = PreferenceManager.getDefaultSharedPreferences(WishlistApplication.getAppContext()).getBoolean("wishDefaultPrivate", false);
@@ -110,8 +113,6 @@ public class WishImageDownloader {
         }
         item.setComplete(0);
         item.setSyncedToServer(false);
-
-        item.setFullsizePicPath(fullsizePath);
 
         item.setUpdatedTime(System.currentTimeMillis());
         item.saveToLocal();
