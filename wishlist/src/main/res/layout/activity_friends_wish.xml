@@ -26,18 +26,13 @@
                     android:fitsSystemWindows="true"
                     app:contentScrim="?attr/colorPrimary"
                     app:titleEnabled="false"
-                    app:expandedTitleMarginBottom="32dp"
-                    app:expandedTitleMarginEnd="64dp"
-                    app:expandedTitleMarginStart="48dp"
-                    app:expandedTitleTextAppearance="@style/ToolbarTitle"
-                    app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
+                    app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+                    >
 
                     <include
                         layout="@layout/profile_header"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fitsSystemWindows="true"
-                        android:scaleType="centerCrop"
+                        android:layout_height="match_parent"
                         app:layout_collapseMode="parallax"
                         />
 
@@ -59,7 +54,6 @@
                         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                         app:theme="@style/Wishlist.Dark.ActionBar"
                         app:layout_collapseMode="pin"
-                        android:minHeight="?actionBarSize"
                         />
 
                 </android.support.design.widget.CollapsingToolbarLayout>

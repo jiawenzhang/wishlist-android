@@ -1,89 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/profile_header_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/gradient_dark_background"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:gravity="bottom"
+    android:paddingTop="80dp"
+    android:paddingBottom="30dp"
+    >
 
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/drawer_header_layout"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/profile_image_frame"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
         >
 
-        <FrameLayout
-            android:id="@+id/profile_image_frame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="50dp"
-            android:paddingBottom="20dp"
-            >
-
-            <ImageView
-                android:id="@+id/generated_profile_image"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_gravity="center"
-                android:src="@drawable/default_profile_image"
-                />
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_gravity="center"
-                android:src="@drawable/default_profile_image"
-                />
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_image_frame"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="10dp"
-            android:text="User name"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_medium"
-            android:visibility="gone"
+        <ImageView
+            android:id="@+id/generated_profile_image"
+            android:layout_width="@dimen/profile_image_size"
+            android:layout_height="@dimen/profile_image_size"
+            android:layout_gravity="center"
+            android:src="@drawable/default_profile_image"
             />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/name"
-            android:layout_marginBottom="30dp"
-            android:orientation="horizontal"
-            android:paddingLeft="10dp"
-            android:paddingTop="20dp"
-            android:paddingRight="10dp"
-            android:layout_gravity="bottom">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="@dimen/profile_image_size"
+            android:layout_height="@dimen/profile_image_size"
+            android:layout_gravity="center"
+            android:src="@drawable/default_profile_image"
+            />
+    </FrameLayout>
 
-            <TextView
-                android:id="@+id/wish_count"
-                style="@style/WishStatsTextView"
-                android:text="15\nWishes"
-                />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:layout_toRightOf="@+id/profile_image_frame"
+        android:layout_toEndOf="@+id/profile_image_frame"
+        android:layout_alignBaseline="@+id/profile_image_frame"
+        >
 
-            <TextView
-                android:id="@+id/completed_count"
-                style="@style/WishStatsTextView"
-                android:text="5\nCompleted"
-                />
+        <TextView
+            android:id="@+id/wish_count"
+            style="@style/WishStatsTextView"
+            android:text="15\nWishes"
+            />
 
-            <TextView
-                android:id="@+id/wish_value"
-                style="@style/WishStatsTextView"
-                android:text="256\n$Value"
-                />
-        </LinearLayout>
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/completed_count"
+            style="@style/WishStatsTextView"
+            android:text="5\nCompleted"
+            />
 
-
-</FrameLayout>
+        <TextView
+            android:id="@+id/wish_value"
+            style="@style/WishStatsTextView"
+            android:text="256\n$Value"
+            />
+    </LinearLayout>
+</RelativeLayout>
