@@ -33,8 +33,7 @@ public class WishlistApplication extends Application {
     HashMap<TrackerName, Tracker> mTrackers = new HashMap<>();
     private static Context mContext;
 
-    public WishlistApplication()
-    {
+    public WishlistApplication() {
         super();
     }
 
@@ -48,10 +47,15 @@ public class WishlistApplication extends Application {
         registerComponentCallbacks(handler);
 
         Options.DeviceCountry deviceCountry = new Options.DeviceCountry(null);
-        deviceCountry.read();
-        if (deviceCountry.val() == null) {
-            deviceCountry.setVal(Util.getDeviceCountry(this));
+        if (getResources().getBoolean(R.bool.force_enable_account)) {
+            deviceCountry.setVal("CA");
             deviceCountry.save();
+        } else {
+            deviceCountry.read();
+            if (deviceCountry.val() == null) {
+                deviceCountry.setVal(Util.getDeviceCountry(this));
+                deviceCountry.save();
+            }
         }
 
         Util.initDeviceAccountEnabled();
