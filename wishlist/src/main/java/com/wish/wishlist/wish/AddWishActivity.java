@@ -120,6 +120,9 @@ public class AddWishActivity extends MyWishDetailActivity
         mCompleteInnerLayout.setVisibility(View.GONE);
         mCompleteCheckBox.setVisibility(View.VISIBLE);
 
+        mPrivateInnerLayout.setVisibility(View.GONE);
+        mPrivateCheckBox.setVisibility(View.VISIBLE);
+
         mTagLayout.setVisibility(View.VISIBLE);
         mTagView.setVisibility(View.VISIBLE);
         mImageFrame.setOnClickListener(new View.OnClickListener() {

@@ -46,7 +46,9 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     protected ImageView mPhotoView;
     protected ImageView mImgComplete;
     protected LinearLayout mCompleteInnerLayout;
+    protected LinearLayout mPrivateInnerLayout;
     protected TextView mTextComplete;
+    protected TextView mTextPrivate;
     protected ClearableEditText mNameView;
     protected ClearableEditText mDescriptionView;
     protected TextView mDateView;
@@ -57,7 +59,6 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     protected LinearLayout mLinkLayout;
     protected ClearableEditText mLinkText;
     protected WishItem mItem;
-    protected int mComplete = -1;
 
     protected abstract boolean myWish();
 
@@ -77,8 +78,10 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
 
         mPhotoView = (ImageView) findViewById(R.id.imgPhotoDetail);
         mCompleteInnerLayout = (LinearLayout) findViewById(R.id.completeInnerLayout);
+        mPrivateInnerLayout = (LinearLayout) findViewById(R.id.privateInnerLayout);
         mImgComplete = (ImageView) findViewById(R.id.completeImageView);
         mTextComplete = (TextView) findViewById(R.id.completeTextView);
+        mTextPrivate = (TextView) findViewById(R.id.privateTextView);
         mNameView = (ClearableEditText) findViewById(R.id.itemNameDetail);
         mDescriptionView = (ClearableEditText) findViewById(R.id.itemDescription);
         mDateView = (TextView) findViewById(R.id.itemDateDetail);
@@ -103,6 +106,12 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
             mCompleteInnerLayout.setVisibility(View.VISIBLE);
         } else {
             mCompleteInnerLayout.setVisibility(View.GONE);
+        }
+
+        if (mItem.getAccess() == WishItem.PRIVATE) {
+            mPrivateInnerLayout.setVisibility(View.VISIBLE);
+        } else {
+            mPrivateInnerLayout.setVisibility(View.GONE);
         }
 
         mDateView.setText(mItem.getUpdatedTimeStr());

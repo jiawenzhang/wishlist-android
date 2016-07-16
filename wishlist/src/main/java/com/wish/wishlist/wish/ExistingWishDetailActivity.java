@@ -41,11 +41,18 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
 
         mFullsizePhotoPath = mItem.getFullsizePicPath();
         mLinkText.setText(mItem.getLink());
-        mComplete = mItem.getComplete();
-        if (mComplete == 1) {
+        int complete = mItem.getComplete();
+        if (complete == 1) {
             mCompleteCheckBox.setChecked(true);
         } else {
             mCompleteCheckBox.setChecked(false);
+        }
+
+        int access = mItem.getAccess();
+        if (access == WishItem.PRIVATE) {
+            mPrivateCheckBox.setChecked(true);
+        } else {
+            mPrivateCheckBox.setChecked(false);
         }
 
         mNameView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -135,6 +142,23 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
                 mCompleteCheckBox.getParent().requestChildFocus(mCompleteCheckBox, mCompleteCheckBox);
             }
         });
+
+        final LinearLayout privateLayout = (LinearLayout) findViewById(R.id.itemPrivateLayout);
+        privateLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enterEditMode();
+                mPrivateCheckBox.getParent().requestChildFocus(mPrivateCheckBox, mPrivateCheckBox);
+            }
+        });
+
+        mTextPrivate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enterEditMode();
+                mPrivateCheckBox.getParent().requestChildFocus(mPrivateCheckBox, mPrivateCheckBox);
+            }
+        });
     }
 
     protected void enterEditMode() {
@@ -173,6 +197,10 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
         mCompleteInnerLayout.setVisibility(View.GONE);
         mCompleteCheckBox.setVisibility(View.VISIBLE);
         mCompleteCheckBox.setChecked(mItem != null && mItem.getComplete() == 1);
+
+        mPrivateInnerLayout.setVisibility(View.GONE);
+        mPrivateCheckBox.setVisibility(View.VISIBLE);
+        mPrivateCheckBox.setChecked(mItem != null && mItem.getAccess() == WishItem.PRIVATE);
 
         mTagLayout.setVisibility(mTags.size() == 0 ? View.VISIBLE : View.GONE);
         mImageFrame.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +262,8 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
                 mTagLayout.setVisibility(View.GONE);
                 mCompleteCheckBox.setVisibility(View.GONE);
                 mCompleteInnerLayout.setVisibility(mItem != null && mItem.getComplete() == 1 ? View.VISIBLE : View.GONE);
+                mPrivateCheckBox.setVisibility(View.GONE);
+                mPrivateInnerLayout.setVisibility(mItem != null && mItem.getAccess() == WishItem.PRIVATE ? View.VISIBLE : View.GONE);
 
                 mImageFrame.setOnClickListener(new View.OnClickListener() {
                     @Override

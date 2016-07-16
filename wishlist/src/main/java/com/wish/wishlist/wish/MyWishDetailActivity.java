@@ -74,6 +74,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     protected TextView mTxtInstruction;
     protected LinearLayout mTagLayout;
     protected CheckBox mCompleteCheckBox;
+    protected CheckBox mPrivateCheckBox;
     protected ArrayList<String> mTags = new ArrayList<>();
     protected String mFullsizePhotoPath = null;
     protected String mTempPhotoPath = null;
@@ -194,6 +195,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         mTagLayout = (LinearLayout) findViewById(R.id.tagLayout);
         mLinkText.setVisibility(View.GONE);
         mCompleteCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
+        mPrivateCheckBox = (CheckBox) findViewById(R.id.privateCheckBox);
 
         mTagView = (TagView) findViewById(R.id.tag_view);
         mImageFrame = findViewById(R.id.imagePhotoDetailFrame);
@@ -338,8 +340,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         }
 
         int complete = mCompleteCheckBox.isChecked() ? 1 : 0;
-        //int access = mPrivateCheckBox.isChecked() ? WishItem.PRIVATE : WishItem.PUBLIC;
-        int access = WishItem.PUBLIC;
+        int access = mPrivateCheckBox.isChecked() ? WishItem.PRIVATE : WishItem.PUBLIC;
 
         return new WishInput(
                 name,
