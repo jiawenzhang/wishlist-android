@@ -255,14 +255,6 @@ public class MyWishActivity extends WishBaseActivity implements
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 super.onCreateActionMode(actionMode, menu);
                 getMenuInflater().inflate(R.menu.menu_my_wish_action, menu);
-                if (!getResources().getBoolean(R.bool.enable_friend)) {
-                    MenuItem item1 = menu.findItem(R.id.menu_private);
-                    item1.setVisible(false);
-
-                    MenuItem item2 = menu.findItem(R.id.menu_public);
-                    item2.setVisible(false);
-                }
-
                 if (refreshEnabled()) {
                     mSwipeRefreshLayout.setEnabled(false);
                 }

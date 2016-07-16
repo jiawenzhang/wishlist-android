@@ -206,6 +206,7 @@
                 android:orientation="vertical"
                 android:paddingLeft="8dp"
                 android:layout_below="@+id/itemCompleteLayout"
+                android:visibility="gone"
                 >
 
                 <LinearLayout

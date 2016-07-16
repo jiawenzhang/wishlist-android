@@ -21,13 +21,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.StringSignature;
+import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wish.wishlist.R;
@@ -47,7 +47,6 @@ import com.wish.wishlist.util.ImagePicker;
 import com.wish.wishlist.util.ScreenOrientation;
 import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.util.dimension;
-import com.wish.wishlist.widgets.ClearableEditText;
 
 import java.io.File;
 import java.text.NumberFormat;
@@ -75,6 +74,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     protected LinearLayout mTagLayout;
     protected CheckBox mCompleteCheckBox;
     protected CheckBox mPrivateCheckBox;
+    protected LinearLayout mItemPrivateLayout;
     protected ArrayList<String> mTags = new ArrayList<>();
     protected String mFullsizePhotoPath = null;
     protected String mTempPhotoPath = null;
@@ -196,6 +196,10 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         mLinkText.setVisibility(View.GONE);
         mCompleteCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
         mPrivateCheckBox = (CheckBox) findViewById(R.id.privateCheckBox);
+        mItemPrivateLayout = (LinearLayout) findViewById(R.id.itemPrivateLayout);
+        if (getResources().getBoolean(R.bool.enable_friend) && ParseUser.getCurrentUser() != null) {
+            mItemPrivateLayout.setVisibility(View.VISIBLE);
+        }
 
         mTagView = (TagView) findViewById(R.id.tag_view);
         mImageFrame = findViewById(R.id.imagePhotoDetailFrame);
@@ -491,20 +495,6 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
 
         saveWishItem();
         return true;
-    }
-
-    @Override
-    protected void showItemInfo() {
-        super.showItemInfo();
-        final ImageView privateImage = (ImageView) findViewById(R.id.imgPrivate);
-
-        if (getResources().getBoolean(R.bool.enable_friend)) {
-            if (mItem.getAccess() == mItem.PRIVATE) {
-                privateImage.setVisibility(View.VISIBLE);
-            } else {
-                privateImage.setVisibility(View.GONE);
-            }
-        }
     }
 
     @Override

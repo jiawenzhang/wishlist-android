@@ -143,8 +143,7 @@ public class ExistingWishDetailActivity extends MyWishDetailActivity implements 
             }
         });
 
-        final LinearLayout privateLayout = (LinearLayout) findViewById(R.id.itemPrivateLayout);
-        privateLayout.setOnClickListener(new View.OnClickListener() {
+        mItemPrivateLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 enterEditMode();

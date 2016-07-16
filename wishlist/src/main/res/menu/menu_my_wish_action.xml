@@ -26,10 +26,12 @@
         />
     <item android:id="@+id/menu_private"
           android:title="Set private"
+          android:visible="false"
           app:showAsAction="ifRoom"
         />
     <item android:id="@+id/menu_public"
           android:title="Set public"
+          android:visible="false"
           app:showAsAction="ifRoom"
         />
 </menu>
