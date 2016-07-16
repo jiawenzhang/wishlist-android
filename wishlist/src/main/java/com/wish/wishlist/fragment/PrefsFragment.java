@@ -61,10 +61,8 @@ public class PrefsFragment extends PreferenceFragmentCompat implements
         });
 
         PreferenceCategory generalCategory = (PreferenceCategory) findPreference("general");
-        if (!getResources().getBoolean(R.bool.enable_friend)) {
-            final Preference p = findPreference("wishDefaultPrivate");
-            generalCategory.removePreference(p);
-        }
+        final Preference p = findPreference("wishDefaultPrivate");
+        generalCategory.removePreference(p);
 
         if (!Util.deviceAccountEnabled()) {
             generalCategory.removePreference(userProfile);
