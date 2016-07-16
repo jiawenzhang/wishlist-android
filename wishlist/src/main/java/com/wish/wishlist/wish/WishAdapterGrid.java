@@ -134,17 +134,6 @@ public class WishAdapterGrid extends WishAdapter {
         } else {
             holder.imgComplete.setVisibility(View.GONE);
         }
-
-        if (WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_friend)) {
-            final int access = wish.getAccess();
-            if (access == WishItem.PRIVATE) {
-                holder.imgPrivate.setVisibility(View.VISIBLE);
-            } else {
-                holder.imgPrivate.setVisibility(View.GONE);
-            }
-        } else {
-            holder.imgPrivate.setVisibility(View.GONE);
-        }
     }
 
     protected RoundedCornersTransformation.CornerType cornerType() {

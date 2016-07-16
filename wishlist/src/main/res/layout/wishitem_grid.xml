@@ -75,7 +75,7 @@
                     android:layout_marginRight="8dp"
                     android:adjustViewBounds="true"
                     android:src="@drawable/ic_action_lock_yellow"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     />
             </LinearLayout>
 

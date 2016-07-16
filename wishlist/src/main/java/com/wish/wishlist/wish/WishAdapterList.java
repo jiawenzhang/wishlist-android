@@ -130,17 +130,6 @@ public class WishAdapterList extends WishAdapter {
         } else {
             holder.imgComplete.setVisibility(View.GONE);
         }
-
-        if (WishlistApplication.getAppContext().getResources().getBoolean(R.bool.enable_friend)) {
-            int access = wish.getAccess();
-            if (access == wish.PRIVATE) {
-                holder.imgPrivate.setVisibility(View.VISIBLE);
-            } else {
-                holder.imgPrivate.setVisibility(View.GONE);
-            }
-        } else {
-            holder.imgPrivate.setVisibility(View.GONE);
-        }
     }
 
     protected RoundedCornersTransformation.CornerType cornerType() {
