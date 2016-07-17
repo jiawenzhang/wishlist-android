@@ -247,4 +247,17 @@ public class Options {
             _defaultVal = 0;
         }
     }
+
+    public static class ShowPrivateWishExplainDialog extends Options {
+        public static final String KEY = "showPrivateWishExplainDialog";
+        public ShowPrivateWishExplainDialog (int val) {
+            super(KEY, val);
+            _defaultVal = 1;
+        }
+
+        public ShowPrivateWishExplainDialog() {
+            super(KEY, 0);
+            _defaultVal = 1;
+        }
+    }
 }

@@ -76,8 +76,7 @@ public class EditFragmentDialog extends DialogFragment {
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         //super.onStart() is where dialog.show() is actually called on the underlying dialog, so we have to do it after this point
         final AlertDialog d = (AlertDialog) getDialog();

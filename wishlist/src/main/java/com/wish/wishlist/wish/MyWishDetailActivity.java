@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -35,6 +36,7 @@ import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.db.TagItemDBManager;
 import com.wish.wishlist.event.EventBus;
 import com.wish.wishlist.event.MyWishChangeEvent;
+import com.wish.wishlist.fragment.PrivateWishExplainFragmentDialog;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.model.WishItemManager;
@@ -44,6 +46,7 @@ import com.wish.wishlist.tag.AddTagFromEditActivity;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.DoubleUtil;
 import com.wish.wishlist.util.ImagePicker;
+import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ScreenOrientation;
 import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.util.dimension;
@@ -194,6 +197,18 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         mLinkText.setVisibility(View.GONE);
         mCompleteCheckBox = (CheckBox) findViewById(R.id.completeCheckBox);
         mPrivateCheckBox = (CheckBox) findViewById(R.id.privateCheckBox);
+        mPrivateCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Options.ShowPrivateWishExplainDialog show = new Options.ShowPrivateWishExplainDialog();
+                show.read();
+                if (show.val() == 1) {
+                    DialogFragment newFragment = new PrivateWishExplainFragmentDialog();
+                    newFragment.show(getSupportFragmentManager(), "dialog");
+                }
+            }
+        });
+
         mItemPrivateLayout = (LinearLayout) findViewById(R.id.itemPrivateLayout);
         if (getResources().getBoolean(R.bool.enable_friend) && ParseUser.getCurrentUser() != null) {
             mItemPrivateLayout.setVisibility(View.VISIBLE);
