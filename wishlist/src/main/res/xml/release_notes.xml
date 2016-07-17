@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <releaseNote>
+    <release versionName="1.3.3" versionCode="63">
+        <note>Support loading wish from link in clipboard</note>
+    </release>
     <release versionName="1.3.0" versionCode="60">
         <note>Support account registration</note>
         <note>Allow backup wishes to cloud</note>

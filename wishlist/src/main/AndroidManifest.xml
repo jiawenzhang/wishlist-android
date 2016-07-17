@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.wish.wishlist"
-    android:versionCode="62"
-    android:versionName="1.3.2" >
+    android:versionCode="63"
+    android:versionName="1.3.3" >
 
     <uses-sdk xmlns:tools="http://schemas.android.com/tools"
               tools:overrideLibrary="android.support.v14.preference" />
