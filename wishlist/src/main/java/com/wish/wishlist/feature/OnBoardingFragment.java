@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.wish.wishlist.R;
-import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.Util;
@@ -43,22 +42,61 @@ public final class OnBoardingFragment extends Fragment {
         mTextView1 = (TextView) v.findViewById(R.id.onBoardingText);
         mButton = (Button) v.findViewById(R.id.onBoardingButton);
 
+        if (!Util.deviceAccountEnabled()) {
+            switch (mPosition) {
+                case 0: {
+                    showFirstView();
+                    break;
+                }
+                case 1: {
+                    showAddView();
+                    break;
+                }
+                case 2: {
+                    showCompleteView();
+                    break;
+                }
+            }
+            return v;
+        }
+
+        if (!getResources().getBoolean(R.bool.enable_friend)) {
+            switch (mPosition) {
+                case 0: {
+                    showFirstView();
+                    break;
+                }
+                case 1: {
+                    showAddView();
+                    break;
+                }
+                case 2: {
+                    showSyncView();
+                    break;
+                }
+                case 3: {
+                    showCompleteView();
+                    break;
+                }
+            }
+            return v;
+        }
+
         switch (mPosition) {
             case 0: {
                 showFirstView();
                 break;
-            } case 1: {
-                showShareView();
+            }
+            case 1: {
+                showAddView();
                 break;
-            } case 2: {
-                if (Util.deviceAccountEnabled()) {
-                    showSyncView();
-                } else {
-                    showCompleteView();
-                }
+            }
+            case 2: {
+                showSyncView();
                 break;
-            } case 3: {
-                showCompleteView();
+            }
+            case 3: {
+                showFriendView();
                 break;
             }
         }
@@ -75,9 +113,9 @@ public final class OnBoardingFragment extends Fragment {
         mButton.setVisibility(View.INVISIBLE);
     }
 
-    private void showShareView() {
-        String text = "<br>SHARE<br>" +
-                "<font color=#f2ca17><b>WISH</b><br></font>" +
+    private void showAddView() {
+        String text = "<br><font color=#f2ca17><b>ADD</b></font><br>" +
+                "WISH<br>" +
                 "FROM<br>" +
                 "OTHER APP<br>" +
                 "OR WEB";
@@ -102,6 +140,20 @@ public final class OnBoardingFragment extends Fragment {
                 "WHEN<br>" +
                 "DONE";
         mTextView1.setText(Html.fromHtml(text));
+        setupButton();
+    }
+
+    private void showFriendView() {
+        String text = "<br><font color=#f2ca17><b>SHARE</b></font><br>" +
+                "WISH<br>" +
+                "WITH<br>" +
+                "YOUR<br>" +
+                "FRIENDS";
+        mTextView1.setText(Html.fromHtml(text));
+        setupButton();
+    }
+
+    protected void setupButton() {
         mButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // make sure on boarding is not shown next time user starts the app
