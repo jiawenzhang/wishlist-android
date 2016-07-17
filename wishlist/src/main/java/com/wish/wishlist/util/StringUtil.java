@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.TimeZone;
 
 /**
@@ -60,5 +61,22 @@ public class StringUtil {
         } while (textWidth(text.substring(0, newEnd) + "...") < max);
 
         return text.substring(0, end) + "...";
+    }
+
+    public static String randomHex(int size) {
+        byte[] b = new byte[size];
+        new Random(System.currentTimeMillis()).nextBytes(b);
+        return bytesToHex(b);
+    }
+
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 }

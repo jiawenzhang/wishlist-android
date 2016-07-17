@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.util.StringUtil;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -148,7 +149,9 @@ public class ImageManager
             File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/image");
             File f;
             if (fileName == null) {
-                f = File.createTempFile("IMG", ".jpg", dir);
+                do {
+                    f = new File(dir, StringUtil.randomHex(8) + ".jpg");
+                } while (!f.createNewFile());
             } else {
                 f = new File(dir, fileName);
             }
