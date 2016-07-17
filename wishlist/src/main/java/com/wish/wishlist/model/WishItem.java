@@ -35,7 +35,8 @@ import org.json.JSONObject;
 public class WishItem implements Parcelable {
     private static final String TAG = "WishItem";
     public static final int PUBLIC = 0;
-    public static final int PRIVATE = 1;
+    public static final int FRIEND = 10;
+    public static final int PRIVATE = 20;
 
     private long mId = -1;
     private String mObjectId;
