@@ -116,7 +116,7 @@ public class ApplicationLifecycleHandler implements Application.ActivityLifecycl
 
     @Override
     public void onTrimMemory(int i) {
-        if (i == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+        if (i >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
             Log.d(TAG, "app went to background");
             isInBackground = true;
         }
