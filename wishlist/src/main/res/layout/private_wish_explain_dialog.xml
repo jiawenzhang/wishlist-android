@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="30dp"
+        android:textSize="@dimen/text_size_medium"
+        android:text="Private wishes are only visible yourself. Your friends and other users won't be able to see them."
+        />
+
+    <CheckBox
+        android:id="@+id/no_show_next_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:text="Don't show me next time"
+        android:textColor="@color/grey"
+        android:defaultValue="false"
+        />
+</LinearLayout>

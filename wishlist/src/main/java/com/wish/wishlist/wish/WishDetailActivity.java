@@ -1,7 +1,10 @@
 package com.wish.wishlist.wish;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -9,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.view.ActionMode;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,12 +29,16 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.ActivityBase;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.social.ShareHelper;
+import com.wish.wishlist.util.ScreenOrientation;
+import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.widgets.ClearableEditText;
 
 
@@ -59,6 +67,8 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     protected LinearLayout mLinkLayout;
     protected ClearableEditText mLinkText;
     protected WishItem mItem;
+    private ProgressDialog mProgressDialog;
+    private Target mTarget;
 
     protected abstract boolean myWish();
 
@@ -257,20 +267,54 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     }
 
     protected void showFullScreenPhoto(String key, String val) {
-        Intent i = new Intent(this, FullscreenPhotoActivity.class);
+        final Intent i = new Intent(this, FullscreenPhotoActivity.class);
         i.putExtra(key, val);
 
         if (Build.VERSION.SDK_INT < 21) {
             startActivity(i);
         } else {
-            // hide toolbar so it's fading away won't interfere with photo animation
-            mToolbarView.setVisibility(View.GONE);
+            if (key.equals(FullscreenPhotoActivity.PHOTO_URL)) {
+                // we are loading the image from web, it could be slow when opening the FullscreenPhotoActivity due to animation
+                // because we need the full bitmap to be ready before showing the animation
+                // so let's pre-load the image to cache before starting the activity
+                mTarget = new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        dismissProgressDialog();
+                        if (bitmap != null) {
+                            Log.d(TAG, "valid bitmap");
+                            animateToFullScreenPhoto(i);
+                        } else {
+                            Log.e(TAG, "null bitmap");
+                        }
+                    }
 
-            // show photo transition animation
-            ActivityOptionsCompat options = ActivityOptionsCompat.
-                    makeSceneTransitionAnimation(this, mPhotoView, getString(R.string.photo));
-            startActivity(i, options.toBundle());
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {}
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        dismissProgressDialog();
+                        Log.e(TAG, "onBitmapFailed");
+                    }
+                };
+
+                showProgressDialog();
+                Picasso.with(this).load(val).resize(dimension.screenWidth(), dimension.screenHeight()).centerInside().onlyScaleDown().into(mTarget);
+            } else {
+                animateToFullScreenPhoto(i);
+            }
         }
+    }
+
+    private void animateToFullScreenPhoto(Intent i) {
+        // hide toolbar so it's fading away won't interfere with photo animation
+        mToolbarView.setVisibility(View.GONE);
+
+        // show photo transition animation
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(this, mPhotoView, getString(R.string.photo));
+        startActivity(i, options.toBundle());
     }
 
     @Override
@@ -308,6 +352,21 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         }
     }
 
+    protected void showProgressDialog() {
+        ScreenOrientation.lock(this);
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage("Loading...");
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+    }
+
+    protected void dismissProgressDialog() {
+        ScreenOrientation.unlock(WishDetailActivity.this);
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
+    }
+
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
         if (mTranslucentToolBar) {
@@ -317,10 +376,8 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     }
 
     @Override
-    public void onDownMotionEvent() {
-    }
+    public void onDownMotionEvent() {}
 
     @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-    }
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {}
 }
