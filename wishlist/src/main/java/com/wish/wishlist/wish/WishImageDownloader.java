@@ -10,6 +10,7 @@ import com.squareup.picasso.Target;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.Owner;
 
 import java.util.HashMap;
@@ -78,6 +79,7 @@ public class WishImageDownloader {
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
                 bitmapFailed(picURL);
+                Analytics.send(Analytics.DEBUG, "OnBitmapFailed", picURL);
             }
         };
 

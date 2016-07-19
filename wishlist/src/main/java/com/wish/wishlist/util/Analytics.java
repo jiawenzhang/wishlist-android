@@ -19,6 +19,7 @@ public class Analytics {
     public static final String DEVICE = "Device";
     public static final String SYNC = "Sync";
     public static final String PUSH = "Push";
+    public static final String FRIEND = "Friend";
     public static final String DEBUG = "Debug";
     public static final String PERMISSION = "Permission";
 

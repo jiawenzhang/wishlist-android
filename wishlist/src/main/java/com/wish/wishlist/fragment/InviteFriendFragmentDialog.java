@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.Analytics;
 
 /**
  * Created by jiawen on 15-11-08.
@@ -47,6 +48,8 @@ public class InviteFriendFragmentDialog extends DialogFragment {
                     //    break;
                     case EMAIL:
                         Log.d(TAG, "Email");
+
+                        Analytics.send(Analytics.FRIEND, "Invite", "ByEmail");
                         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
                         emailIntent.setData(Uri.parse("mailto:" + ""));
                         emailIntent.putExtra(Intent.EXTRA_SUBJECT, msgSubject);
@@ -59,12 +62,14 @@ public class InviteFriendFragmentDialog extends DialogFragment {
                         break;
                     case MESSAGE:
                         Log.d(TAG, "Message");
+                        Analytics.send(Analytics.FRIEND, "Invite", "ByMessage");
                         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
                         sendIntent.setType("vnd.android-dir/mms-sms");
                         sendIntent.putExtra("sms_body", msgBody);
                         startActivity(sendIntent);
                         break;
                     case MORE:
+                        Analytics.send(Analytics.FRIEND, "Invite", "ByMore");
                         final Intent i = new Intent(Intent.ACTION_SEND);
                         i.setType("text/plain");
                         i.putExtra(Intent.EXTRA_SUBJECT, msgSubject);

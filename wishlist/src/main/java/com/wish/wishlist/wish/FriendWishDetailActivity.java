@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.Analytics;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,8 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.sendScreen("FriendWishDetail");
 
         Intent i = getIntent();
         mItem = i.getParcelableExtra(ITEM);
@@ -81,6 +84,8 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
                 mWishImageDownloader.download(new ArrayList<WishItem>() {{
                     add(mItem);
                 }});
+
+                Analytics.send(Analytics.WISH, "SaveAsMyWish", "FromDetail");
                 return true;
             case R.id.share:
                 Log.d(TAG, "share");

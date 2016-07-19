@@ -90,6 +90,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     protected LinearLayoutManager mLinearLayoutManager;
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     protected WishAdapter mWishAdapter;
+    protected String mViewPrefix = "My";
 
     // for friend's wish, we use the Parse object id as the key
     // for my wish, we use the id (converted to string) as the key
@@ -114,11 +115,16 @@ public abstract class WishBaseActivity extends DrawerActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (this instanceof FriendsWishActivity) {
+            mViewPrefix = "Friend";
+        }
+
         mView.read();
         if (mView.val() == Options.View.LIST) {
-            Analytics.sendScreen("ListView");
+            Analytics.sendScreen(mViewPrefix + "ListView");
         } else {
-            Analytics.sendScreen("GridView");
+            Analytics.sendScreen(mViewPrefix + "GridView");
         }
 
         mFilterView = (TagView) this.findViewById(R.id.filter_view);
@@ -246,7 +252,7 @@ public abstract class WishBaseActivity extends DrawerActivity implements
         mView.setVal(viewOption);
         mView.save();
 
-        Analytics.sendScreen(screenView);
+        Analytics.sendScreen(mViewPrefix + screenView);
         return true;
     }
 

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.Analytics;
 
 import java.util.List;
 
@@ -35,6 +36,8 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.sendScreen("FindFriends");
         disableDrawer();
         mSwipeRefreshLayout.setEnabled(false);
 
@@ -160,6 +163,8 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
     @Override
     public void onAddFriend(final String friendId) {
         Log.d(TAG, "onAddFriend " + friendId);
+
+        Analytics.send(Analytics.FRIEND, "Add", null);
         showProgressDialog("Sending friend request");
 
         FriendManager.getInstance().setRequestFriendListener(this);

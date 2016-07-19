@@ -6,6 +6,7 @@ import android.widget.AdapterView;
 
 import com.wish.wishlist.R;
 import com.wish.wishlist.friend.IconTextAdapter;
+import com.wish.wishlist.util.Analytics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,8 @@ public class FriendOptionDialogFragment extends OptionDialogFragment implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Log.d(TAG, "unfriend");
+
+        Analytics.send(Analytics.FRIEND, "Remove", null);
         onRemoveFriend();
 
         dismiss();

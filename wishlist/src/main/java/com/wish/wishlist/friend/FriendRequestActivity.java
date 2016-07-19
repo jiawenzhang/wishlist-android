@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.wish.wishlist.R;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.VisibleActivityTracker;
 
@@ -23,6 +24,8 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.sendScreen("FriendRequest");
         disableDrawer();
         loadView();
     }
@@ -73,6 +76,7 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
     @Override
     public void onAcceptFriend(final String friendId) {
         Log.d(TAG, "onAddFriend " + friendId);
+        Analytics.send(Analytics.FRIEND, "Accept", null);
         showProgressDialog("Accepting friend");
 
         FriendManager.getInstance().setAcceptFriendListener(this);
@@ -90,6 +94,7 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
     @Override
     public void onRejectFriend(final String friendId) {
         Log.d(TAG, "onRejectFriend " + friendId);
+        Analytics.send(Analytics.FRIEND, "Reject", null);
         showProgressDialog("Rejecting friend");
 
         FriendManager.getInstance().setRejectFriendListener(this);

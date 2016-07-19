@@ -26,6 +26,7 @@ import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.friend.FriendsActivity;
 import com.wish.wishlist.activity.MapActivity;
 import com.wish.wishlist.model.WishItem;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ProfileUtil;
@@ -242,6 +243,8 @@ public class FriendsWishActivity extends WishBaseActivity implements
         mWishImageDownloader = new WishImageDownloader();
         mWishImageDownloader.setWishImageDownloadDoneListener(this);
         mWishImageDownloader.download(items);
+
+        Analytics.send(Analytics.WISH, "SaveAsMyWish", Integer.toString(items.size()));
     }
 
     public void onWishImageDownloadDone(boolean success) {

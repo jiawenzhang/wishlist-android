@@ -206,6 +206,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
                     DialogFragment newFragment = new PrivateWishExplainFragmentDialog();
                     newFragment.show(getSupportFragmentManager(), "dialog");
                 }
+                Analytics.send(Analytics.WISH, "PrivateCheckBox", mPrivateCheckBox.isChecked() ? "Check" : "UnCheck");
             }
         });
 
