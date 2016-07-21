@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.parse.ParseUser;
 import com.wish.wishlist.R;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.util.NetworkHelper;
 
 import java.util.List;
 
@@ -57,6 +58,11 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
                     // End has been reached
 
                     mLoading = true;
+                    if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+                        Toast.makeText(FindFriendsActivity.this, "Check network", Toast.LENGTH_LONG).show();
+                        mLoading = false;
+                        return;
+                    }
                     FriendManager.getInstance().fetchUsers(mSearchQuery, mFriendsLoaded);
                 }
             }
