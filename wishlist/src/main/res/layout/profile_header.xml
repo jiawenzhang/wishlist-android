@@ -49,19 +49,19 @@
         <TextView
             android:id="@+id/wish_count"
             style="@style/WishStatsTextView"
-            android:text="15\nWishes"
+            android:text="0\nWish"
             />
 
         <TextView
             android:id="@+id/completed_count"
             style="@style/WishStatsTextView"
-            android:text="5\nCompleted"
+            android:text="0\nCompleted"
             />
 
         <TextView
             android:id="@+id/wish_value"
             style="@style/WishStatsTextView"
-            android:text="256\n$Value"
+            android:text="0\n$Value"
             />
     </LinearLayout>
 </RelativeLayout>
