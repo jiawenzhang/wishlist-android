@@ -3,7 +3,6 @@ package com.wish.wishlist.wish;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,20 +68,6 @@ public class FriendsWishActivity extends WishBaseActivity implements
                 }
             }
         });
-
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            // Google bug: layout inside CollapsingToolbarLayout is cutting off if gravity is bottom,
-            // so set extra bottom padding as a work around
-            RelativeLayout headerLayout = (RelativeLayout) findViewById(R.id.profile_header_layout);
-
-            int extraPadding = (int) getResources().getDimension(R.dimen.header_bottom_padding_extra);
-            headerLayout.setPadding(
-                    headerLayout.getPaddingLeft(),
-                    headerLayout.getPaddingTop(),
-                    headerLayout.getPaddingRight(),
-                    headerLayout.getPaddingBottom() + extraPadding);
-        }
 
         mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         mSwipeRefreshLayout.setEnabled(false);

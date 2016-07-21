@@ -11,7 +11,6 @@
     <dimen name="help_text_padding">20px</dimen>
     <dimen name="avatar_size">75px</dimen>
     <dimen name="fav_place_textbox_size">200px</dimen>
-    <dimen name="header_bottom_padding_extra">30dp</dimen>
 
     <dimen name="title_height">45dip</dimen>
     <dimen name="title_imageButtonHeight">50dip</dimen>
