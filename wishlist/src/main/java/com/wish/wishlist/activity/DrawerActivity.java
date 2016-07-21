@@ -254,6 +254,7 @@ public abstract class DrawerActivity extends ActivityBase {
                             dialog = builder.create();
                             dialog.show();
                         } else {
+                            hideRingIcon();
                             final Intent friendsIntent = new Intent(getApplicationContext(), FriendsActivity.class);
                             startActivity(friendsIntent);
                         }
@@ -279,8 +280,6 @@ public abstract class DrawerActivity extends ActivityBase {
                 showNotification.read();
                 if (showNotification.val() == 1) {
                     showRingIcon();
-                } else {
-                    hideRingIcon();
                 }
                 super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
