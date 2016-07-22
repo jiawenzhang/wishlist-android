@@ -16,6 +16,7 @@
     <string name="save_as_my_wish">Save as my wish</string>
     <string name="no_friend_request">When your friend sends you a friend request, it will show up here.</string>
     <string name="no_friends">Wishlist is more fun with friends. You and your friends can see each other\'s wishes.</string>
+    <string name="sign_up_benefit">Sign up to sync wishes to cloud and see friends\' wishes"</string>
 
     <string name="description_search">Search</string>
     <string name="description_pref">Preferences</string>
