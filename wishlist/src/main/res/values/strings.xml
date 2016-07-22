@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, ToDoList!</string>
     <string name="app_name">Wishlist</string>
     <string name="add_new">Add</string>
     <string name="remove">Delete</string>
@@ -9,7 +8,6 @@
     <string name="mark">Show on map</string>
     <string name="share">Share</string>
     <string name="location">Location</string>
-    <string name="help">Help</string>
     <string name="friend_request">Friend request</string>
     <string name="tap_here_to_change_photo">Tap here to change photo</string>
     <string name="add_photo">Add photo</string>
@@ -19,11 +17,6 @@
     <string name="no_friend_request">When your friend sends you a friend request, it will show up here.</string>
     <string name="no_friends">Wishlist is more fun with friends. You and your friends can see each other\'s wishes.</string>
 
-    <string name="description_logo">Logo</string>
-    <string name="description_back_logo">logo with back arrow</string>
-    <string name="description_fullscreenPhoto">photo in full screen</string>
-    <string name="description_about">About</string>
-    <string name="description_home">Home</string>
     <string name="description_search">Search</string>
     <string name="description_pref">Preferences</string>
     <string name="description_delete">Delete</string>
@@ -36,110 +29,18 @@
     <string name="description_location">Map</string>
     <string name="description_gallery">Gallery</string>
 
-    <string name="title_new_item">Add Wish</string>
-    <string name="title_wishlist">Wishes</string>
-    <string name="title_camera">Camera</string>
-    <string name="title_scan">Scan</string>
-    <string name="title_settings">Settings</string>
-    <string name="title_help">Help</string>
-
-    <string name="detail">Detail Information</string>
     <string name="edit">Edit</string>
     <string name="cancel">Cancel</string>
 
-    <string name="map_menu_zoom_in">Zoom in</string>
-    <string name="map_menu_zoom_out">Zoom out</string>
-    <string name="map_menu_show_list">List Items</string>
-    <string name="map_menu_set_satellite">Toggle Satellite</string>
-    <string name="map_menu_set_map">Toggle Street View</string>
-    <string name="map_menu_set_traffic">Toggle Traffic View</string>
-
-    <string name="settings_description">Find Item</string>
-
-    <string name="search_results">Search Result</string>
     <string name="search_wish_hint">Search wishes by name</string>
-
     <string name="search_people_hint">Search by email or name</string>
 
-	<string name="WishListDataBase_Create">"
-	CREATE TABLE WishItems (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT, create_date TEXT, store_id INTEGER, picture TEXT NOT NULL, price REAL, location TEXT, priority INTEGER);
-	
-	CREATE TABLE StoreInfo (store_id INTEGER, store_name TEXT, address TEXT, latitude INTEGER, longitude INTEGER);
-	
-	INSERT INTO WishItems (_id, name, description, create_date, store_id,  picture, price, location, priority) VALUES ( NULL, 'Car', 'It is a very nice car', '1983-07-06 11:30:00', '0', '7f020004', '25000.0', 'BMW, Shanghai, China', '0');
-	
-	INSERT INTO WishItems (_id, name, description, create_date, store_id,  picture, price, location, priority) VALUES ( NULL, 'Book', 'It is a great book', '1984-03-17 18:22:35', '1', '7f020003', '9.990000', 'Chapter store, Toronto, ON Canada', '3');
-	
-	INSERT INTO WishItems (_id, name, description, create_date, store_id,  picture, price, location, priority) VALUES ( NULL, 'Cake', 'It is a delicious cake', '2011-05-03 03:40:50', '2', '7f020006', '15.0', 'YuanZu Food, Jiaxing, Zhejiang, China', '2');
-	
-	INSERT INTO WishItems (_id, name, description, create_date, store_id,  picture, price, location, priority) VALUES ( NULL, 'Heart', 'It is a warm heart', '2000-11-23 08:17:38', '3', '7f020008', '324.49', 'Hospital, Beijing, China', '1');
-	"</string>
-	
-	<string name="WishListDataBase_Upgrade">"
-	DROP TABLE IF EXISTS WishItems
-	
-	DROP TABLE IF EXISTS StoreInfo
-	"</string>
-
-    <string name="splash">Splash Screen</string>
-    <string name="scores">Scores Screen</string>
-    <string name="app_logo_top">Make A Wish</string>
-    <string name="app_logo_bottom">and Post It!</string>
-    <string name="app_version_info">Version 1.0.0\nCopyright © 2011 aripio All Rights Reserved.</string>
-    <string name="menu">MAIN MENU</string>
-    <string name="menu_item_settings">Settings</string>
-    <string name="menu_item_play">Play Game</string>
-    <string name="menu_item_scores">View Scores</string>
-    <string name="menu_item_help">Help</string>
-
-    <!-- android:transitionName -->
     <string name="photo">Photo</string>
 
-    <string name="menu_scan">Scan</string>
-    <string name="all_scores">"All Scores"</string>
-    <string name="friends_scores">"Scores of Friends"</string>
-    <string name="no_scores">"No scores to show."</string>
     <string name="username">"Username"</string>
-    <string name="rank">"Ranking"</string>
-    <string name="score">"Score"</string>
-    <string name="wait_msg">"Retrieving Scores..."</string>
-    <string name="wait_title">"Loading..."</string>
     <string name="settings">Settings</string>
-    <string name="settings_nickname">Nickname:</string>
-    <string name="settings_email">Email:</string>
-    <string name="settings_dob">Birth Date:</string>
-    <string name="settings_dob_not_set">No Date Set</string>
-    <string name="settings_button_dob">Pick Date</string>
-    <string name="settings_button_pwd">Set Password</string>
-    <string name="settings_gender">Gender:</string>
-    <string name="settings_password">Password:</string>
-    <string name="settings_password2">Password (again):</string>
-    <string name="settings_favoriteplace">Favorite Place:</string>
-    <string name="settings_button_favoriteplace">Pick a Place</string>
-    <string name="settings_favoriteplace_not_set">No Favorite Place Set.</string>
-    <string name="settings_favplace_coords">Coordinates:</string>
-    <string name="settings_favplace_currentlocation"> (Current Location)</string>
-    <string name="settings_button_favplace_map">Map It!</string>
-    <string name="settings_pwd_set">Password Set</string>
-    <string name="settings_pwd_not_set">No Password Set</string>
-    <string name="settings_pwd_not_equal">Passwords do not match, please try again. </string>
-    <string name="settings_pwd_equal">Passwords match.</string>
-    <string name="gender_male">Male</string>
-    <string name="gender_female">Female</string>
-    <string name="gender_neutral">Prefer Not To Say</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="no_questions">No more questions available. Try back later.</string>
-    <string name="exit">Exit</string>
-    <string name="settings_friend_email">Enter email address of friend:</string>
-    <string name="settings_friend_email_label">Friends</string>
-    <string name="settings_friend_email_tip">Add a new friend by email</string>
-    <string name="settings_button_friend_email">Add Friend</string>
-    <string name="change_view_prompt">Change view</string>
-    <string-array name="views_array">
-        <item>List View</item>
-        <item>Grid View</item>
-    </string-array>
     <!-- debug map key -->
     <!--  
     <string name="googleMapKey">0f2l_-BqB8u171fs9a6z5Iv8Uk83-H8-OwGQ9ow</string>
@@ -148,8 +49,6 @@
     <string name="googleMapKey">0f2l_-BqB8u34VeaR4SLtfXhLtMjE9WkI25fJug</string>
     <string name="make_a_wish">Make a Wish</string>
     <string name="my_wishes">My wishes</string>
-    <string name="album_name">WishListPhoto</string>
-    <string name="fullSizePhotoLocation">FullSizeOutput</string>
     <string name="applicationId">221345307993103</string>
 
     <!-- facebook string  -->
@@ -172,16 +71,6 @@
     <string name="drawer_close">Close</string>
 
     <!-- Parse login -->
-    <string name="profile_logo_content_description">Logo</string>
-    <string name="profile_title_logged_in">Your are logged in as</string>
-    <string name="profile_logout_button_label">Log out</string>
-    <string name="profile_title_logged_out">You must be logged in to view your profile</string>
-    <string name="profile_login_button_label">Log in</string>
-    <string name="title_activity_find_friends">FindFriends</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-
-
     <string name="com_parse_ui_logo_content_description">Logo</string>
     <string name="com_parse_ui_progress_dialog_text">Loading...</string>
     <string name="com_parse_ui_username_input_hint">Username</string>

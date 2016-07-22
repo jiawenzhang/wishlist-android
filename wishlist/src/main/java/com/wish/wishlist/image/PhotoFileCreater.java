@@ -80,11 +80,9 @@ public class PhotoFileCreater {
     }
 
     private String getAlbumName(boolean thumb) {
-        //return getString(R.string.album_name);
         if (thumb) {
             return ".WishListThumnail";
-        }
-        else {
+        } else {
             return ".WishListPhoto";
         }
     }
