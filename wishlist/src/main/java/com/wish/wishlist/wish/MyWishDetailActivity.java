@@ -49,6 +49,7 @@ import com.wish.wishlist.util.ImagePicker;
 import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.ScreenOrientation;
 import com.wish.wishlist.util.StringUtil;
+import com.wish.wishlist.util.Util;
 import com.wish.wishlist.util.dimension;
 
 import java.io.File;
@@ -211,7 +212,7 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
         });
 
         mItemPrivateLayout = (LinearLayout) findViewById(R.id.itemPrivateLayout);
-        if (getResources().getBoolean(R.bool.enable_friend) && ParseUser.getCurrentUser() != null) {
+        if (getResources().getBoolean(R.bool.enable_friend) && Util.deviceAccountEnabled() && ParseUser.getCurrentUser() != null) {
             mItemPrivateLayout.setVisibility(View.VISIBLE);
         }
 
