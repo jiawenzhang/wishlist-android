@@ -212,7 +212,8 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                 result._webImages.get(0).mBitmap = single_image;
             }
             result._attemptedAllFromJsoup = true;
-        } catch (IOException e) {
+        } catch (Exception e) {
+            // IOException or IllegalArgumentException: Malformed URL
             Log.e(TAG, e.toString());
             Analytics.send(Analytics.DEBUG, "GetImageException", request.url + " " + e.toString());
         }
