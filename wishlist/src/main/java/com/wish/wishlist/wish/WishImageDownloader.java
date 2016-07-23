@@ -10,6 +10,7 @@ import com.squareup.picasso.Target;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.image.ImageManager;
+import com.wish.wishlist.sync.SyncAgent;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.Owner;
 
@@ -123,6 +124,7 @@ public class WishImageDownloader {
         if (--mItemCount == 0) {
             Log.d(TAG, "download wish images finish");
             onWishImageDownloadDone(true);
+            SyncAgent.getInstance().sync();
         }
     }
 }
