@@ -13,6 +13,8 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
+import com.wish.wishlist.event.EventBus;
+import com.wish.wishlist.event.MyWishChangeEvent;
 import com.wish.wishlist.model.WishItem;
 import com.wish.wishlist.util.Analytics;
 
@@ -121,6 +123,7 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
             Toast.makeText(this, "Failed, check network", Toast.LENGTH_LONG).show();
         }
         mProgressDialog.dismiss();
+        EventBus.getInstance().post(new MyWishChangeEvent());
     }
 
     @Override
