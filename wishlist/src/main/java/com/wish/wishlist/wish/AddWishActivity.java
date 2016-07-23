@@ -46,6 +46,7 @@ public class AddWishActivity extends MyWishDetailActivity
     protected boolean mGettingLocation = false;
     protected Double mLat = null;
     protected Double mLng = null;
+    protected static final int PERMISSIONS_REQUEST_LOCATION = 10;
 
     private class GetAddressTask extends AsyncTask<Void, Void, Void> {//<param, progress, result>
         @Override

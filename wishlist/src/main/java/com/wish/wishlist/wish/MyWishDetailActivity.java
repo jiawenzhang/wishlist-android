@@ -83,8 +83,6 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     protected Boolean mEditDone = false;
     protected static final int ADD_TAG = 3;
 
-    protected static final int PERMISSIONS_REQUEST_LOCATION = 1;
-
     protected static final String TEMP_PHOTO_PATH = "TEMP_PHOTO_PATH";
     protected static final String SELECTED_PIC_URL = "SELECTED_PIC_URL";
     private ImagePicker mImagePicker;
