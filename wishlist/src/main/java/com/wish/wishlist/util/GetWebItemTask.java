@@ -214,6 +214,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             result._attemptedAllFromJsoup = true;
         } catch (IOException e) {
             Log.e(TAG, e.toString());
+            Analytics.send(Analytics.DEBUG, "GetImageException", request.url + " " + e.toString());
         }
 
         Analytics.send(Analytics.DEBUG, "GotImage", "All " + result._webImages.size());
