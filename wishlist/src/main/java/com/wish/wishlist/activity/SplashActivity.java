@@ -33,13 +33,8 @@ public class SplashActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.send(Analytics.APP, "Start", null);
-
         // this opens the db
         DBAdapter.getInstance();
-
-        Analytics.send(Analytics.WISH, "ItemCount", String.valueOf(ItemDBManager.getItemsCount()));
-        Analytics.send(Analytics.WISH, "ImageItemCount", String.valueOf(ItemDBManager.getImageItemsCount()));
 
         File dir = new File(WishlistApplication.getAppContext().getFilesDir(), "/image");
         if (!dir.exists()) {
