@@ -338,6 +338,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
         ScreenOrientation.unlock(this);
 
         Analytics.send(Analytics.WISH, "SelectWebImage", mHost);
+        Analytics.send(Analytics.DEBUG, "SelectWebImage: " + mHost, position + "/" + mWebResult._webImages.size());
     }
 
     public void onLoadMoreFromWebView() {
