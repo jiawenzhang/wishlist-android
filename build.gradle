@@ -15,7 +15,7 @@ buildscript {
         // is an Android Library". It is an open issue of android gradle build tool.
         // Currently the workround is using gradle 1.0.0.
 
-        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'com.android.tools.build:gradle:2.1.3'
     }
 }
 
