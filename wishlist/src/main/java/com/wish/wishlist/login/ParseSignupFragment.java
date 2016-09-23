@@ -210,8 +210,9 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
               loadingFinish();
               signupSuccess();
             } else {
-              String message = "Please check " + username + " to verify your email. Once verified, you can login and enjoy:";
-              verifyEmail(message, username, password);
+              // User successfully sign up, but does not have his email verified,
+              loadingFinish();
+              onLoginSuccessListener.onVerifyEmail(username, password, true);
             }
           } else {
             loadingFinish();
@@ -246,18 +247,5 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
   }
 
   private void verifyEmail(final String message, final String username, final String password) {
-    // User successfully sign up, but does not have his email verified,
-    // let's logout the user and ask him to verify the email
-    ParseUser.logOutInBackground(new LogOutCallback() {
-      public void done(ParseException e) {
-        loadingFinish();
-        if (e == null) {
-          onLoginSuccessListener.onVerifyEmail(message, username, password, true);
-        } else {
-          showToast(R.string.com_parse_ui_signup_failed_unknown_toast);
-          Log.e(TAG, e.toString());
-        }
-      }
-    });
   }
 }

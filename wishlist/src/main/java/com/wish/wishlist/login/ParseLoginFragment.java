@@ -55,11 +55,11 @@ import org.json.JSONObject;
 public class ParseLoginFragment extends ParseLoginFragmentBase {
 
   public interface ParseLoginFragmentListener {
-    public void onSignUpClicked(String username, String password);
+    void onSignUpClicked(String username, String password);
 
-    public void onLoginHelpClicked();
+    void onLoginHelpClicked();
 
-    public void onLoginSuccess();
+    void onLoginSuccess();
   }
 
   private static final String TAG = "ParseLoginFragment";
@@ -214,8 +214,9 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
                   loadingFinish();
                   loginSuccess();
                 } else {
-                  final String message = "Please check " + username + " to verify your email before sign in";
-                  loginVerifyEmail(message, username, password);
+                  // User successfully login, but does not have his email verified,
+                  loadingFinish();
+                  onLoginSuccessListener.onVerifyEmail(username, password, false);
                 }
               } else {
                 loadingFinish();
@@ -469,22 +470,6 @@ public class ParseLoginFragment extends ParseLoginFragmentBase {
 
   private void loginSuccess() {
     onLoginSuccessListener.onLoginSuccess();
-  }
-
-  private void loginVerifyEmail(final String message, final String username, final String password) {
-    // User successfully login, but does not have his email verified,
-    // let's logout the user and ask him to verify the email
-    ParseUser.logOutInBackground(new LogOutCallback() {
-      public void done(ParseException e) {
-        loadingFinish();
-        if (e == null) {
-          onLoginSuccessListener.onVerifyEmail(message, username, password, false);
-        } else {
-          showToast("Fail to log in, please try again");
-          Log.e(TAG, e.toString());
-        }
-      }
-    });
   }
 
   private void loginSkip() {

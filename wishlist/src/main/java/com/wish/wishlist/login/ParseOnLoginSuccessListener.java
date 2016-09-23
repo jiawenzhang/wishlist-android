@@ -21,7 +21,7 @@
 
 package com.wish.wishlist.login;
 
-public interface ParseOnLoginSuccessListener {
-  public void onLoginSuccess();
-  public void onVerifyEmail(String message, String username, String password, boolean fromSignup);
+interface ParseOnLoginSuccessListener {
+  void onLoginSuccess();
+  void onVerifyEmail(String username, String password, boolean fromSignup);
 }

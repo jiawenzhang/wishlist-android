@@ -181,34 +181,26 @@ public class ParseLoginActivity extends FragmentActivity implements
   }
 
   @Override
-  public void onVerifyEmail(String message, final String username, final String password, final boolean fromSignup) {
+  public void onVerifyEmail(final String username, final String password, final boolean fromSignup) {
     final AlertDialog.Builder builder = new AlertDialog.Builder(this, AppCompatAlertDialogStyle);
-    if (fromSignup) {
-      View v = getLayoutInflater().inflate(R.layout.welcome_dialog, null);
-      TextView txtTitle = (TextView) v.findViewById(R.id.welcome_title);
-      txtTitle.setText("Welcome!");
 
-      TextView txtMessage = (TextView) v.findViewById(R.id.welcome_message);
-      txtMessage.setText(message);
+    View v = getLayoutInflater().inflate(R.layout.welcome_dialog, null);
+    TextView txtTitle = (TextView) v.findViewById(R.id.welcome_title);
+    txtTitle.setText("Welcome!");
 
-      // Fixme: should open email client to view email instead of sending an email to myself!
-      Linkify.addLinks(txtMessage, Linkify.EMAIL_ADDRESSES);
+    TextView txtMessage = (TextView) v.findViewById(R.id.welcome_message);
+    final String message = "Please check " + username + " to verify your email. With an account, you can enjoy:";
+    txtMessage.setText(message);
 
-      builder.setView(v);
-      builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int id) {
-          // pop the sign up fragment to show login fragment again
-          getSupportFragmentManager().popBackStackImmediate();
-          ParseLoginFragment loginFragment = (ParseLoginFragment) getSupportFragmentManager().findFragmentByTag(ParseLoginFragment.tag());
-          if (loginFragment != null) {
-            loginFragment.setUsername(username);
-            loginFragment.setPassword(password);
-          }
-        }
-      });
-    } else {
-      builder.setMessage(message);
-    }
+    // Fixme: should open email client to view email instead of sending an email to myself!
+    Linkify.addLinks(txtMessage, Linkify.EMAIL_ADDRESSES);
+
+    builder.setView(v);
+    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int id) {
+        onLoginSuccess();
+      }
+    });
 
     AlertDialog dialog;
     dialog = builder.create();
