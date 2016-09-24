@@ -35,12 +35,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.wish.wishlist.R;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.util.Util;
 
 /**
  * Fragment for the user signup screen.
@@ -167,6 +167,8 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
       } else {
         showToast(R.string.com_parse_ui_no_username_toast);
       }
+    } else if (!Util.isValidEmail(username)) {
+      showToast(R.string.com_parse_ui_invalid_email_toast);
     } else if (password.length() == 0) {
       showToast(R.string.com_parse_ui_no_password_toast);
     } else if (password.length() < minPasswordLength) {
@@ -244,8 +246,5 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
   private void signupSuccess() {
     Analytics.send(Analytics.USER, "Signup", null);
     onLoginSuccessListener.onLoginSuccess();
-  }
-
-  private void verifyEmail(final String message, final String username, final String password) {
   }
 }

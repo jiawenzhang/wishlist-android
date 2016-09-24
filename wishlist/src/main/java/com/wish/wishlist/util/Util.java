@@ -2,6 +2,7 @@ package com.wish.wishlist.util;
 
 import android.content.Context;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -57,5 +58,9 @@ public class Util {
 
     public static boolean deviceAccountEnabled() {
         return deviceAccountEnabled;
+    }
+
+    public static boolean isValidEmail(String target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 }
