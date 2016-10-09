@@ -1,3 +1,5 @@
+package com.wish.wishlist.test;
+
 import com.wish.wishlist.util.DoubleUtil;
 import com.wish.wishlist.util.StringUtil;
 

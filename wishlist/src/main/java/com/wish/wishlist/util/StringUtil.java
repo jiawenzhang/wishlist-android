@@ -1,5 +1,10 @@
 package com.wish.wishlist.util;
 
+import com.wish.wishlist.WishlistApplication;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +15,9 @@ import java.util.TimeZone;
 /**
  * Created by jiawen on 2016-03-11.
  */
-public class StringUtil {
+public final class StringUtil {
+    private StringUtil() {};
+
     public static boolean sameArrays(ArrayList<String> arr1, ArrayList<String> arr2) {
         if (arr1.size() != arr2.size()) {
             return false;
@@ -69,7 +76,7 @@ public class StringUtil {
         return bytesToHex(b);
     }
 
-    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
@@ -78,5 +85,19 @@ public class StringUtil {
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    public static String readFromAssets(String filename) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(WishlistApplication.getAppContext().getAssets().open(filename)));
+
+        // do reading, usually loop until end of file reading
+        StringBuilder sb = new StringBuilder();
+        String mLine = reader.readLine();
+        while (mLine != null) {
+            sb.append(mLine); // process line
+            mLine = reader.readLine();
+        }
+        reader.close();
+        return sb.toString();
     }
 }

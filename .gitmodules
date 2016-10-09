@@ -4,3 +4,6 @@
 [submodule "third-party/Android-Cloud-TagView-Plus"]
 	path = third-party/Android-Cloud-TagView-Plus
 	url = https://github.com/jiawenzhang/Android-Cloud-TagView-Plus.git
+[submodule "third-party/wish-scraper"]
+	path = third-party/wish-scraper
+    url = git@gitlab.com:jiawen/wish-scraper.git

@@ -39,6 +39,7 @@ public class WebImage implements Parcelable {
         dest.writeInt(mHeight);
         dest.writeString(mId);
     }
+
     public static final Parcelable.Creator CREATOR =
             new Parcelable.Creator() {
                 public WebImage createFromParcel(Parcel in) {

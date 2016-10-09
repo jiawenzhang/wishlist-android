@@ -9,7 +9,7 @@ android {
         applicationId "com.wish.wishlist"
         // Parse Android SDK requires GET_ACCOUNTS permission for 4.0.3 (API 15) and lower
         // set minSdkVersion to 16 so we do not need to request GET_ACCOUNTS permission
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 23
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -65,6 +65,17 @@ android {
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
     }
+    aaptOptions {
+        noCompress "js"
+    }
+
+    task copyFiles(type: Copy) {
+        description = 'Copy javascript files to assets folder'
+        from '../third-party/wish-scraper/'
+        into 'src/main/assets'
+    }
+
+    preBuild.dependsOn(copyFiles)
 }
 
 dependencies {
@@ -101,6 +112,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:8.3.0'
     compile 'com.google.android.gms:play-services-analytics:8.3.0'
     compile 'de.sven-jacobs:loremipsum:1.0'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
 
     // Local unit test
     // Required -- JUnit 4 framework

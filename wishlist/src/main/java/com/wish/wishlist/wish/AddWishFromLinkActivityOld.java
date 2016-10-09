@@ -1,8 +1,10 @@
 package com.wish.wishlist.wish;
 
+import android.annotation.TargetApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,48 +13,73 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
 import com.wish.wishlist.activity.WebImage;
-import com.wish.wishlist.fragment.WebImageFragmentDialog;
+import com.wish.wishlist.fragment.WebImageFragmentDialogOld;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.Analytics;
-import com.wish.wishlist.util.ImageDimensionTask;
+import com.wish.wishlist.util.GetWebItemTask;
 import com.wish.wishlist.util.ScreenOrientation;
-import com.wish.wishlist.util.WebItemTask;
 import com.wish.wishlist.util.WebRequest;
 import com.wish.wishlist.util.WebResult;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Observer;
 
-public class AddWishFromLinkActivity extends AddWishActivity
+public class AddWishFromLinkActivityOld extends AddWishActivity
         implements Observer,
-        WebImageFragmentDialog.OnWebImageSelectedListener,
-        WebImageFragmentDialog.OnLoadMoreSelectedListener,
-        WebImageFragmentDialog.OnWebImageCancelledListener,
-        WebItemTask.OnWebResult,
-        ImageDimensionTask.OnImageDimension {
+        WebImageFragmentDialogOld.OnWebImageSelectedListener,
+        WebImageFragmentDialogOld.OnLoadMoreFromWebViewListener,
+        WebImageFragmentDialogOld.OnLoadMoreSelectedListener,
+        WebImageFragmentDialogOld.OnWebImageCancelledListener,
+        GetWebItemTask.OnWebResult {
 
     private String mWebPicUrl = null;
     protected Bitmap mWebBitmap = null;
     private String mLink;
     protected String mHost = null;
     private ProgressDialog mProgressDialog = null;
-    private WebItemTask mWebItemTask = null;
-    private ImageDimensionTask mImageDimensionTask = null;
+    private GetWebItemTask mGetWebItemTask = null;
+    private WebView mWebView = null;
     private static WebResult mWebResult = null;
     private static final String TAG = "AddWishFromLink";
     private long mStartTime;
+    private class MyJavaScriptInterface {
+        private Context ctx;
+
+        MyJavaScriptInterface(Context ctx) {
+            this.ctx = ctx;
+        }
+
+        @JavascriptInterface
+        public void gotHTML(String html) {
+            // gotHTML could be called twice for some websites, usually the second time with more contents in html
+            Log.d(TAG, "gotHTML");
+            long time = System.currentTimeMillis() - mStartTime;
+            Log.d(TAG, "webview show HTML took " + time + " ms");
+            ((AddWishFromLinkActivityOld) ctx).loadImagesFromHtml(html);
+        }
+    }
 
     public static final String WEB_PIC_URL = "WEB_PIC_URL";
     public static final String LINKS = "LINKS";
@@ -137,6 +164,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
 
         WebRequest request = new WebRequest();
         request.url = mLink;
+        request.getAllImages = false;
         ScreenOrientation.lock(this);
 
         mProgressDialog = new ProgressDialog(this);
@@ -149,24 +177,58 @@ public class AddWishFromLinkActivity extends AddWishActivity
 
                 Analytics.send(Analytics.WISH, "CancelLoadingImages", mLink);
 
-                if (mWebItemTask != null) {
-                    //mWebItemTask.cancel(true);
+                if (mGetWebItemTask != null) {
+                    mGetWebItemTask.cancel(true);
                 }
-//                if (mWebView != null) {
-//                    mWebView.stopLoading();
-//                    mWebView.destroy();
-//                    Log.d(TAG, "stopped loading webview");
-//                    if (mWebResult != null && !mWebResult.webImages.isEmpty()) {
-//                        showImageDialog(true);
-//                    }
-//                }
+                if (mWebView != null) {
+                    mWebView.stopLoading();
+                    mWebView.destroy();
+                    Log.d(TAG, "stopped loading webview");
+                    if (mWebResult != null && !mWebResult.webImages.isEmpty()) {
+                        showImageDialog(true);
+                    }
+                }
             }
         });
 
         mProgressDialog.show();
+        mGetWebItemTask = new GetWebItemTask(this, this);
+        mGetWebItemTask.execute(request);
+    }
 
-        mWebItemTask = new WebItemTask(this, request, this);
-        mWebItemTask.run();
+    private void getGeneratedHtml() {
+        Log.d(TAG, "getGeneratedHtml");
+        mWebView = new WebView(this);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.addJavascriptInterface(new MyJavaScriptInterface(this), "HtmlViewer");
+        mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                /* This call inject JavaScript into the page which just finished loading.
+                 * onPageFinished could be called twice for some websites, second time with different results*/
+                Log.d(TAG, "onPageFinished");
+                mWebView.loadUrl("javascript:window.HtmlViewer.gotHTML" +
+                        "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
+            }
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                // Handle the error
+                Log.e(TAG, "onReceivedError " + description + " " + failingUrl);
+                Analytics.send(Analytics.DEBUG, "WebViewLoadError", description + " " + failingUrl);
+                super.onReceivedError(view, errorCode, description, failingUrl);
+            }
+
+            @TargetApi(android.os.Build.VERSION_CODES.M)
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError error) {
+                // Redirect to deprecated method, so you can use it in all SDK versions
+                onReceivedError(view, error.getErrorCode(), error.getDescription().toString(), req.getUrl().toString());
+            }
+        });
+
+        mWebView.loadUrl(mLink);
     }
 
     protected void showSelectedImage() {
@@ -279,6 +341,15 @@ public class AddWishFromLinkActivity extends AddWishActivity
         Analytics.send(Analytics.DEBUG, "SelectWebImage: " + mHost, position + "/" + mWebResult.webImages.size());
     }
 
+    public void onLoadMoreFromWebView() {
+        Log.d(TAG, "onLoadMoreFromWebview");
+
+        Analytics.send(Analytics.WISH, "LoadMoreFromWebView", mLink);
+
+        mProgressDialog.show();
+        getGeneratedHtml();
+    }
+
     public void onWebImageCancelled() {
         Log.d(TAG, "onWebImageCancelled");
         ScreenOrientation.unlock(this);
@@ -286,19 +357,72 @@ public class AddWishFromLinkActivity extends AddWishActivity
         Analytics.send(Analytics.WISH, "CancelWebImage", mLink);
     }
 
-    public void onLoadMoreImages() {
+    public void onLoadMoreFromStaticHtml() {
         Log.d(TAG, "onLoadMoreImages");
-        //ScreenOrientation.lock(this);
+        ScreenOrientation.lock(this);
         mProgressDialog.show();
 
-        Analytics.send(Analytics.WISH, "LoadMoreImages", mLink);
-        mImageDimensionTask = new ImageDimensionTask(this);
-        mImageDimensionTask.execute(mWebResult);
+        Analytics.send(Analytics.WISH, "LoadMoreFromStaticHtml", mLink);
+
+        if (mWebResult.attemptedAllFromJsoup) {
+            getGeneratedHtml();
+        } else {
+            WebRequest request = new WebRequest();
+            request.url = mLink;
+            request.getAllImages = true;
+            mGetWebItemTask = new GetWebItemTask(this, this);
+            mGetWebItemTask.execute(request);
+        }
+    }
+
+    public void loadImagesFromHtml(String html) {
+        Log.d(TAG, "loadImagesFromHtml");
+        WebRequest request = new WebRequest();
+        request.url = mLink;
+        request.getAllImages = true;
+        request.html = html;
+        mGetWebItemTask = new GetWebItemTask(this, this);
+        mGetWebItemTask.execute(request);
+    }
+
+    private void loadPartialImage(String src) {
+        try {
+            Log.d(TAG, "Downloading image: " + src);
+            URL imageUrl = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+            connection.setRequestProperty("Range", "bytes=0-168");
+            Log.d(TAG, "content length " + connection.getContentLength());
+            int response = connection.getResponseCode();
+            Log.d(TAG, "response code: " + response);
+            Log.d(TAG, "\n");
+
+            InputStream is = connection.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            StringBuilder sb = new StringBuilder();
+            BufferedReader br = new BufferedReader(isr);
+            try {
+                String read = br.readLine();
+
+                while(read != null){
+                    sb.append(read);
+                    read = br.readLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            Log.d(TAG, "IOException" + e.toString());
+        }
     }
 
     @Override
     public void onWebResult(WebResult result) {
         Log.d(TAG, "onWebResult");
+        if (result.webImages.isEmpty() && !result.attemptedDynamicHtml) {
+            mStartTime = System.currentTimeMillis();
+            getGeneratedHtml();
+            return;
+        }
         mProgressDialog.dismiss();
         if (result.title != null && !result.title.trim().isEmpty()) {
             mNameView.setText(result.title);
@@ -306,11 +430,10 @@ public class AddWishFromLinkActivity extends AddWishActivity
         if (result.description != null && !result.description.trim().isEmpty()) {
             mDescriptionView.setText(result.description);
         }
-
         mWebResult = result;
         if (!mWebResult.webImages.isEmpty()) {
             Log.d(TAG, "Got " + result.webImages.size() + " images to choose from");
-            showImageDialog(true);
+            showImageDialog(!result.attemptedDynamicHtml);
         } else {
             ScreenOrientation.unlock(this);
             Toast.makeText(this, "No image found", Toast.LENGTH_SHORT).show();
@@ -319,22 +442,15 @@ public class AddWishFromLinkActivity extends AddWishActivity
         }
     }
 
-    @Override
-    public void onImageDimension(WebResult result) {
-        Log.d(TAG, "onImageDimension");
-        mProgressDialog.dismiss();
-        showImageDialog(false);
-    }
-
-    private void showImageDialog(boolean showOneImage) {
-        DialogFragment fragment = WebImageFragmentDialog.newInstance(mWebResult.webImages, showOneImage);
+    private void showImageDialog(boolean allowLoadMore) {
+        DialogFragment fragment = WebImageFragmentDialogOld.newInstance(mWebResult.webImages, allowLoadMore);
         FragmentManager fm = getSupportFragmentManager();
-//        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-//        if (prev != null) {
-//            WebImageFragmentDialog df = (WebImageFragmentDialog) prev;
-//            df.reload(mWebResult.webImages);
-//            return;
-//        }
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            WebImageFragmentDialogOld df = (WebImageFragmentDialogOld) prev;
+            df.reload(mWebResult.webImages, allowLoadMore);
+            return;
+        }
         Log.d(TAG, "fragment.show");
         fragment.show(fm, "dialog");
     }

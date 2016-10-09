@@ -1,12 +1,12 @@
 package com.wish.wishlist.fragment;
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -19,38 +19,43 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
-import com.wish.wishlist.util.WebImageAdapter;
 import com.wish.wishlist.activity.WebImage;
+import com.wish.wishlist.util.WebImageAdapter;
 import com.wish.wishlist.widgets.ItemDecoration;
 
 import java.util.ArrayList;
 
-public class WebImageFragmentDialog extends DialogFragment implements
+public class WebImageFragmentDialogOld extends DialogFragment implements
         WebImageAdapter.WebImageTapListener {
 
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     private WebImageAdapter mAdapter;
     private static ArrayList<WebImage> mList;
-    private static boolean mShowOneImage;
     private OnWebImageSelectedListener mWebImageSelectedListener;
+    private OnLoadMoreFromWebViewListener mLoadMoreFromWebView;
     private OnLoadMoreSelectedListener mLoadMoreSelectedListener;
     private OnWebImageCancelledListener mWebImageCancelledListener;
     private RecyclerView mRecyclerView;
+    private static boolean mAllowLoadMore = true;
     final private static String TAG = "WebImageFragmentDialog";
 
-    public static WebImageFragmentDialog newInstance(ArrayList<WebImage> list, boolean showOneImage) {
+    public static WebImageFragmentDialogOld newInstance(ArrayList<WebImage> list, boolean allowLoadMore) {
         mList = list;
-        mShowOneImage = showOneImage;
-        return new WebImageFragmentDialog();
+        mAllowLoadMore = allowLoadMore;
+        return new WebImageFragmentDialogOld();
     }
 
-    public void reload(ArrayList<WebImage> list) {
+    public void reload(ArrayList<WebImage> list, boolean allowLoadMore) {
         mList = list;
+        mAllowLoadMore = allowLoadMore;
 
         if (mRecyclerView == null) {
             return;
         }
 
+        if (mAllowLoadMore) {
+            mList.add(new WebImage(null, 0, 0, "button", null));
+        }
         for (WebImage img : mList) {
             Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
         }
@@ -67,7 +72,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (!mShowOneImage && mList.size() > 1) {
+        if (mList.size() > 1) {
             // We have multiple images, we show them in a grid view that is loaded in onCreateView
             return new AppCompatDialog(getActivity(), R.style.AppCompatAlertDialogStyleNoTitle);
         }
@@ -85,10 +90,10 @@ public class WebImageFragmentDialog extends DialogFragment implements
         });
 
         final AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle)
-                .setPositiveButton("More images",
+                .setPositiveButton("Load more",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                mLoadMoreSelectedListener.onLoadMoreImages();
+                                mLoadMoreSelectedListener.onLoadMoreFromStaticHtml();
                             }
                         }
                 )
@@ -145,6 +150,9 @@ public class WebImageFragmentDialog extends DialogFragment implements
             if (mList == null) {
                 Log.d(TAG, "mList is null");
             } else {
+                if (mAllowLoadMore) {
+                    mList.add(new WebImage(null, 0, 0, "button", null));
+                }
                 for (WebImage img : mList) {
                     Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
                 }
@@ -160,8 +168,12 @@ public class WebImageFragmentDialog extends DialogFragment implements
         public abstract void onWebImageSelected(int position);
     }
 
+    public static interface OnLoadMoreFromWebViewListener {
+        public abstract void onLoadMoreFromWebView();
+    }
+
     public static interface OnLoadMoreSelectedListener {
-        public abstract void onLoadMoreImages();
+        public abstract void onLoadMoreFromStaticHtml();
     }
 
     public static interface OnWebImageCancelledListener {
@@ -173,6 +185,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
         super.onAttach(activity);
         try {
             this.mWebImageSelectedListener = (OnWebImageSelectedListener) activity;
+            this.mLoadMoreFromWebView = (OnLoadMoreFromWebViewListener) activity;
             this.mLoadMoreSelectedListener = (OnLoadMoreSelectedListener) activity;
             this.mWebImageCancelledListener = (OnWebImageCancelledListener) activity;
         }
@@ -190,7 +203,12 @@ public class WebImageFragmentDialog extends DialogFragment implements
     }
 
     public void onWebImageTap(int position) {
-        this.mWebImageSelectedListener.onWebImageSelected(position);
+        if (mAllowLoadMore && position == mList.size() - 1) {
+            mList.remove(position);
+            this.mLoadMoreFromWebView.onLoadMoreFromWebView();
+        } else {
+            this.mWebImageSelectedListener.onWebImageSelected(position);
+        }
         dismiss();
     }
 }

@@ -27,6 +27,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
     final static String TAG = "GetWebItemTask";
     Context mContext;
     private OnWebResult mListener;
+    private long startTime;
 
     public interface OnWebResult {
         void onWebResult(WebResult result);
@@ -49,10 +50,10 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             //Connection.Response response = Jsoup.connect(urls[0]).followRedirects(true).execute();
             Document doc;
             if (request.html != null && !request.html.isEmpty()) {
-                result._attemptedDynamicHtml = true;
+                result.attemptedDynamicHtml = true;
                 doc = Jsoup.parse(request.html);
             } else {
-                long startTime = System.currentTimeMillis();
+                startTime = System.currentTimeMillis();
                 doc = Jsoup.connect(request.url)
                         .header("Accept-Encoding", "gzip, deflate")
                         .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
@@ -62,6 +63,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
 
                 long time = System.currentTimeMillis() - startTime;
                 Log.d(TAG, "Jsoup connect took " + time + " ms");
+                Log.e(TAG, doc.toString());
             }
 
 
@@ -70,32 +72,32 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
             if (!og_title_element.isEmpty()) {
                 String og_title = og_title_element.first().attr("content");
                 Log.d(TAG, "og:title : " + og_title);
-                result._title = og_title;
+                result.title = og_title;
             }
-            if (result._title == null || result._title.trim().isEmpty()) {
+            if (result.title == null || result.title.trim().isEmpty()) {
                 Elements meta_title_element = doc.head().select("meta[name=title]");
                 if (!meta_title_element.isEmpty()) {
                     String meta_title = meta_title_element.first().attr("content");
                     Log.d(TAG, "meta:title : " + meta_title);
-                    result._title = meta_title;
+                    result.title = meta_title;
                 }
             }
-            if (result._title == null || result._title.trim().isEmpty()) {
-                result._title = doc.title();
+            if (result.title == null || result.title.trim().isEmpty()) {
+                result.title = doc.title();
             }
 
             Elements og_description_element = doc.head().select("meta[property=og:description]");
             if (!og_description_element.isEmpty()) {
                 String og_description = og_description_element.first().attr("content");
                 Log.d(TAG, "og:description : " + og_description);
-                result._description = og_description;
+                result.description = og_description;
             }
-            if (result._description == null || result._description.trim().isEmpty()) {
+            if (result.description == null || result.description.trim().isEmpty()) {
                 Elements meta_description_element = doc.head().select("meta[name=description]");
                 if (!meta_description_element.isEmpty()) {
                     String meta_description = meta_description_element.first().attr("content");
                     Log.d(TAG, "meta:description : " + meta_description);
-                    result._description = meta_description;
+                    result.description = meta_description;
                 }
             }
 
@@ -121,9 +123,10 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
 
                     if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
                         Log.d(TAG, "twitter:image:src " + twitter_image_src + " " + image.getWidth() + "x" + image.getHeight());
-                        result._webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), "", image));
+                        result.webImages.add(new WebImage(twitter_image_src, image.getWidth(), image.getHeight(), "", image));
                         Analytics.send(Analytics.DEBUG, "GotImage", "Twitter");
                         if (!request.getAllImages) {
+                            Log.e(TAG, "twitter time: " + (System.currentTimeMillis() - startTime));
                             return result;
                         }
                         single_image = image;
@@ -143,9 +146,10 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     // let's try to get more images if this happens.
                     if (image != null && image.getWidth() >= 100 && image.getHeight() >= 100) {
                         Log.d(TAG, "og:image src: " + og_image_src + " " + image.getWidth() + "x" + image.getHeight());
-                        result._webImages.add(new WebImage(og_image_src, image.getWidth(), image.getHeight(), "", image));
+                        result.webImages.add(new WebImage(og_image_src, image.getWidth(), image.getHeight(), "", image));
                         Analytics.send(Analytics.DEBUG, "GotImage", "OG");
                         if (!request.getAllImages) {
+                            Log.e(TAG, "og time: " + (System.currentTimeMillis() - startTime));
                             return result;
                         }
                         single_image = image;
@@ -203,22 +207,23 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
                     single_image = image;
                 }
                 Log.d(TAG, "adding " + src + " " + image.getWidth() + " x " + image.getHeight());
-                result._webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), null));
+                result.webImages.add(new WebImage(src, image.getWidth(), image.getHeight(), el.id(), null));
             }
 
             // when there is only one image, we need to pass the bitmap, because we set the bitmap on the ImageView
             // instead of loading from url
-            if (result._webImages.size() == 1) {
-                result._webImages.get(0).mBitmap = single_image;
+            if (result.webImages.size() == 1) {
+                result.webImages.get(0).mBitmap = single_image;
             }
-            result._attemptedAllFromJsoup = true;
+            result.attemptedAllFromJsoup = true;
         } catch (Exception e) {
             // IOException or IllegalArgumentException: Malformed URL
             Log.e(TAG, e.toString());
             Analytics.send(Analytics.DEBUG, "GetImageException", request.url + " " + e.toString());
         }
 
-        Analytics.send(Analytics.DEBUG, "GotImage", "All " + result._webImages.size());
+        Analytics.send(Analytics.DEBUG, "GotImage", "All " + result.webImages.size());
+        Log.e(TAG, "all time: " + (System.currentTimeMillis() - startTime));
         return result;
     }
 
