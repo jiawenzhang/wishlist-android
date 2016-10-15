@@ -50,7 +50,7 @@ public class WebItemTask implements
     private long startTime;
     private String html;
     private DownloadBitmapTask downloadBitmapTask;
-    private WebResult result;
+    private WebResult result = new WebResult();
     private Call call;
 
     @JavascriptInterface
@@ -105,7 +105,7 @@ public class WebItemTask implements
 
         OkHttpClient client = new OkHttpClient();
 
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url(webRequest.url)
                 .build();
 
@@ -119,6 +119,7 @@ public class WebItemTask implements
             @Override public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     Log.e(TAG, "response not successful");
+                    listener.onWebResult(result);
                 }
 
                 if (response.body().contentType().toString().startsWith("text/html")) {
@@ -137,6 +138,7 @@ public class WebItemTask implements
                     mainHandler.post(myRunnable);
                 } else {
                     Log.e(TAG, "content type not supported");
+                    listener.onWebResult(result);
                 }
 
                 response.body().close();
@@ -189,6 +191,7 @@ public class WebItemTask implements
                 // Handle the error
                 Log.e(TAG, "onReceivedError " + description + " " + failingUrl);
                 super.onReceivedError(view, errorCode, description, failingUrl);
+                listener.onWebResult(result);
             }
 
             @TargetApi(android.os.Build.VERSION_CODES.M)
