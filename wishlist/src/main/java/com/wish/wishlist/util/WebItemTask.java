@@ -35,8 +35,8 @@ public class WebItemTask implements
         DownloadBitmapTask.WebImagesListener {
     private final String TAG = "WebItemTask";
     private Context context;
-    private WebView mWebView;
-    private WebRequest mWebRequest;
+    private WebView webView;
+    private WebRequest webRequest;
     private Boolean loadingFinished = true;
     private Boolean redirect = false;
     private Boolean gotResult = false;
@@ -51,6 +51,7 @@ public class WebItemTask implements
     private String html;
     private DownloadBitmapTask downloadBitmapTask;
     private WebResult result;
+    private Call call;
 
     @JavascriptInterface
     public String getHTML() {
@@ -71,16 +72,32 @@ public class WebItemTask implements
         super();
 
         this.context = context;
-        this.mWebRequest = request;
+        this.webRequest = request;
         this.listener = listener;
     }
 
     public void run() {
         startTime = System.currentTimeMillis();
-        mWebView = new WebView(context);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.addJavascriptInterface(this, "Android");
+        webView = new WebView(context);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.addJavascriptInterface(this, "Android");
         getFromStaticHTML();
+    }
+
+    public void cancel() {
+        Log.d(TAG, "cancel");
+        if (call != null) {
+            call.cancel();
+        }
+
+        if (webView != null) {
+            webView.stopLoading();
+            webView.destroy();
+        }
+
+        if (downloadBitmapTask != null) {
+            downloadBitmapTask.cancel();
+        }
     }
 
     private void getFromStaticHTML() {
@@ -89,10 +106,12 @@ public class WebItemTask implements
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url(mWebRequest.url)
+                .url(webRequest.url)
                 .build();
 
-        client.newCall(request).enqueue(new Callback() {
+        call = client.newCall(request);
+
+        call.enqueue(new Callback() {
             @Override public void onFailure(Call call, IOException e) {
                 Log.e(TAG, e.toString());
             }
@@ -128,7 +147,7 @@ public class WebItemTask implements
     private void getFromWebView() {
         html = null;
         fileIndex = 0;
-        mWebView.setWebViewClient(new WebViewClient() {
+        webView.setWebViewClient(new WebViewClient() {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -181,19 +200,19 @@ public class WebItemTask implements
         });
 
         // skip loading images, try to get images from twitter, og meta prop first
-        //mWebView.getSettings().setLoadsImagesAutomatically(false);
-        mWebView.getSettings().setBlockNetworkImage(true);
-        //mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        //mWebView.getSettings().setSupportMultipleWindows(false);
-        mWebView.loadUrl(mWebRequest.url);
+        //webView.getSettings().setLoadsImagesAutomatically(false);
+        webView.getSettings().setBlockNetworkImage(true);
+        //webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        //webView.getSettings().setSupportMultipleWindows(false);
+        webView.loadUrl(webRequest.url);
     }
 
     private void getFromWebViewWithImages() {
         fileIndex = 0;
-        //mWebView.getSettings().setLoadsImagesAutomatically(true);
+        //webView.getSettings().setLoadsImagesAutomatically(true);
         //enable loading images
-        mWebView.getSettings().setBlockNetworkImage(false);
-        mWebView.reload();
+        webView.getSettings().setBlockNetworkImage(false);
+        webView.reload();
     }
 
     private void getBitmapFromUrls(ArrayList<String> imageUrls) {
@@ -308,12 +327,12 @@ public class WebItemTask implements
         try {
             String js = StringUtil.readFromAssets(jsFiles[fileIndex]);
             Log.d(TAG, "evaluating: " + jsFiles[fileIndex]);
-            mWebView.evaluateJavascript(js, new ValueCallback<String>() {
+            webView.evaluateJavascript(js, new ValueCallback<String>() {
                 @Override
                 public void onReceiveValue(String s) {
                     if (fileIndex == jsFiles.length - 1) {
                         // we have evaluated the last javascript file
-                        Log.e(TAG, "url " + mWebRequest.url);
+                        Log.e(TAG, "url " + webRequest.url);
                         //Log.e(TAG, "js time: " + (System.currentTimeMillis() - startTime));
                         parseJSONString(s);
                         return;

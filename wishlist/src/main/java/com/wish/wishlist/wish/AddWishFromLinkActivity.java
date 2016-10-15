@@ -150,16 +150,15 @@ public class AddWishFromLinkActivity extends AddWishActivity
                 Analytics.send(Analytics.WISH, "CancelLoadingImages", mLink);
 
                 if (mWebItemTask != null) {
-                    //mWebItemTask.cancel(true);
+                    mWebItemTask.cancel();
                 }
-//                if (mWebView != null) {
-//                    mWebView.stopLoading();
-//                    mWebView.destroy();
-//                    Log.d(TAG, "stopped loading webview");
-//                    if (mWebResult != null && !mWebResult.webImages.isEmpty()) {
-//                        showImageDialog(true);
-//                    }
-//                }
+                if (mImageDimensionTask != null) {
+                    Log.d(TAG, "cancel loading more images");
+                    mImageDimensionTask.cancel(true);
+                    if (mWebResult != null && !mWebResult.webImages.isEmpty()) {
+                        showImageDialog(true);
+                    }
+                }
             }
         });
 

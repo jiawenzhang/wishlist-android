@@ -24,6 +24,7 @@ public class DownloadBitmapTask {
     private Context context;
     private Target target;
     private WebImagesListener listener;
+    private boolean cancel = false;
 
     public interface WebImagesListener {
         void gotWebImages(ArrayList<WebImage> webImages);
@@ -42,12 +43,23 @@ public class DownloadBitmapTask {
         scaleDownBitmap(imageUrls.get(0));
     }
 
+    public void cancel() {
+        cancel = true;
+        if (target != null) {
+            Picasso.with(context).cancelRequest(target);
+        }
+    }
+
     private void scaleDownBitmap(final String url) {
         final int maxImageWidth = dimension.screenWidth() / 2;
         final int maxImageHeight = dimension.screenHeight() / 2;
 
         target = new Target() {
             private void nextBitmap() {
+                if (cancel) {
+                    return;
+                }
+
                 int index = imageUrls.indexOf(url);
                 if (index < imageUrls.size() - 1) {
                     scaleDownBitmap(imageUrls.get(index + 1));
@@ -80,7 +92,6 @@ public class DownloadBitmapTask {
 
                     webImages.add(new WebImage(url, bitmap.getWidth(), bitmap.getHeight(), "", bitmap));
                     //Log.e(TAG, stage + " loading: Time: " + (System.currentTimeMillis() - startTime));
-                    //printResult(result);
                     listener.gotWebImages(webImages);
                 } else {
                     Log.e(TAG, "null bitmap");
