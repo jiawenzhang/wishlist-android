@@ -1,7 +1,6 @@
 package com.wish.wishlist.wish;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -90,7 +89,6 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
     protected static final String TEMP_PHOTO_PATH = "TEMP_PHOTO_PATH";
     protected static final String SELECTED_PIC_URL = "SELECTED_PIC_URL";
     private ImagePicker mImagePicker;
-    private ProgressDialog mProgressDialog;
     protected class saveTempPhoto extends AsyncTask<Void, Void, Void> {//<param, progress, result>
         @Override
         protected Void doInBackground(Void... arg) {
@@ -370,19 +368,6 @@ public abstract class MyWishDetailActivity extends WishDetailActivity implements
                 complete,
                 access,
                 link);
-    }
-
-    protected void showProgressDialog(final String text) {
-        ScreenOrientation.lock(this);
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage(text);
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.show();
-    }
-
-    protected void dismissProgressDialog() {
-        mProgressDialog.dismiss();
-        ScreenOrientation.unlock(this);
     }
 
     protected WishItem populateItem() {

@@ -299,7 +299,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
                     }
                 };
 
-                showProgressDialog();
+                showProgressDialog("Loading...");
                 Picasso.with(this).load(val).resize(dimension.screenWidth(), dimension.screenHeight()).centerInside().onlyScaleDown().into(mTarget);
             } else {
                 animateToFullScreenPhoto(i);
@@ -352,10 +352,10 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
         }
     }
 
-    protected void showProgressDialog() {
+    protected void showProgressDialog(String text) {
         ScreenOrientation.lock(this);
         mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage("Loading...");
+        mProgressDialog.setMessage(text);
         mProgressDialog.setCancelable(false);
         mProgressDialog.show();
     }

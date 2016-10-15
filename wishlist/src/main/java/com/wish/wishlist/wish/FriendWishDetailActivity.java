@@ -101,7 +101,8 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
         }
     }
 
-    private void showProgressDialog(final String text) {
+    @Override
+    protected void showProgressDialog(final String text) {
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(text);
         mProgressDialog.setCancelable(true);
