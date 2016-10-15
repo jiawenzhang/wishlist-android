@@ -129,7 +129,7 @@ public class FriendsActivity extends FriendsBaseActivity implements
         FriendManager.getInstance().setAllFriendsListener(this);
         FriendManager.getInstance().fetchFriends();
 
-        if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+        if (!NetworkHelper.isNetworkAvailable()) {
             Toast.makeText(this, "Check network, friends may be out of date", Toast.LENGTH_LONG).show();
         }
     }

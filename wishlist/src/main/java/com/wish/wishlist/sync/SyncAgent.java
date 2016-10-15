@@ -58,7 +58,7 @@ public class SyncAgent implements
             // wifi hotspot that does not have internet access, isNetworkAvailable will return true, but
             // device still does not have internet. so do an extra http connect to the parse server to check
             // if the device can "actually" reach the server
-            if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+            if (!NetworkHelper.isNetworkAvailable()) {
                 Log.d(TAG, "no network, sync is not started");
                 // Fixme: shall we attempt sync later?
                 return false;

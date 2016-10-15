@@ -61,7 +61,7 @@ public class FriendsBaseActivity extends DrawerActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+                if (!NetworkHelper.isNetworkAvailable()) {
                     Toast.makeText(FriendsBaseActivity.this, "Check network", Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                     return;

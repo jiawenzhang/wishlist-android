@@ -46,7 +46,7 @@ public class FriendRequestActivity extends FriendsBaseActivity implements
         FriendManager.getInstance().setFriendRequestListener(this);
         FriendManager.getInstance().fetchFriendRequest();
 
-        if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+        if (!NetworkHelper.isNetworkAvailable()) {
             Toast.makeText(this, "Check network, friend request may be out of date", Toast.LENGTH_LONG).show();
         }
     }

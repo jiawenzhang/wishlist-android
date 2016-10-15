@@ -21,6 +21,7 @@ import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.ImageDimensionTask;
+import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.ScreenOrientation;
 import com.wish.wishlist.util.WebItemTask;
 import com.wish.wishlist.util.WebRequest;
@@ -103,6 +104,11 @@ public class AddWishFromLinkActivity extends AddWishActivity
     }
 
     protected void handleLinks(ArrayList<String> links, String action) {
+        if (!NetworkHelper.isNetworkAvailable()) {
+            Toast.makeText(this, "Cannot load wish, check network", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         mHost = null;
 
         // only cares about the valid first link

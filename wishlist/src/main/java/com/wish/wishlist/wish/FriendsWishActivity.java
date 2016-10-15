@@ -76,7 +76,7 @@ public class FriendsWishActivity extends WishBaseActivity implements
             @Override
             public void onRefresh() {
                 Log.d(TAG, "refresh");
-                if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+                if (!NetworkHelper.isNetworkAvailable()) {
                     Toast.makeText(FriendsWishActivity.this, "Check network", Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                     return;

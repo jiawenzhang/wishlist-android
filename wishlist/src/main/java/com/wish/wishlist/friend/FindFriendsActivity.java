@@ -58,7 +58,7 @@ public class FindFriendsActivity extends FriendsBaseActivity implements
                     // End has been reached
 
                     mLoading = true;
-                    if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+                    if (!NetworkHelper.isNetworkAvailable()) {
                         Toast.makeText(FindFriendsActivity.this, "Check network", Toast.LENGTH_LONG).show();
                         mLoading = false;
                         return;

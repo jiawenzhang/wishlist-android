@@ -103,7 +103,7 @@ public class ProfileActivity extends ActivityBase implements
             @Override
             public void onRefresh() {
                 Analytics.send(Analytics.SYNC, "RefreshProfile", null);
-                if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+                if (!NetworkHelper.isNetworkAvailable()) {
                     Toast.makeText(ProfileActivity.this, "Check network", Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                     return;
@@ -478,7 +478,7 @@ public class ProfileActivity extends ActivityBase implements
             return;
         }
 
-        if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+        if (!NetworkHelper.isNetworkAvailable()) {
             Toast.makeText(ProfileActivity.this, "Failed, check network", Toast.LENGTH_LONG).show();
             return;
         }
@@ -514,7 +514,7 @@ public class ProfileActivity extends ActivityBase implements
             return;
         }
 
-        if (!NetworkHelper.getInstance().isNetworkAvailable()) {
+        if (!NetworkHelper.isNetworkAvailable()) {
             Toast.makeText(ProfileActivity.this, "Failed, check network", Toast.LENGTH_LONG).show();
             return;
         }
