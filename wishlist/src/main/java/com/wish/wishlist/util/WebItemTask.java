@@ -3,7 +3,6 @@ package com.wish.wishlist.util;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.JsonReader;
 import android.util.JsonToken;
@@ -15,14 +14,14 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.wish.wishlist.DownloadBitmapTask;
 import com.wish.wishlist.activity.WebImage;
 
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -32,9 +31,10 @@ import okhttp3.Response;
 
 import static com.wish.wishlist.util.ItemJsonReader.readObjString;
 
-public class WebItemTask implements ImageDimensionTask.OnImageDimension {
+public class WebItemTask implements
+        DownloadBitmapTask.WebImagesListener {
     private final String TAG = "WebItemTask";
-    private Context mContext;
+    private Context context;
     private WebView mWebView;
     private WebRequest mWebRequest;
     private Boolean loadingFinished = true;
@@ -44,13 +44,13 @@ public class WebItemTask implements ImageDimensionTask.OnImageDimension {
     private final static String STATIC_HTML="STATIC_HTML";
     private final static String WEBVIEW_NO_IMAGE="WEBVIEW_NO_IMAGE";
     private final static String WEBVIEW_IMAGE="WEBVIEW_IMAGE";
-    private OnWebResult mListener;
+    private OnWebResult listener;
     private String[] jsFiles = {"currency_symbol_map.js", "util.js", "scrape.js"};
     private int fileIndex = 0;
     private long startTime;
     private String html;
-    private Target mTarget;
-    private ImageDimensionTask imageDimensionTask;
+    private DownloadBitmapTask downloadBitmapTask;
+    private WebResult result;
 
     @JavascriptInterface
     public String getHTML() {
@@ -70,14 +70,14 @@ public class WebItemTask implements ImageDimensionTask.OnImageDimension {
     public WebItemTask(Context context, WebRequest request, OnWebResult listener) {
         super();
 
-        this.mContext = context;
+        this.context = context;
         this.mWebRequest = request;
-        this.mListener = listener;
+        this.listener = listener;
     }
 
     public void run() {
         startTime = System.currentTimeMillis();
-        mWebView = new WebView(mContext);
+        mWebView = new WebView(context);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.addJavascriptInterface(this, "Android");
         getFromStaticHTML();
@@ -105,7 +105,7 @@ public class WebItemTask implements ImageDimensionTask.OnImageDimension {
                 if (response.body().contentType().toString().startsWith("text/html")) {
                     //Log.e(TAG, response.body().string());
                     html = response.body().string();
-                    Handler mainHandler = new Handler(mContext.getMainLooper());
+                    Handler mainHandler = new Handler(context.getMainLooper());
 
                     // okhttp response callback is in its own thread, post the runJS to main thread
                     // because webview can only run in the main thread
@@ -196,40 +196,43 @@ public class WebItemTask implements ImageDimensionTask.OnImageDimension {
         mWebView.reload();
     }
 
-    private void getBitmapFromUrls(WebResult result) {
+    private void getBitmapFromUrls(ArrayList<String> imageUrls) {
         // start downloading the bitmap from result.imageUrls array until we get a valid one
-        scaleDownBitmap(result.imageUrls.get(0), result);
+        downloadBitmapTask = new DownloadBitmapTask(imageUrls, context, this);
+        downloadBitmapTask.execute();
     }
 
-    public void onImageDimension(WebResult result) {
-        if (result.webImages.size() > 0) {
-            mListener.onWebResult(result);
+    @Override
+    public void gotWebImages(ArrayList<WebImage> webImages) {
+        if (!webImages.isEmpty()) {
+            result.webImages.addAll(0, webImages);
+            listener.onWebResult(result);
         } else {
-            stage = WEBVIEW_NO_IMAGE;
-            getFromWebView();
+            printResult();
+            nextStage();
         }
     }
 
     private void parse(String s) {
-        WebResult result = readObjString(s);
+        result = readObjString(s);
 
         switch (stage) {
             case STATIC_HTML:
-                if (!getOneBitmap(result)) {
+                if (!getOneBitmap()) {
                     nextStage();
                 }
                 break;
             case WEBVIEW_NO_IMAGE:
-                if (!getOneBitmap(result)) {
+                if (!getOneBitmap()) {
                     nextStage();
                 }
                 break;
             case WEBVIEW_IMAGE:
                 gotResult = true;
                 Log.e(TAG, stage + " loading: Time: " + (System.currentTimeMillis() - startTime));
-                printResult(result);
-                if (!getOneBitmap(result)) {
-                    mListener.onWebResult(result);
+                printResult();
+                if (!getOneBitmap()) {
+                    listener.onWebResult(result);
                 }
                 break;
             default:
@@ -237,18 +240,19 @@ public class WebItemTask implements ImageDimensionTask.OnImageDimension {
         }
     }
 
-    private boolean getOneBitmap(WebResult result) {
+    private boolean getOneBitmap() {
         if (result.imageUrls != null && !result.imageUrls.isEmpty()) {
             // We got an image from og, twitter or itemprop="image"
-            getBitmapFromUrls(result);
+            getBitmapFromUrls(result.imageUrls);
             return true;
         } else if (result.webImages.size() > 0) {
             // We fail to get an image from og, twitter or itemprop="image", but
             // we have an array of img src, try to get the first image's bitmap
+            ArrayList<String> imageUrls = new ArrayList<>();
             for (WebImage webImage : result.webImages) {
-                result.imageUrls.add(webImage.mUrl);
+                imageUrls.add(webImage.mUrl);
             }
-            getBitmapFromUrls(result);
+            getBitmapFromUrls(imageUrls);
             return true;
         } else {
             return false;
@@ -334,69 +338,7 @@ public class WebItemTask implements ImageDimensionTask.OnImageDimension {
         return src;
     }
 
-    private void scaleDownBitmap(final String url, final WebResult result) {
-        final int maxImageWidth = dimension.screenWidth() / 2;
-        final int maxImageHeight = dimension.screenHeight() / 2;
-
-        mTarget = new Target() {
-            private void nextBitmap() {
-                int index = result.imageUrls.indexOf(url);
-                if (index < result.imageUrls.size() - 1) {
-                    scaleDownBitmap(result.imageUrls.get(index + 1), result);
-                } else {
-                    // we have tried all the urls in result.imageUrls but still fail to get a bitmap
-                    // Fixme: shall we proceed to next stage?
-                    Log.d(TAG, "tried all, no valid bitmap");
-                    printResult(result);
-                    nextStage();
-                }
-            }
-
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                if (bitmap != null) {
-                    Log.d(TAG, "got valid bitmap");
-                    int w = bitmap.getWidth();
-                    int h = bitmap.getHeight();
-                    if (w < 100 || h < 100) {
-                        Log.d(TAG, "bitmap width < 100 or height < 100, skip");
-                        nextBitmap();
-                        return;
-                    }
-                    if (w / h > 8 || h / w > 8) {
-                        Log.d(TAG, "bitmap aspect ratio > 8, skip");
-                        nextBitmap();
-                        return;
-                    }
-                    result.webImages.add(0, new WebImage(url, bitmap.getWidth(), bitmap.getHeight(), "", bitmap));
-                    Log.e(TAG, stage + " loading: Time: " + (System.currentTimeMillis() - startTime));
-                    printResult(result);
-                    mListener.onWebResult(result);
-                } else {
-                    Log.e(TAG, "null bitmap");
-                    nextBitmap();
-                }
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {}
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                Log.e(TAG, "onBitmapFailed");
-                nextBitmap();
-            }
-        };
-
-        //final Bitmap image = Picasso.with(mContext).load(src).resize(imageWidth, 0).centerInside().onlyScaleDown().get();
-        // onlyScaleDown() has no effect when working together with resize(targetWidth, 0) on Android 5.1, 6.0
-        // it works on Android 4.4
-
-        // workaround the issue by using centerInside
-        Picasso.with(mContext).load(url).resize(maxImageWidth, maxImageHeight).centerInside().onlyScaleDown().into(mTarget);
-    }
-
-    private void printResult(WebResult result) {
+    private void printResult() {
         Log.d(TAG, "title: " + result.title);
         Log.d(TAG, "description: " + result.description);
         Log.d(TAG, "price: " + result.price);

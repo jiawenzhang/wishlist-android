@@ -293,7 +293,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
 
         Analytics.send(Analytics.WISH, "LoadMoreImages", mLink);
         mImageDimensionTask = new ImageDimensionTask(this);
-        mImageDimensionTask.execute(mWebResult);
+        mImageDimensionTask.execute(mWebResult.webImages);
     }
 
     @Override
@@ -320,8 +320,9 @@ public class AddWishFromLinkActivity extends AddWishActivity
     }
 
     @Override
-    public void onImageDimension(WebResult result) {
+    public void onImageDimension(ArrayList<WebImage> webImages) {
         Log.d(TAG, "onImageDimension");
+        mWebResult.webImages = webImages;
         mProgressDialog.dismiss();
         showImageDialog(false);
     }
