@@ -225,9 +225,15 @@ public class WebItemTask implements
     }
 
     @Override
-    public void gotWebImages(ArrayList<WebImage> webImages) {
-        if (!webImages.isEmpty()) {
-            result.webImages.addAll(0, webImages);
+    public void gotWebImages(WebImage webImage) {
+        if (webImage != null) {
+            for (int i = 0; i < result.webImages.size(); i++) {
+                if (StringUtil.compare(result.webImages.get(i).mUrl, webImage.mUrl)) {
+                    result.webImages.remove(i);
+                    break;
+                }
+            }
+            result.webImages.add(0, webImage);
             listener.onWebResult(result);
         } else {
             printResult();

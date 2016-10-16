@@ -20,14 +20,13 @@ import java.util.ArrayList;
 public class DownloadBitmapTask {
     private final static String TAG = "DownloadBitmapTask";
     private ArrayList<String> imageUrls;
-    public ArrayList<WebImage> webImages = new ArrayList<>();
     private Context context;
     private Target target;
     private WebImagesListener listener;
     private boolean cancel = false;
 
     public interface WebImagesListener {
-        void gotWebImages(ArrayList<WebImage> webImages);
+        void gotWebImages(WebImage webImage);
     }
 
     public DownloadBitmapTask(
@@ -67,7 +66,7 @@ public class DownloadBitmapTask {
                     // we have tried all the urls in result.imageUrls but still fail to get a bitmap
                     // Fixme: shall we proceed to next stage?
                     Log.d(TAG, "tried all, no valid bitmap");
-                    listener.gotWebImages(webImages);
+                    listener.gotWebImages(null);
                 }
             }
 
@@ -90,9 +89,9 @@ public class DownloadBitmapTask {
                         return;
                     }
 
-                    webImages.add(new WebImage(url, bitmap.getWidth(), bitmap.getHeight(), "", bitmap));
+                    WebImage webImage = new WebImage(url, bitmap.getWidth(), bitmap.getHeight(), "", bitmap);
                     //Log.e(TAG, stage + " loading: Time: " + (System.currentTimeMillis() - startTime));
-                    listener.gotWebImages(webImages);
+                    listener.gotWebImages(webImage);
                 } else {
                     Log.e(TAG, "null bitmap");
                     nextBitmap();
