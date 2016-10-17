@@ -9,10 +9,11 @@ import com.wish.wishlist.model.Dimension;
 
 import java.util.ArrayList;
 
+import okhttp3.OkHttpClient;
+
 public class ImageDimensionTask extends AsyncTask<ArrayList<WebImage>, Integer, Void> {
     private final String TAG = "ImageDimensionTask";
     private OnImageDimension listener;
-    private long startTime;
 
     public interface OnImageDimension {
         void onImageDimension(WebImage webImage);
@@ -29,22 +30,26 @@ public class ImageDimensionTask extends AsyncTask<ArrayList<WebImage>, Integer, 
 
     @Override
     protected Void doInBackground(ArrayList<WebImage>... input) {
-        startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         ArrayList<WebImage> webImages = input[0];
 
         Log.d(TAG, "extracting dimension of " + webImages.size() + " images");
 
+        int count = 0;
+        OkHttpClient client = new OkHttpClient();
         for (int i = 0; i< webImages.size(); i++) {
-            Dimension d = ImageDimension.extractImageDimension(webImages.get(i).mUrl);
+            Dimension d = ImageDimension.extractImageDimension(webImages.get(i).mUrl, client);
             if (d != null && d.getWidth() >= 100 && d.getHeight() >= 100) {
                 WebImage w = webImages.get(i);
                 w.mWidth = d.getWidth();
                 w.mHeight = d.getHeight();
 
                 listener.onImageDimension(w);
+                count++;
             }
         }
 
+        Log.d(TAG, "got " + count + " image dimension, took " + (System.currentTimeMillis() - startTime) + " ms");
         return null;
     }
 

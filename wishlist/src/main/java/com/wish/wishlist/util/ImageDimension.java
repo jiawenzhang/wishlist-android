@@ -29,7 +29,7 @@ public final class ImageDimension {
 
     private ImageDimension() {}
 
-    public static Dimension extractImageDimension(String url) {
+    public static Dimension extractImageDimension(String url, OkHttpClient client) {
 
         Request request;
         try {
@@ -41,10 +41,14 @@ public final class ImageDimension {
             return null;
         }
 
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client_ = client;
+        if (client_ == null) {
+            client_ = new OkHttpClient();
+        }
+
         Response response = null;
         try {
-            response = client.newCall(request).execute();
+            response = client_.newCall(request).execute();
             if (!response.isSuccessful()) {
                 Log.e(TAG, "response not successful");
                 response.close();
@@ -67,7 +71,7 @@ public final class ImageDimension {
         return null;
 
 //        final Dimension d;
-//        client.newCall(request).enqueue(new Callback() {
+//        client_.newCall(request).enqueue(new Callback() {
 //            @Override public void onFailure(Call call, IOException e) {
 //                e.printStackTrace();
 //            }
