@@ -52,6 +52,7 @@ public class WebItemTask implements
     private DownloadBitmapTask downloadBitmapTask;
     private WebResult result = new WebResult();
     private Call call;
+    private Handler mainHandler;
 
     @JavascriptInterface
     public String getHTML() {
@@ -74,6 +75,7 @@ public class WebItemTask implements
         this.context = context;
         this.webRequest = request;
         this.listener = listener;
+        this.mainHandler = new Handler(context.getMainLooper());
     }
 
     public void run() {
@@ -114,34 +116,43 @@ public class WebItemTask implements
         call.enqueue(new Callback() {
             @Override public void onFailure(Call call, IOException e) {
                 Log.e(TAG, e.toString());
+                postWebResult(result);
             }
 
             @Override public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     Log.e(TAG, "response not successful");
-                    listener.onWebResult(result);
+                    postWebResult(result);
                 }
 
                 if (response.body().contentType().toString().startsWith("text/html")) {
                     //Log.e(TAG, response.body().string());
                     html = response.body().string();
-                    Handler mainHandler = new Handler(context.getMainLooper());
 
                     // okhttp response callback is in its own thread, post the runJS to main thread
                     // because webview can only run in the main thread
-                    Runnable myRunnable = new Runnable() {
+                    mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             runJS();
                         }
-                    };
-                    mainHandler.post(myRunnable);
+                    });
                 } else {
                     Log.e(TAG, "content type not supported");
-                    listener.onWebResult(result);
+                    postWebResult(result);
                 }
 
                 response.body().close();
+            }
+        });
+    }
+
+    private void postWebResult(final WebResult result) {
+        // okhttp response callback is in its own thread, post to main thread
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                listener.onWebResult(result);
             }
         });
     }
@@ -190,8 +201,9 @@ public class WebItemTask implements
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 // Handle the error
                 Log.e(TAG, "onReceivedError " + description + " " + failingUrl);
+                Analytics.send(Analytics.DEBUG, "WebViewLoadError", description + " " + failingUrl);
                 super.onReceivedError(view, errorCode, description, failingUrl);
-                listener.onWebResult(result);
+                postWebResult(result);
             }
 
             @TargetApi(android.os.Build.VERSION_CODES.M)
