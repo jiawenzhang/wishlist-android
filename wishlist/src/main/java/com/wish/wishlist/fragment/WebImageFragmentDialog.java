@@ -1,6 +1,7 @@
 package com.wish.wishlist.fragment;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -19,14 +20,17 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.util.ImageDimensionTask;
 import com.wish.wishlist.util.WebImageAdapter;
 import com.wish.wishlist.activity.WebImage;
+import com.wish.wishlist.util.dimension;
 import com.wish.wishlist.widgets.ItemDecoration;
 
 import java.util.ArrayList;
 
 public class WebImageFragmentDialog extends DialogFragment implements
-        WebImageAdapter.WebImageTapListener {
+        WebImageAdapter.WebImageTapListener,
+        ImageDimensionTask.OnImageDimension {
 
     protected StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     private WebImageAdapter mAdapter;
@@ -36,6 +40,8 @@ public class WebImageFragmentDialog extends DialogFragment implements
     private OnLoadMoreSelectedListener mLoadMoreSelectedListener;
     private OnWebImageCancelledListener mWebImageCancelledListener;
     private RecyclerView mRecyclerView;
+    private ImageDimensionTask mImageDimensionTask = null;
+    private Handler mainHandler;
     final private static String TAG = "WebImageFragmentDialog";
 
     public static WebImageFragmentDialog newInstance(ArrayList<WebImage> list, boolean showOneImage) {
@@ -44,24 +50,10 @@ public class WebImageFragmentDialog extends DialogFragment implements
         return new WebImageFragmentDialog();
     }
 
-    public void reload(ArrayList<WebImage> list) {
-        mList = list;
-
-        if (mRecyclerView == null) {
-            return;
-        }
-
-        for (WebImage img : mList) {
-            Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
-        }
-        mAdapter = new WebImageAdapter(mList);
-        mAdapter.setWebImageTapListener(this);
-        mRecyclerView.swapAdapter(mAdapter, true);
-    }
-
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mainHandler = new Handler(getContext().getMainLooper());
         setRetainInstance(true);
     }
 
@@ -123,13 +115,17 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView");
-        if (mList.size() <= 1) {
+        if (mShowOneImage) {
            return super.onCreateView(inflater, container, savedInstanceState);
         }
 
         View v = inflater.inflate(R.layout.web_image_view, container, false);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.web_image_recycler_view);
+
+        // set the min view height so the view won't keep expanding while images are loaded into it.
+        // Fixme: should ideally get real the max height of the view
+        int viewHeight = (int) ((double) dimension.screenHeight() * 0.9);
+        mRecyclerView.setMinimumHeight(viewHeight);
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
         int itemSpace = (int) WishlistApplication.getAppContext().getResources().getDimension(R.dimen.item_decoration_space); // in px
@@ -141,19 +137,29 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
         mRecyclerView.addItemDecoration(new ItemDecoration(itemSpace));
 
-        if (mAdapter == null) {
-            if (mList == null) {
-                Log.d(TAG, "mList is null");
-            } else {
-                for (WebImage img : mList) {
-                    Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
+        mImageDimensionTask = new ImageDimensionTask(this);
+        mImageDimensionTask.execute(mList);
+
+        return v;
+    }
+
+    @Override
+    public void onImageDimension(final WebImage webImage) {
+        // onImageDimension is invoked in the background thread of an AsyncTask, post it to main thread
+        // for UI layout
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mAdapter == null) {
+                    mAdapter = new WebImageAdapter(webImage);
+                    mAdapter.setWebImageTapListener(WebImageFragmentDialog.this);
+
+                    mRecyclerView.setAdapter(mAdapter);
+                } else {
+                    mAdapter.addItem(webImage);
                 }
             }
-            mAdapter = new WebImageAdapter(mList);
-            mAdapter.setWebImageTapListener(this);
-        }
-        mRecyclerView.setAdapter(mAdapter);
-        return v;
+        });
     }
 
     public static interface OnWebImageSelectedListener {
@@ -165,7 +171,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
     }
 
     public static interface OnWebImageCancelledListener {
-        public abstract void onWebImageCancelled();
+        public abstract void onWebImageCancelled(boolean showOneImage);
     }
 
     // make sure the Activity implemented it
@@ -185,7 +191,10 @@ public class WebImageFragmentDialog extends DialogFragment implements
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
         Log.d(TAG, "onCancel");
-        mWebImageCancelledListener.onWebImageCancelled();
+        if (mImageDimensionTask != null) {
+            mImageDimensionTask.cancel(true);
+        }
+        mWebImageCancelledListener.onWebImageCancelled(mShowOneImage);
         dismiss();
     }
 

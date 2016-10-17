@@ -21,14 +21,15 @@ import java.util.ArrayList;
 
 public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    protected Transformation mTransform;
+    private Transformation mTransform;
 
     /******************* WebImageTapListener *********************/
     private WebImageTapListener mWebImageTapListener = null;
     public interface WebImageTapListener {
         void onWebImageTap(int position);
     }
-    protected void onWebImageTap(int position) {
+
+    private void onWebImageTap(int position) {
         if (mWebImageTapListener != null) {
             mWebImageTapListener.onWebImageTap(position);
         }
@@ -39,7 +40,7 @@ public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     /*************************************************************/
 
     static final String TAG = "WebImageAdapter";
-    private ArrayList<WebImage> mImageList;
+    private ArrayList<WebImage> mImageList = new ArrayList<>();
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
@@ -54,8 +55,8 @@ public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public WebImageAdapter(ArrayList<WebImage> imageList) {
-        mImageList = imageList;
+    public WebImageAdapter(WebImage webImage) {
+        mImageList.add(webImage);
         if (Build.VERSION.SDK_INT < 21) {
             // Image in CardView pre-LOLLIPOP (API 21) does not have rounded corner, so we need to transform the image ourselves to have
             // round corner
@@ -64,6 +65,11 @@ public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else {
             mTransform = new NoTransformation();
         }
+    }
+
+    public void addItem(WebImage webImage) {
+        mImageList.add(webImage);
+        notifyItemInserted(mImageList.size() - 1);
     }
 
     @Override

@@ -59,7 +59,7 @@ public class WebImageFragmentDialogOld extends DialogFragment implements
         for (WebImage img : mList) {
             Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
         }
-        mAdapter = new WebImageAdapter(mList);
+        mAdapter = new WebImageAdapter(mList.get(0));
         mAdapter.setWebImageTapListener(this);
         mRecyclerView.swapAdapter(mAdapter, true);
     }
@@ -157,7 +157,7 @@ public class WebImageFragmentDialogOld extends DialogFragment implements
                     Log.d(TAG, img.mUrl + " " + img.mId + " " + img.mWidth + " " + img.mHeight);
                 }
             }
-            mAdapter = new WebImageAdapter(mList);
+            mAdapter = new WebImageAdapter(mList.get(0));
             mAdapter.setWebImageTapListener(this);
         }
         mRecyclerView.setAdapter(mAdapter);

@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -20,7 +19,6 @@ import com.wish.wishlist.activity.WebImage;
 import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.Analytics;
-import com.wish.wishlist.util.ImageDimensionTask;
 import com.wish.wishlist.util.NetworkHelper;
 import com.wish.wishlist.util.ScreenOrientation;
 import com.wish.wishlist.util.WebItemTask;
@@ -41,8 +39,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
         WebImageFragmentDialog.OnWebImageSelectedListener,
         WebImageFragmentDialog.OnLoadMoreSelectedListener,
         WebImageFragmentDialog.OnWebImageCancelledListener,
-        WebItemTask.OnWebResult,
-        ImageDimensionTask.OnImageDimension {
+        WebItemTask.OnWebResult {
 
     private String mWebPicUrl = null;
     protected Bitmap mWebBitmap = null;
@@ -50,7 +47,6 @@ public class AddWishFromLinkActivity extends AddWishActivity
     protected String mHost = null;
     private ProgressDialog mProgressDialog = null;
     private WebItemTask mWebItemTask = null;
-    private ImageDimensionTask mImageDimensionTask = null;
     private static WebResult mWebResult = null;
     private static final String TAG = "AddWishFromLink";
     private long mStartTime;
@@ -158,12 +154,9 @@ public class AddWishFromLinkActivity extends AddWishActivity
                 if (mWebItemTask != null) {
                     mWebItemTask.cancel();
                 }
-                if (mImageDimensionTask != null) {
-                    Log.d(TAG, "cancel loading more images");
-                    mImageDimensionTask.cancel(true);
-                    if (mWebResult != null && !mWebResult.webImages.isEmpty()) {
-                        showImageDialog(true);
-                    }
+
+                if (mWebResult != null && !mWebResult.webImages.isEmpty()) {
+                    showImageDialog(true);
                 }
             }
         });
@@ -284,21 +277,24 @@ public class AddWishFromLinkActivity extends AddWishActivity
         Analytics.send(Analytics.DEBUG, "SelectWebImage: " + mHost, position + "/" + mWebResult.webImages.size());
     }
 
-    public void onWebImageCancelled() {
+    public void onWebImageCancelled(boolean showOneImage) {
         Log.d(TAG, "onWebImageCancelled");
         ScreenOrientation.unlock(this);
 
         Analytics.send(Analytics.WISH, "CancelWebImage", mLink);
+
+        // If we exist the dialog of multiple images from onLoadMoreImages, we should show
+        // the dialog of one image (the previous dialog)
+        if (!showOneImage && mWebResult != null && !mWebResult.webImages.isEmpty()) {
+            showImageDialog(true);
+        }
     }
 
     public void onLoadMoreImages() {
         Log.d(TAG, "onLoadMoreImages");
-        //ScreenOrientation.lock(this);
-        mProgressDialog.show();
 
         Analytics.send(Analytics.WISH, "LoadMoreImages", mLink);
-        mImageDimensionTask = new ImageDimensionTask(this);
-        mImageDimensionTask.execute(mWebResult.webImages);
+        showImageDialog(false);
     }
 
     @Override
@@ -324,23 +320,9 @@ public class AddWishFromLinkActivity extends AddWishActivity
         }
     }
 
-    @Override
-    public void onImageDimension(ArrayList<WebImage> webImages) {
-        Log.d(TAG, "onImageDimension");
-        mWebResult.webImages = webImages;
-        mProgressDialog.dismiss();
-        showImageDialog(false);
-    }
-
     private void showImageDialog(boolean showOneImage) {
         DialogFragment fragment = WebImageFragmentDialog.newInstance(mWebResult.webImages, showOneImage);
         FragmentManager fm = getSupportFragmentManager();
-//        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-//        if (prev != null) {
-//            WebImageFragmentDialog df = (WebImageFragmentDialog) prev;
-//            df.reload(mWebResult.webImages);
-//            return;
-//        }
         Log.d(TAG, "fragment.show");
         fragment.show(fm, "dialog");
     }
