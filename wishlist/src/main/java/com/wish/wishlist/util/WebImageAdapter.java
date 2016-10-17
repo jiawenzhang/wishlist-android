@@ -100,11 +100,7 @@ public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 int proximateCardWidth = dimension.screenWidth() / 2;
                 Picasso.with(holder_.imageView.getContext()).load(webImage.mUrl).resize(proximateCardWidth, 0).transform(mTransform).into(holder_.imageView);
 
-                if (BuildConfig.DEBUG) {
-                    holder_.textView.setText(webImage.mWidth + " x " + webImage.mHeight);
-                } else {
-                    holder_.textView.setVisibility(View.GONE);
-                }
+                holder_.textView.setText(webImage.mWidth + " x " + webImage.mHeight);
             }
         }
 
