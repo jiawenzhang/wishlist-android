@@ -12,7 +12,6 @@ import android.view.View.OnClickListener;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
-import com.wish.wishlist.BuildConfig;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.activity.WebImage;

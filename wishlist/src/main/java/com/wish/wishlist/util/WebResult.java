@@ -15,7 +15,7 @@ public class WebResult {
     public String title;
     public String description;
     public String price;
-    public Double priceNumber;
+    public Double priceNumber = null;
     public Currency currency;
     public Boolean attemptedAllFromJsoup = false; // we have tried all results from Jsoup
     public Boolean attemptedDynamicHtml = false; // we have tried results from webview

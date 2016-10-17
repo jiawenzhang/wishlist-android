@@ -30,6 +30,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Observer;
 
@@ -301,6 +302,9 @@ public class AddWishFromLinkActivity extends AddWishActivity
         }
         if (result.description != null && !result.description.trim().isEmpty()) {
             mDescriptionView.setText(result.description);
+        }
+        if (result.priceNumber != null) {
+            mPriceView.setText(new DecimalFormat("0.00").format(result.priceNumber));
         }
 
         mWebResult = result;
