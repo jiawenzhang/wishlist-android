@@ -26,12 +26,12 @@ public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     /******************* WebImageTapListener *********************/
     private WebImageTapListener mWebImageTapListener = null;
     public interface WebImageTapListener {
-        void onWebImageTap(int position);
+        void onWebImageTap(String url);
     }
 
-    private void onWebImageTap(int position) {
+    private void onWebImageTap(String url) {
         if (mWebImageTapListener != null) {
-            mWebImageTapListener.onWebImageTap(position);
+            mWebImageTapListener.onWebImageTap(url);
         }
     }
     public void setWebImageTapListener(final WebImageTapListener listener) {
@@ -111,7 +111,7 @@ public class WebImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder_.cardView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                onWebImageTap(position);
+                onWebImageTap(webImage.mUrl);
             }
         });
     }

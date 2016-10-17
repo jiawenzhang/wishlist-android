@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
 import com.wish.wishlist.WishlistApplication;
+import com.wish.wishlist.util.Analytics;
 import com.wish.wishlist.util.ImageDimensionTask;
 import com.wish.wishlist.util.WebImageAdapter;
 import com.wish.wishlist.activity.WebImage;
@@ -42,11 +43,13 @@ public class WebImageFragmentDialog extends DialogFragment implements
     private RecyclerView mRecyclerView;
     private ImageDimensionTask mImageDimensionTask = null;
     private Handler mainHandler;
+    private static String mHost;
     final private static String TAG = "WebImageFragmentDialog";
 
-    public static WebImageFragmentDialog newInstance(ArrayList<WebImage> list, boolean showOneImage) {
+    public static WebImageFragmentDialog newInstance(ArrayList<WebImage> list, boolean showOneImage, String host) {
         mList = list;
         mShowOneImage = showOneImage;
+        mHost = host;
         return new WebImageFragmentDialog();
     }
 
@@ -71,7 +74,9 @@ public class WebImageFragmentDialog extends DialogFragment implements
         imageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mWebImageSelectedListener.onWebImageSelected(0);
+                Analytics.send(Analytics.WISH, "SelectWebImage", mHost);
+                Analytics.send(Analytics.DEBUG, "SelectWebImage: " + mHost, 0 + "/" + mList.size());
+                mWebImageSelectedListener.onWebImageSelected(mList.get(0).mUrl);
                 dismiss();
             }
         });
@@ -163,7 +168,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
     }
 
     public static interface OnWebImageSelectedListener {
-        public abstract void onWebImageSelected(int position);
+        public abstract void onWebImageSelected(String url);
     }
 
     public static interface OnLoadMoreSelectedListener {
@@ -198,8 +203,18 @@ public class WebImageFragmentDialog extends DialogFragment implements
         dismiss();
     }
 
-    public void onWebImageTap(int position) {
-        this.mWebImageSelectedListener.onWebImageSelected(position);
+    public void onWebImageTap(String url) {
+        this.mWebImageSelectedListener.onWebImageSelected(url);
+        Analytics.send(Analytics.WISH, "SelectWebImage", mHost);
+
+        int i;
+        for (i = 0; i < mList.size(); i++) {
+            if (url.equals(mList.get(i).mUrl)) {
+                break;
+            }
+        }
+        Analytics.send(Analytics.DEBUG, "SelectWebImage: " + mHost, i + "/" + mList.size());
+
         dismiss();
     }
 }

@@ -84,7 +84,7 @@ public class WebImageFragmentDialogOld extends DialogFragment implements
         imageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mWebImageSelectedListener.onWebImageSelected(0);
+                mWebImageSelectedListener.onWebImageSelected(mList.get(0).mUrl);
                 dismiss();
             }
         });
@@ -165,7 +165,7 @@ public class WebImageFragmentDialogOld extends DialogFragment implements
     }
 
     public static interface OnWebImageSelectedListener {
-        public abstract void onWebImageSelected(int position);
+        public abstract void onWebImageSelected(String url);
     }
 
     public static interface OnLoadMoreFromWebViewListener {
@@ -202,13 +202,13 @@ public class WebImageFragmentDialogOld extends DialogFragment implements
         dismiss();
     }
 
-    public void onWebImageTap(int position) {
-        if (mAllowLoadMore && position == mList.size() - 1) {
-            mList.remove(position);
-            this.mLoadMoreFromWebView.onLoadMoreFromWebView();
-        } else {
-            this.mWebImageSelectedListener.onWebImageSelected(position);
-        }
+    public void onWebImageTap(String url) {
+//        if (mAllowLoadMore && position == mList.size() - 1) {
+//            mList.remove(position);
+//            this.mLoadMoreFromWebView.onLoadMoreFromWebView();
+//        } else {
+//            this.mWebImageSelectedListener.onWebImageSelected(position);
+//        }
         dismiss();
     }
 }

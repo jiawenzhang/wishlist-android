@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
-import com.wish.wishlist.activity.WebImage;
 import com.wish.wishlist.fragment.WebImageFragmentDialogOld;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.Analytics;
@@ -330,15 +329,13 @@ public class AddWishFromLinkActivityOld extends AddWishActivity
         wishSaved();
     }
 
-    public void onWebImageSelected(int position) {
+    public void onWebImageSelected(String url) {
         // After the dialog fragment completes, it calls this callback.
-        WebImage webImage = mWebResult.webImages.get(position);
-        mWebPicUrl = webImage.mUrl;
-        setWebPic(mWebPicUrl);
+        setWebPic(url);
         ScreenOrientation.unlock(this);
 
-        Analytics.send(Analytics.WISH, "SelectWebImage", mHost);
-        Analytics.send(Analytics.DEBUG, "SelectWebImage: " + mHost, position + "/" + mWebResult.webImages.size());
+//        Analytics.send(Analytics.WISH, "SelectWebImage", mHost);
+//        Analytics.send(Analytics.DEBUG, "SelectWebImage: " + mHost, position + "/" + mWebResult.webImages.size());
     }
 
     public void onLoadMoreFromWebView() {

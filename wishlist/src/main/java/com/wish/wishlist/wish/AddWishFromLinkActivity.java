@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wish.wishlist.activity.FullscreenPhotoActivity;
-import com.wish.wishlist.activity.WebImage;
 import com.wish.wishlist.fragment.WebImageFragmentDialog;
 import com.wish.wishlist.image.ImageManager;
 import com.wish.wishlist.util.Analytics;
@@ -266,15 +265,11 @@ public class AddWishFromLinkActivity extends AddWishActivity
         wishSaved();
     }
 
-    public void onWebImageSelected(int position) {
+    public void onWebImageSelected(String url) {
         // After the dialog fragment completes, it calls this callback.
-        WebImage webImage = mWebResult.webImages.get(position);
-        mWebPicUrl = webImage.mUrl;
-        setWebPic(mWebPicUrl);
+        setWebPic(url);
         ScreenOrientation.unlock(this);
 
-        Analytics.send(Analytics.WISH, "SelectWebImage", mHost);
-        Analytics.send(Analytics.DEBUG, "SelectWebImage: " + mHost, position + "/" + mWebResult.webImages.size());
     }
 
     public void onWebImageCancelled(boolean showOneImage) {
@@ -321,7 +316,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
     }
 
     private void showImageDialog(boolean showOneImage) {
-        DialogFragment fragment = WebImageFragmentDialog.newInstance(mWebResult.webImages, showOneImage);
+        DialogFragment fragment = WebImageFragmentDialog.newInstance(mWebResult.webImages, showOneImage, mHost);
         FragmentManager fm = getSupportFragmentManager();
         Log.d(TAG, "fragment.show");
         fragment.show(fm, "dialog");
