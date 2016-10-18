@@ -156,7 +156,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
                 }
 
                 if (mWebResult != null && !mWebResult.webImages.isEmpty()) {
-                    showImageDialog(true);
+                    showOneImageDialog();
                 }
             }
         });
@@ -282,7 +282,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
         // If we exist the dialog of multiple images from onLoadMoreImages, we should show
         // the dialog of one image (the previous dialog)
         if (!showOneImage && mWebResult != null && !mWebResult.webImages.isEmpty()) {
-            showImageDialog(true);
+            showOneImageDialog();
         }
     }
 
@@ -290,7 +290,11 @@ public class AddWishFromLinkActivity extends AddWishActivity
         Log.d(TAG, "onLoadMoreImages");
 
         Analytics.send(Analytics.WISH, "LoadMoreImages", mLink);
-        showImageDialog(false);
+        if (mWebResult.webImages.size() > 1) {
+            showMoreImagesDialog();
+        } else {
+            showOneImageDialog();
+        }
     }
 
     @Override
@@ -310,7 +314,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
         mWebResult = result;
         if (!mWebResult.webImages.isEmpty()) {
             Log.d(TAG, "Got " + result.webImages.size() + " images to choose from");
-            showImageDialog(true);
+            showOneImageDialog();
         } else {
             ScreenOrientation.unlock(this);
             Toast.makeText(this, "No image found", Toast.LENGTH_SHORT).show();
@@ -319,10 +323,15 @@ public class AddWishFromLinkActivity extends AddWishActivity
         }
     }
 
-    private void showImageDialog(boolean showOneImage) {
-        DialogFragment fragment = WebImageFragmentDialog.newInstance(mWebResult.webImages, showOneImage, mHost);
+    private void showOneImageDialog() {
+        DialogFragment fragment = WebImageFragmentDialog.newInstance(mWebResult.webImages, true, mHost);
         FragmentManager fm = getSupportFragmentManager();
-        Log.d(TAG, "fragment.show");
+        fragment.show(fm, "dialog");
+    }
+
+    private void showMoreImagesDialog() {
+        DialogFragment fragment = WebImageFragmentDialog.newInstance(mWebResult.webImages, false, mHost);
+        FragmentManager fm = getSupportFragmentManager();
         fragment.show(fm, "dialog");
     }
 
