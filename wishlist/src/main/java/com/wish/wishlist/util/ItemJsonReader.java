@@ -7,7 +7,6 @@ import android.util.Patterns;
 
 import com.wish.wishlist.activity.WebImage;
 import com.wish.wishlist.model.Currency;
-import com.wish.wishlist.model.Dimension;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -72,6 +71,14 @@ public final class ItemJsonReader {
                             result.currency = readCurrency(reader);
                         }
                         break;
+                    case "og_image":
+                        Analytics.send(Analytics.DEBUG, "GotImage", "OG");
+                        reader.skipValue();
+                        break;
+                    case "twitter_image":
+                        Analytics.send(Analytics.DEBUG, "GotImage", "Twitter");
+                        reader.skipValue();
+                        break;
                     case "image_urls":
                         if (reader.peek() == JsonToken.NULL) {
                             reader.skipValue();
@@ -113,7 +120,6 @@ public final class ItemJsonReader {
             String url = reader.nextString();
             url = getValidImageUrl(url);
             if (url != null && !imageUrls.contains(url)) {
-                //Dimension d = ImageDimension.extractImageDimension(url);
                 imageUrls.add(url);
             }
         }

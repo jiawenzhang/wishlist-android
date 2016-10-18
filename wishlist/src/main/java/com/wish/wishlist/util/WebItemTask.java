@@ -14,6 +14,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.wish.wishlist.BuildConfig;
 import com.wish.wishlist.DownloadBitmapTask;
 import com.wish.wishlist.activity.WebImage;
 
@@ -116,12 +117,14 @@ public class WebItemTask implements
         call.enqueue(new Callback() {
             @Override public void onFailure(Call call, IOException e) {
                 Log.e(TAG, e.toString());
+                Analytics.send(Analytics.DEBUG, "StaticHTMLFail", e.toString() + " " + webRequest.url);
                 postWebResult(result);
             }
 
             @Override public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     Log.e(TAG, "response not successful");
+                    Analytics.send(Analytics.DEBUG, "StaticHTMLFail", "ResponseNotSuccessful" + " " + webRequest.url);
                     postWebResult(result);
                 }
 
@@ -139,6 +142,7 @@ public class WebItemTask implements
                     });
                 } else {
                     Log.e(TAG, "content type not supported");
+                    Analytics.send(Analytics.DEBUG, "StaticHTMLFail", "ContentTypeNotSupported" + " " + webRequest.url);
                     postWebResult(result);
                 }
 
@@ -158,6 +162,7 @@ public class WebItemTask implements
     }
 
     private void getFromWebView() {
+        Analytics.send(Analytics.WISH, "GetFromWebView", webRequest.url);
         html = null;
         fileIndex = 0;
         webView.setWebViewClient(new WebViewClient() {
@@ -223,6 +228,7 @@ public class WebItemTask implements
     }
 
     private void getFromWebViewWithImages() {
+        Analytics.send(Analytics.WISH, "GetFromWebViewWithImages", webRequest.url);
         fileIndex = 0;
         //webView.getSettings().setLoadsImagesAutomatically(true);
         //enable loading images
@@ -255,6 +261,15 @@ public class WebItemTask implements
 
     private void parse(String s) {
         result = readObjString(s);
+
+        if (result.priceNumber == null) {
+            Analytics.send(Analytics.DEBUG, "PriceNumber: Null", result.url);
+        }
+        if (result.currency != null) {
+            Analytics.send(Analytics.DEBUG, "Currency: " + result.currency.toString(), result.url);
+        } else {
+            Analytics.send(Analytics.DEBUG, "Currency: Null", result.url);
+        }
 
         switch (stage) {
             case STATIC_HTML:
@@ -311,6 +326,7 @@ public class WebItemTask implements
                 break;
             case WEBVIEW_IMAGE:
                 Log.e(TAG, "last stage, cannot start the next");
+                Analytics.send(Analytics.DEBUG, "LastStage", webRequest.url);
         }
     }
 
@@ -379,6 +395,10 @@ public class WebItemTask implements
     }
 
     private void printResult() {
+        if (!BuildConfig.DEBUG) {
+            return;
+        }
+
         Log.d(TAG, "title: " + result.title);
         Log.d(TAG, "description: " + result.description);
         Log.d(TAG, "price: " + result.price);
