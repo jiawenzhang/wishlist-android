@@ -268,9 +268,9 @@ public class AddWishFromLinkActivity extends AddWishActivity
 
     public void onWebImageSelected(String url) {
         // After the dialog fragment completes, it calls this callback.
+        mWebPicUrl = url;
         setWebPic(url);
         ScreenOrientation.unlock(this);
-
     }
 
     public void onWebImageCancelled(boolean showOneImage) {
