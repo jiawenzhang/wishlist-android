@@ -38,6 +38,7 @@ wishlist/src/main/res/values/application_id.xml
 wishlist/src/debug/res/values/application_id.xml
 
 # Javascript files copied from wish-scraper submodule
+wishlist/src/main/assets
 wishlist/src/main/assets/util.js
 wishlist/src/main/assets/scrape.js
 wishlist/src/main/assets/mobile_test.js
