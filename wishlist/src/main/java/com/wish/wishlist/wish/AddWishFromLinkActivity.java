@@ -67,6 +67,7 @@ public class AddWishFromLinkActivity extends AddWishActivity
         ArrayList<String> links = intent.getStringArrayListExtra(LINKS);
         if (links != null && !links.isEmpty()) {
             if (savedInstanceState == null) {
+                // we created a new instance of this activity instead of re-launching an existing one (by screen orientation)
                 Log.d(TAG, "got links " + links.toString());
                 handleLinks(links, "ShareFrom_Link");
             }
