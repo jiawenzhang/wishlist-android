@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <releaseNote>
+    <release versionName="2.0.2" versionCode="68">
+        <note>Support getting price of wish shared from many apps and websites</note>
+        <note>Improve images loading when wish is shared from other apps and websites</note>
+    </release>
     <release versionName="2.0.0" versionCode="65">
         <note>Wishlist become social!</note>
         <note>Add friends and see friends' wishes</note>
