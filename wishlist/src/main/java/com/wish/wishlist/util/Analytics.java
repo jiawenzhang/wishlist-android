@@ -40,6 +40,25 @@ public class Analytics {
         }
     }
 
+    public static void sendTime(String category, long duration, String name, String label) {
+        Tracker t = ((WishlistApplication) WishlistApplication.getAppContext()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
+
+        if (label == null) {
+            t.send(new HitBuilders.TimingBuilder()
+                    .setCategory(category)
+                    .setValue(duration)
+                    .setVariable(name)
+                    .build());
+        } else {
+            t.send(new HitBuilders.TimingBuilder()
+                    .setCategory(category)
+                    .setValue(duration)
+                    .setVariable(name)
+                    .setLabel(label)
+                    .build());
+        }
+    }
+
     public static void sendScreen(String screenName) {
         Tracker t = ((WishlistApplication) WishlistApplication.getAppContext()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
         t.setScreenName(screenName);

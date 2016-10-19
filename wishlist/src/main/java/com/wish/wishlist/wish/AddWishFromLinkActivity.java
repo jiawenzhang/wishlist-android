@@ -49,7 +49,6 @@ public class AddWishFromLinkActivity extends AddWishActivity
     private WebItemTask mWebItemTask = null;
     private static WebResult mWebResult = null;
     private static final String TAG = "AddWishFromLink";
-    private long mStartTime;
 
     public static final String WEB_PIC_URL = "WEB_PIC_URL";
     public static final String LINKS = "LINKS";

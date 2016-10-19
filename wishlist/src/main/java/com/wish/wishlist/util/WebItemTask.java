@@ -156,9 +156,16 @@ public class WebItemTask implements
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
-                listener.onWebResult(result);
+                gotWebResult(result);
             }
         });
+    }
+
+    private void gotWebResult(WebResult result) {
+        long loadTime = (System.currentTimeMillis() - startTime);
+        Log.d(TAG, stage + " loading: Time: " + loadTime);
+        Analytics.sendTime(Analytics.DEBUG, loadTime, "ScrapeWish", stage);
+        listener.onWebResult(result);
     }
 
     private void getFromWebView() {
@@ -252,7 +259,7 @@ public class WebItemTask implements
                 }
             }
             result.webImages.add(0, webImage);
-            listener.onWebResult(result);
+            gotWebResult(result);
         } else {
             printResult();
             nextStage();
@@ -284,10 +291,9 @@ public class WebItemTask implements
                 break;
             case WEBVIEW_IMAGE:
                 gotResult = true;
-                Log.e(TAG, stage + " loading: Time: " + (System.currentTimeMillis() - startTime));
                 printResult();
                 if (!getOneBitmap()) {
-                    listener.onWebResult(result);
+                    gotWebResult(result);
                 }
                 break;
             default:
@@ -355,7 +361,6 @@ public class WebItemTask implements
     }
 
     private void runJS() {
-        //startTime = System.currentTimeMillis();
         fileIndex = 0;
         evaluateJS();
     }
@@ -370,7 +375,6 @@ public class WebItemTask implements
                     if (fileIndex == jsFiles.length - 1) {
                         // we have evaluated the last javascript file
                         Log.e(TAG, "url " + webRequest.url);
-                        //Log.e(TAG, "js time: " + (System.currentTimeMillis() - startTime));
                         parseJSONString(s);
                         return;
                     }
