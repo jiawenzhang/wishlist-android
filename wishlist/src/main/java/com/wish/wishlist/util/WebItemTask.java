@@ -8,12 +8,14 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
-import android.webkit.ValueCallback;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.evgenii.jsevaluator.JsEvaluator;
+import com.evgenii.jsevaluator.interfaces.JsCallback;
 import com.wish.wishlist.BuildConfig;
 import com.wish.wishlist.DownloadBitmapTask;
 import com.wish.wishlist.activity.WebImage;
@@ -37,23 +39,37 @@ public class WebItemTask implements
     private final String TAG = "WebItemTask";
     private Context context;
     private WebView webView;
+    private JsEvaluator jsEvaluator;
     private WebRequest webRequest;
     private Boolean loadingFinished = true;
     private Boolean redirect = false;
     private Boolean gotResult = false;
     private String stage;
-    private final static String STATIC_HTML="STATIC_HTML";
-    private final static String WEBVIEW_NO_IMAGE="WEBVIEW_NO_IMAGE";
-    private final static String WEBVIEW_IMAGE="WEBVIEW_IMAGE";
+    private final static String STATIC_HTML = "STATIC_HTML";
+    private final static String WEBVIEW_NO_IMAGE = "WEBVIEW_NO_IMAGE";
+    private final static String WEBVIEW_IMAGE = "WEBVIEW_IMAGE";
     private OnWebResult listener;
-    private String[] jsFiles = {"currency_symbol_map.js", "util.js", "scrape.js"};
-    private int fileIndex = 0;
+    private String jsCode;
     private long startTime;
     private String html;
     private DownloadBitmapTask downloadBitmapTask;
     private WebResult result = new WebResult();
     private Call call;
     private Handler mainHandler;
+
+    private class GotHtmlFromWebviewInterface {
+        private WebItemTask task;
+
+        GotHtmlFromWebviewInterface(WebItemTask task) {
+            this.task = task;
+        }
+
+        @JavascriptInterface
+        public void gotHTML(String html) {
+            // gotHTML could be called twice for some websites, usually the second time with more contents in html
+            task.setHtml(html);
+        }
+    }
 
     @JavascriptInterface
     public String getHTML() {
@@ -70,6 +86,10 @@ public class WebItemTask implements
         void onWebResult(WebResult result);
     }
 
+    public void setHtml(String html) {
+        this.html = html;
+    }
+
     public WebItemTask(Context context, WebRequest request, OnWebResult listener) {
         super();
 
@@ -81,9 +101,6 @@ public class WebItemTask implements
 
     public void run() {
         startTime = System.currentTimeMillis();
-        webView = new WebView(context);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(this, "Android");
         getFromStaticHTML();
     }
 
@@ -96,6 +113,10 @@ public class WebItemTask implements
         if (webView != null) {
             webView.stopLoading();
             webView.destroy();
+        }
+
+        if (jsEvaluator != null) {
+            jsEvaluator.destroy();
         }
 
         if (downloadBitmapTask != null) {
@@ -165,13 +186,22 @@ public class WebItemTask implements
         long loadTime = (System.currentTimeMillis() - startTime);
         Log.d(TAG, stage + " loading: Time: " + loadTime);
         Analytics.sendTime(Analytics.DEBUG, loadTime, "ScrapeWish", stage);
+        printResult();
         listener.onWebResult(result);
     }
 
     private void getFromWebView() {
+        Log.e(TAG, "getFromWebView " + webRequest.url);
         Analytics.send(Analytics.WISH, "GetFromWebView", webRequest.url);
-        html = null;
-        fileIndex = 0;
+        webView = new WebView(context);
+        // web view will not draw anything - turn on optimizations
+        webView.setWillNotDraw(false);
+
+        final WebSettings webSettings = webView.getSettings();
+        webSettings.setBlockNetworkImage(true);
+        webSettings.setJavaScriptEnabled(true);
+
+        webView.addJavascriptInterface(new GotHtmlFromWebviewInterface(this), "HtmlViewer");
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
@@ -200,6 +230,9 @@ public class WebItemTask implements
 
                 if (loadingFinished && !redirect) {
                     Log.d(TAG, "loading page finished");
+                    webView.loadUrl("javascript:window.HtmlViewer.gotHTML" +
+                            "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
+                    //webView.setWebViewClient(null);
                     if (!gotResult) {
                         runJS();
                     }
@@ -228,7 +261,6 @@ public class WebItemTask implements
 
         // skip loading images, try to get images from twitter, og meta prop first
         //webView.getSettings().setLoadsImagesAutomatically(false);
-        webView.getSettings().setBlockNetworkImage(true);
         //webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         //webView.getSettings().setSupportMultipleWindows(false);
         webView.loadUrl(webRequest.url);
@@ -236,7 +268,6 @@ public class WebItemTask implements
 
     private void getFromWebViewWithImages() {
         Analytics.send(Analytics.WISH, "GetFromWebViewWithImages", webRequest.url);
-        fileIndex = 0;
         //webView.getSettings().setLoadsImagesAutomatically(true);
         //enable loading images
         webView.getSettings().setBlockNetworkImage(false);
@@ -261,7 +292,6 @@ public class WebItemTask implements
             result.webImages.add(0, webImage);
             gotWebResult(result);
         } else {
-            printResult();
             nextStage();
         }
     }
@@ -291,7 +321,6 @@ public class WebItemTask implements
                 break;
             case WEBVIEW_IMAGE:
                 gotResult = true;
-                printResult();
                 if (!getOneBitmap()) {
                     gotWebResult(result);
                 }
@@ -336,6 +365,7 @@ public class WebItemTask implements
         }
     }
 
+    // parseJSONString is used to escape quotes when using evaluateJavascript call
     private void parseJSONString(String s) {
         JsonReader reader = new JsonReader(new StringReader(s));
         // Must set lenient to parse single values
@@ -361,29 +391,29 @@ public class WebItemTask implements
     }
 
     private void runJS() {
-        fileIndex = 0;
-        evaluateJS();
-    }
+        if (jsEvaluator == null) {
+            jsEvaluator = new JsEvaluator(context);
+            jsEvaluator.getWebView().addJavascriptInterface(this, "Android");
+        }
 
-    private void evaluateJS() {
         try {
-            String js = StringUtil.readFromAssets(jsFiles[fileIndex]);
-            Log.d(TAG, "evaluating: " + jsFiles[fileIndex]);
-            webView.evaluateJavascript(js, new ValueCallback<String>() {
+            if (jsCode == null) {
+                final String[] jsFiles = {"currency_symbol_map.js", "util.js", "scrape.js"};
+                jsCode = StringUtil.readFromAssets(jsFiles[0]) +
+                        StringUtil.readFromAssets(jsFiles[1]) +
+                        StringUtil.readFromAssets(jsFiles[2]);
+            }
+
+            jsEvaluator.callFunction(jsCode, new JsCallback() {
                 @Override
-                public void onReceiveValue(String s) {
-                    if (fileIndex == jsFiles.length - 1) {
-                        // we have evaluated the last javascript file
-                        Log.e(TAG, "url " + webRequest.url);
-                        parseJSONString(s);
-                        return;
-                    }
-                    fileIndex++;
-                    evaluateJS();
+                public void onResult(String s) {
+                    Log.e(TAG, "url " + webRequest.url);
+                    parse(s);
                 }
-            });
+            }, "scrape");
         } catch (Exception e) {
             Log.e(TAG, e.toString());
+            gotWebResult(result);
         }
     }
 

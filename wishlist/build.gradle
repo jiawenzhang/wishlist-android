@@ -113,6 +113,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-analytics:8.3.0'
     compile 'de.sven-jacobs:loremipsum:1.0'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.github.evgenyneu:js-evaluator-for-android:v1.0.7'
 
     // Local unit test
     // Required -- JUnit 4 framework

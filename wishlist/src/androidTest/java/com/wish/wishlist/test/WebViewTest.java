@@ -9,9 +9,9 @@ import android.test.RenamingDelegatingContext;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.util.JsonReader;
 import android.util.Log;
-import android.webkit.ValueCallback;
-import android.webkit.WebView;
 
+import com.evgenii.jsevaluator.JsEvaluator;
+import com.evgenii.jsevaluator.interfaces.JsCallback;
 import com.wish.wishlist.util.StringUtil;
 import com.wish.wishlist.util.WebItemTask;
 import com.wish.wishlist.util.WebRequest;
@@ -32,7 +32,6 @@ public class WebViewTest
 
     private static final String TAG = "WebViewTest";
     private Context mMockContext;
-    private WebView mWebView;
     private Handler mainHandler;
     private ArrayList<WebItemTask> tasks = new ArrayList<>();
     private ArrayList<TestCase> testCases = new ArrayList<>();
@@ -170,15 +169,14 @@ public class WebViewTest
         Runnable myRunnable = new Runnable() {
             @Override
             public void run() {
-                mWebView = new WebView(mMockContext);
-                mWebView.getSettings().setJavaScriptEnabled(true);
                 try {
                     String js = StringUtil.readFromAssets("mobile_test.js");
-                    mWebView.evaluateJavascript(js, new ValueCallback<String>() {
+                    JsEvaluator jsEvaluator = new JsEvaluator(mMockContext);
+                    jsEvaluator.evaluate(js, new JsCallback() {
                         @Override
-                        public void onReceiveValue(String s) {
-                            // we have evaluated the last javascript file
-                            // Log.e(TAG, s); // Returns the value from the function
+                        public void onResult(final String s) {
+                            // Log.e(TAG, s);
+                            // This method is called in the UI thread.
                             parseTests(s);
                             mSignal.countDown();
                         }
