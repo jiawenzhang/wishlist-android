@@ -9,7 +9,7 @@ android {
         applicationId "com.wish.wishlist"
         // Parse Android SDK requires GET_ACCOUNTS permission for 4.0.3 (API 15) and lower
         // set minSdkVersion to 16 so we do not need to request GET_ACCOUNTS permission
-        minSdkVersion 19
+        minSdkVersion 16
         targetSdkVersion 23
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
