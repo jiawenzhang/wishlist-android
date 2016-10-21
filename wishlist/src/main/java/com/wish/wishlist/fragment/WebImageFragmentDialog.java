@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.wish.wishlist.R;
@@ -41,6 +42,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
     private OnLoadMoreSelectedListener mLoadMoreSelectedListener;
     private OnWebImageCancelledListener mWebImageCancelledListener;
     private RecyclerView mRecyclerView;
+    private TextView mTitleView;
     private ImageDimensionTask mImageDimensionTask = null;
     private Handler mainHandler;
     private static String mHost;
@@ -126,6 +128,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
         View v = inflater.inflate(R.layout.web_image_view, container, false);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.web_image_recycler_view);
+        mTitleView = (TextView) v.findViewById(R.id.web_image_title);
 
         // set the min view height so the view won't keep expanding while images are loaded into it.
         // Fixme: should ideally get real the max height of the view
@@ -144,27 +147,43 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
         mImageDimensionTask = new ImageDimensionTask(this);
         mImageDimensionTask.execute(mList);
+        setTitle(0, mList.size());
 
         return v;
     }
 
     @Override
-    public void onImageDimension(final WebImage webImage) {
+    public void onImageDimension(final WebImage webImage, final int count, final int total) {
         // onImageDimension is invoked in the background thread of an AsyncTask, post it to main thread
         // for UI layout
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (mAdapter == null) {
-                    mAdapter = new WebImageAdapter(webImage);
-                    mAdapter.setWebImageTapListener(WebImageFragmentDialog.this);
+                if (webImage != null) {
+                    if (mAdapter == null) {
+                        mAdapter = new WebImageAdapter(webImage);
+                        mAdapter.setWebImageTapListener(WebImageFragmentDialog.this);
 
-                    mRecyclerView.setAdapter(mAdapter);
-                } else {
-                    mAdapter.addItem(webImage);
+                        mRecyclerView.setAdapter(mAdapter);
+                    } else {
+                        mAdapter.addItem(webImage);
+                    }
                 }
+                setTitle(count, total);
             }
         });
+    }
+
+    private void setTitle(int count, int total) {
+        if (count < total) {
+            mTitleView.setText("Loading images... " + count + "/" + total);
+        } else {
+            if (total <= 1) {
+                mTitleView.setText("Got " + total + " image");
+            } else if (total > 1) {
+                mTitleView.setText("Got " + total + " images");
+            }
+        }
     }
 
     public static interface OnWebImageSelectedListener {

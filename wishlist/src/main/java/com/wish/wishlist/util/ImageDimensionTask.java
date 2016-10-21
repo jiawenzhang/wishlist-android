@@ -16,7 +16,7 @@ public class ImageDimensionTask extends AsyncTask<ArrayList<WebImage>, Integer, 
     private OnImageDimension listener;
 
     public interface OnImageDimension {
-        void onImageDimension(WebImage webImage);
+        void onImageDimension(WebImage webImage, int count, int total);
     }
 
     public ImageDimensionTask(OnImageDimension listener) {
@@ -37,19 +37,22 @@ public class ImageDimensionTask extends AsyncTask<ArrayList<WebImage>, Integer, 
 
         int count = 0;
         OkHttpClient client = new OkHttpClient();
+        int total = webImages.size();
         for (int i = 0; i< webImages.size(); i++) {
             Dimension d = ImageDimension.extractImageDimension(webImages.get(i).mUrl, client);
+            WebImage w = null;
             if (d != null && d.getWidth() >= 100 && d.getHeight() >= 100) {
-                WebImage w = webImages.get(i);
+                count++;
+                w = webImages.get(i);
                 w.mWidth = d.getWidth();
                 w.mHeight = d.getHeight();
-
-                listener.onImageDimension(w);
-                count++;
+            } else {
+                total--;
             }
+            listener.onImageDimension(w, count, total);
         }
 
-        Log.d(TAG, "got " + count + " image dimension, took " + (System.currentTimeMillis() - startTime) + " ms");
+        Log.d(TAG, "got " + total + " image dimension, took " + (System.currentTimeMillis() - startTime) + " ms");
         return null;
     }
 
