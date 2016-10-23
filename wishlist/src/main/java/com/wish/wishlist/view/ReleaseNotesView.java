@@ -53,8 +53,7 @@ public class ReleaseNotesView {
 		XmlResourceParser parser = res.getXml(resId);
 
 		String html = "<html><head>" + css + "</head><body>";
-		try
-		{
+		try {
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if ((eventType == XmlPullParser.START_TAG) && (parser.getName().equals("release"))){
@@ -62,15 +61,9 @@ public class ReleaseNotesView {
 				}
 				eventType = parser.next();
 			}
-		} 
-		catch (XmlPullParserException e)
-		{
-		}
-		catch (IOException e)
-		{
-		}
-		finally
-		{
+		} catch (XmlPullParserException e) {}
+		catch (IOException e) {}
+		finally {
 			parser.close();
 		}
 		html = html + "</body></html>";

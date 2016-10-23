@@ -8,9 +8,9 @@ import android.database.SQLException;
  */
 public class LocationDBManager extends DBManager {
 
-    public static final String KEY_ID = "_id";
-    public static final String KEY_LATITUDE = "latitude";
-    public static final String KEY_LONGITUDE= "longitude";
+    static final String KEY_ID = "_id";
+    private static final String KEY_LATITUDE = "latitude";
+    private static final String KEY_LONGITUDE= "longitude";
 
     public static final String DB_TABLE = "location";
     private static final String TAG="LocationDBManager";
@@ -29,7 +29,7 @@ public class LocationDBManager extends DBManager {
      * @throws SQLException
      *             if location could not be found/retrieved
      */
-    public Cursor getLocation(long rowId) throws SQLException {
+    Cursor getLocation(long rowId) throws SQLException {
         Cursor mCursor = DBAdapter.getInstance().db().query(true, DB_TABLE, null, KEY_ID + "=" + rowId, null, null,
                 null, null, null);
         if (mCursor != null) {

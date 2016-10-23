@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Created by jiawen on 2016-06-19.
  */
-public class ApplicationLifecycleHandler implements Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
+class ApplicationLifecycleHandler implements Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
 
     private static final String TAG = ApplicationLifecycleHandler.class.getSimpleName();
     private static boolean isInBackground = true;

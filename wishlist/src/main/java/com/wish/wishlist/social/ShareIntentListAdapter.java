@@ -10,12 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;  
 import com.wish.wishlist.R;
 
-public class ShareIntentListAdapter extends ArrayAdapter {
+class ShareIntentListAdapter extends ArrayAdapter {
 	Activity _ctx;
 	Object[] _items;
 	int _layoutId; 
 
-public ShareIntentListAdapter(Activity context, int layoutId, int textViewResourceId, Object[] items) {
+ShareIntentListAdapter(Activity context, int layoutId, int textViewResourceId, Object[] items) {
 	super(context, layoutId, textViewResourceId, items); 
 	_ctx = context;
 	_items = items; 

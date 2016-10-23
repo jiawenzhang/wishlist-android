@@ -508,7 +508,7 @@ public class ItemDBManager extends DBManager {
 	 * @return the Cursor of store where the Item belongs to
 	 */
 	//
-	public Cursor getItemStoreCursor(long _id){
+	private Cursor getItemStoreCursor(long _id){
 		String sql = String.format(Locale.US, "SELECT store_id FROM Item " + "WHERE _id = '%d' ", _id);
 		SQLiteDatabase d = DBAdapter.getInstance().db();
 		ItemsCursor itemC = (ItemsCursor) d.rawQueryWithFactory(

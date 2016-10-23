@@ -40,7 +40,7 @@ public class Analytics {
         }
     }
 
-    public static void sendTime(String category, long duration, String name, String label) {
+    static void sendTime(String category, long duration, String name, String label) {
         Tracker t = ((WishlistApplication) WishlistApplication.getAppContext()).getTracker(WishlistApplication.TrackerName.APP_TRACKER);
 
         if (label == null) {

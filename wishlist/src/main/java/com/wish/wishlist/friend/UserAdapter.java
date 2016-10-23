@@ -22,16 +22,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public static class UserMeta {
+    static class UserMeta {
         public String objectId;
         public String name;
         public String email;
         public String username;
-        public String imageUrl;
+        String imageUrl;
 
-        public UserMeta(final String objectId, final String name, final String email, final String username, final String imageUrl) {
+        UserMeta(final String objectId, final String name, final String email, final String username, final String imageUrl) {
             this.objectId = objectId;
             this.name = name;
             this.email = email;
@@ -40,7 +40,7 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public class UserMetaNameComparator implements Comparator<UserMeta> {
+    class UserMetaNameComparator implements Comparator<UserMeta> {
         @Override
         public int compare(UserMeta o1, UserMeta o2) {
             if (o1.name == null || o2.name == null) {
@@ -50,17 +50,17 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    protected List<UserMeta> mUserMetaList;
+    List<UserMeta> mUserMetaList;
     private static final String TAG = "UserAdapter";
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView txtName;
-        public TextView txtEmail;
-        public ImageView imgProfile;
-        public ImageButton button1;
-        public ImageButton button2;
-        public LinearLayout userLayout;
+        TextView txtName;
+        TextView txtEmail;
+        ImageView imgProfile;
+        ImageButton button1;
+        ImageButton button2;
+        LinearLayout userLayout;
 
         public ViewHolder(View v) {
             super(v);
@@ -73,8 +73,8 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public UserAdapter() {}
-    public UserAdapter(List<UserMeta> userData) {
+    UserAdapter() {}
+    UserAdapter(List<UserMeta> userData) {
         mUserMetaList = userData;
         Collections.sort(mUserMetaList, new UserMetaNameComparator());
     }

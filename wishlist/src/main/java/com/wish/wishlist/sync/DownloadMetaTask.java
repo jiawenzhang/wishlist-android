@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Created by jiawen on 2016-04-03.
  */
-public class DownloadMetaTask {
+class DownloadMetaTask {
     private static String TAG = "DownloadMetaTask";
     private long mItemsToDownload;
     private Date mDownloadStamp;
@@ -33,11 +33,11 @@ public class DownloadMetaTask {
 
     /* listener */
     private DownloadMetaTaskDoneListener mDownlaodMetaTaskDoneListener;
-    public interface DownloadMetaTaskDoneListener {
+    interface DownloadMetaTaskDoneListener {
         void downloadMetaTaskDone(boolean success, boolean wishMetaChanged);
     }
 
-    public void registerListener(DownloadMetaTaskDoneListener l) {
+    void registerListener(DownloadMetaTaskDoneListener l) {
         mDownlaodMetaTaskDoneListener = l;
     }
     /* listener */

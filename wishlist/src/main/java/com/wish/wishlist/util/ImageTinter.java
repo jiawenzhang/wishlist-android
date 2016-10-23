@@ -11,7 +11,7 @@ import com.wish.wishlist.WishlistApplication;
 /**
  * Created by jiawen on 2016-01-09.
  */
-public class ImageTinter {
+class ImageTinter {
     private static ImageTinter ourInstance = new ImageTinter();
 
     public static ImageTinter getInstance() {

@@ -56,7 +56,7 @@ public class ProfileUtil {
         return new File(WishlistApplication.getAppContext().getFilesDir(), fileName);
     }
 
-    public static boolean profileImageExists() {
+    private static boolean profileImageExists() {
         String fileName = profileImageName();
         if (fileName == null) {
             return false;

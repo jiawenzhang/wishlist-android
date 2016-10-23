@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by jiawen on 15-11-01.
  */
-public class FriendListCache {
+class FriendListCache {
     static final String TAG = "FiendListCache";
     private List<ParseUser> mFriends = null;
 
@@ -20,9 +20,9 @@ public class FriendListCache {
         return ourInstance;
     }
 
-    protected FriendListCache() {}
+    FriendListCache() {}
 
-    public void addFriend(final ParseUser friend) {
+    void addFriend(final ParseUser friend) {
         if (mFriends == null) {
             mFriends = new ArrayList<>();
             mFriends.add(friend);
@@ -38,7 +38,7 @@ public class FriendListCache {
         mFriends.add(friend);
     }
 
-    public void removeFriend(final String friendId) {
+    void removeFriend(final String friendId) {
         for (int i = 0; i < mFriends.size(); i++) {
             if (mFriends.get(i).getObjectId().equals(friendId)) {
                 mFriends.remove(i);

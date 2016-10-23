@@ -6,8 +6,7 @@ import android.provider.MediaStore;
 
 import java.io.File;
 
-public class CameraManager
-{
+public class CameraManager {
     private Intent mIntent;
     private String mPhotoPath = null;
 

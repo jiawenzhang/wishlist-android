@@ -10,8 +10,8 @@ import java.util.ArrayList;
  * TagDBManager provides access to operations on data in ItemCategory table
  */
 public class TagDBManager extends DBManager {
-    public static final String KEY_ID = "_id";
-    public static final String KEY_NAME = "name";
+    static final String KEY_ID = "_id";
+    static final String KEY_NAME = "name";
 
     public static final String DB_TABLE = "Tag";
     private static final String TAG="TagDBManager";
@@ -38,7 +38,7 @@ public class TagDBManager extends DBManager {
      * @param name
      * @return rowId or -1 if failed
      */
-    public long createTag(String name) {
+    long createTag(String name) {
         String where = KEY_NAME + " = ?";
         Cursor cursor = DBAdapter.getInstance().db().query(DB_TABLE, new String[]{KEY_ID}, where, new String[]{name}, null, null, null);
         while (cursor.moveToNext()) {
@@ -62,7 +62,7 @@ public class TagDBManager extends DBManager {
      * @param rowId
      * @return true if deleted, false otherwise
      */
-    public boolean deleteTag(long tagId) {
+    boolean deleteTag(long tagId) {
         boolean success = DBAdapter.getInstance().db().delete(DB_TABLE, KEY_ID + "=" + tagId, null) > 0; //$NON-NLS-1$
         return success;
     }
@@ -84,7 +84,7 @@ public class TagDBManager extends DBManager {
         return tagList;
     }
 
-    public ArrayList<String> getTagsByIds(String[] ids) {
+    ArrayList<String> getTagsByIds(String[] ids) {
         ArrayList<String> tags = new ArrayList<String>();
         String query = "SELECT * FROM Tag"
                 + " WHERE rowId IN (" + makePlaceholders(ids.length) + ")";
@@ -95,7 +95,7 @@ public class TagDBManager extends DBManager {
         return tags;
     }
 
-    public long getIdByName(String name) {
+    long getIdByName(String name) {
         long tagId = -1;
         String where = KEY_NAME + " = ?";
         Cursor cursor = DBAdapter.getInstance().db().query(DB_TABLE, new String[]{KEY_ID}, where, new String[]{name}, null, null, null);

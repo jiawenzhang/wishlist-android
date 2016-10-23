@@ -31,7 +31,7 @@ public class DBAdapter {
         return instance;
     }
 
-    public static final Patch[] PATCHES = new Patch[] {
+    private static final Patch[] PATCHES = new Patch[] {
             new Patch() {//db version 1 already done in onCreate
                 public void apply(SQLiteDatabase db) {
                     //mDb.execSQL("create table ...");

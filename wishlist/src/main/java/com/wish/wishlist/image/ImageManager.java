@@ -18,10 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class ImageManager
-{
+public class ImageManager {
     private static ImageManager _instance = null;
-    public static final int THUMB_WIDTH = 512; // iphone screen width (iphone 5s w 640px, iphone 6 w 750px)
+    private static final int THUMB_WIDTH = 512; // iphone screen width (iphone 5s w 640px, iphone 6 w 750px)
     public static final int IMG_WIDTH = 1024; // width of the fullsizephoto saved to file locally
     private static final String TAG = "ImageManager";
 

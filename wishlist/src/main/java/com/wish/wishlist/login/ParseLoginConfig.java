@@ -37,22 +37,22 @@ import java.util.Set;
 /**
  * Configurations for the ParseLoginActivity.
  */
-public class ParseLoginConfig {
-  public static final String APP_LOGO = "com.parse.ui.ParseLoginActivity.APP_LOGO";
-  public static final String PARSE_LOGIN_ENABLED = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ENABLED";
-  public static final String PARSE_LOGIN_ALLOW_SKIP = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ALLOW_SKIP";
-  public static final String PARSE_LOGIN_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_BUTTON_TEXT";
-  public static final String PARSE_SIGNUP_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_SIGNUP_BUTTON_TEXT";
-  public static final String PARSE_LOGIN_HELP_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_HELP_TEXT";
-  public static final String PARSE_LOGIN_INVALID_CREDENTIALS_TOAST_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_INVALID_CREDENTIALS_TEXT";
-  public static final String PARSE_LOGIN_EMAIL_AS_USERNAME = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_EMAIL_AS_USERNAME";
-  public static final String PARSE_SIGNUP_MIN_PASSWORD_LENGTH = "com.parse.ui.ParseLoginActivity.PARSE_SIGNUP_MIN_PASSWORD_LENGTH";
-  public static final String PARSE_SIGNUP_SUBMIT_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_SIGNUP_SUBMIT_BUTTON_TEXT";
-  public static final String FACEBOOK_LOGIN_ENABLED = "com.parse.ui.ParseLoginActivity.FACEBOOK_LOGIN_ENABLED";
-  public static final String FACEBOOK_LOGIN_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.FACEBOOK_LOGIN_BUTTON_TEXT";
-  public static final String FACEBOOK_LOGIN_PERMISSIONS = "com.parse.ui.ParseLoginActivity.FACEBOOK_LOGIN_PERMISSIONS";
-  public static final String TWITTER_LOGIN_ENABLED = "com.parse.ui.ParseLoginActivity.TWITTER_LOGIN_ENABLED";
-  public static final String TWITTER_LOGIN_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.TWITTER_LOGIN_BUTTON_TEXT";
+class ParseLoginConfig {
+  private static final String APP_LOGO = "com.parse.ui.ParseLoginActivity.APP_LOGO";
+  private static final String PARSE_LOGIN_ENABLED = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ENABLED";
+  private static final String PARSE_LOGIN_ALLOW_SKIP = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ALLOW_SKIP";
+  private static final String PARSE_LOGIN_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_BUTTON_TEXT";
+  private static final String PARSE_SIGNUP_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_SIGNUP_BUTTON_TEXT";
+  private static final String PARSE_LOGIN_HELP_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_HELP_TEXT";
+  private static final String PARSE_LOGIN_INVALID_CREDENTIALS_TOAST_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_INVALID_CREDENTIALS_TEXT";
+  private static final String PARSE_LOGIN_EMAIL_AS_USERNAME = "com.parse.ui.ParseLoginActivity.PARSE_LOGIN_EMAIL_AS_USERNAME";
+  private static final String PARSE_SIGNUP_MIN_PASSWORD_LENGTH = "com.parse.ui.ParseLoginActivity.PARSE_SIGNUP_MIN_PASSWORD_LENGTH";
+  private static final String PARSE_SIGNUP_SUBMIT_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.PARSE_SIGNUP_SUBMIT_BUTTON_TEXT";
+  private static final String FACEBOOK_LOGIN_ENABLED = "com.parse.ui.ParseLoginActivity.FACEBOOK_LOGIN_ENABLED";
+  private static final String FACEBOOK_LOGIN_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.FACEBOOK_LOGIN_BUTTON_TEXT";
+  private static final String FACEBOOK_LOGIN_PERMISSIONS = "com.parse.ui.ParseLoginActivity.FACEBOOK_LOGIN_PERMISSIONS";
+  private static final String TWITTER_LOGIN_ENABLED = "com.parse.ui.ParseLoginActivity.TWITTER_LOGIN_ENABLED";
+  private static final String TWITTER_LOGIN_BUTTON_TEXT = "com.parse.ui.ParseLoginActivity.TWITTER_LOGIN_BUTTON_TEXT";
 
   // For internally serializing to/from string array (the public analog above is for resource from activity meta-data).
   private static final String FACEBOOK_LOGIN_PERMISSIONS_STRING_ARRAY = "com.parse.ui.ParseLoginActivity.FACEBOOK_LOGIN_PERMISSIONS_STRING_ARRAY";
@@ -84,11 +84,11 @@ public class ParseLoginConfig {
     return appLogo;
   }
 
-  public void setAppLogo(Integer appLogo) {
+  void setAppLogo(Integer appLogo) {
     this.appLogo = appLogo;
   }
 
-  public boolean isParseLoginEnabled() {
+  boolean isParseLoginEnabled() {
     if (parseLoginEnabled != null) {
       return parseLoginEnabled;
     } else {
@@ -96,11 +96,11 @@ public class ParseLoginConfig {
     }
   }
 
-  public void setParseLoginEnabled(boolean parseLoginEnabled) {
+  void setParseLoginEnabled(boolean parseLoginEnabled) {
     this.parseLoginEnabled = parseLoginEnabled;
   }
 
-  public boolean parseLoginAllowSkip() {
+  boolean parseLoginAllowSkip() {
     if (parseLoginAllowSkip != null) {
       return parseLoginAllowSkip;
     } else {
@@ -108,44 +108,44 @@ public class ParseLoginConfig {
     }
   }
 
-  public void setParseLoginAllowSkip(boolean allow) {
+  void setParseLoginAllowSkip(boolean allow) {
     this.parseLoginAllowSkip = allow;
   }
 
-  public CharSequence getParseLoginButtonText() {
+  CharSequence getParseLoginButtonText() {
     return parseLoginButtonText;
   }
 
-  public void setParseLoginButtonText(CharSequence parseLoginButtonText) {
+  void setParseLoginButtonText(CharSequence parseLoginButtonText) {
     this.parseLoginButtonText = parseLoginButtonText;
   }
 
-  public CharSequence getParseSignupButtonText() {
+  CharSequence getParseSignupButtonText() {
     return parseSignupButtonText;
   }
 
-  public void setParseSignupButtonText(CharSequence parseSignupButtonText) {
+  void setParseSignupButtonText(CharSequence parseSignupButtonText) {
     this.parseSignupButtonText = parseSignupButtonText;
   }
 
-  public CharSequence getParseLoginHelpText() {
+  CharSequence getParseLoginHelpText() {
     return parseLoginHelpText;
   }
 
-  public void setParseLoginHelpText(CharSequence parseLoginHelpText) {
+  void setParseLoginHelpText(CharSequence parseLoginHelpText) {
     this.parseLoginHelpText = parseLoginHelpText;
   }
 
-  public CharSequence getParseLoginInvalidCredentialsToastText() {
+  CharSequence getParseLoginInvalidCredentialsToastText() {
     return parseLoginInvalidCredentialsToastText;
   }
 
-  public void setParseLoginInvalidCredentialsToastText(
+  void setParseLoginInvalidCredentialsToastText(
       CharSequence parseLoginInvalidCredentialsToastText) {
     this.parseLoginInvalidCredentialsToastText = parseLoginInvalidCredentialsToastText;
   }
 
-  public boolean isParseLoginEmailAsUsername() {
+  boolean isParseLoginEmailAsUsername() {
     if (parseLoginEmailAsUsername != null) {
       return parseLoginEmailAsUsername;
     } else {
@@ -153,28 +153,28 @@ public class ParseLoginConfig {
     }
   }
 
-  public void setParseLoginEmailAsUsername(boolean parseLoginEmailAsUsername) {
+  void setParseLoginEmailAsUsername(boolean parseLoginEmailAsUsername) {
     this.parseLoginEmailAsUsername = parseLoginEmailAsUsername;
   }
 
-  public Integer getParseSignupMinPasswordLength() {
+  Integer getParseSignupMinPasswordLength() {
     return parseSignupMinPasswordLength;
   }
 
-  public void setParseSignupMinPasswordLength(Integer parseSignupMinPasswordLength) {
+  void setParseSignupMinPasswordLength(Integer parseSignupMinPasswordLength) {
     this.parseSignupMinPasswordLength = parseSignupMinPasswordLength;
   }
 
-  public CharSequence getParseSignupSubmitButtonText() {
+  CharSequence getParseSignupSubmitButtonText() {
     return parseSignupSubmitButtonText;
   }
 
-  public void setParseSignupSubmitButtonText(
+  void setParseSignupSubmitButtonText(
       CharSequence parseSignupSubmitButtonText) {
     this.parseSignupSubmitButtonText = parseSignupSubmitButtonText;
   }
 
-  public boolean isFacebookLoginEnabled() {
+  boolean isFacebookLoginEnabled() {
     if (facebookLoginEnabled != null) {
       return facebookLoginEnabled;
     } else {
@@ -182,19 +182,19 @@ public class ParseLoginConfig {
     }
   }
 
-  public void setFacebookLoginEnabled(boolean facebookLoginEnabled) {
+  void setFacebookLoginEnabled(boolean facebookLoginEnabled) {
     this.facebookLoginEnabled = facebookLoginEnabled;
   }
 
-  public CharSequence getFacebookLoginButtonText() {
+  CharSequence getFacebookLoginButtonText() {
     return facebookLoginButtonText;
   }
 
-  public void setFacebookLoginButtonText(CharSequence facebookLoginButtonText) {
+  void setFacebookLoginButtonText(CharSequence facebookLoginButtonText) {
     this.facebookLoginButtonText = facebookLoginButtonText;
   }
 
-  public Collection<String> getFacebookLoginPermissions() {
+  Collection<String> getFacebookLoginPermissions() {
     if (facebookLoginPermissions != null) {
       return Collections.unmodifiableCollection(facebookLoginPermissions);
     } else {
@@ -202,7 +202,7 @@ public class ParseLoginConfig {
     }
   }
 
-  public void setFacebookLoginPermissions(Collection<String> permissions) {
+  void setFacebookLoginPermissions(Collection<String> permissions) {
     if (permissions != null) {
       facebookLoginPermissions = new ArrayList<String>(permissions.size());
       facebookLoginPermissions.addAll(permissions);
@@ -218,7 +218,7 @@ public class ParseLoginConfig {
     }
   }
 
-  public boolean isTwitterLoginEnabled() {
+  boolean isTwitterLoginEnabled() {
     if (twitterLoginEnabled != null) {
       return twitterLoginEnabled;
     } else {
@@ -226,15 +226,15 @@ public class ParseLoginConfig {
     }
   }
 
-  public void setTwitterLoginEnabled(boolean twitterLoginEnabled) {
+  void setTwitterLoginEnabled(boolean twitterLoginEnabled) {
     this.twitterLoginEnabled = twitterLoginEnabled;
   }
 
-  public CharSequence getTwitterLoginButtonText() {
+  CharSequence getTwitterLoginButtonText() {
     return twitterLoginButtonText;
   }
 
-  public void setTwitterLoginButtonText(CharSequence twitterLoginButtonText) {
+  void setTwitterLoginButtonText(CharSequence twitterLoginButtonText) {
     this.twitterLoginButtonText = twitterLoginButtonText;
   }
 
@@ -246,7 +246,7 @@ public class ParseLoginConfig {
    *
    * @return The Bundle object containing configurations.
    */
-  public Bundle toBundle() {
+  Bundle toBundle() {
     Bundle bundle = new Bundle();
 
     if (appLogo != null) {
@@ -320,7 +320,7 @@ public class ParseLoginConfig {
    *     The context for resolving resource IDs.
    * @return The ParseLoginConfig instance.
    */
-  public static ParseLoginConfig fromBundle(Bundle bundle, Context context) {
+  static ParseLoginConfig fromBundle(Bundle bundle, Context context) {
     ParseLoginConfig config = new ParseLoginConfig();
     Set<String> keys = bundle.keySet();
 

@@ -6,8 +6,8 @@ import android.content.Context;
 import android.app.DialogFragment;
 
 public class ShareHelper {
-	Context _ctx;
-	long[] mItemIds;
+	private Context _ctx;
+	private long[] mItemIds;
 
 public ShareHelper(Context ctx, long[] itemIds) {
 	_ctx = ctx;

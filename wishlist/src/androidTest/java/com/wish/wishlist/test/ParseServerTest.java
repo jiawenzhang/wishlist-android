@@ -38,9 +38,9 @@ public class ParseServerTest extends InstrumentationTestCase implements SyncAgen
 
     private static final String TAG = "ParseServerTest";
     Context mMockContext;
-    static public CountDownLatch mSignal = null;
-    static public CountDownLatch mSyncDoneSignal = null;
-    static public int mWishCount = 20;
+    private static CountDownLatch mSignal = null;
+    private static CountDownLatch mSyncDoneSignal = null;
+    private static int mWishCount = 20;
 
     @Before
     public void setUp() {

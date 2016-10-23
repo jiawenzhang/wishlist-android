@@ -25,7 +25,7 @@ import java.util.HashSet;
 
 public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
     final static String TAG = "GetWebItemTask";
-    Context mContext;
+    private Context mContext;
     private OnWebResult mListener;
     private long startTime;
 
@@ -44,7 +44,7 @@ public class GetWebItemTask extends AsyncTask<WebRequest, Integer, WebResult> {
         super.onPreExecute();
     }
 
-    WebResult getImages(WebRequest request) {
+    private WebResult getImages(WebRequest request) {
         WebResult result = new WebResult();
         try {
             //Connection.Response response = Jsoup.connect(urls[0]).followRedirects(true).execute();

@@ -13,8 +13,7 @@ import com.wish.wishlist.R;
  */
 public class FriendsFragment extends Fragment {
 
-    public FriendsFragment() {
-    }
+    public FriendsFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

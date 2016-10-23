@@ -31,7 +31,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
     private ArrayList<WishItem> mItems = new ArrayList<>();
     private static final String TAG = "Tester";
     private static final LoremIpsum loremIpsum = new LoremIpsum();
-    public static ArrayList<String> mGalleryFiles;
+    private static ArrayList<String> mGalleryFiles;
 
     private static Tester ourInstance = new Tester();
 
@@ -69,39 +69,39 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         return new LatLng(foundLatitude, foundLongitude);
     }
 
-    public static int randomAccess() {
+    private static int randomAccess() {
         return new Random().nextInt(2); // int between [0, 2);
     }
 
-    public static String randomName() {
+    private static String randomName() {
         return loremIpsum.getWords(1 + new Random().nextInt(20)); // text between 1-20 characters;
     }
 
-    public static String randomDesc() {
+    private static String randomDesc() {
         Random r = new Random();
         return r.nextInt(5) == 0 ? null : loremIpsum.getWords(r.nextInt(50)); // text between 0-50 characters or null
     }
 
-    public static String randomStoreName() {
+    private static String randomStoreName() {
         Random r = new Random();
         return r.nextInt(3) == 0 ? null : loremIpsum.getWords(r.nextInt(10));
     }
 
-    public static Double randomPrice() {
+    private static Double randomPrice() {
         Random r = new Random();
         return r.nextInt(5) == 0 ? null : r.nextDouble() * r.nextInt(10000);
     }
 
-    public static String randomAddress() {
+    private static String randomAddress() {
         Random r = new Random();
         return r.nextInt(5) == 0 ? null : loremIpsum.getWords(r.nextInt(20));
     }
 
-    public static int randomComplete() {
+    private static int randomComplete() {
         return new Random().nextInt(2);
     }
 
-    public static ImgMeta randomImgMeta() {
+    private static ImgMeta randomImgMeta() {
         Random r = new Random();
 
         int width = 256 + r.nextInt(256); // 256 - 512
@@ -114,11 +114,11 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         return r.nextInt(5) == 0 ? null : new ImgMeta(ImgMeta.WEB, url, width, height);
     }
 
-    public static long randomUpdatedTime() {
+    private static long randomUpdatedTime() {
         return System.currentTimeMillis() - new Random().nextInt(30) * 3600L * 24L * 1000L; // 30 days
     }
 
-    public static ArrayList<String> randomTags() {
+    static ArrayList<String> randomTags() {
         Random r = new Random();
         ArrayList<String> tags = new ArrayList<>();
         int tagCount = r.nextInt(3);
@@ -134,7 +134,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         return tags;
     }
 
-    public static WishItem generateWish() {
+    static WishItem generateWish() {
         // create a new item filled with random data
         String imgMetaJSON = null;
         String itemLink = null;
@@ -201,7 +201,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         mImageDownloader.download(mItems);
     }
 
-    public static WishItem updateWish(WishItem item) {
+    static WishItem updateWish(WishItem item) {
         boolean changed = false;
         if (new Random().nextDouble() <= 0.2) {
             Log.d(TAG, "change access");
@@ -283,7 +283,7 @@ public class Tester implements WishImageDownloader.onWishImageDownloadDoneListen
         return item;
     }
 
-    public static ArrayList<String> getAllImagesPath() {
+    static ArrayList<String> getAllImagesPath() {
         Uri uri;
         Cursor cursor;
         int column_index_data;

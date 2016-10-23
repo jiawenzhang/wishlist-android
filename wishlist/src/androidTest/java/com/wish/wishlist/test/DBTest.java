@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class DBTest extends InstrumentationTestCase {
 
     private static final String TAG = "DBTest";
-    static public int mWishCount = 20;
+    private static int mWishCount = 20;
 
     @Test
     public void WishDBWriteAndRead() throws InterruptedException {

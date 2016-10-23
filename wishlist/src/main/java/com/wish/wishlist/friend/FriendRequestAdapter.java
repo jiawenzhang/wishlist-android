@@ -17,10 +17,10 @@ import com.wish.wishlist.util.ProfileUtil;
 
 import java.util.ListIterator;
 
-public class FriendRequestAdapter extends UserAdapter {
+class FriendRequestAdapter extends UserAdapter {
 
     /******************** acceptFriendListener*************************/
-    public interface acceptFriendListener {
+    interface acceptFriendListener {
         void onAcceptFriend(final String friendId);
     }
     private void onAcceptFriend(final String friendId) {
@@ -29,13 +29,12 @@ public class FriendRequestAdapter extends UserAdapter {
         }
     }
     private acceptFriendListener mAcceptFriendListener = null;
-    public void setAcceptFriendListener(acceptFriendListener listener)
-    {
+    void setAcceptFriendListener(acceptFriendListener listener) {
         mAcceptFriendListener = listener;
     }
 
     /******************** rejectFriendListener*************************/
-    public interface rejectFriendListener {
+    interface rejectFriendListener {
         void onRejectFriend(final String friendId);
     }
     private void onRejectFriend(final String friendId) {
@@ -44,15 +43,14 @@ public class FriendRequestAdapter extends UserAdapter {
         }
     }
     private rejectFriendListener mRejectFriendListener = null;
-    public void setRejectFriendListener(rejectFriendListener listener)
-    {
+    void setRejectFriendListener(rejectFriendListener listener) {
         mRejectFriendListener = listener;
     }
 
 
     private static final String TAG = "FriendRequestAdapter";
 
-    public FriendRequestAdapter() {
+    FriendRequestAdapter() {
         super();
     }
 

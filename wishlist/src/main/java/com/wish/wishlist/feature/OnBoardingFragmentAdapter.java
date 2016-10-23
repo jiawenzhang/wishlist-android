@@ -9,7 +9,7 @@ import com.wish.wishlist.WishlistApplication;
 import com.wish.wishlist.util.Util;
 
 class OnBoardingFragmentAdapter extends FragmentPagerAdapter {
-    public OnBoardingFragmentAdapter(FragmentManager fm) {
+    OnBoardingFragmentAdapter(FragmentManager fm) {
         super(fm);
     }
 

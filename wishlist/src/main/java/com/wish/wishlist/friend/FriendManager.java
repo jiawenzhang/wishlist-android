@@ -51,12 +51,12 @@ public class FriendManager {
 
 
     /******************* FoundUserListener  *************************/
-    onFoundUserListener mFoundUserListener;
+    private onFoundUserListener mFoundUserListener;
     public interface onFoundUserListener {
         void onFoundUser(final List<ParseUser> users, final boolean success);
     }
 
-    protected void onFoundUsers(final List<ParseUser> users, final boolean success) {
+    private void onFoundUsers(final List<ParseUser> users, final boolean success) {
         if (mFoundUserListener != null) {
             mFoundUserListener.onFoundUser(users, success);
         }
@@ -70,17 +70,17 @@ public class FriendManager {
 
     /****************** FriendRequestListener ************************/
     onFriendRequestListener mFriendRequestListener;
-    public interface onFriendRequestListener {
+    interface onFriendRequestListener {
         void onGotFriendRequest();
     }
 
-    protected void onGotFriendRequest() {
+    private void onGotFriendRequest() {
         if (mFriendRequestListener != null) {
             mFriendRequestListener.onGotFriendRequest();
         }
     }
 
-    public void setFriendRequestListener(final Activity a) {
+    void setFriendRequestListener(final Activity a) {
         mFriendRequestListener = (onFriendRequestListener) a;
     }
 
@@ -275,7 +275,7 @@ public class FriendManager {
         }
     }
 
-    public void removeFriend(final String friendId) {
+    void removeFriend(final String friendId) {
         Map<String, Object> params = new HashMap<>();
         params.put("friendId", friendId);
         ParseCloud.callFunctionInBackground(REMOVE_FRIEND, params, new FunctionCallback<Map<String, Object>>() {
@@ -294,7 +294,7 @@ public class FriendManager {
         });
     }
 
-    public void fetchFriendRequest() {
+    void fetchFriendRequest() {
         // fetch form cache first, then from network
         if (FriendRequestCache.getInstance().valid()) {
             Log.d(TAG, "Got cached FriendRequestActivity");
@@ -508,7 +508,7 @@ public class FriendManager {
         });
     }
 
-    public void fetchFriendsFromCache() {
+    void fetchFriendsFromCache() {
         if (FriendListCache.getInstance().valid()) {
             Log.d(TAG, "Got friends from cache");
             onGotAllFriends(FriendListCache.getInstance().friends());
@@ -521,7 +521,7 @@ public class FriendManager {
         fetchFriends(ParseQuery.CachePolicy.NETWORK_ONLY);
     }
 
-    public void fetchFriends() {
+    void fetchFriends() {
         // we fetch friends from in-memory cache first, then from network
         // if we have network, onGotAllFriends will be called twice
         // first returns the cached result, second returns the result from network

@@ -20,53 +20,53 @@ import com.wish.wishlist.util.TopButtonViewHolder;
 
 import java.util.List;
 
-public class FriendAdapter extends UserAdapter {
+class FriendAdapter extends UserAdapter {
 
     /******************* FriendTapListener *********************/
     private FriendTapListener mFriendTapListener = null;
-    public interface FriendTapListener {
+    interface FriendTapListener {
         void onFriendTap(final UserMeta friendMeta);
     }
-    protected void onFriendTap(final UserMeta friendMeta) {
+    private void onFriendTap(final UserMeta friendMeta) {
         if (mFriendTapListener != null) {
             mFriendTapListener.onFriendTap(friendMeta);
         }
     }
-    public void setFriendTapListener(final FriendTapListener listener) {
+    void setFriendTapListener(final FriendTapListener listener) {
         mFriendTapListener = listener;
     }
 
     /******************* FriendMoreListener *********************/
     private FriendMoreListener mFriendMoreListener = null;
-    public interface FriendMoreListener {
+    interface FriendMoreListener {
         void onFriendMore(final String friendId);
     }
-    protected void onFriendMore(final String friendId) {
+    private void onFriendMore(final String friendId) {
         if (mFriendMoreListener != null) {
             mFriendMoreListener.onFriendMore(friendId);
         }
     }
-    public void setFriendMoreListener(FriendMoreListener listener) {
+    void setFriendMoreListener(FriendMoreListener listener) {
         mFriendMoreListener = listener;
     }
 
     /******************* FriendRequestTapListener *********************/
     private FriendRequestTapListener mFriendRequestTapListener = null;
-    public interface FriendRequestTapListener {
+    interface FriendRequestTapListener {
         void onFriendRequestTap();
     }
-    protected void onFriendRequestTap() {
+    private void onFriendRequestTap() {
         if (mFriendRequestTapListener != null) {
             mFriendRequestTapListener.onFriendRequestTap();
         }
     }
-    public void setFriendRequestTapListener(final FriendRequestTapListener listener) {
+    void setFriendRequestTapListener(final FriendRequestTapListener listener) {
         mFriendRequestTapListener = listener;
     }
     /*************************************************************/
 
 
-    public FriendAdapter(List<UserMeta> userData) {
+    FriendAdapter(List<UserMeta> userData) {
         super(userData);
         EventBus.getInstance().register(this); //listen to ShowNewFriendRequestNotification
     }
@@ -77,7 +77,7 @@ public class FriendAdapter extends UserAdapter {
     private static final int TOP_BUTTON = 0;
     private static final int FRIEND = 1;
 
-    ImageView mImgRedDot;
+    private ImageView mImgRedDot;
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

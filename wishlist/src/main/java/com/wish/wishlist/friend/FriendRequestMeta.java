@@ -4,10 +4,10 @@ package com.wish.wishlist.friend;
  * Created by jiawen on 15-11-01.
  */
 public class FriendRequestMeta extends UserAdapter.UserMeta {
-    public Boolean fromMe;
+    Boolean fromMe;
     public long updatedTime;
 
-    public FriendRequestMeta(final String objectId,
+    FriendRequestMeta(final String objectId,
                              final String name,
                              final String email,
                              final String username,

@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 class NewFeatureFragmentAdapter extends FragmentPagerAdapter {
     private int mCount = 2;
 
-    public NewFeatureFragmentAdapter(FragmentManager fm) {
+    NewFeatureFragmentAdapter(FragmentManager fm) {
         super(fm);
     }
 

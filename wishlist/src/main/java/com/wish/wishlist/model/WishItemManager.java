@@ -52,8 +52,7 @@ public class WishItemManager {
         return items;
     }
 
-    public List<WishItem> searchItems(final String query, final String sortOption)
-    {
+    public List<WishItem> searchItems(final String query, final String sortOption) {
         final ItemDBManager itemDBManager = new ItemDBManager();
         final ItemsCursor c = itemDBManager.searchItems(query, sortOption);
         List<WishItem> itemList = new ArrayList<>();
@@ -81,8 +80,7 @@ public class WishItemManager {
         return itemList;
     }
 
-    public ArrayList<WishItem> getItemsNotSyncedToServer()
-    {
+    public ArrayList<WishItem> getItemsNotSyncedToServer() {
         ItemDBManager itemDBManager = new ItemDBManager();
 
         ArrayList<Long> ids = itemDBManager.getItemsNotSyncedToServer();
@@ -98,8 +96,7 @@ public class WishItemManager {
         return items;
     }
 
-    public WishItem getItemByObjectId(String object_id)
-    {
+    public WishItem getItemByObjectId(String object_id) {
         ItemDBManager itemDBManager = new ItemDBManager();
 
         ItemsCursor wishItemCursor = itemDBManager.getItemByObjectId(object_id);
@@ -109,8 +106,7 @@ public class WishItemManager {
         return itemFromCursor(wishItemCursor);
     }
 
-    public WishItem getItemById(long itemId)
-    {
+    public WishItem getItemById(long itemId) {
         ItemDBManager itemDBManager = new ItemDBManager();
 
         ItemsCursor wishItemCursor = itemDBManager.getItem(itemId);

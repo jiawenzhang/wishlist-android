@@ -10,8 +10,8 @@ import java.util.Collections;
  * TagDBManager provides access to operations on data in ItemCategory table
  */
 public class TagItemDBManager extends DBManager {
-    public static final String TAG_ID = "tag_id";
-	public static final String ITEM_ID = "item_id";
+    static final String TAG_ID = "tag_id";
+	static final String ITEM_ID = "item_id";
 	public static final String DB_TABLE = "TagItem";
 
     private static TagItemDBManager _instance = null;
@@ -95,7 +95,7 @@ public class TagItemDBManager extends DBManager {
         return tags;
     }
 
-    public ArrayList<Long> tagIds_by_item(long itemId) {
+    private ArrayList<Long> tagIds_by_item(long itemId) {
         Cursor cursor = DBAdapter.getInstance().db().query(true, DB_TABLE, new String[]{TAG_ID}, ITEM_ID + "=" + itemId, null, null, null, null, null);
         ArrayList<Long> tagIds = new ArrayList<Long>();
         while (cursor.moveToNext()) {

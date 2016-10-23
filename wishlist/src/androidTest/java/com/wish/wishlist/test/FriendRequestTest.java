@@ -33,8 +33,8 @@ public class FriendRequestTest extends InstrumentationTestCase implements
     // Test 5 users send friend request to one user
 
     private static final String TAG = "FriendTest";
-    Context mMockContext;
-    static public CountDownLatch mSignal = null;
+    private Context mMockContext;
+    private static CountDownLatch mSignal = null;
     private static final String friendUserEmail = "li.kevin@mail.com";
 
     @Before

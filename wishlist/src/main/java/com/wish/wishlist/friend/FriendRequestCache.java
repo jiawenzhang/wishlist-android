@@ -10,7 +10,7 @@ import java.util.ListIterator;
 /**
  * Created by jiawen on 15-11-01.
  */
-public class FriendRequestCache extends FriendListCache {
+class FriendRequestCache extends FriendListCache {
     static final String TAG = "FiendRequestCache";
     private LinkedList<FriendRequestMeta> mFriendRequestList = null;
 
@@ -22,7 +22,7 @@ public class FriendRequestCache extends FriendListCache {
 
     private FriendRequestCache() {}
 
-    public void addFriendRequest(final FriendRequestMeta request) {
+    void addFriendRequest(final FriendRequestMeta request) {
         if (mFriendRequestList == null) {
             mFriendRequestList = new LinkedList<>();
             mFriendRequestList.add(request);
@@ -62,11 +62,11 @@ public class FriendRequestCache extends FriendListCache {
         return (mFriendRequestList != null);
     }
 
-    public List<FriendRequestMeta> friendRequestList() {
+    List<FriendRequestMeta> friendRequestList() {
         return mFriendRequestList;
     }
 
-    public void setFriendRequestList(final LinkedList<FriendRequestMeta> friendRequestList) {
+    void setFriendRequestList(final LinkedList<FriendRequestMeta> friendRequestList) {
         mFriendRequestList = friendRequestList;
     }
 

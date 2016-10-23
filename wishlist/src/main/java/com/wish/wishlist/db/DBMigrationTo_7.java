@@ -17,11 +17,11 @@ import java.util.Locale;
 /**
  * Created by jiawen on 2016-04-13.
  */
-public class DBMigrationTo_7 {
+class DBMigrationTo_7 {
     private final static String TAG = "DBMigrationTo_7";
 
     // ImgMeta struct in db version 6
-    public static class ImgMeta_6 {
+    private static class ImgMeta_6 {
         private final static String TAG = "ImgMeta_6";
 
         private final static String URL = "url";
@@ -32,7 +32,7 @@ public class DBMigrationTo_7 {
         public int mWidth;
         public int mHeight;
 
-        public ImgMeta_6(String url, int w, int h) {
+        ImgMeta_6(String url, int w, int h) {
             mUrl = url;
             mWidth = w;
             mHeight = h;
@@ -54,7 +54,7 @@ public class DBMigrationTo_7 {
             return imageArray.toString();
         }
 
-        public static ImgMeta_6 fromJSON(final String JSON) {
+        static ImgMeta_6 fromJSON(final String JSON) {
             try {
                 JSONArray jsonArray = new JSONArray(JSON);
                 if (jsonArray.length() == 0) {

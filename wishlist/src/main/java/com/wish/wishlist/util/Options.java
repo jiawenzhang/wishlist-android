@@ -11,8 +11,8 @@ import com.wish.wishlist.db.ItemDBManager;
  * Created by jiawen on 15-08-24.
  */
 public class Options {
-    public String _key;
-    public int _val;
+    private String _key;
+    protected int _val;
     protected int _defaultVal;
 
     Options(String key, int val) {
@@ -48,7 +48,7 @@ public class Options {
      * Created by jiawen on 15-08-24.
      */
     public static class View extends Options {
-        public static final String KEY = "viewOption";
+        static final String KEY = "viewOption";
         public static final int LIST = 0;
         public static final int GRID = 1;
 
@@ -66,21 +66,21 @@ public class Options {
         public static final int COMPLETED = 1;
         public static final int IN_PROGRESS = 2;
 
-        public Status(String key, int val) {
+        Status(String key, int val) {
             super(key, val);
             _defaultVal = ALL;
         }
     }
 
     public static class MyWishStatus extends Status {
-        public static final String KEY = "myWishStatusOption";
+        static final String KEY = "myWishStatusOption";
         public MyWishStatus(int val) {
             super(KEY, val);
         }
     }
 
     public static class FriendWishStatus extends Status {
-        public static final String KEY = "friendWishStatusOption";
+        static final String KEY = "friendWishStatusOption";
         public FriendWishStatus(int val) {
             super(KEY, val);
         }
@@ -91,7 +91,7 @@ public class Options {
      */
 
     public static class Tag {
-        public static final String KEY = "tagOption";
+        static final String KEY = "tagOption";
         private String _key;
         private String _val;
 
@@ -120,7 +120,7 @@ public class Options {
     }
 
     public static class DeviceCountry {
-        public static final String KEY = "DeviceCountry";
+        static final String KEY = "DeviceCountry";
         private String _key;
         private String _val;
 
@@ -153,13 +153,13 @@ public class Options {
      */
 
     public static class Sort extends Options {
-        public static final int ID = 0;
+        static final int ID = 0;
         public static final int NAME = 1;
         public static final int UPDATED_TIME = 2;
         public static final int PRICE = 3;
-        public static final int PRIORITY = 4;
+        static final int PRIORITY = 4;
 
-        public Sort(String key, int val) {
+        Sort(String key, int val) {
             super(key, val);
             _defaultVal = UPDATED_TIME;
         }
@@ -183,21 +183,21 @@ public class Options {
     }
 
     public static class MyWishSort extends Sort {
-        public static final String KEY = "myWishSort";
+        static final String KEY = "myWishSort";
         public MyWishSort(int val) {
             super(KEY, val);
         }
     }
 
     public static class FriendWishSort extends Sort {
-        public static final String KEY = "friendWishSort";
+        static final String KEY = "friendWishSort";
         public FriendWishSort(int val) {
             super(KEY, val);
         }
     }
 
     public static class ShowLoginOnStartup extends Options {
-        public static final String KEY = "showLoginOnStartup";
+        static final String KEY = "showLoginOnStartup";
         public ShowLoginOnStartup(int val) {
             super(KEY, val);
             _defaultVal = 1;
@@ -210,7 +210,7 @@ public class Options {
     }
 
     public static class ShowOnBoarding extends Options {
-        public static final String KEY = "showOnBoarding";
+        static final String KEY = "showOnBoarding";
         public ShowOnBoarding(int val) {
             super(KEY, val);
             _defaultVal = 1;
@@ -223,7 +223,7 @@ public class Options {
     }
 
     public static class ShowNewFriendNotification extends Options {
-        public static final String KEY = "showNewFriendNotification";
+        static final String KEY = "showNewFriendNotification";
         public ShowNewFriendNotification(int val) {
             super(KEY, val);
             _defaultVal = 0;
@@ -236,7 +236,7 @@ public class Options {
     }
 
     public static class ShowNewFriendRequestNotification extends Options {
-        public static final String KEY = "showNewFriendRequestNotification";
+        static final String KEY = "showNewFriendRequestNotification";
         public ShowNewFriendRequestNotification(int val) {
             super(KEY, val);
             _defaultVal = 0;
@@ -249,7 +249,7 @@ public class Options {
     }
 
     public static class ShowPrivateWishExplainDialog extends Options {
-        public static final String KEY = "showPrivateWishExplainDialog";
+        static final String KEY = "showPrivateWishExplainDialog";
         public ShowPrivateWishExplainDialog (int val) {
             super(KEY, val);
             _defaultVal = 1;

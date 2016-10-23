@@ -20,18 +20,16 @@ import android.text.TextWatcher;
 import android.text.Editable;
 import android.widget.EditText;
 
-public class TextWatcherAdapter implements TextWatcher {
+class TextWatcherAdapter implements TextWatcher {
 
-    public interface TextWatcherListener {
-
+    interface TextWatcherListener {
         void onTextChanged(EditText view, String text);
-
     }
 
     private final EditText view;
     private final TextWatcherListener listener;
 
-    public TextWatcherAdapter(EditText editText, TextWatcherListener listener) {
+    TextWatcherAdapter(EditText editText, TextWatcherListener listener) {
         this.view = editText;
         this.listener = listener;
     }
@@ -51,5 +49,4 @@ public class TextWatcherAdapter implements TextWatcher {
     public void afterTextChanged(Editable s) {
         // pass
     }
-
 }

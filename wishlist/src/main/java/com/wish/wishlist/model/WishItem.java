@@ -142,7 +142,7 @@ public class WishItem implements Parcelable {
         mObjectId = object_id;
     }
 
-    public String getOwnerId() {
+    String getOwnerId() {
         return mOwnerId;
     }
     public void setOwnerId(final String owner_id) {
@@ -160,11 +160,11 @@ public class WishItem implements Parcelable {
         return mDeleted;
     }
 
-    public void setDeleted(boolean value) {
+    void setDeleted(boolean value) {
         mDeleted = value;
     }
 
-    public boolean getSyncedToServer() {
+    boolean getSyncedToServer() {
         return mSyncedToServer;
     }
 
@@ -172,7 +172,7 @@ public class WishItem implements Parcelable {
         mSyncedToServer = value;
     }
 
-    public boolean getDownloadImg() {
+    boolean getDownloadImg() {
         return mDownloadImg;
     }
 
@@ -286,7 +286,7 @@ public class WishItem implements Parcelable {
         this.mName = name;
     }
 
-    public long getUpdatedTime() {
+    long getUpdatedTime() {
         return mUpdatedTime;
     }
 

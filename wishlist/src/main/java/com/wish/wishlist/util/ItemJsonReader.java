@@ -16,10 +16,10 @@ import java.util.ArrayList;
  * Created by jiawen on 2016-10-07.
  */
 
-public final class ItemJsonReader {
+final class ItemJsonReader {
     private static final String TAG = "ItemJsonReader";
 
-    public static WebResult readObjString(String s) {
+    static WebResult readObjString(String s) {
         WebResult result = new WebResult();
 
         JsonReader reader = new JsonReader(new StringReader(s));

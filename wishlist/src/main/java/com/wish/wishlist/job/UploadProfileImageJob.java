@@ -18,7 +18,7 @@ import java.io.File;
  * Created by jiawen on 15-09-20.
  */
 public class UploadProfileImageJob extends Job {
-    public static final int PRIORITY = 1;
+    private static final int PRIORITY = 1;
     private static final String TAG = "UpdateProfileImageJob";
 
     public UploadProfileImageJob() {

@@ -26,12 +26,12 @@ import android.content.Intent;
 
 import java.util.Collection;
 
-public class ParseLoginBuilder {
+class ParseLoginBuilder {
 
   private Context context;
   private ParseLoginConfig config = new ParseLoginConfig();
 
-  public ParseLoginBuilder(Context context) {
+  ParseLoginBuilder(Context context) {
     this.context = context;
   }
 
@@ -55,7 +55,7 @@ public class ParseLoginBuilder {
    *     Whether to show the username/password login.
    * @return The caller instance to allow chaining.
    */
-  public ParseLoginBuilder setParseLoginEnabled(boolean enabled) {
+  ParseLoginBuilder setParseLoginEnabled(boolean enabled) {
     config.setParseLoginEnabled(enabled);
     return this;
   }
@@ -68,7 +68,7 @@ public class ParseLoginBuilder {
    *     Whether to allow user to skip login
    * @return The caller instance to allow chaining.
    */
-  public ParseLoginBuilder setParseLoginAllowSkip(boolean allow) {
+  ParseLoginBuilder setParseLoginAllowSkip(boolean allow) {
     config.setParseLoginAllowSkip(allow);
     return this;
   }
@@ -80,7 +80,7 @@ public class ParseLoginBuilder {
    *     The text to display on the button.
    * @return The caller instance to allow chaining.
    */
-  public ParseLoginBuilder setParseLoginButtonText(CharSequence text) {
+  ParseLoginBuilder setParseLoginButtonText(CharSequence text) {
     config.setParseLoginButtonText(text);
     return this;
   }
@@ -103,7 +103,7 @@ public class ParseLoginBuilder {
    *     The text to display on the button.
    * @return The caller instance to allow chaining.
    */
-  public ParseLoginBuilder setParseSignupButtonText(CharSequence text) {
+  ParseLoginBuilder setParseSignupButtonText(CharSequence text) {
     config.setParseSignupButtonText(text);
     return this;
   }
@@ -126,7 +126,7 @@ public class ParseLoginBuilder {
    *     The text to display on the link.
    * @return The caller instance to allow chaining.
    */
-  public ParseLoginBuilder setParseLoginHelpText(CharSequence text) {
+  ParseLoginBuilder setParseLoginHelpText(CharSequence text) {
     config.setParseLoginHelpText(text);
     return this;
   }
@@ -150,7 +150,7 @@ public class ParseLoginBuilder {
    *     The text to display on the toast.
    * @return The caller instance to allow chaining.
    */
-  public ParseLoginBuilder setParseLoginInvalidCredentialsToastText(
+  ParseLoginBuilder setParseLoginInvalidCredentialsToastText(
       CharSequence text) {
     config.setParseLoginInvalidCredentialsToastText(text);
     return this;
@@ -180,7 +180,7 @@ public class ParseLoginBuilder {
    *     Whether to use email as the user's username in the Parse SDK.
    * @return The caller instance to allow chaining.
    */
-  public ParseLoginBuilder setParseLoginEmailAsUsername(boolean emailAsUsername) {
+  ParseLoginBuilder setParseLoginEmailAsUsername(boolean emailAsUsername) {
     config.setParseLoginEmailAsUsername(emailAsUsername);
     return this;
   }
@@ -205,7 +205,7 @@ public class ParseLoginBuilder {
    *     The text to display on the user signup submission button.
    * @return The caller instance to allow chaining.
    */
-  public ParseLoginBuilder setParseSignupSubmitButtonText(CharSequence text) {
+  ParseLoginBuilder setParseSignupSubmitButtonText(CharSequence text) {
     config.setParseSignupSubmitButtonText(text);
     return this;
   }
@@ -231,7 +231,7 @@ public class ParseLoginBuilder {
    *     Whether to show the facebook login.
    * @return The caller instance to allow chaining.
    */
-  public ParseLoginBuilder setFacebookLoginEnabled(boolean enabled) {
+  ParseLoginBuilder setFacebookLoginEnabled(boolean enabled) {
     config.setFacebookLoginEnabled(enabled);
     return this;
   }
@@ -268,7 +268,7 @@ public class ParseLoginBuilder {
    *     The Facebook permissions being requested.
    * @return The caller instance to allow chaining.
    */
-  public ParseLoginBuilder setFacebookLoginPermissions(
+  ParseLoginBuilder setFacebookLoginPermissions(
       Collection<String> permissions) {
     config.setFacebookLoginPermissions(permissions);
     return this;

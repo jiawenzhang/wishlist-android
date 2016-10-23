@@ -18,28 +18,28 @@ import com.wish.wishlist.R;
 
 import java.util.List;
 
-public class AddFriendAdapter extends UserAdapter {
+class AddFriendAdapter extends UserAdapter {
     private AddFriendListener mAddFriendListener = null;
     private static final String TAG = "AddFriendAdapter";
 
     /******************* AddFriendListener *********************/
-    public interface AddFriendListener {
+    interface AddFriendListener {
         void onAddFriend(String friendId);
     }
 
-    protected void onAddFriend(String friendId) {
+    private void onAddFriend(String friendId) {
         if (mAddFriendListener != null) {
             mAddFriendListener.onAddFriend(friendId);
         }
     }
 
-    public void setAddFriendListener(AddFriendListener listener)
+    void setAddFriendListener(AddFriendListener listener)
     {
         mAddFriendListener = listener;
     }
     /*************************************************************/
 
-    public AddFriendAdapter(List<UserMeta> userData) {
+    AddFriendAdapter(List<UserMeta> userData) {
         super(userData);
     }
 

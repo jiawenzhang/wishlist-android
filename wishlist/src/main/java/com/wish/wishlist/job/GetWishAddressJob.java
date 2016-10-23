@@ -24,7 +24,7 @@ import java.util.Locale;
  * Created by jiawen on 15-09-20.
  */
 public class GetWishAddressJob extends Job {
-    public static final int PRIORITY = 1;
+    private static final int PRIORITY = 1;
     private static final String TAG = "GetWishAddressJob";
 
     private long mItemId;

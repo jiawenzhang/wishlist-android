@@ -26,7 +26,7 @@ import java.util.HashMap;
 /**
  * Created by jiawen on 2016-04-03.
  */
-public class DownloadImageTask {
+class DownloadImageTask {
     private static String TAG = "DownloadImageTask";
     private HashMap<Long, String> mItemUrl= new HashMap<>();
     private HashMap<Long, Target> mTargets = new HashMap<>();
@@ -34,10 +34,10 @@ public class DownloadImageTask {
 
     class Result {
         // result code
-        public int HEAD_HTTP_OK = 0;
-        public int HEAD_HTTP_NOT_OK = 1;
-        public int NETWORK_ERROR = 2;
-        public int MALFORMEDURL = 3;
+        int HEAD_HTTP_OK = 0;
+        int HEAD_HTTP_NOT_OK = 1;
+        int NETWORK_ERROR = 2;
+        int MALFORMEDURL = 3;
 
         Long itemId;
         public String url;
@@ -101,7 +101,7 @@ public class DownloadImageTask {
         void downloadImageTaskDone(boolean success, boolean imageChanged);
     }
 
-    public void registerListener(DownloadImageTaskDoneListener l) {
+    void registerListener(DownloadImageTaskDoneListener l) {
         mDownlaodImageTaskDoneListener = l;
     }
     /* listener */

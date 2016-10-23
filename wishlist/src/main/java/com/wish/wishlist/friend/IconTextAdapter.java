@@ -31,8 +31,8 @@ public class IconTextAdapter extends ArrayAdapter<IconTextAdapter.Entry> {
     private final Activity context;
 
     static class ViewHolder {
-        protected TextView txtView;
-        protected ImageView imgView;
+        TextView txtView;
+        ImageView imgView;
     }
 
     public IconTextAdapter(Activity context, List<Entry> list) {

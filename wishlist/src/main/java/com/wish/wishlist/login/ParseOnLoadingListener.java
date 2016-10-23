@@ -21,8 +21,7 @@
 
 package com.wish.wishlist.login;
 
-public interface ParseOnLoadingListener {
-  public void onLoadingStart(boolean showSpinner);
-
-  public void onLoadingFinish();
+interface ParseOnLoadingListener {
+  void onLoadingStart(boolean showSpinner);
+  void onLoadingFinish();
 }

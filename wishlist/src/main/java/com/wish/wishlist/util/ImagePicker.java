@@ -26,8 +26,8 @@ public class ImagePicker {
 
     public static final int TAKE_PICTURE = 100;
     public static final int SELECT_PICTURE = 101;
-    public static final int PERMISSIONS_TAKE_PHOTO = 0;
-    public static final int PERMISSIONS_READ_EXTERNAL_STORAGE = 1;
+    private static final int PERMISSIONS_TAKE_PHOTO = 0;
+    private static final int PERMISSIONS_READ_EXTERNAL_STORAGE = 1;
 
     private static final String TAG="ImagePicker";
 
@@ -39,7 +39,7 @@ public class ImagePicker {
         showChangePhotoDialog();
     }
 
-    protected void showChangePhotoDialog() {
+    private void showChangePhotoDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mActivity, R.style.AppCompatAlertDialogStyle);
 
         final CharSequence[] items = {"Take a photo", "From gallery"};
@@ -71,7 +71,7 @@ public class ImagePicker {
         takePhoto();
     }
 
-    public void takePhoto() {
+    private void takePhoto() {
         // prevent screen orientation to re-create activity, in which case we lose the state of ImagePicker
         ScreenOrientation.lock(mActivity);
         Intent intent =  new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

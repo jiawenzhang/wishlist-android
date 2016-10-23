@@ -13,8 +13,8 @@ import com.wish.wishlist.R;
  */
 
 public class TopButtonViewHolder extends RecyclerView.ViewHolder {
-    public TextView txtView;
-    public ImageView imgProfile;
+    TextView txtView;
+    ImageView imgProfile;
     public ImageView imgRedDot;
     public FrameLayout rootLayout;
 

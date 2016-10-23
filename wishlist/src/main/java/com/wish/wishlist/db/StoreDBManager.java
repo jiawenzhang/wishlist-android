@@ -1,6 +1,5 @@
 package com.wish.wishlist.db;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 
@@ -8,8 +7,8 @@ import android.database.SQLException;
  * StoreDBManager provides access to opexarations on data in store table
  */
 public class StoreDBManager extends DBManager {
-    public static final String KEY_ID = "_id";
-    public static final String KEY_NAME = "store_name";
+    private static final String KEY_ID = "_id";
+    private static final String KEY_NAME = "store_name";
     public static final String KEY_LOCATION_ID = "location_id";
 
     public static final String DB_TABLE = "store";
