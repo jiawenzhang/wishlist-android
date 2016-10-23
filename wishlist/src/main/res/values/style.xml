@@ -287,8 +287,15 @@
         <item name="actionMenuTextAppearance">@style/Wishlist.actionMenuTextSize</item>
         <item name="actionModeBackground">@color/wishlist_yellow_color</item>
         <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="searchViewStyle">@style/Wishlist.SearchView</item>
     </style>
     <!--<item name="actionMenuTextColor">@color/black</item>-->
+
+    <style name="Wishlist.SearchView" parent="Widget.AppCompat.SearchView">
+        <item name="searchIcon">@null</item>
+        <item name="submitBackground">@android:color/transparent</item>
+        <item name="queryBackground">@android:color/transparent</item>
+    </style>
 
     <style name="Wishlist.actionMenuTextSize" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Menu">
         <item name="android:textSize">20sp</item>
