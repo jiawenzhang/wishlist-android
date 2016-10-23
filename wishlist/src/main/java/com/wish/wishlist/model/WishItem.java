@@ -64,18 +64,18 @@ public class WishItem implements Parcelable {
     public final static String PARSE_KEY_LAST_CHANGED_BY = "lastChangedBy";
     public final static String PARSE_KEY_TAGS = "tags";
     public final static String PARSE_KEY_IMAGES = "images";
-    public static final String PARSE_KEY_ACCESS = "access";
-    public static final String PARSE_KEY_STORE_NAME = "storeName";
+    private static final String PARSE_KEY_ACCESS = "access";
+    private static final String PARSE_KEY_STORE_NAME = "storeName";
     public static final String PARSE_KEY_NAME = "itemName";
-    public static final String PARSE_KEY_DESCRIPTION = "description";
-    public static final String PARSE_KEY_UPDATED_TIME = "updatedTime"; // ms, migrated from data_time:String
+    private static final String PARSE_KEY_DESCRIPTION = "description";
+    private static final String PARSE_KEY_UPDATED_TIME = "updatedTime"; // ms, migrated from data_time:String
     public static final String PARSE_KEY_IMG_META_JSON = "picture";
-    public static final String PARSE_KEY_PRICE = "price";
-    public static final String PARSE_KEY_ADDRESS = "location";
-    public static final String PARSE_KEY_LATITUDE = "latitude";
-    public static final String PARSE_KEY_LONGITUDE = "longitude";
-    public static final String PARSE_KEY_COMPLETE = "complete";
-    public static final String PARSE_KEY_LINK = "link";
+    private static final String PARSE_KEY_PRICE = "price";
+    private static final String PARSE_KEY_ADDRESS = "location";
+    private static final String PARSE_KEY_LATITUDE = "latitude";
+    private static final String PARSE_KEY_LONGITUDE = "longitude";
+    private static final String PARSE_KEY_COMPLETE = "complete";
+    private static final String PARSE_KEY_LINK = "link";
     public static final String PARSE_KEY_DELETED = "deleted";
 
     public WishItem(

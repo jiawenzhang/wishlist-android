@@ -310,7 +310,7 @@ public class SyncAgent implements
         });
     }
 
-    public static String parseFileNameToLocal(String parseFileName) {
+    static String parseFileNameToLocal(String parseFileName) {
         // when we save file to parse (aws s3), its file name will be prefixed by a server generated random string.
         // for example:
         // file name we uploaded                    IMG173391503.jpg

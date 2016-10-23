@@ -27,17 +27,17 @@ import java.util.List;
 /**
  * Created by jiawen on 2016-04-03.
  */
-public class UploadTask {
+class UploadTask {
     private static String TAG = "UploadTask";
     private long mItemsToUpload;
 
     /* listener */
     private UploadTaskDoneListener mUploadTaskDoneListener;
-    public interface UploadTaskDoneListener {
+    interface UploadTaskDoneListener {
         void uploadTaskDone(boolean success);
     }
 
-    public void registerListener(UploadTaskDoneListener l) {
+    void registerListener(UploadTaskDoneListener l) {
         mUploadTaskDoneListener = l;
     }
     /* listener */
