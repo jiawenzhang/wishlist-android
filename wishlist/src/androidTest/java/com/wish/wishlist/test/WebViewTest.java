@@ -13,6 +13,7 @@ import android.util.Log;
 import com.evgenii.jsevaluator.JsEvaluator;
 import com.evgenii.jsevaluator.interfaces.JsCallback;
 import com.wish.wishlist.util.StringUtil;
+import com.wish.wishlist.util.Util;
 import com.wish.wishlist.util.WebItemTask;
 import com.wish.wishlist.util.WebRequest;
 import com.wish.wishlist.util.WebResult;
@@ -170,7 +171,7 @@ public class WebViewTest
             @Override
             public void run() {
                 try {
-                    String js = StringUtil.readFromAssets("mobile_test.js");
+                    String js = Util.decrypt(StringUtil.readByteFromAsset("t"));
                     JsEvaluator jsEvaluator = new JsEvaluator(mMockContext);
                     jsEvaluator.evaluate(js, new JsCallback() {
                         @Override

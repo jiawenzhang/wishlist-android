@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
+import javax.crypto.Cipher
 
 android {
     compileSdkVersion 23
@@ -69,13 +72,31 @@ android {
         noCompress "js"
     }
 
-    task copyFiles(type: Copy) {
-        description = 'Copy javascript files to assets folder'
-        from '../third-party/wish-scraper/'
-        into 'src/main/assets'
+    ext {
+        KEY = "d214e8a3af797fed".padRight(16).getBytes("UTF-8")
+        IV = "56e27baf5903c24d".padRight(16).getBytes("UTF-8")
     }
 
-    preBuild.dependsOn(copyFiles)
+    task encryptJS << {
+        SecretKeySpec key = new SecretKeySpec(KEY, "AES")
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(IV))
+        String fileContents = new File('third-party/wish-scraper/mobile_test.js').getText('UTF-8')
+        def encBytes = cipher.doFinal(fileContents.getBytes("UTF-8"))
+        def out_t = file('src/main/assets/t')
+        out_t.delete()
+        out_t << encBytes
+
+        String f1 = new File('third-party/wish-scraper/currency_symbol_map.js').getText('UTF-8')
+        String f2 = new File('third-party/wish-scraper/util.js').getText('UTF-8')
+        String f3 = new File('third-party/wish-scraper/scrape.js').getText('UTF-8')
+        def encBytesJ = cipher.doFinal((f1+f2+f3).getBytes("UTF-8"))
+        def out_j = file('src/main/assets/j')
+        out_j.delete()
+        out_j << encBytesJ
+    }
+
+    preBuild.dependsOn(encryptJS)
 }
 
 dependencies {

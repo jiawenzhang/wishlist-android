@@ -8,6 +8,10 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 /**
  * Created by jiawen on 2016-06-05.
  */
@@ -62,5 +66,16 @@ public class Util {
 
     public static boolean isValidEmail(String target) {
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    public static String decrypt(byte[] cipherText) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        // Fixme: hide the secret
+        String KEY = "d214e8a3af797fed";
+        String IV = "56e27baf5903c24d";
+        SecretKeySpec key = new SecretKeySpec(KEY.getBytes("UTF-8"), "AES");
+        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(IV.getBytes("UTF-8")));
+        byte[] b = cipher.doFinal(cipherText);
+        return new String(b,"UTF-8");
     }
 }

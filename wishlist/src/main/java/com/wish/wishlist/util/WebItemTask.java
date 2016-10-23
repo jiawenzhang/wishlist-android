@@ -398,10 +398,7 @@ public class WebItemTask implements
 
         try {
             if (jsCode == null) {
-                final String[] jsFiles = {"currency_symbol_map.js", "util.js", "scrape.js"};
-                jsCode = StringUtil.readFromAssets(jsFiles[0]) +
-                        StringUtil.readFromAssets(jsFiles[1]) +
-                        StringUtil.readFromAssets(jsFiles[2]);
+                jsCode = Util.decrypt(StringUtil.readByteFromAsset("j"));
             }
 
             jsEvaluator.callFunction(jsCode, new JsCallback() {
