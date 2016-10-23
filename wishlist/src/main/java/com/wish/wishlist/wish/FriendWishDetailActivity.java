@@ -24,7 +24,6 @@ public class FriendWishDetailActivity extends WishDetailActivity implements
         WishImageDownloader.onWishImageDownloadDoneListener {
     private static final String TAG = "FriendWishDetailAct";
     private WishImageDownloader mWishImageDownloader;
-    private ProgressDialog mProgressDialog = null;
 
     public final static String ITEM = "ITEM";
 

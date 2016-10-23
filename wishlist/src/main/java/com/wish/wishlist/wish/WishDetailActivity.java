@@ -67,7 +67,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     protected LinearLayout mLinkLayout;
     protected ClearableEditText mLinkText;
     protected WishItem mItem;
-    private ProgressDialog mProgressDialog;
+    protected ProgressDialog mProgressDialog;
     private Target mTarget;
 
     protected abstract boolean myWish();
@@ -361,7 +361,7 @@ public abstract class WishDetailActivity extends ActivityBase implements Observa
     }
 
     protected void dismissProgressDialog() {
-        ScreenOrientation.unlock(WishDetailActivity.this);
+        ScreenOrientation.unlock(this);
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
