@@ -21,6 +21,7 @@ public class Analytics {
     public static final String PUSH = "Push";
     public static final String FRIEND = "Friend";
     public static final String DEBUG = "Debug";
+    public static final String SCRAPE = "Scrape";
     public static final String PERMISSION = "Permission";
 
     public static void send(String category, String action, String label) {

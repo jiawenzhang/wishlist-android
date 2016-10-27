@@ -138,14 +138,14 @@ public class WebItemTask implements
         call.enqueue(new Callback() {
             @Override public void onFailure(Call call, IOException e) {
                 Log.e(TAG, e.toString());
-                Analytics.send(Analytics.DEBUG, "StaticHTMLFail", e.toString() + " " + webRequest.url);
+                Analytics.send(Analytics.SCRAPE, "StaticHTMLFail", e.toString() + " " + webRequest.url);
                 postWebResult(result);
             }
 
             @Override public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     Log.e(TAG, "response not successful");
-                    Analytics.send(Analytics.DEBUG, "StaticHTMLFail", "ResponseNotSuccessful" + " " + webRequest.url);
+                    Analytics.send(Analytics.SCRAPE, "StaticHTMLFail", "ResponseNotSuccessful" + " " + webRequest.url);
                     postWebResult(result);
                 }
 
@@ -163,7 +163,7 @@ public class WebItemTask implements
                     });
                 } else {
                     Log.e(TAG, "content type not supported");
-                    Analytics.send(Analytics.DEBUG, "StaticHTMLFail", "ContentTypeNotSupported" + " " + webRequest.url);
+                    Analytics.send(Analytics.SCRAPE, "StaticHTMLFail", "ContentTypeNotSupported" + " " + webRequest.url);
                     postWebResult(result);
                 }
 
@@ -185,14 +185,14 @@ public class WebItemTask implements
     private void gotWebResult(WebResult result) {
         long loadTime = (System.currentTimeMillis() - startTime);
         Log.d(TAG, stage + " loading: Time: " + loadTime);
-        Analytics.sendTime(Analytics.DEBUG, loadTime, "ScrapeWish", stage);
+        Analytics.sendTime(Analytics.SCRAPE, loadTime, "stage", stage);
         printResult();
         listener.onWebResult(result);
     }
 
     private void getFromWebView() {
         Log.e(TAG, "getFromWebView " + webRequest.url);
-        Analytics.send(Analytics.WISH, "GetFromWebView", webRequest.url);
+        Analytics.send(Analytics.SCRAPE, "GetFromWebView", webRequest.url);
         webView = new WebView(context);
         // web view will not draw anything - turn on optimizations
         webView.setWillNotDraw(false);
@@ -246,7 +246,7 @@ public class WebItemTask implements
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 // Handle the error
                 Log.e(TAG, "onReceivedError " + description + " " + failingUrl);
-                Analytics.send(Analytics.DEBUG, "WebViewLoadError", description + " " + failingUrl);
+                Analytics.send(Analytics.SCRAPE, "WebViewLoadError", description + " " + failingUrl);
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 postWebResult(result);
             }
@@ -267,7 +267,7 @@ public class WebItemTask implements
     }
 
     private void getFromWebViewWithImages() {
-        Analytics.send(Analytics.WISH, "GetFromWebViewWithImages", webRequest.url);
+        Analytics.send(Analytics.SCRAPE, "GetFromWebViewWithImages", webRequest.url);
         //webView.getSettings().setLoadsImagesAutomatically(true);
         //enable loading images
         webView.getSettings().setBlockNetworkImage(false);
@@ -300,12 +300,12 @@ public class WebItemTask implements
         result = readObjString(s);
 
         if (result.priceNumber == null) {
-            Analytics.send(Analytics.DEBUG, "PriceNumber: Null", result.url);
+            Analytics.send(Analytics.SCRAPE, "PriceNumber", " Null " + webRequest.url);
         }
         if (result.currency != null) {
-            Analytics.send(Analytics.DEBUG, "Currency: " + result.currency.toString(), result.url);
+            Analytics.send(Analytics.SCRAPE, "Currency", result.currency.toString() +  " " + webRequest.url);
         } else {
-            Analytics.send(Analytics.DEBUG, "Currency: Null", result.url);
+            Analytics.send(Analytics.SCRAPE, "Currency", " Null " + webRequest.url);
         }
 
         switch (stage) {
@@ -361,7 +361,7 @@ public class WebItemTask implements
                 break;
             case WEBVIEW_IMAGE:
                 Log.e(TAG, "last stage, cannot start the next");
-                Analytics.send(Analytics.DEBUG, "LastStage", webRequest.url);
+                Analytics.send(Analytics.SCRAPE, "LastStage", webRequest.url);
         }
     }
 
