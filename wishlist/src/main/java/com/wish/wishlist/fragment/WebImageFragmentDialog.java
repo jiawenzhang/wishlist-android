@@ -76,8 +76,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
         imageFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Analytics.send(Analytics.WISH, "SelectWebImage", mHost);
-                Analytics.send(Analytics.DEBUG, "SelectWebImage: " + mHost, 0 + "/" + mList.size());
+                Analytics.send(Analytics.WISH, "SelectOneWebImage", mHost);
                 mWebImageSelectedListener.onWebImageSelected(mList.get(0).mUrl);
                 dismiss();
             }
@@ -224,7 +223,6 @@ public class WebImageFragmentDialog extends DialogFragment implements
 
     public void onWebImageTap(String url) {
         this.mWebImageSelectedListener.onWebImageSelected(url);
-        Analytics.send(Analytics.WISH, "SelectWebImage", mHost);
 
         int i;
         for (i = 0; i < mList.size(); i++) {
@@ -232,7 +230,7 @@ public class WebImageFragmentDialog extends DialogFragment implements
                 break;
             }
         }
-        Analytics.send(Analytics.DEBUG, "SelectWebImage: " + mHost, i + "/" + mList.size());
+        Analytics.send(Analytics.DEBUG, "SelectMoreWebImage", mHost + " " + i + "/" + mList.size());
 
         dismiss();
     }
