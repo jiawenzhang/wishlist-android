@@ -145,8 +145,20 @@ public class WebItemTask implements
             @Override public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     Log.e(TAG, "response not successful");
+                    response.close();
                     Analytics.send(Analytics.SCRAPE, "StaticHTMLFail", "ResponseNotSuccessful" + " " + webRequest.url);
                     postWebResult(result);
+                    return;
+                }
+
+                if (response.body() == null ||
+                        response.body().contentType() == null ||
+                        response.body().contentType().toString() == null) {
+                    Log.e(TAG, "response type null");
+                    response.close();
+                    Analytics.send(Analytics.SCRAPE, "StaticHTMLFail", "ResponseTypeNull" + " " + webRequest.url);
+                    postWebResult(result);
+                    return;
                 }
 
                 if (response.body().contentType().toString().startsWith("text/html")) {

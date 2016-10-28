@@ -55,6 +55,14 @@ public final class ImageDimension {
                 return null;
             }
 
+            if (response.body() == null ||
+                    response.body().contentType() == null ||
+                    response.body().contentType().toString() == null) {
+                Log.e(TAG, "response type null");
+                response.close();
+                return null;
+            }
+
             switch (response.body().contentType().toString()) {
                 case "image/jpeg":
                     Dimension d = decodeJpegDimension(response.body().byteStream());
