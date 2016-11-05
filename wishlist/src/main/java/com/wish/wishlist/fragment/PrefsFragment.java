@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.parse.ParseUser;
 import com.wish.wishlist.BuildConfig;
@@ -30,6 +32,7 @@ import com.wish.wishlist.feature.NewFeatureFragmentActivity;
 import com.wish.wishlist.activity.ProfileActivity;
 import com.wish.wishlist.login.UserLoginActivity;
 import com.wish.wishlist.util.Analytics;
+import com.wish.wishlist.util.Options;
 import com.wish.wishlist.util.Util;
 import com.wish.wishlist.view.ReleaseNotesView;
 
@@ -37,10 +40,12 @@ import com.wish.wishlist.view.ReleaseNotesView;
  * Created by jiawen on 15-09-27.
  */
 public class PrefsFragment extends PreferenceFragmentCompat implements
-        CurrencyFragmentDialog.onCurrencyChangedListener {
+        CurrencyFragmentDialog.onCurrencyChangedListener,
+        PasswordFragmentDialog.OnPasswordListener {
 
     private static String TAG = "PrefsFragment";
     private final static int PERMISSIONS_REQUEST_LOCATION = 1;
+    private int tapCount = 0;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String s) {
@@ -172,6 +177,29 @@ public class PrefsFragment extends PreferenceFragmentCompat implements
                 }
             });
         }
+
+        final Preference version = findPreference("version");
+        String versionName;
+        try {
+            PackageInfo pi = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
+            versionName = pi.versionName;
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+            return;
+        }
+        version.setSummary(versionName);
+        version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                tapCount++;
+                if (tapCount == 8) {
+                    tapCount = 0;
+                    DialogFragment passwordFragment = new PasswordFragmentDialog();
+                    passwordFragment.setTargetFragment(PrefsFragment.this, 0);
+                    passwordFragment.show(getFragmentManager(), "dialog");
+                }
+                return true;
+            }
+        });
     }
 
     public void onCurrencyChanged(String currency) {
@@ -184,6 +212,26 @@ public class PrefsFragment extends PreferenceFragmentCompat implements
 
         EventBus.getInstance().post(new MyWishChangeEvent());
         Analytics.send(Analytics.WISH, "Currency", currency);
+    }
+
+    public void onPassword(String password) {
+        if ("beanswishlistawesome".equals(password)) {
+            Options.DeviceCountry deviceCountry = new Options.DeviceCountry(null);
+            deviceCountry.setVal("CA");
+            deviceCountry.save();
+            Util.initDeviceAccountEnabled();
+            final AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle)
+                    .setPositiveButton("OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {}
+                            }
+                    )
+                    .create();
+            dialog.setTitle("Account enabled, please restart the app");
+            dialog.show();
+        } else {
+            Toast.makeText(getActivity(), "Wrong password", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
