@@ -88,9 +88,10 @@ android {
         out_t << encBytes
 
         String f1 = new File('third-party/wish-scraper/currency_symbol_map.js').getText('UTF-8')
-        String f2 = new File('third-party/wish-scraper/util.js').getText('UTF-8')
-        String f3 = new File('third-party/wish-scraper/scrape.js').getText('UTF-8')
-        def encBytesJ = cipher.doFinal((f1+f2+f3).getBytes("UTF-8"))
+        String f2 = new File('third-party/wish-scraper/accounting.js').getText('UTF-8')
+        String f3 = new File('third-party/wish-scraper/util.js').getText('UTF-8')
+        String f4 = new File('third-party/wish-scraper/scrape.js').getText('UTF-8')
+        def encBytesJ = cipher.doFinal((f1+f2+f3+f4).getBytes("UTF-8"))
         def out_j = file('src/main/assets/j')
         out_j.delete()
         out_j << encBytesJ
