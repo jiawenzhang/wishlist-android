@@ -164,7 +164,12 @@ public class AddWishFromLinkActivity extends AddWishActivity
         mProgressDialog.show();
 
         mWebItemTask = new WebItemTask(this, request, this);
-        mWebItemTask.run();
+        boolean skipStatic = false;
+        if (mHost.contains("costco")) {
+            // static html does not have price
+            skipStatic = true;
+        }
+        mWebItemTask.run(skipStatic);
     }
 
     protected void showSelectedImage() {

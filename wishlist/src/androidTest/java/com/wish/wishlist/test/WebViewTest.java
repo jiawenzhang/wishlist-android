@@ -196,7 +196,7 @@ public class WebViewTest
         Runnable myRunnable = new Runnable() {
             @Override
             public void run() {
-                tasks.get(0).run();
+                tasks.get(0).run(false);
             }
         };
 

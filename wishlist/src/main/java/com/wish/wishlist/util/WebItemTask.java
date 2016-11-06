@@ -99,9 +99,14 @@ public class WebItemTask implements
         this.mainHandler = new Handler(context.getMainLooper());
     }
 
-    public void run() {
+    public void run(boolean skipStatic) {
         startTime = System.currentTimeMillis();
-        getFromStaticHTML();
+        if (!skipStatic) {
+            getFromStaticHTML();
+        } else {
+            stage = WEBVIEW_NO_IMAGE;
+            getFromWebView();
+        }
     }
 
     public void cancel() {
