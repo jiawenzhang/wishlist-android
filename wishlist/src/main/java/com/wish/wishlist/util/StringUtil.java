@@ -18,9 +18,17 @@ import java.util.TimeZone;
  * Created by jiawen on 2016-03-11.
  */
 public final class StringUtil {
-    private StringUtil() {};
+    private StringUtil() {}
 
     public static boolean sameArrays(ArrayList<String> arr1, ArrayList<String> arr2) {
+        if (arr1 == null && arr2 == null) {
+            return true;
+        }
+
+        if (arr1 == null || arr2 == null) {
+            return false;
+        }
+
         if (arr1.size() != arr2.size()) {
             return false;
         }
