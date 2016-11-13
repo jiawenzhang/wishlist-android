@@ -20,8 +20,6 @@ import com.wish.wishlist.BuildConfig;
 import com.wish.wishlist.DownloadBitmapTask;
 import com.wish.wishlist.activity.WebImage;
 
-import org.jsoup.nodes.Element;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -429,17 +427,6 @@ public class WebItemTask implements
             Log.e(TAG, e.toString());
             gotWebResult(result);
         }
-    }
-
-    private String getImageUrl(Element el, String attribute) {
-        String src = el.absUrl(attribute);
-
-        if (src.isEmpty()) {
-            src = el.attr("src").trim();
-            Log.d(TAG, "mal-formatted img src " + src);
-            //src = getValidImageUrl(src);
-        }
-        return src;
     }
 
     private void printResult() {
