@@ -50,14 +50,15 @@ public class Util {
     }
 
     public static void initDeviceAccountEnabled() {
-        Options.DeviceCountry deviceCountry = new Options.DeviceCountry(null);
-        deviceCountry.read();
-        ArrayList<String> enabledCountryList = new ArrayList<>();
-        enabledCountryList.add("US");
-        enabledCountryList.add("CA");
-        if (deviceCountry.val() != null && enabledCountryList.contains(deviceCountry.val())) {
-            deviceAccountEnabled = true;
-        }
+        deviceAccountEnabled = true;
+//        Options.DeviceCountry deviceCountry = new Options.DeviceCountry(null);
+//        deviceCountry.read();
+//        ArrayList<String> enabledCountryList = new ArrayList<>();
+//        enabledCountryList.add("US");
+//        enabledCountryList.add("CA");
+//        if (deviceCountry.val() != null && enabledCountryList.contains(deviceCountry.val())) {
+//            deviceAccountEnabled = true;
+//        }
     }
 
     public static boolean deviceAccountEnabled() {
