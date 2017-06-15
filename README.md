@@ -2,12 +2,18 @@
 
 **Third-party library dependency:**<br/>
 We use the following libraries in the project<br/>
-- AndroidStaggeredGrid https://github.com/etsy/AndroidStaggeredGrid<br/>
 - facebook-android-sdk https://developers.facebook.com/docs/android<br/>
 - Parse https://parse.com/docs/android/guide<br/>
 - ParseUI-Android https://github.com/ParsePlatform/ParseUI-Android<br/>
 - TokenAutoComplete https://github.com/splitwise/TokenAutoComplete<br/>
+- Android-Cloud-TagView-Plus https://github.com/kaedea/android-tagview
+- ViewPageIndicator https://github.com/JakeWharton/ViewPagerIndicator
+- SimpleCropView https://github.com/IsseiAoki/SimpleCropView
+- CircleImageView https://github.com/hdodenhof/CircleImageView
+- AndroidPriorityJobqueue https://github.com/yigit/android-priority-jobqueue
 - Picaso http://square.github.io/picasso/<br/>
+
+See the complete list in build.gradle
 
 **Get the code**<br/>
   git clone https://github.com/jiawenzhang/wishlist.git<br/>
@@ -16,13 +22,7 @@ As we use git submodules, please also run the following command to download the 
   git submodule update --init --recursive<br/>
 
 **Development enviroment**<br/>
-We recommen Android Studio as the IDE. You can download it from https://developer.android.com/sdk/index.html. It should also    incude Android sdk. The tools we use in the Android sdk are:
-- Android sdk tools 24.3.2<br/>
-- Google API 21<br/>
-- Android sdk build tools 21.0.1<br/>
-- Android Support Repository 15<br/>
-- Google Play service 24<br/>
-- Google Repository 19<br/>
+We recommend Android Studio as the IDE. You can download it from https://developer.android.com/sdk/index.html. It should also    incude Android sdk.
 
 **Compile and run**<br/>
 - Using Android Studio<br/>
